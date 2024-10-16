@@ -16,7 +16,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { createProject, toggleDrawer } from '../projectSlice'
 import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { ProjectType } from '../../../types/project'
+import { ProjectType } from '../../../types/project.types'
 import { nanoid } from '@reduxjs/toolkit'
 import {
     healthStatusData,

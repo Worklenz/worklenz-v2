@@ -15,7 +15,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleDrawer } from '../../../features/navbar/addMember/addMemberSlice'
 
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 import { colors } from '../../../styles/colors'
 import { avatarNamesMap } from '../../../shared/constants'
 

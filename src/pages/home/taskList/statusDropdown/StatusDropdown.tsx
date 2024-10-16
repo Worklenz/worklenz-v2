@@ -2,7 +2,7 @@ import { Badge, Card, Dropdown, Flex, Menu, MenuProps } from 'antd'
 import React, { useState } from 'react'
 import { colors } from '../../../../styles/colors'
 import { DownOutlined } from '@ant-design/icons'
-import { TaskStatusType } from '../../../../types/task'
+import { TaskStatusType } from '../../../../types/task.types'
 // custom css file
 import './statusDropdown.css'
 

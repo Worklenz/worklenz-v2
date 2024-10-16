@@ -14,7 +14,7 @@ import {
 } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { TodoType } from '../../../types/todo'
+import { TodoType } from '../../../types/todo.types'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 
 import { addTodo } from '../../../features/todo/todoSlice'

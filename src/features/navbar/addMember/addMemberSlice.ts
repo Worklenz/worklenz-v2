@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 
 type addMemberState = {
     membersList: MemberType[]

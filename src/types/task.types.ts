@@ -1,4 +1,4 @@
-import { ProjectType } from './project'
+import { ProjectType } from './project.types'
 
 export type TaskStatusType = 'Doing' | 'Todo' | 'Done'
 

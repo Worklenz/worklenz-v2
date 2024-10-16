@@ -2,7 +2,7 @@ import { Alert, Flex, Form, Input, InputRef, Select, Typography } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { nanoid } from '@reduxjs/toolkit'
-import { TaskType } from '../../../types/task'
+import { TaskType } from '../../../types/task.types'
 import { addTask } from '../../../features/tasks/taskSlice'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 

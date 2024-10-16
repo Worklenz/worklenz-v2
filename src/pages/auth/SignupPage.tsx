@@ -10,11 +10,12 @@ import {
     Space,
     Typography,
 } from 'antd'
-import googleIcon from '../../assets/images/icons8-google.svg'
 import { Link, useNavigate } from 'react-router-dom'
-import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
+
+import PageHeader from '../../components/PageHeader'
+import googleIcon from '../../assets/images/google-icon.png'
 
 const SignupPage = () => {
     const [loading, setLoading] = useState(false)

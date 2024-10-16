@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import {
     Button,
@@ -11,35 +11,41 @@ import {
     Space,
     Typography,
 } from 'antd'
-import googleIcon from '../../assets/images/icons8-google.svg'
 import { useNavigate } from 'react-router-dom'
-import PageHeader from '../../components/PageHeader'
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
+
+import PageHeader from '../../components/PageHeader'
+import googleIcon from '../../assets/images/google-icon.png'
+
+interface ILoginFormValues {
+    email?: string
+    password?: string
+    remember?: boolean
+}
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
-
-    // Localization
     const { t } = useTranslation('loginPage')
-
-    // media queries from react-responsive package
     const isMobile = useMediaQuery({ query: '(max-width: 576px)' })
 
-    const onFinish = (values: any) => {
-        console.log('Received values of form: ', values)
-        setLoading(true)
-
-        setTimeout(() => {
-            setLoading(false)
-            message.success(t('successMessage'))
+    const onFinish = useCallback(
+        (values: ILoginFormValues) => {
+            console.log('Received values of form: ', values)
+            setLoading(true)
 
             setTimeout(() => {
-                navigate('/worklenz/home')
-            }, 500)
-        }, 1500)
-    }
+                setLoading(false)
+                message.success(t('successMessage'))
+
+                setTimeout(() => {
+                    navigate('/worklenz/home')
+                }, 500)
+            }, 1500)
+        },
+        [navigate, t]
+    )
 
     return (
         <Card

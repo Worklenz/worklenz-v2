@@ -3,7 +3,7 @@ import React from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { addClient, toggleCreateClientDrawer } from './clientSlice'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
 import { nanoid } from '@reduxjs/toolkit'
 
 const CreateClientDrawer = () => {

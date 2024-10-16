@@ -13,7 +13,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { addMember, toggleDrawer } from './addMemberSlice'
 import { colors } from '../../../styles/colors'
-import { MemberType } from '../../../types/member'
+import { MemberType } from '../../../types/member.types'
 import { nanoid } from '@reduxjs/toolkit'
 
 const AddMemberDrawer = () => {

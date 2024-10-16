@@ -1,46 +1,59 @@
-# Getting Started with Create React App
+## Getting Started
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+To set up the project locally, follow these steps:
 
-## Available Scripts
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Worklenz/worklenz-react.git
 
-In the project directory, you can run:
+### 1. `/api`
+This folder contains all the API service files used to interact with external services. It is organized by feature. For example, `authApi.ts` handles all authentication-related API calls, while `projectApi.ts` handles calls related to project management.
 
-### `npm start`
+### 2. `/app`
+This folder holds the configuration of the Redux store. It includes:
+- `store.ts`: The Redux store setup.
+- `hooks.ts`: Custom hooks like `useAppSelector` and `useAppDispatch` to simplify the use of Redux in components.
+- `rootReducer.ts`: Combines all feature reducers into one root reducer.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 3. `/components`
+This folder contains reusable UI components that can be shared across different parts of the application, such as buttons, input fields, and loading spinners.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 4. `/features`
+A feature-based folder structure is used here, where each feature (e.g., authentication, projects, reporting) has its own folder. Inside each folder, you'll find:
+- `Slice.ts`: The Redux slice for that feature, including its reducer and actions.
+- `Actions.ts`: Any additional actions related to the feature.
+- `Selectors.ts`: Selectors that extract specific parts of the feature's state.
 
-### `npm test`
+This separation ensures that each feature is self-contained and modular.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 5. `/layouts`
+This folder contains layout components for different sections of the application:
+- `AuthLayout.tsx`: Used for pages like login, signup, and forgot password.
+- `NonAuthLayout.tsx`: Used for non-authenticated areas.
+- `MainLayout.tsx`: Used for authenticated pages like the dashboard, projects, and settings.
 
-### `npm run build`
+### 6. `/pages`
+Each folder in `pages` corresponds to a different section or feature of the app. For example, the `auth` folder contains pages like `Login.tsx` and `Signup.tsx`, while the `projects` folder contains `ProjectList.tsx` and `ProjectDetail.tsx`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 7. `/routes`
+This folder contains the routing logic for the application. It includes:
+- `AuthRoutes.tsx`: Routes for authenticated users.
+- `NonAuthRoutes.tsx`: Routes for non-authenticated users.
+- `PrivateRoute.tsx`: A higher-order component (HOC) that protects routes and ensures only authenticated users can access them.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 8. `/styles`
+Global styles or feature-specific styles are stored in this folder. You can have a `globals.css` file for common styles used across the app, or feature-specific stylesheets.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 9. `/utils`
+This folder contains utility functions and helper methods that are used across the app. For example, common constants and helper functions for manipulating data.
 
-### `npm run eject`
+### 10. `/types`
+TypeScript interfaces and types used in the application are stored here. Keeping types organized by feature ensures better type safety and easy-to-understand type definitions.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 11. `/assets`
+This folder is used for static assets such as images, fonts, and icons.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Entry Files
+- `index.tsx`: This is the entry point of the React app, where the root component is rendered.
+- `App.tsx`: The main component that contains the layout and routes for the application.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).

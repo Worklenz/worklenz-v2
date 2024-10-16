@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleUpdateJobTitleDrawer, updateJobTitle } from './jobSlice'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
 
 type UpdateJobTitleDrawerProps = {
     selectedJobTitleId: string | null

@@ -23,7 +23,7 @@ import {
 } from '../../../features/settings/client/clientSlice'
 import CreateClientDrawer from '../../../features/settings/client/CreateClientDrawer'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer'

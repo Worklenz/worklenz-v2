@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ProjectType } from '../../types/project'
+import { ProjectType } from '../../types/project.types'
 
 type ProjectState = {
     projectsList: ProjectType[]

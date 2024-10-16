@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
 
 type ClientState = {
     clientsList: ClientType[]

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
 
 type JobState = {
     jobsList: JobType[]

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleUpdateClientDrawer, updateClient } from './clientSlice'
-import { ClientType } from '../../../types/client'
+import { ClientType } from '../../../types/client.types'
 
 type UpdateClientDrawerProps = {
     selectedClientId: string | null

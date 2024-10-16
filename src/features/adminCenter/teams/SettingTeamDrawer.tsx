@@ -15,7 +15,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { toggleSettingDrawer, updateTeam } from './teamSlice'
-import { TeamsType } from '../../../types/adminCenter/team'
+import { TeamsType } from '../../../types/adminCenter/team.types'
 import './SettingTeamDrawer.css'
 
 interface SettingTeamDrawerProps {

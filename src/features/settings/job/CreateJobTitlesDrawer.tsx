@@ -4,7 +4,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import { nanoid } from '@reduxjs/toolkit'
 import { addJobTitle, toggleCreateJobTitleDrawer } from './jobSlice'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
 
 const CreateJobTitlesDrawer = () => {
     const isDrawerOpen = useAppSelector(

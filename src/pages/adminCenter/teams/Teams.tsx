@@ -28,7 +28,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch'
 import CreateTeamDrawer from '../../../features/adminCenter/teams/CreateTeamDrawer'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import { RootState } from '../../../app/store'
-import { TeamsType } from '../../../types/adminCenter/team'
+import { TeamsType } from '../../../types/adminCenter/team.types'
 import './Teams.css'
 import SettingTeamDrawer from '../../../features/adminCenter/teams/SettingTeamDrawer'
 

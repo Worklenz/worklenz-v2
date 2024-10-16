@@ -2,7 +2,7 @@ import { SyncOutlined } from '@ant-design/icons'
 import { Badge, Button, Card, Empty, Flex, Segmented, Skeleton, Table, TableProps, Typography } from 'antd'
 import React, { useState } from 'react'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { ProjectType } from '../../../types/project'
+import { ProjectType } from '../../../types/project.types'
 import AddFavouriteProjectButton from './AddFavouriteProjectButton'
 
 const RecentAndFavouriteProjectList = () => {

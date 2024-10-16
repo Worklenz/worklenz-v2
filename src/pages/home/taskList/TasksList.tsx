@@ -18,7 +18,7 @@ import CalendarView from './CalendarView'
 import { useAppSelector } from '../../../hooks/useAppSelector'
 import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder'
 import StatusDropdown from './statusDropdown/StatusDropdown'
-import { TaskType } from '../../../types/task'
+import { TaskType } from '../../../types/task.types'
 
 const TasksList = () => {
     const tasksList = useAppSelector((state) => state.taskReducer.tasks)

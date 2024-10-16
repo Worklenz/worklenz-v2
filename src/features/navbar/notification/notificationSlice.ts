@@ -1,4 +1,4 @@
-import { NotificationType } from '../../../types/notification'
+import { NotificationType } from '../../../types/notification.types'
 import { createSlice } from '@reduxjs/toolkit'
 
 type NotificationState = {

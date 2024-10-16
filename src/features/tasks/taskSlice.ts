@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TaskType } from '../../types/task'
+import { TaskType } from '../../types/task.types'
 
 type TaskState = {
     tasks: TaskType[]

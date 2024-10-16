@@ -18,7 +18,7 @@ import {
     toggleUpdateJobTitleDrawer,
 } from '../../../features/settings/job/jobSlice'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { JobType } from '../../../types/job'
+import { JobType } from '../../../types/job.types'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 import {
