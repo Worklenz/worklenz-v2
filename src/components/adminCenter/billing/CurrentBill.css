@@ -1,8 +1,8 @@
 .current-billing .ant-card-head-wrapper {
-    padding: 16px 0 ;
+    padding: 16px 0;
 }
 
-.current-billing .ant-progress-inner{
+.current-billing .ant-progress-inner {
     width: 75px !important;
     height: 75px !important;
 }

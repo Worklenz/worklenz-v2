@@ -8,9 +8,9 @@
     text-align: center;
     justify-content: center;
     margin-top: 2rem;
-  }
+}
 
-  .vert-text-dark{
+.vert-text-dark {
     max-width: 40px;
     background-color: #141414;
     position: relative;
@@ -20,9 +20,9 @@
     text-align: center;
     justify-content: center;
     margin-top: 2rem;
-  }
-  
-  .vert-line {
+}
+
+.vert-line {
     position: absolute;
     left: 0;
     right: 0;
@@ -34,9 +34,9 @@
     top: 0;
     margin-bottom: auto;
     margin-top: auto;
-  }
+}
 
-  .vert-line-dark {
+.vert-line-dark {
     position: absolute;
     left: 0;
     right: 0;
@@ -48,18 +48,18 @@
     top: 0;
     margin-bottom: auto;
     margin-top: auto;
-  }
+}
 
-  @media (max-width: 1000px) {
+@media (max-width: 1000px) {
     .first-project-form {
-      width: 400px !important;
+        width: 400px !important;
     }
 
-  }
+}
 
-  @media (max-width: 500px) {
+@media (max-width: 500px) {
     .first-project-form {
-      width: 200px !important;
+        width: 200px !important;
     }
 
-  }
+}

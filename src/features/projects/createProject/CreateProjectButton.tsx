@@ -11,7 +11,7 @@ const CreateProjectButton = () => {
     const dispatch = useAppDispatch()
     const [open, setOpen] = useState(false)
     const [current, setCurrent] = useState<string>('')
-    const location = useLocation();
+    const location = useLocation()
 
     const { t } = useTranslation('createFirstProjectFormPage')
 
@@ -26,16 +26,22 @@ const CreateProjectButton = () => {
     }
 
     useEffect(() => {
-        const pathKey = location.pathname.split('/').pop();
-        setCurrent(pathKey ?? 'home');
-    }, [location]);
+        const pathKey = location.pathname.split('/').pop()
+        setCurrent(pathKey ?? 'home')
+    }, [location])
 
     const items = [
         {
             key: '1',
             label: (
-                <div style={{width: '100%', margin: 0, padding: 0}} onClick={openTemplateSelector}>
-                    <ImportOutlined style={{ marginRight: '8px' }}/> {current === 'home' ? ' Import from template ': ' Create from template'} 
+                <div
+                    style={{ width: '100%', margin: 0, padding: 0 }}
+                    onClick={openTemplateSelector}
+                >
+                    <ImportOutlined style={{ marginRight: '8px' }} />{' '}
+                    {current === 'home'
+                        ? ' Import from template '
+                        : ' Create from template'}
                 </div>
             ),
         },
@@ -47,7 +53,7 @@ const CreateProjectButton = () => {
                 type="primary"
                 icon={<DownOutlined />}
                 onClick={() => dispatch(toggleDrawer())}
-                menu={{ items }}  
+                menu={{ items }}
             >
                 <EditOutlined /> Create Project
             </Dropdown.Button>

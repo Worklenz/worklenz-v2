@@ -6,7 +6,6 @@ import {
     Popconfirm,
     Table,
     TableProps,
-    Tooltip,
     Typography,
 } from 'antd'
 import React, { useMemo, useState } from 'react'
@@ -26,11 +25,9 @@ import {
     DeleteOutlined,
     EditOutlined,
     ExclamationCircleFilled,
-    PushpinOutlined
 } from '@ant-design/icons'
 import { colors } from '../../../styles/colors'
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer'
-
 
 const JobTitlesSettings = () => {
     // get currently hover row
@@ -145,7 +142,6 @@ const JobTitlesSettings = () => {
                             name="jobTitles"
                             path="/worklenz/settings/job-titles"
                         />
-
                     </Flex>
                 </Flex>
             }

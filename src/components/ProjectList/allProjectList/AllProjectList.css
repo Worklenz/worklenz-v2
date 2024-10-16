@@ -1,5 +1,4 @@
 
-
 table th {
     border: none !important;
     transition: none !important;
@@ -23,6 +22,7 @@ table td {
 .custom-row td:last-child {
     visibility: hidden
 }
+
 .custom-row:hover td:last-child {
     visibility: visible;
 }
@@ -34,21 +34,24 @@ table td {
     line-height: 22px;
 }
 
-:where(.css-dev-only-do-not-override-ezht69).ant-table-wrapper .ant-table-pagination >* {
+:where(.css-dev-only-do-not-override-ezht69).ant-table-wrapper .ant-table-pagination > * {
     flex: none;
     min-width: 24px;
     height: 24px;
     margin: 0;
     line-height: 24px;
 }
+
 :where(.css-dev-only-do-not-override-ezht69).ant-select-single {
     font-size: 14px;
     height: 24px;
 }
-:where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-first, :where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-second{
+
+:where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-first, :where(.css-dev-only-do-not-override-ezht69).ant-rate .ant-rate-star-second {
     color: #dedede;
 }
-.ant-table-filter-dropdown-btns{
+
+.ant-table-filter-dropdown-btns {
     display: none !important;
 }
 
@@ -56,7 +59,7 @@ table td {
     table th {
         font-size: 10px;
     }
-    
+
     table td {
         font-size: 10px;
     }

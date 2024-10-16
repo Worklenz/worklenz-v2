@@ -5,9 +5,10 @@
     color: #262626;
 }
 
-:where(.css-dev-only-do-not-override-c1iapc).ant-space-compact-block{
+:where(.css-dev-only-do-not-override-c1iapc).ant-space-compact-block {
     width: unset !important;
 }
+
 @media (max-width: 1000px) {
     .project-card.ant-card .ant-card-body {
         padding: 0 !important;

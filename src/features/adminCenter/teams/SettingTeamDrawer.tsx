@@ -1,24 +1,38 @@
-import { Avatar, Button, Drawer, Form, Input, message, Select, Table, TableProps, Typography } from "antd";
-import React from "react";
-import { useAppSelector } from "../../../hooks/useAppSelector";
-import { RootState } from "../../../app/store";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
-import { toggleSettingDrawer, updateTeam } from "./teamSlice";
-import { TeamsType } from "../../../types/adminCenter/team";
+import {
+    Avatar,
+    Button,
+    Drawer,
+    Form,
+    Input,
+    message,
+    Select,
+    Table,
+    TableProps,
+    Typography,
+} from 'antd'
+import React from 'react'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { RootState } from '../../../app/store'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
+import { toggleSettingDrawer, updateTeam } from './teamSlice'
+import { TeamsType } from '../../../types/adminCenter/team'
 import './SettingTeamDrawer.css'
 
 interface SettingTeamDrawerProps {
-    teamId: string;
+    teamId: string
 }
 
 const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
+    const isSettingDrawerOpen = useAppSelector(
+        (state: RootState) => state.teamReducer.isSettingDrawerOpen
+    )
+    const dispatch = useAppDispatch()
+    const [form] = Form.useForm()
+    const teamsLists = useAppSelector(
+        (state: RootState) => state.teamReducer.teamsList
+    )
 
-    const isSettingDrawerOpen = useAppSelector((state: RootState) => state.teamReducer.isSettingDrawerOpen);
-    const dispatch = useAppDispatch();
-    const [form] = Form.useForm();
-    const teamsLists = useAppSelector((state: RootState) => state.teamReducer.teamsList);
-
-    const team = teamsLists.find(team => team.teamId === teamId);
+    const team = teamsLists.find((team) => team.teamId === teamId)
 
     const handleFormSubmit = (values: any) => {
         const newTeam: TeamsType = {
@@ -27,18 +41,19 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
             membersCount: team?.membersCount || 1,
             members: team?.members || ['Raveesha Dilanka'],
             created: team?.created || new Date(),
-        };
+        }
 
-        dispatch(updateTeam(newTeam));
-        dispatch(toggleSettingDrawer());
-        form.resetFields();
-        message.success('Team updated!');
-    };
+        dispatch(updateTeam(newTeam))
+        dispatch(toggleSettingDrawer())
+        form.resetFields()
+        message.success('Team updated!')
+    }
 
-    const membersDataSource = team?.members?.map((member, index) => ({
-        key: index,
-        memberName: member,
-    })) || [];
+    const membersDataSource =
+        team?.members?.map((member, index) => ({
+            key: index,
+            memberName: member,
+        })) || []
 
     const columns: TableProps['columns'] = [
         {
@@ -66,17 +81,15 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
             render: () => (
                 <div>
                     <Select
-                    style={{width: '150px', height: '32px'}}
+                        style={{ width: '150px', height: '32px' }}
                         disabled
                         defaultValue="owner"
-                        options={[
-                            { value: 'owner', label: 'Owner' },
-                        ]}
+                        options={[{ value: 'owner', label: 'Owner' }]}
                     />
                 </div>
             ),
         },
-    ];
+    ]
 
     return (
         <Drawer
@@ -116,16 +129,20 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
                     rules={[
                         {
                             validator: (_, value) => {
-                                return membersDataSource.length > 0 
-                                    ? Promise.resolve() 
-                                    : Promise.reject(new Error('Please add at least one user'));
+                                return membersDataSource.length > 0
+                                    ? Promise.resolve()
+                                    : Promise.reject(
+                                          new Error(
+                                              'Please add at least one user'
+                                          )
+                                      )
                             },
                         },
                     ]}
                 >
                     <Table
-                    className="setting-team-table"
-                    style={{marginBottom: '24px',}}
+                        className="setting-team-table"
+                        style={{ marginBottom: '24px' }}
                         columns={columns}
                         dataSource={membersDataSource}
                         pagination={false}
@@ -143,7 +160,7 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({ teamId }) => {
                 </Form.Item>
             </Form>
         </Drawer>
-    );
-};
+    )
+}
 
-export default SettingTeamDrawer;
+export default SettingTeamDrawer

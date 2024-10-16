@@ -1,15 +1,15 @@
-.custom-close-button:hover{
+.custom-close-button:hover {
     background-color: transparent !important;
 }
 
 @media (max-width: 1000px) {
-    .invite-members-form{
+    .invite-members-form {
         width: 400px !important;
     }
 }
 
 @media (max-width: 500px) {
-    .invite-members-form{
+    .invite-members-form {
         width: 200px !important;
     }
 }

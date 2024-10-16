@@ -1,4 +1,8 @@
-import { PushpinOutlined } from '@ant-design/icons'
+import {
+    DeleteOutlined,
+    EditOutlined,
+    ExclamationCircleFilled,
+} from '@ant-design/icons'
 import {
     Button,
     Card,
@@ -7,7 +11,6 @@ import {
     Popconfirm,
     Table,
     TableProps,
-    Tooltip,
     Typography,
 } from 'antd'
 import React, { useMemo, useState } from 'react'
@@ -23,11 +26,6 @@ import { useAppSelector } from '../../../hooks/useAppSelector'
 import { ClientType } from '../../../types/client'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
-import {
-    DeleteOutlined,
-    EditOutlined,
-    ExclamationCircleFilled,
-} from '@ant-design/icons'
 import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer'
 
 const ClientsSettings = () => {
@@ -159,7 +157,6 @@ const ClientsSettings = () => {
                             name="clients"
                             path="/worklenz/settings/clients"
                         />
-
                     </Flex>
                 </Flex>
             }

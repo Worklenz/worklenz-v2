@@ -1,4 +1,4 @@
-import { Card, Checkbox, Divider, Flex, Space, Typography } from 'antd'
+import { Card, Checkbox, Divider, Flex, Typography } from 'antd'
 import React from 'react'
 import { colors } from '../../../styles/colors'
 import { useTranslation } from 'react-i18next'

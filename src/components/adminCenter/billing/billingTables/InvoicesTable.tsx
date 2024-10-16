@@ -1,6 +1,6 @@
-import { ContainerOutlined } from "@ant-design/icons";
-import { Badge, Button, Table, TableProps } from "antd";
-import React from "react";
+import { ContainerOutlined } from '@ant-design/icons'
+import { Badge, Button, Table, TableProps } from 'antd'
+import React from 'react'
 
 interface DataType {
     key: string
@@ -11,44 +11,49 @@ interface DataType {
     paymentMethod: string
 }
 
-const InvoicesTable :React.FC = () => {
-
+const InvoicesTable: React.FC = () => {
     const columns: TableProps['columns'] = [
         {
             title: 'Transaction ID',
             key: 'transactionId',
-            dataIndex: 'transactionId'
+            dataIndex: 'transactionId',
         },
         {
             title: 'Transaction Date',
             key: 'transactionDate',
             render: (record) => {
-                const formattedStartingDate =  new Date(record.startingDate).toLocaleDateString('en-US', {
+                const formattedStartingDate = new Date(
+                    record.startingDate
+                ).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                 })
 
-                return `${formattedStartingDate}`;
-            }
+                return `${formattedStartingDate}`
+            },
         },
         {
             title: 'Billing Period',
             key: 'billingPeriod',
             render: (record) => {
-                const formattedStartingDate =  new Date(record.startingDate).toLocaleDateString('en-US', {
+                const formattedStartingDate = new Date(
+                    record.startingDate
+                ).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                 })
-                const formattedEndingDate =  new Date(record.endingDate).toLocaleDateString('en-US', {
+                const formattedEndingDate = new Date(
+                    record.endingDate
+                ).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                 })
 
-                return `${formattedStartingDate} - ${formattedEndingDate}`;
-            }
+                return `${formattedStartingDate} - ${formattedEndingDate}`
+            },
         },
         {
             title: 'Payment Method',
@@ -60,14 +65,19 @@ const InvoicesTable :React.FC = () => {
             key: 'status',
             dataIndex: 'status',
             render: (text) => (
-                <><Badge status="success"/><span style={{paddingLeft: '4px'}}>{text}</span></>
-            )
+                <>
+                    <Badge status="success" />
+                    <span style={{ paddingLeft: '4px' }}>{text}</span>
+                </>
+            ),
         },
         {
             key: 'button',
             render: () => (
-                <Button size="small"><ContainerOutlined /></Button>
-            )
+                <Button size="small">
+                    <ContainerOutlined />
+                </Button>
+            ),
         },
     ]
 
@@ -82,9 +92,7 @@ const InvoicesTable :React.FC = () => {
         },
     ]
 
-  return (
-    <Table columns={columns} dataSource={data} pagination={false}/>
-  );
-};
+    return <Table columns={columns} dataSource={data} pagination={false} />
+}
 
-export default InvoicesTable;
+export default InvoicesTable

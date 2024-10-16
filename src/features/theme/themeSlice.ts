@@ -12,8 +12,8 @@ const getThemeModeFromLocalStorage = () => {
     return savedTheme === 'default'
         ? (savedTheme as 'default')
         : savedTheme === 'dark'
-            ? (savedTheme as 'dark')
-            : 'default'
+          ? (savedTheme as 'dark')
+          : 'default'
 }
 // function for save the current theme value in the local storage
 const saveThemeModeToLocalStorage = (themeMode: ThemeType) => {

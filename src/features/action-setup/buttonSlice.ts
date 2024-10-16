@@ -1,11 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface ButtonState {
     isButtonDisable: boolean
 }
 
 const initialState: ButtonState = {
-    isButtonDisable: true
+    isButtonDisable: true,
 }
 
 const buttonSlice = createSlice({
@@ -14,8 +14,8 @@ const buttonSlice = createSlice({
     reducers: {
         setButtonDisabled: (state, action: PayloadAction<boolean>) => {
             state.isButtonDisable = action.payload
-        }
-    }
+        },
+    },
 })
 
 export const { setButtonDisabled } = buttonSlice.actions

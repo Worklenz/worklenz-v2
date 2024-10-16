@@ -14,7 +14,9 @@ const { Title } = Typography
 
 const AccountSetup: React.FC = () => {
     const [current, setCurrent] = useState(0)
-    const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable)
+    const isButtonDisabled = useSelector(
+        (state: RootState) => state.button.isButtonDisable
+    )
     const themeMode = useSelector((state: RootState) => state.themeReducer.mode)
 
     const { t } = useTranslation('accountSetupPage')
@@ -49,8 +51,8 @@ const AccountSetup: React.FC = () => {
         {
             title: '',
             content: (
-                <InviteInitialTeamMembers 
-                onGoBack={() => setCurrent(current - 1)}
+                <InviteInitialTeamMembers
+                    onGoBack={() => setCurrent(current - 1)}
                 />
             ),
         },
@@ -118,7 +120,10 @@ const AccountSetup: React.FC = () => {
                             width: '600px',
                         }}
                     />
-                    <div className='step-content' style={{ flexGrow: 1, width: '600px' }}>
+                    <div
+                        className="step-content"
+                        style={{ flexGrow: 1, width: '600px' }}
+                    >
                         {steps[current].content}
                     </div>
                 </Space>

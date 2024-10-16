@@ -1,16 +1,16 @@
 import { SyncOutlined } from '@ant-design/icons'
 import {
+    Badge,
     Button,
     Card,
     Flex,
     Segmented,
     Select,
-    Typography,
-    Tooltip,
+    Skeleton,
     Table,
     TableProps,
-    Badge,
-    Skeleton,
+    Tooltip,
+    Typography,
 } from 'antd'
 import React, { useState } from 'react'
 import ListView from './ListView'

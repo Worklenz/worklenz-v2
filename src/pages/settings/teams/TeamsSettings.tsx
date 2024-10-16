@@ -1,14 +1,4 @@
-import { PushpinOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
-import { colors } from '../../../styles/colors'
+import { Card, Flex, Table, TableProps, Typography } from 'antd'
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 
 const TeamsSettings = () => {

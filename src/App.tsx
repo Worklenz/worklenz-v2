@@ -44,8 +44,10 @@ const App = () => {
                 {/* main pages routes */}
                 <Route path="/worklenz" element={<MainLayout />}>
                     <Route path="/worklenz/home" element={<Homepage />} />
-                    <Route path="/worklenz/projects" element={<ProjectList />} />
-
+                    <Route
+                        path="/worklenz/projects"
+                        element={<ProjectList />}
+                    />
 
                     {/* settings page routes */}
                     <Route

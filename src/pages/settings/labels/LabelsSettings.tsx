@@ -1,16 +1,5 @@
-import { PushpinOutlined } from '@ant-design/icons'
-import {
-    Button,
-    Card,
-    Flex,
-    Input,
-    Table,
-    TableProps,
-    Tooltip,
-    Typography,
-} from 'antd'
+import { Card, Flex, Input, Table, TableProps, Typography } from 'antd'
 import React from 'react'
-import { colors } from '../../../styles/colors'
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton'
 
@@ -50,7 +39,6 @@ const LabelsSettings = () => {
                             name="labels"
                             path="/worklenz/settings/labels"
                         />
-
                     </Flex>
                 </Flex>
             }

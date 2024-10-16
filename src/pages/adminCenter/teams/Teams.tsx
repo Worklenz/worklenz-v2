@@ -18,10 +18,9 @@ import {
     Tooltip,
     Typography,
 } from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
-import CreateClientDrawer from '../../../features/settings/client/CreateClientDrawer'
+import React, { useMemo, useState } from 'react'
 import {
-  deleteTeam,
+    deleteTeam,
     toggleDrawer,
     toggleSettingDrawer,
 } from '../../../features/adminCenter/teams/teamSlice'
@@ -34,7 +33,9 @@ import './Teams.css'
 import SettingTeamDrawer from '../../../features/adminCenter/teams/SettingTeamDrawer'
 
 const Teams: React.FC = () => {
-    const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode)
+    const themeMode = useAppSelector(
+        (state: RootState) => state.themeReducer.mode
+    )
     const [isLoading, setIsLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const teamsLists = useAppSelector(
@@ -102,30 +103,32 @@ const Teams: React.FC = () => {
             title: '',
             key: 'button',
             render: (record: TeamsType) => (
-                <div className='row-buttons'>
+                <div className="row-buttons">
                     <Tooltip title="Settings">
                         <Button
                             style={{ marginRight: '8px' }}
                             size="small"
                             onClick={() => {
-                              setSelectedTeam(record.teamId)
-                              dispatch(toggleSettingDrawer())
+                                setSelectedTeam(record.teamId)
+                                dispatch(toggleSettingDrawer())
                             }}
                         >
                             <SettingOutlined />
                         </Button>
                     </Tooltip>
-                    <SettingTeamDrawer teamId={selectedTeam}/>
+                    <SettingTeamDrawer teamId={selectedTeam} />
 
                     <Tooltip title="Delete">
-                      <Popconfirm
-                        title='Are you sure?'
-                        onConfirm={() => dispatch(deleteTeam(record.teamId))}
-                      >
-                        <Button size="small">
-                            <DeleteOutlined />
-                        </Button>
-                      </Popconfirm>
+                        <Popconfirm
+                            title="Are you sure?"
+                            onConfirm={() =>
+                                dispatch(deleteTeam(record.teamId))
+                            }
+                        >
+                            <Button size="small">
+                                <DeleteOutlined />
+                            </Button>
+                        </Popconfirm>
                     </Tooltip>
                 </div>
             ),
@@ -148,7 +151,7 @@ const Teams: React.FC = () => {
                 subTitle={
                     <span
                         style={{
-                            color: `${themeMode === 'dark'? '#ffffffd9' :'#000000d9'}`,
+                            color: `${themeMode === 'dark' ? '#ffffffd9' : '#000000d9'}`,
                             fontWeight: 500,
                             fontSize: '16px',
                         }}
@@ -191,8 +194,8 @@ const Teams: React.FC = () => {
                     dataSource={filteredTeamsData}
                     rowKey={(record) => record.teamId}
                     pagination={{
-                      showSizeChanger: true,
-                      defaultPageSize: 20,
+                        showSizeChanger: true,
+                        defaultPageSize: 20,
                     }}
                 />
             </Card>

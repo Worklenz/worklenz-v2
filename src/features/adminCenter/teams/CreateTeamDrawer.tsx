@@ -1,26 +1,26 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app/store";
-import { Button, Drawer, Form, Input, message, Typography } from "antd";
-import { TeamsType } from "../../../types/adminCenter/team";
-import { nanoid } from "@reduxjs/toolkit";
-import { addTeam, toggleDrawer } from "./teamSlice";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../app/store'
+import { Button, Drawer, Form, Input, message, Typography } from 'antd'
+import { TeamsType } from '../../../types/adminCenter/team'
+import { nanoid } from '@reduxjs/toolkit'
+import { addTeam, toggleDrawer } from './teamSlice'
+import { useAppDispatch } from '../../../hooks/useAppDispatch'
 
-const CreateTeamDrawer : React.FC = () => {
+const CreateTeamDrawer: React.FC = () => {
     const isDrawerOpen = useSelector(
-        (state : RootState) => state.teamReducer.isDrawerOpen
+        (state: RootState) => state.teamReducer.isDrawerOpen
     )
     const dispatch = useAppDispatch()
     const [form] = Form.useForm()
 
     const handleFormSubmit = (values: any) => {
-        const newTeam : TeamsType = {
+        const newTeam: TeamsType = {
             teamId: nanoid(),
             teamName: values.name,
             membersCount: 1,
             members: ['Raveesha Dilanka'],
-            created: new Date()
+            created: new Date(),
         }
 
         dispatch(addTeam(newTeam))
@@ -29,8 +29,8 @@ const CreateTeamDrawer : React.FC = () => {
         message.success('Team added!')
     }
 
-  return (
-    <Drawer
+    return (
+        <Drawer
             title={
                 <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
                     Create New Team
@@ -64,7 +64,7 @@ const CreateTeamDrawer : React.FC = () => {
                 </Form.Item>
             </Form>
         </Drawer>
-  );
-};
+    )
+}
 
-export default CreateTeamDrawer;
+export default CreateTeamDrawer

@@ -1,5 +1,5 @@
-import { Table, TableProps } from "antd";
-import React from "react";
+import { Table, TableProps } from 'antd'
+import React from 'react'
 
 interface DataType {
     key: string
@@ -12,8 +12,7 @@ interface DataType {
     amount: number
 }
 
-const ChargesTable : React.FC = () => {
-
+const ChargesTable: React.FC = () => {
     const perUserValue = 5.99
     const users = 23
 
@@ -27,19 +26,23 @@ const ChargesTable : React.FC = () => {
             title: 'Billing Period',
             key: 'billingPeriod',
             render: (record) => {
-                const formattedStartingDate =  new Date(record.startingDate).toLocaleDateString('en-US', {
+                const formattedStartingDate = new Date(
+                    record.startingDate
+                ).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                 })
-                const formattedEndingDate =  new Date(record.endingDate).toLocaleDateString('en-US', {
+                const formattedEndingDate = new Date(
+                    record.endingDate
+                ).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                 })
 
-                return `${formattedStartingDate} - ${formattedEndingDate}`;
-            }
+                return `${formattedStartingDate} - ${formattedEndingDate}`
+            },
         },
         {
             title: 'Bill Status',
@@ -50,9 +53,7 @@ const ChargesTable : React.FC = () => {
             title: 'Per User Value',
             key: 'perUserValue',
             dataIndex: 'perUserValue',
-            render: (text) => (
-                <span>USD {text}</span>
-            )
+            render: (text) => <span>USD {text}</span>,
         },
         {
             title: 'Users',
@@ -63,9 +64,7 @@ const ChargesTable : React.FC = () => {
             title: 'Amount',
             key: 'amount',
             dataIndex: 'amount',
-            render: (text) => (
-                <span>USD {text}</span>
-            )
+            render: (text) => <span>USD {text}</span>,
         },
     ]
 
@@ -82,9 +81,7 @@ const ChargesTable : React.FC = () => {
         },
     ]
 
-  return (
-    <Table columns={columns} dataSource={data} pagination={false}/>
-  );
-};
+    return <Table columns={columns} dataSource={data} pagination={false} />
+}
 
-export default ChargesTable;
+export default ChargesTable

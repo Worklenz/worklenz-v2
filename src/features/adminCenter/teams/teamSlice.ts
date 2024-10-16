@@ -1,5 +1,5 @@
-import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
-import { TeamsType } from "../../../types/adminCenter/team";
+import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
+import { TeamsType } from '../../../types/adminCenter/team'
 
 interface teamState {
     teamsList: TeamsType[]
@@ -14,8 +14,8 @@ const initialState: teamState = {
             teamName: 'Raveesha Dilanka',
             membersCount: 1,
             members: ['Raveesha Dilanka'],
-            created: new Date('2024-05-08T08:30:00')
-        }
+            created: new Date('2024-05-08T08:30:00'),
+        },
     ],
     isDrawerOpen: false,
     isSettingDrawerOpen: false,
@@ -48,9 +48,15 @@ const teamSlice = createSlice({
             state.teamsList = state.teamsList.filter(
                 (team) => team.teamId !== action.payload
             )
-        }
-    }
+        },
+    },
 })
 
-export const { toggleDrawer, addTeam, toggleSettingDrawer, updateTeam, deleteTeam } = teamSlice.actions
+export const {
+    toggleDrawer,
+    addTeam,
+    toggleSettingDrawer,
+    updateTeam,
+    deleteTeam,
+} = teamSlice.actions
 export default teamSlice.reducer

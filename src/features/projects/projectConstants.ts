@@ -1,11 +1,11 @@
 import React, { ReactNode } from 'react'
 import { colors } from '../../styles/colors'
 import {
-    CloseCircleTwoTone,
-    StopOutlined,
+    CheckCircleTwoTone,
     ClockCircleOutlined,
     ClockCircleTwoTone,
-    CheckCircleTwoTone,
+    CloseCircleTwoTone,
+    StopOutlined,
 } from '@ant-design/icons'
 
 // color for project

@@ -1,11 +1,11 @@
 @media (max-width: 1000px) {
-    .organization-name-form{
+    .organization-name-form {
         width: 400px !important;
     }
 }
 
 @media (max-width: 500px) {
-    .organization-name-form{
+    .organization-name-form {
         width: 200px !important;
     }
 }
