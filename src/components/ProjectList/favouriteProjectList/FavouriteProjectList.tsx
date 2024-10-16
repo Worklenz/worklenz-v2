@@ -1,9 +1,6 @@
-import { Avatar, Badge, Button, Progress, Rate, Table, Tooltip } from 'antd'
-import { ColumnsType } from 'antd/es/table'
+import { Table } from 'antd'
 import React from 'react'
 import './FavouriteProjectList.css'
-import { InboxOutlined, SettingOutlined } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
 import TableColumns from '../TableColumns'
 
 interface DataType {

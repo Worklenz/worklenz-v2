@@ -11,11 +11,11 @@ type AddFavouriteProjectButtonProps = {
 }
 
 const AddFavouriteProjectButton = ({
-    record,
-}: AddFavouriteProjectButtonProps) => {
+                                       record,
+                                   }: AddFavouriteProjectButtonProps) => {
     const dispatch = useAppDispatch()
     const [checkIconColor, setCheckIconColor] = useState<string>(
-        colors.lightGray
+        colors.lightGray,
     )
 
     // function for handle favourite project toggle
@@ -30,7 +30,7 @@ const AddFavouriteProjectButton = ({
                 ? setCheckIconColor(colors.yellow)
                 : setCheckIconColor(colors.lightGray),
 
-        [handleToggleFavoriteProject]
+        [handleToggleFavoriteProject],
     )
 
     return (
