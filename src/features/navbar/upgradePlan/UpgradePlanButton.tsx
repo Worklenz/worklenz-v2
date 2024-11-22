@@ -19,7 +19,7 @@ const UpgradePlanButton = () => {
         }}
         size="small"
         type="text"
-        onClick={() => navigate('/worklenz/admin-center/billing')}
+        onClick={() => navigate('/worklenz/pricing')}
       >
         {t('upgradePlan')}
       </Button>

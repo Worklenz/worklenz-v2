@@ -1,0 +1,27 @@
+.custom-tab .ant-tabs-nav .ant-tabs-tab-active {
+  background-color: #1677ff !important;
+}
+
+.custom-tab .ant-tabs-nav .ant-tabs-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px !important;
+  height: 48px;
+  border: none !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.custom-tab .ant-tabs-nav .ant-tabs-nav-wrap {
+  justify-content: center !important;
+}
+
+.custom-tab .ant-tabs-nav::before {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .custom-tab .ant-tabs-nav .ant-tabs-tab {
+    min-width: 125px !important;
+  }
+}
