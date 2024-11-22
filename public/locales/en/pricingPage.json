@@ -1,0 +1,56 @@
+{
+  "inqueryText": "Have any questions about pricing ?",
+  "contactButton": "Contact Us",
+  "backButton": "Back",
+
+  "headerTitle": "Choose Your Plan",
+
+  "notExpiredFirstText": "Your trial will expire on",
+  "notExpiredLastText": "If you don't choose a plan by then, you'll be downgraded to the Worklenz Free plan, which has fewer features.",
+
+  "expiredFirstText": "Your trial has expired. To continue using all features, please choose a plan. If you don't choose a plan, you can",
+  "expiredLastText": "to the Worklenz Free plan with limited features",
+  "downgradeButton": "downgrade",
+
+  "chooseTeamSizeText": "Choose team size:",
+  "seatsText": "seats",
+
+  "cloudTab": "Cloud",
+  "selfHostedTab": "Self Hosted",
+
+  "popularText": "Popular",
+
+  "proMonthlyText": "Pro Monthly",
+  "proAnnuallyText": "Pro Annually",
+  "enterpriseText": "Enterprise",
+  "monthText": "Month",
+  "yearText": "Year",
+  "userText": "User",
+  "totalText": "Total",
+
+  "getStartedButton": "Get Started",
+
+  "unlimitedTeamsText": "Unlimited teams",
+  "freeStorageText": "25GB free storage",
+  "unlimitedActiveProjectsText": "Unlimited active projects",
+  "unlimitedTeamMembersText": "Unlimited team members",
+  "everythingInFreePlanText": "Everything in free plan",
+  "resourceManagementText": "Resource management",
+  "advancedProjectReportingText": "Advanced project reporting",
+  "trackTeamProgressText": "Track team members' progress",
+  "reportsExportingText": "Reports exporting",
+
+  "customText": "Custom",
+  "suitableForEnterpriseText": "Suitable for Enterprise solutions",
+  "allProFeaturesText": "All Pro Features",
+  "hostingSupportText": "Hosting Support",
+
+  "comparePlansTitle": "Compare Plans",
+  "comparePlansSubTitle": "Use the table below to compare full features of this product.",
+
+  "teamsText": "Teams",
+  "storageText": "Storage",
+  "activeProjectsText": "Active Projects",
+  "teamMembersText": "Team Members",
+  "unlimitedText": "Unlimited"
+}
