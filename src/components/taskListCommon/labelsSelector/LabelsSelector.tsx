@@ -68,7 +68,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
           ref={labelInputRef}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder={t('searchInputPlaceholder')}
+          placeholder={t('labelInputPlaceholder')}
           onKeyDown={(e) => {
             const isLabel = filteredLabelData.findIndex(
               (label) => label.labelName.toLowerCase === searchQuery.toLowerCase
@@ -82,7 +82,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
           }}
         />
 
-        <List style={{ padding: 0 }}>
+        <List style={{ padding: 0, maxHeight: 300, overflow: 'scroll' }}>
           {filteredLabelData.length ? (
             filteredLabelData.map((label) => (
               <List.Item
@@ -120,7 +120,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
               style={{ color: colors.lightGray }}
               onClick={() => handleCreateLabel(searchQuery)}
             >
-              {t('labelSelectorInputTip')}
+              {t('labelsSelectorInputTip')}
             </Typography.Text>
           )}
         </List>

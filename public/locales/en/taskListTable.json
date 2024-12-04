@@ -27,6 +27,7 @@
 
   "selectText": "Select",
   "labelsSelectorInputTip": "Hit enter to create!",
+  "labelInputPlaceholder": "Search or create",
 
   "addTaskText": "+ Add Task",
   "addSubTaskText": "+ Add Sub Task",
