@@ -13,7 +13,7 @@ import {
   PlusOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
-import DescriptionEditor from './DescriptionEditor';
+import DescriptionEditor from './text-editor/description-editor';
 import SubTaskTable from './SubTaskTable';
 import DependenciesTable from './DependenciesTable';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
@@ -117,7 +117,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
       <Collapse
         items={infoItems}
         bordered={false}
-        style={{ maxHeight: 600, overflow: 'auto' }}
+        style={{ maxHeight: 600, overflow: 'auto', background: 'transparent' }}
         defaultActiveKey={[
           'details',
           'description',

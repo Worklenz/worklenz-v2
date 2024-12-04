@@ -156,6 +156,14 @@ const TasksList = () => {
           rowKey={(record) => record.taskId}
           columns={columns}
           pagination={false}
+          onRow={(record) => {
+            return {
+              className: 'group',
+              style: {
+                height: 44,
+              },
+            };
+          }}
         />
       )}
     </Card>
