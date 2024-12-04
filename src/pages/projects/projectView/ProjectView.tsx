@@ -34,6 +34,7 @@ import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/upda
 import { avatarNamesMap } from '../../../shared/constants';
 import './ProjectView.css';
 import CustomAvatar from '../../../components/CustomAvatar';
+import { PageHeader } from '@ant-design/pro-components';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -126,22 +127,32 @@ const ProjectView = () => {
       children: item.element,
     })),
   ];
-
+  
   return (
     <div style={{ marginBlock: 80, minHeight: '80vh' }}>
       {/* page header for the project view  */}
       <ProjectViewHeader />
 
       {/* tabs  */}
-      <div className="relative">
-        <Tabs
-          activeKey={activeTab}
-          onChange={handleTabChange}
-          items={tabMenuItems}
-        />
+      <div
+        style={{
+          display: 'flex',
+        }}
+      >
+        {/* Tabs container */}
+        <div style={{ flex: 1, overflow: 'auto', minWidth: '0' }}>
+          <Tabs
+            activeKey={activeTab}
+            onChange={handleTabChange}
+            items={tabMenuItems}
+          />
+        </div>
 
-        <div className="absolute right-0 top-0 translate-y-1/2">
-          <CustomAvatar avatarName="Raveesha dilanka" size={26} />
+        {/* Right-side content */}
+        <div>
+          <Avatar size="small" style={{ backgroundColor: avatarNamesMap['R'] }}>
+            R
+          </Avatar>
           <span style={{ position: 'relative', top: '-10px' }}>
             <Tooltip title="Members who are active on this project will be displayed here.">
               <QuestionCircleOutlined />
@@ -158,6 +169,7 @@ const ProjectView = () => {
           </span>
         </div>
       </div>
+
       {/* drawers  */}
       {/* add project members drawer */}
       <ProjectMemberDrawer />

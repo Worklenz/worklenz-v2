@@ -17,12 +17,15 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { setSelectedTemplate, toggleTaskTemplateDrawer } from '../../../features/settings/taskTemplates/taskTemplateSlice';
 import TaskTemplateDrawer from '../../../features/settings/taskTemplates/TaskTemplateDrawer';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const TaskTemplatesSettings = () => {
   // localization
   const { t } = useTranslation('taskTemplatesSettings');
   const dispatch = useAppDispatch()
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
+  useDocumentTitle('Task Templates');
 
   // table columns
   const columns: TableProps['columns'] = [

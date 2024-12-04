@@ -127,7 +127,13 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
               cancelText={'No'}
               onConfirm={() => handleDeleteSubTask(record.taskId)}
             >
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title="Delete">
+                <Button
+                  shape="default"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
+              </Tooltip>
             </Popconfirm>
           </Flex>
         ),

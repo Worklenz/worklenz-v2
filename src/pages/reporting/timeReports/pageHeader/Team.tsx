@@ -9,6 +9,7 @@ const Team: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const {t} = useTranslation('timeReport')
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const allItems = [
     { key: '1', label: 'Team 1' },
@@ -44,6 +45,7 @@ const Team: React.FC = () => {
             placeholder={t('searchByName')}
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
           />
         ),
       },
@@ -51,7 +53,7 @@ const Team: React.FC = () => {
       key: 'selectAll',
       label: (
         <div>
-            <Checkbox onChange={handleSelectAllChange} checked={selectAll}>
+            <Checkbox  onClick={(e) => e.stopPropagation()} onChange={handleSelectAllChange} checked={selectAll}>
               {t('selectAll')}
             </Checkbox>
             <Divider style={{margin: '4px 0'}}/>
@@ -62,6 +64,7 @@ const Team: React.FC = () => {
       key: item.key,
       label: (
         <Checkbox
+          onClick={(e) => e.stopPropagation()}
           checked={checkedList.includes(item.key)}
           onChange={(e) => handleCheckboxChange(item.key, e.target.checked)}
         >
@@ -78,6 +81,12 @@ const Team: React.FC = () => {
         placement="bottomLeft"
         trigger={['click']}
         overlayStyle={{maxHeight: '330px', overflowY: 'auto'}}
+        onOpenChange={(visible) => {
+          setDropdownVisible(visible)
+          if (!visible) {
+            setSearchText('')
+          }
+        }}
       >
         <Button >
           {t('teams')} <CaretDownFilled />

@@ -62,7 +62,7 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
 
   // custom dropdown content
   const labelDropdownContent = (
-    <Card className="custom-card" styles={{ body: { padding: 8 } }}>
+    <Card className="custom-card" styles={{ body: { padding: 8, overflow: 'hidden', overflowY: 'auto', maxHeight: '255px'} }}>
       <Flex vertical gap={8}>
         <Input
           ref={labelInputRef}
@@ -149,7 +149,6 @@ const LabelsSelector = ({ taskId }: { taskId: string }) => {
 
   return (
     <Dropdown
-      overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => labelDropdownContent}
       onOpenChange={handleLabelDropdownOpen}

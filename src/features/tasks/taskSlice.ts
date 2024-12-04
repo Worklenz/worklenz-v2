@@ -56,7 +56,7 @@ const initialState: TaskState = {
       createdDate: new Date('2023-09-10'),
       lastUpdated: new Date('2023-09-15'),
       reporter: '-',
-      phase: '-',
+      phase: 'UI/UX',
       subTasks: [
         {
           taskId: 'SP-09',

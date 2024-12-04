@@ -171,7 +171,9 @@ const Overview: React.FC = () => {
             }}
           >
             <span style={{ marginRight: '8px' }}>
-              <MailOutlined />
+              <Tooltip title='Email Address'>
+                <MailOutlined />
+              </Tooltip>
             </span>
             raveeshadilanka1999@gmail.com
           </Text>

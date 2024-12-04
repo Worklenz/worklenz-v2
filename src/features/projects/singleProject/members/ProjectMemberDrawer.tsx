@@ -72,6 +72,7 @@ const ProjectMemberDrawer = () => {
           label="Add members by adding their name or email"
         >
           <Select
+            placeholder="Type name or email"
             showSearch
             onSearch={onSearch}
             onChange={onChange}

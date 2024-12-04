@@ -39,7 +39,7 @@ const TableColumns = (): ColumnsType<DataType> => {
       sorter: (a, b) => a.name.length - b.name.length,
       onCell: (record) => {
         return {
-          onClick: () => navigate(`/worklenz/projects/${record.key}`),
+          
           style: {
             cursor: 'pointer',
           },
@@ -68,21 +68,23 @@ const TableColumns = (): ColumnsType<DataType> => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Rate
               count={1}
-              style={{ marginRight: '0.5rem' }}
+              style={{ marginRight: '0.5rem', zIndex: 99}}
               tooltips={['Add to favourites']}
             />
-            <Badge color="geekblue" style={{ marginRight: '0.5rem' }} />
-            <>
-              {text}
-              {(record.startDate || record.endDate) && (
-                <Tooltip
-                  title={`Start date: ${formattedStartDate}\nEnd date: ${formattedEndDate}`}
-                  overlayStyle={{ width: '200px' }}
-                >
-                  <CalendarOutlined style={{ marginLeft: '0.5rem' }} />
-                </Tooltip>
-              )}
-            </>
+            <div onClick={ () => navigate(`/worklenz/projects/${record.key}`)}>
+              <Badge color="geekblue" style={{ marginRight: '0.5rem' }} />
+              <>
+                {text}
+                {(record.startDate || record.endDate) && (
+                  <Tooltip
+                    title={`Start date: ${formattedStartDate}\nEnd date: ${formattedEndDate}`}
+                    overlayStyle={{ width: '200px' }}
+                  >
+                    <CalendarOutlined style={{ marginLeft: '0.5rem' }} />
+                  </Tooltip>
+                )}
+              </>
+            </div>
           </div>
         );
       },
@@ -218,7 +220,21 @@ const TableColumns = (): ColumnsType<DataType> => {
           });
         }
 
-        return <>{displayText}</>;
+        return (
+          <>
+            <Tooltip title={updatedDate.toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+              second: 'numeric',
+              hour12: true,
+            })}>
+              {displayText}
+            </Tooltip>
+          </>
+        );
       },
     },
     {

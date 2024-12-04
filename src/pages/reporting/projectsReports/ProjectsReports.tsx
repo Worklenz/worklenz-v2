@@ -17,10 +17,13 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { fetchProjectData } from '../../../features/reporting/projectReports/projectReportsSlice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ProjectsReports = () => {
   // localization
   const { t } = useTranslation('reportingProjects');
+
+  useDocumentTitle('Reporting - Projects');
 
   const dispatch = useAppDispatch();
 

@@ -7,10 +7,13 @@ import OverviewReportsTable from './overviewTable/OverviewReportsTable';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { fetchTeamsData } from '../../../features/reporting/overviewReports/overviewReportsSlice';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const OverviewReports = () => {
   //   localization
   const { t } = useTranslation('reportingOverview');
+
+  useDocumentTitle('Reporting - Overview')
 
   const dispatch = useAppDispatch();
 

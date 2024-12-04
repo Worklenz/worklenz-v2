@@ -34,7 +34,7 @@ const ProfileButton = () => {
       key: '1',
       label: (
         <Card
-          className="profile-card"
+          className={`profile-card ${themeMode === 'dark' ? 'dark' : ''}`}
           title={
             <div style={{ paddingBlock: '16px' }}>
               <Typography.Text>Account</Typography.Text>

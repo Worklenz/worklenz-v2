@@ -10,6 +10,7 @@ import {
   Skeleton,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { useRef, useState } from 'react';
@@ -70,8 +71,10 @@ const TodoList = () => {
       key: 'name',
       render: (record: TodoType) => (
         <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
-          {record.todoName}
-        </Typography.Paragraph>
+          <Tooltip title={record.todoName}>
+            {record.todoName}
+          </Tooltip>
+          </Typography.Paragraph>
       ),
     },
   ];
@@ -84,11 +87,13 @@ const TodoList = () => {
         </Typography.Title>
       }
       extra={
-        <Button
-          shape="circle"
-          icon={<SyncOutlined spin={isLoading} />}
-          onClick={() => handleRefresh()}
-        />
+        <Tooltip title='Refresh tasks'>
+          <Button
+            shape="circle"
+            icon={<SyncOutlined spin={isLoading} />}
+            onClick={() => handleRefresh()}
+          />
+        </Tooltip>
       }
       style={{ width: '100%' }}
     >

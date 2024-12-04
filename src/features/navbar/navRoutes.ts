@@ -18,6 +18,6 @@ export const navRoutes: NavRoutesType[] = [
   },
   {
     name: 'reporting',
-    path: '/worklenz/reporting',
+    path: '/worklenz/reporting/overview',
   },
 ];

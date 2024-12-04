@@ -33,10 +33,13 @@ import { colors } from '../../../styles/colors';
 import UpdateMemberDrawer from '../../../features/settings/member/UpdateMemberDrawer';
 import { useTranslation } from 'react-i18next';
 import CustomAvatar from '../../../components/CustomAvatar';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const TeamMembersSettings = () => {
   // localization
   const { t } = useTranslation('teamMembersSettings');
+
+  useDocumentTitle('Team Members');
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -337,6 +340,8 @@ const TeamMembersSettings = () => {
             pagination={{
               showSizeChanger: true,
               defaultPageSize: 20,
+              pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+              size: 'small',
             }}
             scroll={{
               x: 'max-content',

@@ -155,6 +155,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
             onChange={handleChange}
             value={taskName}
             onPressEnter={handleAddTask}
+            placeholder='Enter task name'
           />
         </div>
 

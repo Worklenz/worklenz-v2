@@ -78,7 +78,6 @@ const CreateProjectDrawer = () => {
       projectMemberCount: 0,
     };
     dispatch(createProject(newProject));
-    message.success('project created!');
     form.resetFields();
     dispatch(toggleDrawer());
   };

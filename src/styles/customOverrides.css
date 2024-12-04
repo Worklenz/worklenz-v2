@@ -59,6 +59,11 @@
   color: #181818;
 }
 
+.custom-list-item.dark:hover {
+  background-color: #424242 !important;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 /* dropdown render card manual shadow 
     used in project view filters
 */
@@ -89,4 +94,12 @@
 
 .custom-reporting-sider .ant-menu:nth-child(2) .ant-menu-item {
   padding-inline-start: 32px !important;
+}
+
+.ql-snow .ql-picker {
+  color: #6C757D !important;
+}
+
+.ql-snow .ql-stroke {
+  stroke: #6C757D !important;
 }

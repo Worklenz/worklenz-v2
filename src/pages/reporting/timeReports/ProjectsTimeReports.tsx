@@ -7,9 +7,13 @@ import TimeReportPageHeader from './pageHeader/TimeReportPageHeader';
 import ProjectTimeSheetChart from './projectTimeSheet/ProjectTimeSheetChart';
 import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ProjectsTimeReports = () => {
   const {t} = useTranslation('timeReport')
+
+  useDocumentTitle('Reporting - Allocation')
+
   return (
     <Flex vertical>
       <TimeReportingRightHeader title = {t('projectsTimeSheet')}/>

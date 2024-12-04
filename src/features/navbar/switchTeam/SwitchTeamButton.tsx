@@ -22,7 +22,7 @@ const SwitchTeamButton = () => {
 
   // get the active team
   const activeTeam = teamsDetails.find((team) => team.isActive);
-
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const dispatch = useAppDispatch();
 
   // switch teams dropdown items
@@ -85,8 +85,8 @@ const SwitchTeamButton = () => {
           align="center"
           justify="center"
           style={{
-            color: colors.skyBlue,
-            backgroundColor: colors.paleBlue,
+            color: themeMode === 'dark' ? '#e6f7ff' : colors.skyBlue,
+            backgroundColor: themeMode === 'dark' ? '#153450' : colors.paleBlue,
             fontWeight: 500,
             borderRadius: '50rem',
             padding: '10px 16px',
@@ -94,7 +94,7 @@ const SwitchTeamButton = () => {
           }}
         >
           <BankOutlined />
-          <Typography.Text strong style={{ color: colors.skyBlue }}>
+          <Typography.Text strong style={{ color: themeMode === 'dark' ? '#e6f7ff' : colors.skyBlue }}>
             {activeTeam?.teamName}
           </Typography.Text>
           <CaretDownFilled />

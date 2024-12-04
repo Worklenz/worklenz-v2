@@ -1,10 +1,10 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip } from 'chart.js';
-import { Badge, Flex, Typography } from 'antd';
+import { Chart, ArcElement,} from 'chart.js';
+import { Badge, Flex, Tooltip, Typography } from 'antd';
 import { ChartOptions } from 'chart.js';
 
-Chart.register(ArcElement, Tooltip);
+Chart.register(ArcElement);
 
 const StatusGraph = () => {
   const options: ChartOptions<'doughnut'> = {
@@ -40,23 +40,33 @@ const StatusGraph = () => {
       >
         <Flex gap={8} align="center">
           <Badge color={'#a9a9a9'} />
-          <Typography.Text>To Do (7) </Typography.Text>
+          <Tooltip title='To Do'>
+            <Typography.Text>To Do (7) </Typography.Text>
+          </Tooltip>
         </Flex>
         <Flex gap={8} align="center">
           <Badge color={'#70a6f3'} />
-          <Typography.Text>Doing (2) </Typography.Text>
+          <Tooltip title='Doing'>
+            <Typography.Text>Doing (2) </Typography.Text>
+          </Tooltip>
         </Flex>
         <Flex gap={8} align="center">
           <Badge color={'#75c997'} />
-          <Typography.Text>Done (6) </Typography.Text>
+          <Tooltip title='Done'>
+            <Typography.Text>Done (6) </Typography.Text>
+          </Tooltip>
         </Flex>
         <Flex gap={8} align="center">
           <Badge color={'#a9a9a9'} />
-          <Typography.Text>On Hold (3) </Typography.Text>
+          <Tooltip title='On Hold'>
+            <Typography.Text>On Hold (3) </Typography.Text>
+          </Tooltip>
         </Flex>
         <Flex gap={8} align="center">
           <Badge color={'#70a6f3'} />
-          <Typography.Text>Review (2) </Typography.Text>
+          <Tooltip title='In Review'>
+            <Typography.Text>In Review (2) </Typography.Text>
+          </Tooltip>
         </Flex>
       </Flex>
     </Flex>

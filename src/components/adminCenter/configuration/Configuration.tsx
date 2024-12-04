@@ -1,4 +1,14 @@
-import { Button, Card, Col, Divider, Form, Input, notification, Row } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Form,
+  Input,
+  notification,
+  Row,
+  Select,
+} from 'antd';
 import React from 'react';
 import { RootState } from '../../../app/store';
 import { useAppSelector } from '../../../hooks/useAppSelector';
@@ -11,15 +21,36 @@ const Configuration: React.FC = () => {
   const name = 'Raveesha Dilanka';
   const emailAddress = 'raveeshadilanka1999@gmail.com';
 
-  const [api, contextHolder] = notification.useNotification()
+  const [api, contextHolder] = notification.useNotification();
 
   const handleSave = () => {
-      api.open({
-        message: '',
-        description: 'Configuration Updated',
-        duration: 4.5,
-      });
-  }
+    api.open({
+      message: '',
+      description: 'Configuration Updated',
+      duration: 4.5,
+    });
+  };
+
+  const { Option } = Select;
+
+  const countries = [
+    'United States',
+    'Canada',
+    'United Kingdom',
+    'Australia',
+    'India',
+    'sdasd',
+    'dasdas',
+    'sdasdas',
+    'sdasd',
+    // Add more countries as needed
+  ];
+
+  // Map countries to an array of objects with label and value
+  const countryOptions = countries.map((country) => ({
+    label: country,
+    value: country,
+  }));
 
   return (
     <div>
@@ -81,8 +112,21 @@ const Configuration: React.FC = () => {
                 name="contactNumber"
                 label="Contact Number"
                 layout="vertical"
+                rules={[
+                  {
+                    pattern: /^\d{10}$/,
+                    message: 'Phone number must be exactly 10 digits',
+                  },
+                ]}
               >
-                <Input placeholder="Phone Number" />
+                <Input
+                  placeholder="Phone Number"
+                  maxLength={10}
+                  onInput={(e) => {
+                    const input = e.target as HTMLInputElement; // Type assertion to access 'value'
+                    input.value = input.value.replace(/[^0-9]/g, ''); // Restrict non-numeric input
+                  }}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -131,9 +175,29 @@ const Configuration: React.FC = () => {
             </Col>
           </Row>
           <Row>
-            <Col span={8} style={{ padding: '0 12px', height: '86px' }}>
+            <Col
+              span={8}
+              style={{
+                padding: '0 12px',
+                height: '86px',
+                scrollbarColor: 'red',
+              }}
+            >
               <Form.Item name="country" label="Country" layout="vertical">
-                <Input placeholder="Country" />
+                <Select
+                  dropdownStyle={{ maxHeight: 256, overflow: 'auto' }}
+                  placement="topLeft"
+                  showSearch
+                  placeholder="Country"
+                  optionFilterProp="label"
+                  filterOption={(input, option) =>
+                    (option?.label as string)
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                  allowClear
+                  options={countryOptions}
+                />
               </Form.Item>
             </Col>
             <Col span={8} style={{ padding: '0 12px', height: '86px' }}>

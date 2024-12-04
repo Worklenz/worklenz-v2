@@ -28,7 +28,7 @@ const MainLayout = () => {
         }}
       >
         <Layout.Header
-          className={`shadow-md ${themeMode === 'dark' ? 'shadow-[#5f5f5f1f]' : 'shadow-[#18181811]'}`}
+          className={`shadow-md ${themeMode === 'dark' ? '' : 'shadow-[#18181811]'}`}
           style={{
             zIndex: 999,
             position: 'fixed',
@@ -36,6 +36,7 @@ const MainLayout = () => {
             display: 'flex',
             alignItems: 'center',
             padding: 0,
+            borderBottom: themeMode === 'dark' ? '1px solid #303030' : ''
           }}
         >
           <Navbar />

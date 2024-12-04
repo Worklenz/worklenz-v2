@@ -99,7 +99,9 @@ const CurrentBill: React.FC = () => {
                   <Typography.Text style={{ fontWeight: 700 }}>
                     {t('cardBodyText01')}
                   </Typography.Text>
-                  <Typography.Text>{t('cardBodyText02')}</Typography.Text>
+                  <Tooltip title = 'Monday,November 18,2024'>
+                    <Typography.Text>{t('cardBodyText02')}</Typography.Text>
+                  </Tooltip>
                 </div>
                 <Button
                   type="link"

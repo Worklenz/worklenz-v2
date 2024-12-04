@@ -39,6 +39,7 @@ const TimeLogItem = ({ log, onHover, isHovered }: TimeLogItemProps) => {
                 {log.via}
               </Typography.Text>
             )}
+            {' '} 5 hours ago
           </Typography>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
             {log.date}

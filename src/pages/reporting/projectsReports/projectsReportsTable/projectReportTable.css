@@ -1,3 +1,13 @@
+[data-theme="dark"] {
+  --table-cell-bg: #181818;
+  --hover-bg: #000;
+}
+
+[data-theme="default"] {
+  --table-cell-bg: #f4f4f4;
+  --hover-bg: #edebf0;
+}
+
 /* change the scroll bar in the table  */
 :where(.css-dev-only-do-not-override-ifo476).ant-table-wrapper .ant-table {
   scrollbar-color: unset;
@@ -17,14 +27,14 @@
 
 .ant-table-wrapper .ant-table-cell-fix-left.even-row,
 .ant-table-wrapper .ant-table-row:nth-child(even) .ant-table-cell-fix-left {
-  background: #f4f4f4;
+  background: var(--table-cell-bg);
 }
 
 .ant-table-wrapper .ant-table-cell-fix-left.even-row:hover,
 .ant-table-wrapper
   .ant-table-row:nth-child(even):hover
   .ant-table-cell-fix-left {
-  background-color: #edebf0;
+  background: var(--hover-bg) !important;
 }
 
 /* remove select border  */

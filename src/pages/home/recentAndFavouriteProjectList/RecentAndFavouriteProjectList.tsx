@@ -9,6 +9,7 @@ import {
   Skeleton,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { useState } from 'react';
@@ -80,11 +81,13 @@ const RecentAndFavouriteProjectList = () => {
       }
       extra={
         <Flex gap={8} align="center">
-          <Button
-            shape="circle"
-            icon={<SyncOutlined spin={isLoading} />}
-            onClick={() => handleRefresh()}
-          />
+          <Tooltip title='Refresh tasks'>
+            <Button
+              shape="circle"
+              icon={<SyncOutlined spin={isLoading} />}
+              onClick={() => handleRefresh()}
+            />
+          </Tooltip>
           <Segmented<'Recent' | 'Favourites'>
             options={['Recent', 'Favourites']}
             defaultValue="Recent"

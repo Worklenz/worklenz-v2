@@ -13,6 +13,7 @@ import { toggleSettingsDrawer } from '../../features/schedule/scheduleSlice';
 import ScheduleSettingsDrawer from '../../features/schedule/ScheduleSettingsDrawer';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '../../hooks/useDoumentTItle';
 
 const { Option } = Select;
 
@@ -34,6 +35,8 @@ const Schedule: React.FC = () => {
   const {t} = useTranslation('schedule');
 
   const dispatch = useDispatch();
+
+  useDocumentTitle('Schedule');
 
   const handleDateChange = (value: dayjs.Dayjs | null) => {
     if (!value) return;

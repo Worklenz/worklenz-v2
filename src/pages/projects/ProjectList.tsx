@@ -10,10 +10,13 @@ import FavouriteProjectList from '../../components/ProjectList/favouriteProjectL
 import ArchiveProjectList from '../../components/ProjectList/archivedProjectList/ArchiveProjectList';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useDocumentTitle } from '../../hooks/useDoumentTItle';
 
 const ProjectList: React.FC = () => {
   // localization
   const { t } = useTranslation('ProjectList');
+
+  useDocumentTitle('Projects')
 
   // get project list from project slice
   const projectList = useAppSelector(

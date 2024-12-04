@@ -33,7 +33,6 @@ const LoginPage = () => {
 
     setTimeout(() => {
       setLoading(false);
-      message.success(t('successMessage'));
 
       setTimeout(() => {
         navigate('/worklenz/home');

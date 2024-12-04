@@ -35,6 +35,6 @@
 
   "openButton": "Open",
   "okButton": "Ok",
-  "searchInputPlaceholder": "Search by name",
+  "searchInputPlaceholder": "Search or create",
   "assigneeSelectorInviteButton": "Invite a new member by email"
 }

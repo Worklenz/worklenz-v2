@@ -18,17 +18,19 @@ const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
     (state) => state.bulkActionReducer.selectedTaskIdsList
   );
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   // fuction for get a color regariding the status
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'todo':
-        return '#d8d7d8';
+        return themeMode === 'dark' ? '#3a3a3a' : '#d8d7d8';
       case 'doing':
-        return '#c0d5f6';
+        return themeMode === 'dark' ? '#3d506e' : '#c0d5f6';
       case 'done':
-        return '#c2e4d0';
+        return themeMode === 'dark' ? '#3b6149' : '#c2e4d0';
       default:
-        return '#d8d7d8';
+        return themeMode === 'dark' ? '#3a3a3a' : '#d8d7d8';
     }
   };
 

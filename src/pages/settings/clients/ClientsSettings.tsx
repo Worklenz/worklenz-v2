@@ -30,10 +30,13 @@ import { ClientType } from '../../../types/client.types';
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
 import UpdateClientDrawer from '../../../features/settings/client/UpdateClientDrawer';
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ClientsSettings = () => {
   // localization
   const { t } = useTranslation('clientSettings');
+
+  useDocumentTitle('Manage Clients');
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -102,14 +105,16 @@ const ClientsSettings = () => {
       render: (record: ClientType) =>
         hoverRow === record.clientId && (
           <Flex gap={8} style={{ padding: 0 }}>
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setSelectedClientId(record.clientId);
-                dispatch(toggleUpdateClientDrawer());
-              }}
-            />
+            <Tooltip title="Edit">
+              <Button
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setSelectedClientId(record.clientId);
+                  dispatch(toggleUpdateClientDrawer());
+                }}
+              />
+            </Tooltip>
 
             <Popconfirm
               title={t('deleteConfirmationTitle')}
@@ -122,7 +127,13 @@ const ClientsSettings = () => {
               cancelText={t('deleteConfirmationCancel')}
               onConfirm={() => dispatch(deleteClient(record.clientId))}
             >
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title="Delete">
+                <Button
+                  shape="default"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
+              </Tooltip>
             </Popconfirm>
           </Flex>
         ),
@@ -173,6 +184,8 @@ const ClientsSettings = () => {
         pagination={{
           showSizeChanger: true,
           defaultPageSize: 20,
+          pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+          size: 'small',
         }}
         onRow={(record) => {
           return {

@@ -7,10 +7,14 @@ import { Col, Flex } from 'antd';
 import { useMediaQuery } from 'react-responsive';
 import CreateProjectDrawer from '../../features/projects/createProject/CreateProjectDrawer';
 import CreateProjectButton from '../../features/projects/createProject/CreateProjectButton';
+import { useDocumentTitle } from '../../hooks/useDoumentTItle';
+
 
 const Homepage = () => {
   // media queries from react-responsive package
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
+
+  useDocumentTitle('Home');
 
   return (
     <div style={{ marginBlock: 96, minHeight: '90vh' }}>

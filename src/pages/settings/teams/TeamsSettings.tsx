@@ -16,10 +16,13 @@ import { useState } from 'react';
 import EditTeamModal from '../../../features/adminCenter/teams/EditTeamModal';
 import { toggleUpdateTeamNameModal } from '../../../features/adminCenter/teams/teamSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const TeamsSettings = () => {
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
+
+  useDocumentTitle('Teams')
 
   // get currently selected team id
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);

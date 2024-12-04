@@ -13,7 +13,7 @@ const ProjectViewTaskList = () => {
   );
 
   return (
-    <Flex vertical gap={16}>
+    <Flex vertical gap={16} style={{overflowX: 'hidden'}}>
       <TaskListFilters position="list" />
 
       <StatusGroupTables datasource={dataSource} />

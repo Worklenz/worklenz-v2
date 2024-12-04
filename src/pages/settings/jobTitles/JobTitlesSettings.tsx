@@ -31,6 +31,7 @@ import {
 import UpdateJobTitlesDrawer from '../../../features/settings/job/UpdateJobTitlesDrawer';
 import { useTranslation } from 'react-i18next';
 import { colors } from '../../../styles/colors';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const JobTitlesSettings = () => {
   // localization
@@ -39,6 +40,8 @@ const JobTitlesSettings = () => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
   // get currently selected job id
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
+  useDocumentTitle('Manage Job Titles');
 
   // get data from job reducer
   const jobTitlesList = useAppSelector((state) => state.jobReducer.jobsList);
@@ -80,14 +83,16 @@ const JobTitlesSettings = () => {
       render: (record: JobType) =>
         hoverRow === record.jobId && (
           <Flex gap={8} style={{ padding: 0 }}>
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setSelectedJobId(record.jobId);
-                dispatch(toggleUpdateJobTitleDrawer());
-              }}
-            />
+            <Tooltip title="Edit">
+              <Button
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setSelectedJobId(record.jobId);
+                  dispatch(toggleUpdateJobTitleDrawer());
+                }}
+              />
+            </Tooltip>
 
             <Popconfirm
               title={t('deleteConfirmationTitle')}
@@ -100,7 +105,13 @@ const JobTitlesSettings = () => {
               cancelText={t('deleteConfirmationCancel')}
               onConfirm={() => dispatch(deleteJobTitle(record.jobId))}
             >
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title="Delete">
+                <Button
+                  shape="default"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
+              </Tooltip>
             </Popconfirm>
           </Flex>
         ),
@@ -151,6 +162,8 @@ const JobTitlesSettings = () => {
         pagination={{
           showSizeChanger: true,
           defaultPageSize: 20,
+          pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+          size: 'small',
         }}
         onRow={(record: any) => {
           return {

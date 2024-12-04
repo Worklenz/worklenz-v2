@@ -102,6 +102,7 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
           style={{
             fontSize: 13,
             color: colors.darkGray,
+            fontWeight: 400
           }}
         >
           {statusName}

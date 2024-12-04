@@ -36,6 +36,8 @@ const LabelsFilterDropdown = () => {
     );
   }, [labelList, searchQuery]);
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode)
+
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
     setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
@@ -65,7 +67,7 @@ const LabelsFilterDropdown = () => {
           {filteredLabelData.length ? (
             filteredLabelData.map((label) => (
               <List.Item
-                className="custom-list-item"
+                className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
                 key={label.labelId}
                 style={{
                   display: 'flex',

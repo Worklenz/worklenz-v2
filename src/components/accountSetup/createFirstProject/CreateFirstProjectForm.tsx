@@ -71,8 +71,9 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({
       style={{
         width: '600px',
         paddingBottom: '1rem',
-        marginBottom: '3rem',
         marginTop: '3rem',
+        height: '100%',
+        overflow: 'hidden'
       }}
     >
       <Form.Item>

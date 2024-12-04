@@ -1,8 +1,10 @@
 import {
   Button,
+  Col,
   Flex,
   Form,
   Popconfirm,
+  Row,
   Select,
   Table,
   TableProps,
@@ -130,9 +132,11 @@ const DependenciesTable = () => {
 
       {isDependencyInputShow && (
         <Form layout="inline" initialValues={{ blockedBy: 'blockedBy' }}>
+          <Row style={{width: '100%'}}>
+            <Col span={14}>
           <Form.Item name={'taskName'}>
             <Select
-              placeholder="Select a task"
+              placeholder="Search task name"
               size="small"
               showSearch
               options={taskList.map((task) => ({
@@ -142,6 +146,9 @@ const DependenciesTable = () => {
               onSelect={(value) => handleAddDependency(value)}
             />
           </Form.Item>
+            </Col>
+            
+            <Col span={6}>
           <Form.Item name={'blockedBy'}>
             <Select
               options={[
@@ -150,6 +157,9 @@ const DependenciesTable = () => {
               size="small"
             />
           </Form.Item>
+            </Col>
+
+            <Col span={4}>
           <Form.Item>
             <Button
               icon={<DeleteOutlined />}
@@ -157,6 +167,9 @@ const DependenciesTable = () => {
               onClick={() => setIsDependencyInputShow(false)}
             />
           </Form.Item>
+            </Col>
+          </Row>
+          
         </Form>
       )}
 

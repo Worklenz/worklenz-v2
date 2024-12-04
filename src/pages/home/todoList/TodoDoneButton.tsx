@@ -29,6 +29,7 @@ const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
     <ConfigProvider wave={{ disabled: true }}>
       <Tooltip title={'Mark as done'}>
         <Button
+          type='text'
           className="borderless-icon-btn"
           style={{ backgroundColor: colors.transparent }}
           shape="circle"

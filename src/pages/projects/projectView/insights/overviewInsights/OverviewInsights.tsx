@@ -58,7 +58,7 @@ const OverviewInsights = () => {
                   </tr>
                 </table>
               }
-              trigger={'click'}
+              trigger={'hover'}
             >
               4h 30m
             </Tooltip>

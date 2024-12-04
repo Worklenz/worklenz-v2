@@ -95,16 +95,18 @@ const Teams: React.FC = () => {
       key: 'members',
       render: (record: TeamsType) => (
         <span>
-          <Avatar
-            style={{
-              width: `${isTablet ? '28px' : '20px'}`,
-              backgroundColor: '#bf4949',
-              height: `${isTablet ? '28px' : '20px'}`,
-              marginRight: '8px',
-            }}
-          >
-            {record.members[0].charAt(0).toUpperCase()}
-          </Avatar>
+          <Tooltip title={record.members[0]}>
+            <Avatar
+              style={{
+                width: `${isTablet ? '28px' : '20px'}`,
+                backgroundColor: '#bf4949',
+                height: `${isTablet ? '28px' : '20px'}`,
+                marginRight: '8px',
+              }}
+            >
+              {record.members[0].charAt(0).toUpperCase()}
+            </Avatar>
+          </Tooltip>
         </span>
       ),
     },

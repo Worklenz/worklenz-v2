@@ -1,7 +1,6 @@
 import { CaretDownFilled } from "@ant-design/icons";
-import { Button, Divider, Dropdown, Input, MenuProps } from "antd";
+import { Button, Checkbox, Divider, Dropdown, Input, MenuProps } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
-import { Checkbox } from "antd/lib";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -10,6 +9,7 @@ const Projects:React.FC = () => {
     const [searchText, setSearchText] = useState("");
     const [selectAll, setSelectAll] = useState(false);
     const {t} = useTranslation('timeReport')
+    const [dropdownVisible, setDropdownVisible] = useState(false);
 
     const allItems = [
       { key: '1', label: 'Project 1' },
@@ -42,6 +42,7 @@ const Projects:React.FC = () => {
           key: 'search',
           label: (
             <Input
+              onClick={(e) => e.stopPropagation()}
               placeholder={t('searchByProject')}
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
@@ -52,7 +53,7 @@ const Projects:React.FC = () => {
         key: 'selectAll',
         label: (
           <div>
-              <Checkbox onChange={handleSelectAllChange} checked={selectAll}>
+              <Checkbox  onClick={(e) => e.stopPropagation()} onChange={handleSelectAllChange} checked={selectAll}>
                 {t('selectAll')}
               </Checkbox>
               <Divider style={{margin: '4px 0'}}/>
@@ -63,6 +64,7 @@ const Projects:React.FC = () => {
         key: item.key,
         label: (
           <Checkbox
+            onClick={(e) => e.stopPropagation()}
             checked={checkedList.includes(item.key)}
             onChange={(e) => handleCheckboxChange(item.key, e.target.checked)}
           >
@@ -79,6 +81,12 @@ const Projects:React.FC = () => {
           placement="bottomLeft"
           trigger={['click']}
           overlayStyle={{maxHeight: '330px', overflowY: 'auto'}}
+          onOpenChange={(visible) => {
+            setDropdownVisible(visible)
+            if (!visible) {
+              setSearchText('')
+            }
+          }}
         >
           <Button >
             {t('projects')} <CaretDownFilled />

@@ -61,20 +61,22 @@ const TaskListTableWrapper = ({
     setIsExpanded(!isExpanded);
   };
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   // this is for get the color for every typed tables
   const getBgColorClassName = (type: string) => {
     switch (type) {
       case 'status':
-        if (currentCategory === 'todo') return 'after:bg-[#d8d7d8]';
-        else if (currentCategory === 'doing') return 'after:bg-[#c0d5f6]';
-        else if (currentCategory === 'done') return 'after:bg-[#c2e4d0]';
-        else return 'after:bg-[#d8d7d8]';
+        if (currentCategory === 'todo') return themeMode === 'dark' ? 'after:bg-[#3a3a3a]' : 'after:bg-[#d8d7d8]';
+        else if (currentCategory === 'doing') return themeMode === 'dark' ? 'after:bg-[#3d506e]' : 'after:bg-[#c0d5f6]';
+        else if (currentCategory === 'done') return themeMode === 'dark' ? 'after:bg-[#3b6149]' : 'after:bg-[#c2e4d0]';
+        else return themeMode === 'dark' ? 'after:bg-[#3a3a3a]' : 'after:bg-[#d8d7d8]';
 
       case 'priority':
-        if (priorityCategory === 'low') return 'after:bg-[#c2e4d0]';
-        else if (priorityCategory === 'medium') return 'after:bg-[#f9e3b1]';
-        else if (priorityCategory === 'high') return 'after:bg-[#f6bfc0]';
-        else return 'after:bg-[#f9e3b1]';
+        if (priorityCategory === 'low') return themeMode === 'dark' ? 'after:bg-[#3b6149]' : 'after:bg-[#c2e4d0]';
+        else if (priorityCategory === 'medium') return themeMode === 'dark' ? 'after:bg-[#916c33]' : 'after:bg-[#f9e3b1]';
+        else if (priorityCategory === 'high') return themeMode === 'dark' ? 'after:bg-[#8b3a3b]' : 'after:bg-[#f6bfc0]';
+        else return themeMode === 'dark' ? 'after:bg-[#916c33]' : 'after:bg-[#f9e3b1]';
       default:
         return '';
     }
@@ -162,7 +164,7 @@ const TaskListTableWrapper = ({
               border: 'none',
               borderBottomLeftRadius: isExpanded ? 0 : 4,
               borderBottomRightRadius: isExpanded ? 0 : 4,
-              color: colors.darkGray,
+              color: themeMode === 'dark'? '#ffffffd9' : colors.darkGray,
             }}
             icon={<RightOutlined rotate={isExpanded ? 90 : 0} />}
             onClick={handlToggleExpand}
@@ -180,7 +182,7 @@ const TaskListTableWrapper = ({
               <Typography.Text
                 style={{
                   fontSize: 14,
-                  color: colors.darkGray,
+                  color: themeMode === 'dark'? '#ffffffd9' : colors.darkGray,
                 }}
               >
                 {/* check the default values available in the table names ==> this check for localization  */}

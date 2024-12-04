@@ -33,6 +33,8 @@ const MembersFilterDropdown = () => {
     useAppSelector((state) => state.memberReducer.owner),
   ];
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -63,7 +65,7 @@ const MembersFilterDropdown = () => {
           {filteredMembersData.length ? (
             filteredMembersData.map((member) => (
               <List.Item
-                className="custom-list-item"
+                className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
                 key={member.memberId}
                 style={{
                   display: 'flex',

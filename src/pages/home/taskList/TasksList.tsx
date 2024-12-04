@@ -1,4 +1,4 @@
-import { SyncOutlined } from '@ant-design/icons';
+import { ExpandAltOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
@@ -19,6 +19,10 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import EmptyListPlaceholder from '../../../components/EmptyListPlaceholder';
 import StatusDropdown from '../../../components/taskListCommon/statusDropdown/StatusDropdown';
 import { TaskType } from '../../../types/task.types';
+import { toggleUpdateTaskDrawer } from '../../../features/tasks/taskSlice';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { colors } from '../../../styles/colors';
+import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 
 const TasksList = () => {
   const tasksList = useAppSelector((state) => state.taskReducer.tasks);
@@ -27,6 +31,8 @@ const TasksList = () => {
   );
   const [listView, setListView] = useState<'List' | 'Calendar'>('List');
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -52,9 +58,31 @@ const TasksList = () => {
       title: 'Task',
       width: '400px',
       render: (values) => (
-        <Typography.Text style={{ textTransform: 'capitalize' }}>
-          {values.task}
-        </Typography.Text>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Tooltip title={values.task}>
+            <Typography.Text style={{ textTransform: 'capitalize' }}>
+              {values.task}
+            </Typography.Text>
+          </Tooltip>
+          <div className="row-button">
+            <Tooltip title={'Click open task form'}>
+              <Button
+                type="text"
+                icon={<ExpandAltOutlined />}
+                onClick={() => {
+                  dispatch(toggleUpdateTaskDrawer());
+                }}
+                style={{
+                  backgroundColor: colors.transparent,
+                  padding: 0,
+                  height: 'fit-content',
+                }}
+              >
+                Open
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
       ),
     },
     {
@@ -67,13 +95,15 @@ const TasksList = () => {
         );
         return (
           project && (
-            <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
-              <Badge
-                color={project.projectColor}
-                style={{ marginInlineEnd: 4 }}
-              />
-              {project.projectName}
-            </Typography.Paragraph>
+            <Tooltip title={project.projectName}>
+              <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
+                <Badge
+                  color={project.projectColor}
+                  style={{ marginInlineEnd: 4 }}
+                />
+                {project.projectName}
+              </Typography.Paragraph>
+            </Tooltip>
           )
         );
       },
@@ -135,7 +165,10 @@ const TasksList = () => {
       style={{
         width: '100%',
         border: '1px solid transparent',
-        boxShadow: '#7a7a7a26 0 5px 16px',
+        boxShadow:
+          themeMode === 'dark'
+            ? 'rgba(0, 0, 0, 0.4) 0px 4px 12px, rgba(255, 255, 255, 0.06) 0px 2px 4px'
+            : '#7a7a7a26 0 5px 16px',
       }}
     >
       {/* toggle task view list / calendar */}
@@ -156,6 +189,8 @@ const TasksList = () => {
           rowKey={(record) => record.taskId}
           columns={columns}
           pagination={false}
+          size="middle"
+          rowClassName={() => 'custom-row-height'}
           onRow={(record) => {
             return {
               className: 'group',
@@ -166,6 +201,7 @@ const TasksList = () => {
           }}
         />
       )}
+      <UpdateTaskDrawer taskId={'SP-1'} />
     </Card>
   );
 };

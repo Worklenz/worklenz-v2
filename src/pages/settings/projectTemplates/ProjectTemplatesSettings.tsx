@@ -5,12 +5,15 @@ import jsonData from './ProjectTemplates.json';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ProjectTemplatesSettings = () => {
   // localization
   const { t } = useTranslation('projectTemplatesSettings');
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const navigate = useNavigate()
+
+  useDocumentTitle('Project Templates');
 
   // table columns
   const columns: TableProps['columns'] = [

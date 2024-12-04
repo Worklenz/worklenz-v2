@@ -32,6 +32,10 @@
     width: 60px !important;
 }
 
+.ant-steps-item-finish .ant-steps-item-icon{
+    background-color: black !important;
+}
+
 @media (max-width: 1000px) {
     .progress-steps {
         width: 400px !important;

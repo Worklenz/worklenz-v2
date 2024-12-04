@@ -162,7 +162,8 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
           <Select
             placeholder="Select Phase"
             options={phaseMenuItems}
-            style={{ width: 'fit-content' }}
+            style={{ width: 'fit-content'}}
+            dropdownStyle={{width: 'fit-content'}}
           />
         </Form.Item>
 
@@ -221,7 +222,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
               labelCol={{ style: { paddingBlock: 0 } }}
               layout="vertical"
             >
-              <InputNumber min={0} placeholder="Minutes" />
+              <InputNumber min={0} max={60} placeholder="Minutes" />
             </Form.Item>
           </Flex>
         </Form.Item>
@@ -243,7 +244,7 @@ const TaskDetailsForm = ({ selectedTask = null }: TaskDetailsFormProps) => {
           <Switch defaultChecked={false} />
         </Form.Item>
 
-        <Form.Item name="notify" label="Notify">
+        <Form.Item name="notify" label={selectedTask ? "Notify" : "When done, notify"}>
           <NotifyMemberSelector />
         </Form.Item>
 

@@ -24,6 +24,7 @@ import { colors } from '../../../styles/colors';
 import { deleteLabel } from '../../../features/settings/label/labelSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import ColorChangedLabel from '../../../components/taskListCommon/labelsSelector/color-changed-label';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const LabelsSettings = () => {
   // localization
@@ -37,6 +38,8 @@ const LabelsSettings = () => {
 
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useDocumentTitle('Manage Labels');
 
   // used useMemo hook for re render the list when searching
   const filteredLabelsData = useMemo(() => {
@@ -73,7 +76,9 @@ const LabelsSettings = () => {
             cancelText={t('deleteConfirmationCancel')}
             onConfirm={() => dispatch(deleteLabel(record.labelId))}
           >
-            <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            <Tooltip title="Delete">
+              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            </Tooltip>
           </Popconfirm>
         ),
     },
@@ -117,6 +122,12 @@ const LabelsSettings = () => {
         dataSource={filteredLabelsData}
         columns={columns}
         rowKey={(record) => record.labelId}
+        pagination={{
+          showSizeChanger: true,
+          defaultPageSize: 20,
+          pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+          size: 'small',
+        }}
         onRow={(record) => {
           return {
             onMouseEnter: () => setHoverRow(record.labelId),

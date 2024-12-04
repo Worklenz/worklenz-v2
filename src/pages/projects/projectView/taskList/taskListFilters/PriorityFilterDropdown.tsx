@@ -8,6 +8,7 @@ import {
 } from '../../../../../shared/constants';
 import { colors } from '../../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
 const PriorityFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
@@ -19,6 +20,8 @@ const PriorityFilterDropdown = () => {
   const handleSelectedFiltersCount = (checked: boolean) => {
     setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
   };
+
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // priority dropdown items
   type PriorityFieldsType = {
@@ -47,7 +50,7 @@ const PriorityFilterDropdown = () => {
       <List style={{ padding: 0 }}>
         {priorityFieldsList.map((item) => (
           <List.Item
-            className="custom-list-item"
+            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
             key={item.key}
             style={{
               display: 'flex',

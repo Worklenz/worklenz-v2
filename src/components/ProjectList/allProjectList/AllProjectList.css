@@ -10,6 +10,7 @@ table td {
   transition: none !important;
 }
 
+
 .custom-two-colors-row-table thead th:nth-last-child(2)::before {
   display: none;
 }
@@ -39,3 +40,22 @@ table td {
         font-size: 10px;
     }
 } */
+
+.custom-row-height {
+  height: 44px; /* Set the desired row height */
+}
+
+.custom-two-colors-row-table .ant-table-thead > tr > th {
+  height: 44px;
+}
+
+.custom-row-height .row-button {
+  visibility: hidden;
+  transition: visibility 0s, opacity ease-in-out;
+  opacity: 0;
+}
+
+.custom-row-height:hover .row-button {
+  visibility: visible;
+  opacity: 1;
+}

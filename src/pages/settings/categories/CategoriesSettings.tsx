@@ -11,6 +11,7 @@ import {
   Popconfirm,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from 'antd';
 import React, { useMemo, useState } from 'react';
@@ -21,10 +22,13 @@ import { colors } from '../../../styles/colors';
 import { CategoryType } from '../../../types/categories.types';
 import CustomColordCategoryTag from '../../../features/settings/categories/color-changed-category';
 import { deleteCategory } from '../../../features/settings/categories/categoriesSlice';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const CategoriesSettings = () => {
   // localization
   const { t } = useTranslation('categoriesSettings');
+
+  useDocumentTitle('Manage Categories');
 
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
@@ -75,7 +79,9 @@ const CategoriesSettings = () => {
             cancelText={t('deleteConfirmationCancel')}
             onConfirm={() => dispatch(deleteCategory(record.categoryId))}
           >
-            <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            <Tooltip title= 'Delete'>
+              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            </Tooltip>
           </Popconfirm>
         ),
     },
@@ -111,6 +117,12 @@ const CategoriesSettings = () => {
         dataSource={filteredCategoriesData}
         columns={columns}
         rowKey={(record) => record.categoryId}
+        pagination={{
+          showSizeChanger: true,
+          defaultPageSize: 20,
+          pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+          size: 'small',
+        }}
         onRow={(record) => {
           return {
             onMouseEnter: () => setHoverRow(record.categoryId),

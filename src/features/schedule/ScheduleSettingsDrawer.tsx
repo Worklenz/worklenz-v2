@@ -42,25 +42,25 @@ const ScheduleSettingsDrawer: React.FC = () => {
               onChange={onChangeWorkingDays}
             >
               <Row>
-                <Col span={8}>
+                <Col span={8} style={{paddingBottom: '8px'}}>
                 <Checkbox value="Monday">{t('monday')}</Checkbox>
                 </Col>
-                <Col span={8}>
+                <Col span={8} style={{paddingBottom: '8px'}}>
                 <Checkbox value="Tuesday">{t('tuesday')}</Checkbox>
                 </Col>
-                <Col span={8}>
+                <Col span={8} style={{paddingBottom: '8px'}}>
                 <Checkbox value="Wednesday">{t('wednesday')}</Checkbox>
                 </Col>
-                <Col span={8}>
+                <Col span={8} style={{paddingBottom: '8px'}}>
                 <Checkbox value="Thursday">{t('thursday')}</Checkbox>
                 </Col>
-                <Col span={8}>
+                <Col span={8} style={{paddingBottom: '8px'}}>
                 <Checkbox value="Friday">{t('friday')}</Checkbox>
                 </Col>
-                <Col span={8}>
+                <Col span={8} style={{paddingBottom: '8px'}}>
                 <Checkbox value="Saturday">{t('saturday')}</Checkbox>
                 </Col>
-                <Col span={8}>
+                <Col span={8} style={{paddingBottom: '8px'}}>
                 <Checkbox value="Sunday">{t('sunday')}</Checkbox>
                 </Col>
               </Row>

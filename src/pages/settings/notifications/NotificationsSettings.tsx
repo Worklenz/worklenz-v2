@@ -2,11 +2,14 @@ import { Card, Checkbox, Divider, Flex, Typography } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const NotificationsSettings = () => {
   // localization
   const { t } = useTranslation('notificationsSettings');
   const themeMode = useAppSelector((state) => state.themeReducer.mode)
+
+  useDocumentTitle('Notifications Settings');
 
   return (
     <Card style={{ width: '100%' }}>

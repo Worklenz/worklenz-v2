@@ -35,8 +35,9 @@ const AddFavouriteProjectButton = ({
 
   return (
     <ConfigProvider wave={{ disabled: true }}>
-      <Tooltip title={'Add to favourites'}>
+      <Tooltip title={record.isFavourite ? 'Remove from favorites' : 'Add to favourites'}>
         <Button
+          type='text'
           className="borderless-icon-btn"
           style={{ backgroundColor: colors.transparent }}
           shape="circle"

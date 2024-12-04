@@ -18,9 +18,12 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { fetchMembersData } from '../../../features/reporting/membersReports/membersReportsSlice';
 import { useTranslation } from 'react-i18next';
 import CustomSearchbar from '../../../components/CustomSearchbar';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const MembersReports = () => {
   const [searchQuery, setSearhQuery] = useState<string>('');
+
+  useDocumentTitle('Reporting - Members');
 
   // localization
   const { t } = useTranslation('reportingMembers');
