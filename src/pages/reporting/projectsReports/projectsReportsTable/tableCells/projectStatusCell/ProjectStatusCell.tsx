@@ -40,6 +40,7 @@ const ProjectStatusCell = ({ status }: { status: string }) => {
     >
       <Select
         options={statusOptions}
+        variant="borderless"
         defaultValue={toCamelCase(status)}
         style={{ width: 'fit-content' }}
       />
