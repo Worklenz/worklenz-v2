@@ -33,11 +33,23 @@ const EstimatedVsActualCell = ({
         display: false,
       },
     },
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false
+      },
+      tooltip: {
+        enabled: false
+      }
+    },
   };
 
   // data for the chart
   const graphData = {
-    labels: [t('estimatedText'), t('actualText')],
+    labels: ['', ''],
     datasets: [
       {
         data: [estimatedTime, actualTime],

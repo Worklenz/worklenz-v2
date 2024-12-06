@@ -12,12 +12,15 @@ import {
   toggleMembersOverviewTasksStatsDrawer,
   toggleMembersOverviewProjectsStatsDrawer,
 } from '../../membersReportsSlice';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
 const MembersReportsStatCard = () => {
   // localization
   const { t } = useTranslation('reportingMembersDrawer');
 
   const dispatch = useAppDispatch();
+
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // function to handle members overview tasks stat drawer open
   const handleMembersOverviewTasksStatsDrawerToggle = () => {
@@ -106,7 +109,7 @@ const MembersReportsStatCard = () => {
             <Button
               type="link"
               onClick={item.onClick}
-              className="text-[#181818] hover:text-[#1890ff]"
+              className={themeMode === 'dark' ?"text-[#ffffffd9] hover:text-[#1890FF]" : "text-[#181818] hover:text-[#1890ff]"}
             >
               {item.value} {t(`${item.name}Text`)}
             </Button>

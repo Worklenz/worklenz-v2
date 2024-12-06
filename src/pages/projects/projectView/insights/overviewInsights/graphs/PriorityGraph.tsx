@@ -40,6 +40,15 @@ const PriorityGraph = () => {
         beginAtZero: true,
       },
     },
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false
+      },
+    },
   };
 
   //   priority mock data

@@ -9,6 +9,15 @@ Chart.register(ArcElement);
 const StatusGraph = () => {
   const options: ChartOptions<'doughnut'> = {
     responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false
+      },
+    },
   };
 
   //   mock task data

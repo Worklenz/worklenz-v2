@@ -52,6 +52,19 @@ const MembersReportsProjectGraph = () => {
     ],
   };
 
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false
+      },
+    },
+  }
+
   const totalTasks = projectGraphItems.reduce(
     (sum, item) => sum + item.count,
     0
@@ -68,7 +81,7 @@ const MembersReportsProjectGraph = () => {
       <div className="flex flex-wrap items-center justify-center gap-6 xl:flex-nowrap">
         <Doughnut
           data={chartData}
-          options={{ responsive: true }}
+          options={options}
           className="max-h-[200px] w-full max-w-[200px]"
         />
 

@@ -34,6 +34,18 @@ const ProjectReportsPriorityGraph = () => {
       },
     ],
   };
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false
+      },
+    },
+  }
 
   const totalTasks = priorityGraphItems.reduce(
     (sum, item) => sum + item.count,
@@ -51,7 +63,7 @@ const ProjectReportsPriorityGraph = () => {
       <div className="flex flex-wrap items-center justify-center gap-6 xl:flex-nowrap">
         <Doughnut
           data={chartData}
-          options={{ responsive: true }}
+          options={options}
           className="max-h-[200px] w-full max-w-[200px]"
         />
 
