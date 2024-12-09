@@ -1,7 +1,7 @@
 import { Typography } from 'antd';
 import React from 'react';
 
-const DescriptionCell = ({ description }: { description: string }) => {
+const TaskListDescriptionCell = ({ description }: { description: string }) => {
   return (
     <Typography.Paragraph
       ellipsis={{ expandable: false }}
@@ -12,4 +12,4 @@ const DescriptionCell = ({ description }: { description: string }) => {
   );
 };
 
-export default DescriptionCell;
+export default TaskListDescriptionCell;

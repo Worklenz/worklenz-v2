@@ -5,12 +5,15 @@ import { colors } from '../../../../../../../styles/colors';
 import CustomAvatar from '../../../../../../../components/CustomAvatar';
 import { mockTimeLogs } from './mockTimeLogs';
 
-type TimeTrackerProps = {
+type TaskListTimeTrackerCellProps = {
   taskId: string | null;
   initialTime?: number;
 };
 
-const TimeTracker = ({ taskId, initialTime = 0 }: TimeTrackerProps) => {
+const TaskListTimeTrackerCell = ({
+  taskId,
+  initialTime = 0,
+}: TaskListTimeTrackerCellProps) => {
   const minutes = Math.floor(initialTime / 60);
   const seconds = initialTime % 60;
   const formattedTime = `${minutes}m ${seconds}s`;
@@ -65,4 +68,4 @@ const TimeTracker = ({ taskId, initialTime = 0 }: TimeTrackerProps) => {
   );
 };
 
-export default TimeTracker;
+export default TaskListTimeTrackerCell;

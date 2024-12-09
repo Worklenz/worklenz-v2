@@ -4,12 +4,15 @@ import CustomAvatar from '../../../../../../../components/CustomAvatar';
 import AssigneeSelector from '../../../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
 import { MemberType } from '../../../../../../../types/member.types';
 
-type TaskMembersCellProps = {
+type TaskListMembersCellProps = {
   members: MemberType[];
   selectedTaskId: string | null;
 };
 
-const TaskMembersCell = ({ members, selectedTaskId }: TaskMembersCellProps) => {
+const TaskListMembersCell = ({
+  members,
+  selectedTaskId,
+}: TaskListMembersCellProps) => {
   return (
     <Flex gap={4} align="center">
       <Avatar.Group>
@@ -26,4 +29,4 @@ const TaskMembersCell = ({ members, selectedTaskId }: TaskMembersCellProps) => {
   );
 };
 
-export default TaskMembersCell;
+export default TaskListMembersCell;

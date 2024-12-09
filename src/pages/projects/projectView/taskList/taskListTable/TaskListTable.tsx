@@ -1,5 +1,5 @@
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import AddTaskListRow from './taskListTableRows/AddTaskListRow';
+import AddTaskListRow from './task-list-table-rows/add-task-list-row';
 import { TaskType } from '../../../../../types/task.types';
 import {
   Checkbox,
@@ -11,19 +11,14 @@ import {
   Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown';
 import PriorityDropdown from '../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
-import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
-import { durationDateFormat } from '../../../../../utils/durationDateFormat';
-import CustomColordLabel from '../../../../../components/taskListCommon/labelsSelector/CustomColordLabel';
-import CustomNumberLabel from '../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
 import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
-import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
+import AddSubTaskListRow from './task-list-table-rows/add-sub-task-list-row';
 import { colors } from '../../../../../styles/colors';
-import TaskContextMenu from './contextMenu/TaskContextMenu';
+import TaskContextMenu from './context-menu/task-context-menu';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
 import {
   deselectAll,
@@ -31,14 +26,22 @@ import {
 } from '../../../../../features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';
 import { HolderOutlined } from '@ant-design/icons';
-import TimeTracker from './taskListTableCells/time-tracker-cell/TimeTracker';
 import { CustomColumnType } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import CustomColumnLabelCell from './custom-columns/custom-column-cells/label-cell/custom-column-label-cell';
-import DescriptionCell from './taskListTableCells/description-cell/description-cell';
-import TaskCell from './taskListTableCells/task-cell/task-cell';
-import TaskProgressCell from './taskListTableCells/task-progress-cell/task-progress-cell';
-import TaskIdCell from './taskListTableCells/task-id-cell/task-id-cell';
-import TaskMembersCell from './taskListTableCells/task-members-cell/task-members-cell';
+import TaskListProgressCell from './task-list-table-cells/task-list-progress-cell/task-list-progress-cell';
+import TaskListStartDateCell from './task-list-table-cells/task-list-start-date-cell/task-list-start-date-cell';
+import TaskListDueDateCell from './task-list-table-cells/task-list-due-date-cell/task-list-due-date-cell';
+import TaskListMembersCell from './task-list-table-cells/task-list-members-cell/task-list-members-cell';
+import TaskListLabelsCell from './task-list-table-cells/task-list-labels-cell/task-list-labels-cell';
+import TaskListEstimationCell from './task-list-table-cells/task-list-estimation-cell/task-list-estimation-cell';
+import TaskListTimeTrackerCell from './task-list-table-cells/task-list-time-tracker-cell/task-list-time-tracker-cell';
+import TaskListTaskCell from './task-list-table-cells/task-list-task-cell/task-list-task-cell';
+import TaskListTaskIdCell from './task-list-table-cells/task-list-task-id-cell/task-list-task-id-cell';
+import TaskListDescriptionCell from './task-list-table-cells/task-list-description-cell/task-list-description-cell';
+import TaskListCompletedDateCell from './task-list-table-cells/task-list-completed-date-cell/task-list-completed-date-cell';
+import TaskListCreatedDateCell from './task-list-table-cells/task-list-created-date-cell/task-list-created-date-cell';
+import TaskListLastUpdatedCell from './task-list-table-cells/task-list-last-updated-cell/task-list-last-updated-cell';
+import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cell/task-list-reporter-cell';
 
 const TaskListTable = ({
   taskList,
@@ -168,7 +171,7 @@ const TaskListTable = ({
   const customBodyColumnStyles = (key: string) =>
     `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
 
-  // function to render the column content based on column key
+  // function to render the column content based on column key===================================================================================
   const renderColumnContent = (
     columnKey: string,
     task: TaskType,
@@ -177,12 +180,12 @@ const TaskListTable = ({
     switch (columnKey) {
       // task ID column
       case 'taskId':
-        return <TaskIdCell taskId={task.taskId} />;
+        return <TaskListTaskIdCell taskId={task.taskId} />;
       // task column
       case 'task':
         return (
           // custom task cell component
-          <TaskCell
+          <TaskListTaskCell
             task={task}
             isSubTask={isSubtask}
             expandedTasks={expandedTasks}
@@ -193,138 +196,87 @@ const TaskListTable = ({
         );
       // description column
       case 'description':
-        return <DescriptionCell description={task?.description || ''} />;
-
+        return (
+          <TaskListDescriptionCell description={task?.description || ''} />
+        );
       // progress column
       case 'progress': {
-        return task?.progress || task?.progress === 0 ? (
-          <TaskProgressCell
-            progress={task?.progress}
+        return (
+          <TaskListProgressCell
+            progress={task?.progress || 0}
             numberOfSubTasks={task?.subTasks?.length || 0}
           />
-        ) : (
-          <div></div>
         );
       }
-
       // members column
       case 'members':
         return (
-          <TaskMembersCell
+          <TaskListMembersCell
             members={task?.members || []}
             selectedTaskId={selectedTaskId}
           />
         );
-
       // labels column
       case 'labels':
         return (
-          <Flex>
-            {task?.labels && task?.labels?.length <= 2 ? (
-              task?.labels?.map((label) => <CustomColordLabel label={label} />)
-            ) : (
-              <Flex>
-                <CustomColordLabel
-                  label={task?.labels ? task.labels[0] : null}
-                />
-                <CustomColordLabel
-                  label={task?.labels ? task.labels[1] : null}
-                />
-                {/* this component show other label names  */}
-                <CustomNumberLabel
-                  // this label list get the labels without 1, 2 elements
-                  labelList={task?.labels ? task.labels : null}
-                />
-              </Flex>
-            )}
-            <LabelsSelector taskId={task.taskId} />
-          </Flex>
+          <TaskListLabelsCell
+            labels={task?.labels || []}
+            taskId={task.taskId}
+          />
         );
-
       // phase column
       case 'phases':
-        return <PhaseDropdown projectId={selectedProject?.projectId || ''} />;
-
+        return <PhaseDropdown projectId={selectedProject?.projectId || ''} />; // this is from a common component
       // status column
       case 'status':
-        return <StatusDropdown currentStatus={task.status} />;
-
+        return <StatusDropdown currentStatus={task?.status} />; // this is from a common component
       // priority column
       case 'priority':
-        return <PriorityDropdown currentPriority={task.priority} />;
-
+        return <PriorityDropdown currentPriority={task?.priority} />; // this is from a common component
       // time tracking column
       case 'timeTracking':
         return (
-          <TimeTracker
+          <TaskListTimeTrackerCell
             taskId={task.taskId}
-            initialTime={task.timeTracking || 0}
+            initialTime={task?.timeTracking || 0}
           />
         );
-
       // estimation column
       case 'estimation':
-        return <Typography.Text>0h 0m</Typography.Text>;
-
+        return <TaskListEstimationCell />;
       // start date column
       case 'startDate':
-        return task.startDate ? (
-          <Typography.Text>{simpleDateFormat(task.startDate)}</Typography.Text>
-        ) : (
-          <DatePicker
-            placeholder="Set a start date"
-            suffixIcon={null}
-            style={{ border: 'none', width: '100%', height: '100%' }}
-          />
-        );
-
+        return <TaskListStartDateCell startDate={task?.startDate || null} />;
       // due date column
       case 'dueDate':
-        return task.dueDate ? (
-          <Typography.Text>{simpleDateFormat(task.dueDate)}</Typography.Text>
-        ) : (
-          <DatePicker
-            placeholder="Set a due date"
-            suffixIcon={null}
-            style={{ border: 'none', width: '100%', height: '100%' }}
-          />
-        );
-
+        return <TaskListDueDateCell dueDate={task?.dueDate || null} />;
       // completed date column
       case 'completedDate':
         return (
-          <Typography.Text>
-            {durationDateFormat(task.completedDate || null)}
-          </Typography.Text>
+          <TaskListCompletedDateCell
+            completedDate={task?.completedDate || null}
+          />
         );
-
       // created date column
       case 'createdDate':
         return (
-          <Typography.Text>
-            {durationDateFormat(task.createdDate || null)}
-          </Typography.Text>
+          <TaskListCreatedDateCell createdDate={task?.createdDate || null} />
         );
-
       // last updated column
       case 'lastUpdated':
         return (
-          <Typography.Text>
-            {durationDateFormat(task.lastUpdated || null)}
-          </Typography.Text>
+          <TaskListLastUpdatedCell lastUpdated={task?.lastUpdated || null} />
         );
-
       // recorder column
       case 'reporter':
-        return <Typography.Text>Sachintha Prasad</Typography.Text>;
-
+        return <TaskListReporterCell />;
       // default case for unsupported columns
       default:
         return null;
     }
   };
 
-  // function to render custom column cells
+  // function to render custom column cells =======================================================================================================
   const renderCustomColumnContent = (
     columnObj: any,
     columnType: CustomColumnType,
@@ -619,6 +571,7 @@ const TaskListTable = ({
           </tbody>
         </table>
       </div>
+
       {/* add a main task to the table  */}
       <AddTaskListRow />
 
