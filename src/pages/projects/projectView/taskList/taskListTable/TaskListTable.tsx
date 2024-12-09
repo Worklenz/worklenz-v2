@@ -1,5 +1,5 @@
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { columnList } from './columns/columnList';
+// import { columnList } from './columns/columnList';
 import AddTaskListRow from './taskListTableRows/AddTaskListRow';
 import { TaskType } from '../../../../../types/task.types';
 import {
@@ -7,6 +7,7 @@ import {
   Checkbox,
   DatePicker,
   Flex,
+  Input,
   Tag,
   Tooltip,
   Typography,
@@ -23,12 +24,11 @@ import CustomColordLabel from '../../../../../components/taskListCommon/labelsSe
 import CustomNumberLabel from '../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
 import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
-import TaskCell from './taskListTableCells/TaskCell';
+import TaskCell from './taskListTableCells/task-cell/TaskCell';
 import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
 import { colors } from '../../../../../styles/colors';
-import TimeTracker from './taskListTableCells/TimeTracker';
 import TaskContextMenu from './contextMenu/TaskContextMenu';
-import TaskProgress from './taskListTableCells/TaskProgress';
+import TaskProgress from './taskListTableCells/task-progress-cell/TaskProgress';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
 import {
   deselectAll,
@@ -36,6 +36,9 @@ import {
 } from '../../../../../features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';
 import { HolderOutlined } from '@ant-design/icons';
+import TimeTracker from './taskListTableCells/time-tracker-cell/TimeTracker';
+import { CustomColumnType } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
+import CustomColumnLabelCell from './custom-columns/custom-column-cells/label-cell/custom-column-label-cell';
 
 const TaskListTable = ({
   taskList,
@@ -73,12 +76,10 @@ const TaskListTable = ({
   const selectedProject = useSelectedProject();
 
   // get columns list details
-  const columnsVisibility = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
+  const columnList = useAppSelector(
+    (state) => state.projectViewTaskListColumnsReducer.columnList
   );
-  const visibleColumns = columnList.filter(
-    (column) => columnsVisibility[column.key as keyof typeof columnsVisibility]
-  );
+  const visibleColumns = columnList.filter((column) => column.isVisible);
 
   // toggle subtasks visibility
   const toggleTaskExpansion = (taskId: string) => {
@@ -103,7 +104,7 @@ const TaskListTable = ({
 
       setSelectedRows(allTaskIds);
       dispatch(selectTaskIds(allTaskIds));
-      console.log('selected tasks and subtasks (all):', allTaskIds);
+      // console.log('selected tasks and subtasks (all):', allTaskIds);
     }
     setIsSelectAll(!isSelectAll);
   };
@@ -119,7 +120,7 @@ const TaskListTable = ({
 
   // this use effect for realtime update the selected rows
   useEffect(() => {
-    console.log('Selected tasks and subtasks:', selectedRows);
+    // console.log('Selected tasks and subtasks:', selectedRows);
   }, [selectedRows]);
 
   // select one row this triggers only in handle the context menu ==> righ click mouse event
@@ -128,7 +129,7 @@ const TaskListTable = ({
 
     // log the task object when selected
     if (!selectedRows.includes(task.taskId)) {
-      console.log('Selected task:', task);
+      // console.log('Selected task:', task);
     }
   };
 
@@ -162,10 +163,10 @@ const TaskListTable = ({
   const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
 
   const customHeaderColumnStyles = (key: string) =>
-    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[42px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
+    `border px-2 text-left ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[42px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#1d1d1d] border-[#303030]' : 'bg-[#fafafa]'}`;
 
   const customBodyColumnStyles = (key: string) =>
-    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[33px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
+    `border px-2 ${key === 'selector' && 'sticky left-0 z-10'} ${key === 'task' && `sticky left-[48px] z-10 after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:min-h-[40px] after:w-1.5 after:bg-transparent ${scrollingTables[tableId] ? 'after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`} ${themeMode === 'dark' ? 'bg-[#141414] border-[#303030]' : 'bg-white'}`;
 
   // function to render the column content based on column key
   const renderColumnContent = (
@@ -210,7 +211,13 @@ const TaskListTable = ({
       // progress column
       case 'progress': {
         return task?.progress || task?.progress === 0 ? (
-          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <TaskProgress
               progress={task?.progress}
               numberOfSubTasks={task?.subTasks?.length || 0}
@@ -346,6 +353,122 @@ const TaskListTable = ({
     }
   };
 
+  // function to render custom column cells
+  const renderCustomColumnContent = (
+    columnObj: any,
+    columnType: CustomColumnType,
+    task: TaskType
+  ) => {
+    switch (columnType) {
+      case 'people':
+        return <AssigneeSelector taskId={task.taskId} />;
+      case 'date':
+        return (
+          <DatePicker
+            placeholder="Set  Date"
+            format={'MMM DD, YYYY'}
+            suffixIcon={null}
+            style={{
+              backgroundColor: colors.transparent,
+              border: 'none',
+              boxShadow: 'none',
+            }}
+          />
+        );
+      case 'checkbox':
+        return <Checkbox />;
+      case 'key':
+        return (
+          <Tooltip title={task.taskId} className="flex justify-center">
+            <Tag>{task.taskId}</Tag>
+          </Tooltip>
+        );
+      case 'number': {
+        const decimal = columnObj?.decimal || 2;
+        const label = columnObj?.label || 'LKR';
+        const labelPosition = columnObj?.position || 'left';
+        const value = 1000;
+
+        switch (columnObj?.numberType) {
+          case 'formatted':
+            return (
+              <Input
+                defaultValue={value.toFixed(decimal)}
+                style={{
+                  padding: 0,
+                  border: 'none',
+                  background: 'transparent',
+                }}
+              />
+            );
+          case 'withLabel':
+            return (
+              <Flex align="center">
+                <Typography.Text style={{ width: 'fit-content', minWidth: 30 }}>
+                  {labelPosition === 'left' && label}
+                </Typography.Text>
+                <Input
+                  defaultValue={value.toFixed(decimal)}
+                  style={{
+                    padding: 0,
+                    border: 'none',
+                    background: 'transparent',
+                  }}
+                />
+                <Typography.Text style={{ width: 'fit-content', minWidth: 30 }}>
+                  {labelPosition === 'right' && label}
+                </Typography.Text>
+              </Flex>
+            );
+          case 'unformatted':
+            return (
+              <Input
+                defaultValue={value}
+                style={{
+                  padding: 0,
+                  border: 'none',
+                  background: 'transparent',
+                }}
+              />
+            );
+          case 'percentage':
+            return (
+              <Input
+                defaultValue={value + '%'}
+                style={{
+                  padding: 0,
+                  border: 'none',
+                  background: 'transparent',
+                }}
+              />
+            );
+          default:
+            return null;
+        }
+      }
+      case 'labels': {
+        const labelsList = columnObj?.labelsList || [
+          {
+            labelId: '1',
+            labelName: 'Label 1',
+            labelColor: '#154b99',
+          },
+          {
+            labelId: '2',
+            labelName: 'Label 2',
+            labelColor: '#bd4848',
+          },
+        ];
+
+        return <CustomColumnLabelCell labelsList={labelsList} />;
+      }
+      case 'selection':
+      case 'formula':
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
       <div
@@ -360,7 +483,7 @@ const TaskListTable = ({
                 className={`${customHeaderColumnStyles('selector')}`}
                 style={{ width: 56, fontWeight: 500 }}
               >
-                <Flex justify="flex-end">
+                <Flex justify="flex-start" style={{ marginInlineStart: 22 }}>
                   <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
                 </Flex>
               </th>
@@ -371,7 +494,9 @@ const TaskListTable = ({
                   className={`${customHeaderColumnStyles(column.key)}`}
                   style={{ width: column.width, fontWeight: 500 }}
                 >
-                  {column.key === 'phases'
+                  {column.key === 'phases' ||
+                  column.key === 'customColumn' ||
+                  column.isCustomColumn
                     ? column.columnHeader
                     : t(`${column.columnHeader}Column`)}
                 </th>
@@ -435,7 +560,13 @@ const TaskListTable = ({
                               : '#fff',
                       }}
                     >
-                      {renderColumnContent(column.key, task)}
+                      {column.isCustomColumn
+                        ? renderCustomColumnContent(
+                            column.customColumnObj,
+                            column.customColumnObj.fieldType,
+                            task
+                          )
+                        : renderColumnContent(column.key, task)}
                     </td>
                   ))}
                 </tr>
@@ -469,10 +600,12 @@ const TaskListTable = ({
                                 : '#fff',
                         }}
                       >
-                        <Checkbox
-                          checked={selectedRows.includes(subtask.taskId)}
-                          onChange={() => toggleRowSelection(subtask)}
-                        />
+                        <Flex style={{ marginInlineStart: 22 }}>
+                          <Checkbox
+                            checked={selectedRows.includes(subtask.taskId)}
+                            onChange={() => toggleRowSelection(subtask)}
+                          />
+                        </Flex>
                       </td>
 
                       {/* other sub tasks cells  */}
