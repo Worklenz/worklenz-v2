@@ -1,9 +1,7 @@
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
-// import { columnList } from './columns/columnList';
 import AddTaskListRow from './taskListTableRows/AddTaskListRow';
 import { TaskType } from '../../../../../types/task.types';
 import {
-  Avatar,
   Checkbox,
   DatePicker,
   Flex,
@@ -13,7 +11,6 @@ import {
   Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import CustomAvatar from '../../../../../components/CustomAvatar';
 import LabelsSelector from '../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
 import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
 import StatusDropdown from '../../../../../components/taskListCommon/statusDropdown/StatusDropdown';
@@ -24,11 +21,9 @@ import CustomColordLabel from '../../../../../components/taskListCommon/labelsSe
 import CustomNumberLabel from '../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
 import PhaseDropdown from '../../../../../components/taskListCommon/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '../../../../../components/taskListCommon/assigneeSelector/AssigneeSelector';
-import TaskCell from './taskListTableCells/task-cell/TaskCell';
 import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
 import { colors } from '../../../../../styles/colors';
 import TaskContextMenu from './contextMenu/TaskContextMenu';
-import TaskProgress from './taskListTableCells/task-progress-cell/TaskProgress';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
 import {
   deselectAll,
@@ -39,6 +34,11 @@ import { HolderOutlined } from '@ant-design/icons';
 import TimeTracker from './taskListTableCells/time-tracker-cell/TimeTracker';
 import { CustomColumnType } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import CustomColumnLabelCell from './custom-columns/custom-column-cells/label-cell/custom-column-label-cell';
+import DescriptionCell from './taskListTableCells/description-cell/description-cell';
+import TaskCell from './taskListTableCells/task-cell/task-cell';
+import TaskProgressCell from './taskListTableCells/task-progress-cell/task-progress-cell';
+import TaskIdCell from './taskListTableCells/task-id-cell/task-id-cell';
+import TaskMembersCell from './taskListTableCells/task-members-cell/task-members-cell';
 
 const TaskListTable = ({
   taskList,
@@ -177,12 +177,7 @@ const TaskListTable = ({
     switch (columnKey) {
       // task ID column
       case 'taskId':
-        return (
-          <Tooltip title={task.taskId} className="flex justify-center">
-            <Tag>{task.taskId}</Tag>
-          </Tooltip>
-        );
-
+        return <TaskIdCell taskId={task.taskId} />;
       // task column
       case 'task':
         return (
@@ -196,33 +191,17 @@ const TaskListTable = ({
             toggleTaskExpansion={toggleTaskExpansion}
           />
         );
-
       // description column
       case 'description':
-        return (
-          <Typography.Paragraph
-            ellipsis={{ expandable: false }}
-            style={{ width: 260, marginBlockEnd: 0 }}
-          >
-            {task.description}
-          </Typography.Paragraph>
-        );
+        return <DescriptionCell description={task?.description || ''} />;
 
       // progress column
       case 'progress': {
         return task?.progress || task?.progress === 0 ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <TaskProgress
-              progress={task?.progress}
-              numberOfSubTasks={task?.subTasks?.length || 0}
-            />
-          </div>
+          <TaskProgressCell
+            progress={task?.progress}
+            numberOfSubTasks={task?.subTasks?.length || 0}
+          />
         ) : (
           <div></div>
         );
@@ -231,18 +210,10 @@ const TaskListTable = ({
       // members column
       case 'members':
         return (
-          <Flex gap={4} align="center">
-            <Avatar.Group>
-              {task.members?.map((member) => (
-                <CustomAvatar
-                  key={member.memberId}
-                  avatarName={member.memberName}
-                  size={26}
-                />
-              ))}
-            </Avatar.Group>
-            <AssigneeSelector taskId={selectedTaskId || '0'} />
-          </Flex>
+          <TaskMembersCell
+            members={task?.members || []}
+            selectedTaskId={selectedTaskId}
+          />
         );
 
       // labels column
@@ -648,7 +619,6 @@ const TaskListTable = ({
           </tbody>
         </table>
       </div>
-
       {/* add a main task to the table  */}
       <AddTaskListRow />
 
