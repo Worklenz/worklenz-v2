@@ -16,10 +16,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/AuthPageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { useDocumentTitle } from '../../hooks/useDoumentTItle';
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useDocumentTitle('Login');
 
   // Localization
   const { t } = useTranslation('loginPage');

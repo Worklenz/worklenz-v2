@@ -69,8 +69,7 @@ const SortFilterDropdown = () => {
               <Checkbox
                 id={item.key}
                 onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
-              />
-              {item.label}
+              >{item.label}</Checkbox>
             </Space>
             <Button
               onClick={() => handleSort(item.key)}
@@ -99,9 +98,9 @@ const SortFilterDropdown = () => {
         iconPosition="end"
         style={{
           backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+            selectedCount > 0 ? themeMode === 'dark' ? '#003a5c' : colors.paleBlue : colors.transparent,
 
-          color: selectedCount > 0 ? colors.darkGray : 'inherit',
+          color: selectedCount > 0 ? themeMode === 'dark' ? 'white' : colors.darkGray : 'inherit',
         }}
       >
         <Space>

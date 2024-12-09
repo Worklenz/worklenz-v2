@@ -77,22 +77,25 @@ const MembersFilterDropdown = () => {
                 <Checkbox
                   id={member.memberId}
                   onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
-                />
-                <div>
-                  <CustomAvatar avatarName={member.memberName} />
-                </div>
-                <Flex vertical>
-                  {member.memberName}
+                >
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <div>
+                      <CustomAvatar avatarName={member.memberName} />
+                    </div>
+                    <Flex vertical>
+                      {member.memberName}
 
-                  <Typography.Text
-                    style={{
-                      fontSize: 12,
-                      color: colors.lightGray,
-                    }}
-                  >
-                    {member.memberEmail}
-                  </Typography.Text>
-                </Flex>
+                      <Typography.Text
+                        style={{
+                          fontSize: 12,
+                          color: colors.lightGray,
+                        }}
+                      >
+                        {member.memberEmail}
+                      </Typography.Text>
+                    </Flex>
+                  </div>
+                </Checkbox>
               </List.Item>
             ))
           ) : (
@@ -124,9 +127,18 @@ const MembersFilterDropdown = () => {
         iconPosition="end"
         style={{
           backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+            selectedCount > 0
+              ? themeMode === 'dark'
+                ? '#003a5c'
+                : colors.paleBlue
+              : colors.transparent,
 
-          color: selectedCount > 0 ? colors.darkGray : 'inherit',
+          color:
+            selectedCount > 0
+              ? themeMode === 'dark'
+                ? 'white'
+                : colors.darkGray
+              : 'inherit',
         }}
       >
         <Space>

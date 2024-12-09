@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Dropdown, Input, InputRef, MenuProps, Typography } from 'antd';
+import {
+  Button,
+  Dropdown,
+  Input,
+  InputRef,
+  MenuProps,
+  Tooltip,
+  Typography,
+} from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -16,7 +24,7 @@ import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 
-import '../commonStatusSection/CommonStatusSection'
+import '../commonStatusSection/CommonStatusSection';
 
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
@@ -29,7 +37,6 @@ interface CommonPrioritySectionProps {
   category: string;
   id: string;
 }
-
 
 const CommonPrioritySection: React.FC<CommonPrioritySectionProps> = ({
   status,
@@ -60,7 +67,7 @@ const CommonPrioritySection: React.FC<CommonPrioritySectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
-  const {t} = useTranslation('kanbanBoard')
+  const { t } = useTranslation('kanbanBoard');
 
   const handleAddTaskClick = () => {
     dispatch(
@@ -73,6 +80,8 @@ const CommonPrioritySection: React.FC<CommonPrioritySectionProps> = ({
     dispatch(setTaskCardDisabled({ status, position: 'top', disabled: false }));
     setAddTaskCount((prev) => prev + 1);
   };
+
+  const [isEllipsisActive, setIsEllipsisActive] = useState(false);
 
   useEffect(() => {
     if (isEditable && inputRef.current) {
@@ -191,42 +200,25 @@ const CommonPrioritySection: React.FC<CommonPrioritySectionProps> = ({
               style={{ display: 'flex', gap: '5px', alignItems: 'center' }}
               onClick={() => setIsEditable(true)}
             >
-              {isLoading ? (
-                <LoadingOutlined />
-              ) : (
-                <Button
-                  type="text"
-                  size="small"
-                  shape="circle"
-                  style={{
-                    backgroundColor: themeMode === 'dark' ? '#383838' : 'white',
-                  }}
-                >
-                  {dataSource.length}
-                </Button>
-              )}
-              {isEditable ? (
-                <Input
-                  ref={inputRef}
-                  value={name}
-                  variant="borderless"
-                  style={{
-                    backgroundColor: themeMode === 'dark' ? 'black' : 'white',
-                  }}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onPressEnter={handleBlur}
-                />
-              ) : (
+              <Tooltip title={isEllipsisActive ? name : null}>
                 <Typography.Text
+                  ellipsis={{
+                    tooltip: false,
+                    suffix:
+                      dataSource.length > 0 ? ` (${dataSource.length})` : '',
+                    onEllipsis: (ellipsed) => setIsEllipsisActive(ellipsed),
+                  }}
                   style={{
+                    maxWidth: '250px',
                     textTransform: 'capitalize',
                     color: themeMode === 'dark' ? '#383838' : '',
+                    display: 'inline-block',
+                    overflow: 'hidden',
                   }}
                 >
                   {name}
                 </Typography.Text>
-              )}
+              </Tooltip>
             </div>
             <div style={{ display: 'flex' }}>
               <Button

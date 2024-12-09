@@ -8,6 +8,7 @@ import jsonData from "./ProjectTimeLog.json";
 import { avatarNamesMap } from "../../../shared/constants";
 import './ProjectTimeLogDrawer.css'
 import { useTranslation } from "react-i18next";
+import TimeWiseFilter from "../../../pages/reporting/membersReports/TimeWiseFilter";
 
 const ProjectTimeLogDrawer: React.FC = () => {
     const isTimeLogDrawerOpen = useAppSelector((state) => state.timeLogReducer.isTimeLogDrawerOpen);
@@ -34,7 +35,7 @@ const ProjectTimeLogDrawer: React.FC = () => {
     };
 
   return (
-    <Drawer width={736} open={isTimeLogDrawerOpen} onClose={() => dispatch(toggleTimeLogDrawer())} title={<Typography.Title level={5}>{selectedLabel}</Typography.Title>}>
+    <Drawer width={736} open={isTimeLogDrawerOpen} onClose={() => dispatch(toggleTimeLogDrawer())} title={<Typography.Title level={5}>{selectedLabel}</Typography.Title>} extra={<TimeWiseFilter />}>
         <div style={{ textAlign: 'right', width: "100%", height: '40px' }}>
             <Button size="small" icon={<DownloadOutlined />}>{t('exportToExcel')}</Button>
         </div>

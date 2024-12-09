@@ -11,6 +11,7 @@ import {
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import './AddMembersDropdown.css';
 import { avatarNamesMap } from '../../shared/constants';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 const AddMembersDropdown: React.FC = () => {
   const [checkedMembers, setCheckedMembers] = useState<string[]>([]);
@@ -22,6 +23,8 @@ const AddMembersDropdown: React.FC = () => {
         : [...prevChecked, member]
     );
   };
+
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const inviteItems = [
     {
@@ -73,7 +76,7 @@ const AddMembersDropdown: React.FC = () => {
       {/* Header */}
       <div
         style={{
-          backgroundColor: 'white',
+          backgroundColor: themeMode === 'dark' ? 'black' : 'white',
           padding: '8px 16px',
           fontWeight: 'bold',
         }}
@@ -90,7 +93,7 @@ const AddMembersDropdown: React.FC = () => {
         }}
       />
 
-      <Button style={{ width: '100%', backgroundColor: 'white' }} type="link">
+      <Button style={{ width: '100%', backgroundColor: themeMode === 'dark' ? 'black' : 'white' }} type="link">
         <UsergroupAddOutlined /> Invite a new member by email
       </Button>
 
@@ -99,7 +102,7 @@ const AddMembersDropdown: React.FC = () => {
         style={{
           padding: '8px',
           textAlign: 'right',
-          backgroundColor: 'white',
+          backgroundColor: themeMode === 'dark' ? 'black' : 'white',
           borderTop: '1px solid rgba(0, 0, 0, 0.15)',
           color: '#1890ff',
         }}

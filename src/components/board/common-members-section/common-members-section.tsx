@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Dropdown, Input, InputRef, MenuProps, Typography } from 'antd';
+import { Button, Dropdown, Input, InputRef, MenuProps, Tooltip, Typography } from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -71,6 +71,8 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
   const {t} = useTranslation('kanbanBoard')
+
+  const [isEllipsisActive, setIsEllipsisActive] = useState(false);
 
   const handleAddTaskClick = () => {
     dispatch(
@@ -196,19 +198,8 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
               style={{ display: 'flex', gap: '5px', alignItems: 'center' }}
               onClick={() => setIsEditable(true)}
             >
-              {isLoading ? (
-                <LoadingOutlined />
-              ) : (
-                <Button
-                  type="text"
-                  size="small"
-                  shape="circle"
-                  style={{
-                    backgroundColor: themeMode === 'dark' ? '#383838' : 'white',
-                  }}
-                >
-                  {dataSource.length}
-                </Button>
+              {isLoading && (
+                <LoadingOutlined style={{color: themeMode === 'dark' ? 'black' : ''}}/>
               )}
               {isEditable ? (
                 <Input
@@ -223,14 +214,25 @@ const CommonMembersSection: React.FC<CommonMembersSectionProps> = ({
                   onPressEnter={handleBlur}
                 />
               ) : (
-                <Typography.Text
-                  style={{
-                    textTransform: 'capitalize',
-                    color: themeMode === 'dark' ? '#383838' : '',
-                  }}
-                >
-                  {name}
-                </Typography.Text>
+                <Tooltip title={isEllipsisActive ? name : null}>
+                  <Typography.Text
+                    ellipsis={{
+                      tooltip: false,
+                      suffix:
+                        dataSource.length > 0 ? ` (${dataSource.length})` : '',
+                      onEllipsis: (ellipsed) => setIsEllipsisActive(ellipsed),
+                    }}
+                    style={{
+                      maxWidth: '250px',
+                      textTransform: 'capitalize',
+                      color: themeMode === 'dark' ? '#383838' : '',
+                      display: 'inline-block',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {name}
+                  </Typography.Text>
+                </Tooltip>
               )}
             </div>
             <div style={{ display: 'flex' }}>

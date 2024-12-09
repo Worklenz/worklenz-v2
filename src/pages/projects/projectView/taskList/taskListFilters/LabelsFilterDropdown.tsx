@@ -36,7 +36,7 @@ const LabelsFilterDropdown = () => {
     );
   }, [labelList, searchQuery]);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode)
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
@@ -80,12 +80,12 @@ const LabelsFilterDropdown = () => {
                 <Checkbox
                   id={label.labelId}
                   onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
-                />
-
-                <Flex gap={8}>
-                  <Badge color={label.labelColor} />
-                  {label.labelName}
-                </Flex>
+                >
+                  <Flex gap={8}>
+                    <Badge color={label.labelColor} />
+                    {label.labelName}
+                  </Flex>
+                </Checkbox>
               </List.Item>
             ))
           ) : (
@@ -108,9 +108,18 @@ const LabelsFilterDropdown = () => {
         iconPosition="end"
         style={{
           backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+            selectedCount > 0
+              ? themeMode === 'dark'
+                ? '#003a5c'
+                : colors.paleBlue
+              : colors.transparent,
 
-          color: selectedCount > 0 ? colors.darkGray : 'inherit',
+          color:
+            selectedCount > 0
+              ? themeMode === 'dark'
+                ? 'white'
+                : colors.darkGray
+              : 'inherit',
         }}
       >
         <Space>

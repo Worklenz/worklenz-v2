@@ -63,9 +63,15 @@ const PriorityFilterDropdown = () => {
               <Checkbox
                 id={item.key}
                 onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
-              />
-              <Badge color={item.color} />
-              {item.label}
+              >
+                <div style={{
+                  display: 'flex',
+                  gap: 8,
+                }}>
+                  <Badge color={item.color} />
+                  {item.label}
+                </div>
+              </Checkbox>
             </Space>
           </List.Item>
         ))}
@@ -84,9 +90,9 @@ const PriorityFilterDropdown = () => {
         iconPosition="end"
         style={{
           backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+            selectedCount > 0 ? themeMode === 'dark' ? '#003a5c' : colors.paleBlue : colors.transparent,
 
-          color: selectedCount > 0 ? colors.darkGray : 'inherit',
+          color: selectedCount > 0 ? themeMode === 'dark' ? 'white' : colors.darkGray : 'inherit',
         }}
       >
         <Space>
