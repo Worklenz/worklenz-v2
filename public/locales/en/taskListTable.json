@@ -36,5 +36,10 @@
   "openButton": "Open",
   "okButton": "Ok",
   "searchInputPlaceholder": "Search or create",
-  "assigneeSelectorInviteButton": "Invite a new member by email"
+  "assigneeSelectorInviteButton": "Invite a new member by email",
+
+  "deleteTooltip": "Delete",
+  "deleteConfirmationTitle": "Are you sure?",
+  "deleteConfirmationOk": "Yes",
+  "deleteConfirmationCancel": "Cancel"
 }
