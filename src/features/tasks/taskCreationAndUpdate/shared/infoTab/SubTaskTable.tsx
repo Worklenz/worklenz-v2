@@ -163,7 +163,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
           {isEdit ? (
             <Input
               style={{
-                backgroundColor: '#edebf0',
+                backgroundColor: themeMode === 'dark' ? '' : '#edebf0',
                 border: 'none',
                 boxShadow: 'none',
                 height: 48,

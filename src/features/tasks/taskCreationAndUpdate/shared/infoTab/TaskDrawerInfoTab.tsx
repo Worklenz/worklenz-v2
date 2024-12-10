@@ -115,11 +115,11 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
   ];
 
   return (
-    <Flex vertical justify="space-between" style={{ height: '78vh' }}>
+    <Flex vertical justify="space-between" style={{ height: '78vh'}}>
       <Collapse
         items={infoItems}
         bordered={false}
-        style={{ maxHeight: 600, overflow: 'auto', backgroundColor: themeMode === 'dark' ? 'black' : 'white'}}
+        style={{ maxHeight: 600, overflow: 'auto', backgroundColor: themeMode === 'dark' ? 'transparent' : 'white'}}
         defaultActiveKey={[
           'details',
           'description',
