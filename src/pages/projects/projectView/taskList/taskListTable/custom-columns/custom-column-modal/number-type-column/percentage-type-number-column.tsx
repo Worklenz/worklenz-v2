@@ -1,14 +1,24 @@
 import { Form, Select, Typography } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import { useAppSelector } from '../../../../../../../../hooks/useAppSelector';
 import { themeWiseColor } from '../../../../../../../../utils/themeWiseColor';
+import { useAppDispatch } from '../../../../../../../../hooks/useAppDispatch';
+import { setDecimals } from '../../../../../../../../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 
 const PercentageTypeNumberColumn = () => {
-  const [decimal, setDecimal] = useState<number>(0);
-  const previewValue = 1000;
-
   //   get theme details from theme reducer
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
+  const dispatch = useAppDispatch();
+
+  // get initial data from task list custom column slice
+  const decimals: number = useAppSelector(
+    (state) => state.taskListCustomColumnsReducer.decimals
+  );
+  const previewValue: number = useAppSelector(
+    (state) => state.taskListCustomColumnsReducer.previewValue
+  );
+
   return (
     <>
       <Form.Item
@@ -21,8 +31,8 @@ const PercentageTypeNumberColumn = () => {
             value: item,
             label: item,
           }))}
-          defaultValue={decimal}
-          onChange={(value) => setDecimal(value)}
+          defaultValue={decimals}
+          onChange={(value) => dispatch(setDecimals(value))}
           style={{
             border: `1px solid ${themeWiseColor('#d9d9d9', '#424242', themeMode)}`,
             borderRadius: 4,
@@ -31,10 +41,10 @@ const PercentageTypeNumberColumn = () => {
       </Form.Item>
 
       <Form.Item
-        name={'preview'}
+        name={'previewValue'}
         label={<Typography.Text>Preview</Typography.Text>}
       >
-        {previewValue.toFixed(decimal)}%
+        <Typography.Text>{previewValue.toFixed(decimals)}%</Typography.Text>
       </Form.Item>
     </>
   );

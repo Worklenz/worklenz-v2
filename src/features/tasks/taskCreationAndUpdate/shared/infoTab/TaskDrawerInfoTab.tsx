@@ -122,7 +122,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
         style={{
           maxHeight: 600,
           overflow: 'auto',
-          backgroundColor: themeMode === 'dark' ? 'black' : 'white',
+          backgroundColor: 'transparent',
         }}
         defaultActiveKey={[
           'details',

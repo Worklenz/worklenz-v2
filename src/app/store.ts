@@ -30,6 +30,7 @@ import overviewReportsReducer from '../features/reporting/overviewReports/overvi
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
+import taskListCustomColumnsReducer from '../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 
 export const store = configureStore({
   // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -69,6 +70,7 @@ export const store = configureStore({
     projectReportsReducer: projectReportsReducer,
     membersReportsReducer: membersReportsReducer,
     roadmapReducer: roadmapReducer,
+    taskListCustomColumnsReducer: taskListCustomColumnsReducer,
   },
 });
 

@@ -1,4 +1,13 @@
-import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
+import {
+  Badge,
+  Card,
+  Dropdown,
+  Empty,
+  Flex,
+  Menu,
+  MenuProps,
+  Typography,
+} from 'antd';
 import React, { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 // custom css file
@@ -20,32 +29,35 @@ const CustomColumnLabelCell = ({ labelsList }: { labelsList: LabelType[] }) => {
   // localization
   const { t } = useTranslation('taskListTable');
 
-  // menu type
-  type MenuItem = Required<MenuProps>['items'][number];
-  // label menu item
-  const labelMenuItems: MenuItem[] = labelsList
-    ? labelsList.map((label) => ({
-        key: label.labelId,
-        label: (
-          <Flex gap={4}>
-            <Badge color={label.labelColor} /> {label.labelName}
-          </Flex>
-        ),
-      }))
-    : [];
+  // esure labelsList is an array and has valid data
+  const labelMenuItems: MenuProps['items'] =
+    Array.isArray(labelsList) && labelsList.length > 0
+      ? labelsList.map((label) => ({
+          key: label.labelId,
+          label: (
+            <Flex gap={4}>
+              <Badge color={label.labelColor} /> {label.labelName}
+            </Flex>
+          ),
+        }))
+      : [
+          {
+            key: 'noLabels',
+            label: <Empty />,
+          },
+        ];
 
-  // Handle label select
+  // handle label selection
   const handleLabelOptionSelect: MenuProps['onClick'] = (e) => {
     const selectedOption = labelsList.find(
       (option) => option.labelId === e.key
     );
-
     if (selectedOption) {
       setCurrentLabelOption(selectedOption);
     }
   };
 
-  //dropdown items
+  // dropdown items
   const customColumnLabelCellItems: MenuProps['items'] = [
     {
       key: '1',
@@ -78,7 +90,7 @@ const CustomColumnLabelCell = ({ labelsList }: { labelsList: LabelType[] }) => {
           paddingInline: 8,
           height: 22,
           fontSize: 13,
-          backgroundColor: currentLabelOption?.labelColor,
+          backgroundColor: currentLabelOption?.labelColor || colors.transparent,
           color: colors.darkGray,
           cursor: 'pointer',
         }}

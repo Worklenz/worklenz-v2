@@ -1,13 +1,8 @@
-import {
-  CloseCircleOutlined,
-  ExclamationCircleFilled,
-} from '@ant-design/icons';
-import { Button, Flex, Popconfirm, Tooltip, Typography } from 'antd';
-import React from 'react';
-import { colors } from '../../../../../../../styles/colors';
+import { SettingOutlined } from '@ant-design/icons';
+import { Button, Flex, Tooltip, Typography } from 'antd';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch } from '../../../../../../../hooks/useAppDispatch';
-import { deleteCustomColumn } from '../../../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
+import CustomColumnModal from '../custom-column-modal/custom-column-modal';
 
 type CustomColumnHeaderProps = {
   columnKey: string;
@@ -18,35 +13,45 @@ const CustomColumnHeader = ({
   columnKey,
   columnName,
 }: CustomColumnHeaderProps) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   // localization
   const { t } = useTranslation('taskListTable');
 
-  const dispatch = useAppDispatch();
+  //   function to open modal
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+
+  //   fuction to handle cancel
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <Flex gap={8} align="center" justify="space-between">
-      <Typography.Text>{columnName}</Typography.Text>
-      <Popconfirm
-        title={t('deleteConfirmationTitle')}
-        icon={
-          <ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />
-        }
-        okText={t('deleteConfirmationOk')}
-        cancelText={t('deleteConfirmationCancel')}
-        onConfirm={() => dispatch(deleteCustomColumn(columnKey))}
-      >
-        <Tooltip title={t('deleteTooltip')}>
-          <Button
-            icon={<CloseCircleOutlined />}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              boxShadow: 'none',
-              fontSize: 12,
-            }}
-          />
-        </Tooltip>
-      </Popconfirm>
+      <Typography.Text ellipsis={{ expanded: false }}>
+        {columnName}
+      </Typography.Text>
+
+      <Tooltip title={t('editTooltip')}>
+        <Button
+          icon={<SettingOutlined />}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            boxShadow: 'none',
+            fontSize: 12,
+          }}
+          onClick={handleModalOpen}
+        />
+      </Tooltip>
+
+      <CustomColumnModal
+        modalType="edit"
+        isModalOpen={isModalOpen}
+        handleCancel={handleCancel}
+        columnId={columnKey}
+      />
     </Flex>
   );
 };

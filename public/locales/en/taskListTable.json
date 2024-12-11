@@ -41,5 +41,6 @@
   "deleteTooltip": "Delete",
   "deleteConfirmationTitle": "Are you sure?",
   "deleteConfirmationOk": "Yes",
-  "deleteConfirmationCancel": "Cancel"
+  "deleteConfirmationCancel": "Cancel",
+  "editTooltip": "Edit"
 }

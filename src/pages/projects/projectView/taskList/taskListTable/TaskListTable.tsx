@@ -26,8 +26,7 @@ import {
 } from '../../../../../features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';
 import { HolderOutlined } from '@ant-design/icons';
-import { CustomColumnType } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
-import CustomColumnLabelCell from './custom-columns/custom-column-cells/label-cell/custom-column-label-cell';
+import CustomColumnLabelCell from './custom-columns/custom-column-cells/custom-column-label-cell/custom-column-label-cell';
 import TaskListProgressCell from './task-list-table-cells/task-list-progress-cell/task-list-progress-cell';
 import TaskListStartDateCell from './task-list-table-cells/task-list-start-date-cell/task-list-start-date-cell';
 import TaskListDueDateCell from './task-list-table-cells/task-list-due-date-cell/task-list-due-date-cell';
@@ -42,6 +41,10 @@ import TaskListCompletedDateCell from './task-list-table-cells/task-list-complet
 import TaskListCreatedDateCell from './task-list-table-cells/task-list-created-date-cell/task-list-created-date-cell';
 import TaskListLastUpdatedCell from './task-list-table-cells/task-list-last-updated-cell/task-list-last-updated-cell';
 import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cell/task-list-reporter-cell';
+import { CustomFieldsTypes } from '../../../../../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
+import { LabelType } from '../../../../../types/label.type';
+import CustomColumnSelectionCell from './custom-columns/custom-column-cells/custom-column-selection-cell/custom-column-selection-cell';
+import { SelectionType } from './custom-columns/custom-column-modal/selection-type-column/selection-type-column';
 
 const TaskListTable = ({
   taskList,
@@ -279,7 +282,7 @@ const TaskListTable = ({
   // function to render custom column cells =======================================================================================================
   const renderCustomColumnContent = (
     columnObj: any,
-    columnType: CustomColumnType,
+    columnType: CustomFieldsTypes,
     task: TaskType
   ) => {
     switch (columnType) {
@@ -307,16 +310,13 @@ const TaskListTable = ({
           </Tooltip>
         );
       case 'number': {
-        const decimal = columnObj?.decimal || 2;
-        const label = columnObj?.label || 'LKR';
-        const labelPosition = columnObj?.position || 'left';
-        const value = 1000;
-
         switch (columnObj?.numberType) {
           case 'formatted':
             return (
               <Input
-                defaultValue={value.toFixed(decimal)}
+                defaultValue={columnObj?.previewValue.toFixed(
+                  columnObj?.decimals
+                )}
                 style={{
                   padding: 0,
                   border: 'none',
@@ -326,27 +326,26 @@ const TaskListTable = ({
             );
           case 'withLabel':
             return (
-              <Flex align="center">
-                <Typography.Text style={{ width: 'fit-content', minWidth: 30 }}>
-                  {labelPosition === 'left' && label}
-                </Typography.Text>
+              <Flex gap={4} align="center" justify="flex-start">
+                {columnObj?.labelPosition === 'left' && columnObj?.label}
                 <Input
-                  defaultValue={value.toFixed(decimal)}
+                  defaultValue={columnObj?.previewValue.toFixed(
+                    columnObj?.decimals
+                  )}
                   style={{
                     padding: 0,
                     border: 'none',
                     background: 'transparent',
+                    width: '100%',
                   }}
                 />
-                <Typography.Text style={{ width: 'fit-content', minWidth: 30 }}>
-                  {labelPosition === 'right' && label}
-                </Typography.Text>
+                {columnObj?.labelPosition === 'right' && columnObj?.label}
               </Flex>
             );
           case 'unformatted':
             return (
               <Input
-                defaultValue={value}
+                defaultValue={columnObj?.previewValue}
                 style={{
                   padding: 0,
                   border: 'none',
@@ -357,7 +356,9 @@ const TaskListTable = ({
           case 'percentage':
             return (
               <Input
-                defaultValue={value + '%'}
+                defaultValue={
+                  columnObj?.previewValue.toFixed(columnObj?.decimals) + '%'
+                }
                 style={{
                   padding: 0,
                   border: 'none',
@@ -369,29 +370,66 @@ const TaskListTable = ({
             return null;
         }
       }
+      case 'formula': {
+        const firstColumnId = columnObj?.firstNumericColumn;
+        const secondColumnId = columnObj?.secondNumericColumn;
+
+        console.log('first column', firstColumnId);
+        console.log('second column', secondColumnId);
+
+        const calculateResult = () => {
+          if (
+            columnObj?.firstNumericColumn == null ||
+            columnObj?.secondNumericColumn == null ||
+            !columnObj?.expression
+          ) {
+            return null;
+          }
+
+          switch (columnObj.expression) {
+            case 'add':
+              return (
+                columnObj.firstNumericColumn + columnObj.secondNumericColumn
+              );
+            case 'substract':
+              return (
+                columnObj.firstNumericColumn - columnObj.secondNumericColumn
+              );
+            case 'multiply':
+              return (
+                columnObj.firstNumericColumn * columnObj.secondNumericColumn
+              );
+            case 'divide':
+              return columnObj.secondNumericColumn !== 0
+                ? columnObj.firstNumericColumn / columnObj.secondNumericColumn
+                : null;
+            default:
+              return null;
+          }
+        };
+        return (
+          <Typography.Text>
+            {calculateResult() ?? 'Invalid Formula'}
+          </Typography.Text>
+        );
+      }
       case 'labels': {
-        const labelsList = columnObj?.labelsList || [
-          {
-            labelId: '1',
-            labelName: 'Label 1',
-            labelColor: '#154b99',
-          },
-          {
-            labelId: '2',
-            labelName: 'Label 2',
-            labelColor: '#bd4848',
-          },
-        ];
+        const labelsList: LabelType[] = columnObj?.labelsList || [];
 
         return <CustomColumnLabelCell labelsList={labelsList} />;
       }
-      case 'selection':
-      case 'formula':
+      case 'selection': {
+        const selectionsList: SelectionType[] = columnObj?.selectionsList || [];
+
+        return <CustomColumnSelectionCell selectionsList={selectionsList} />;
+      }
+
       default:
         return null;
     }
   };
 
+  // table structure==============================================================================================================
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
       <div

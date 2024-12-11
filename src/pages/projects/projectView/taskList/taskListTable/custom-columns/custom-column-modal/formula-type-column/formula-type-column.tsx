@@ -1,66 +1,58 @@
-import { Form, Select, Typography } from 'antd';
-import React, { useState } from 'react';
+import { Flex, Form, Select, Typography } from 'antd';
+import React from 'react';
 import { themeWiseColor } from '../../../../../../../../utils/themeWiseColor';
 import { useAppSelector } from '../../../../../../../../hooks/useAppSelector';
-
-type ExpressionType = 'add' | 'substract' | 'divide' | 'multiply';
+import { useAppDispatch } from '../../../../../../../../hooks/useAppDispatch';
+import {
+  setExpression,
+  setFirstNumericColumn,
+  setSecondNumericColumn,
+} from '../../../../../../../../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 
 const FormulaTypeColumn = () => {
-  const [expression, setExpression] = useState<ExpressionType>('add');
-
-  //   get theme details from theme reducer
+  // get theme details from the theme reducer
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  const expressionTypesOptions = [
-    {
-      key: 'add',
-      value: 'add',
-      label: '+ Add',
-    },
-    {
-      key: 'substract',
-      value: 'substract',
-      label: '- Substract',
-    },
-    {
-      key: 'divide',
-      value: 'divide',
-      label: '/ Divide',
-    },
-    {
-      key: 'multiply',
-      value: 'multiply',
-      label: 'x Multiply',
-    },
-  ];
+  const dispatch = useAppDispatch();
 
-  const columnsOptions = [
-    {
-      key: 1,
-      value: 1,
-      label: 'New Field 1',
-    },
-    {
-      key: 2,
-      value: 2,
-      label: 'New Field 2',
-    },
-    {
-      key: 3,
-      value: 3,
-      label: 'New Field 3',
-    },
+  // get initial data from task list custom column slice
+  const expression = useAppSelector(
+    (state) => state.taskListCustomColumnsReducer.expression
+  );
+
+  // get columns from column slice and filter only numeric columns
+  const columnsOptions = useAppSelector(
+    (state) => state.projectViewTaskListColumnsReducer.columnList
+  );
+
+  // filter numeric columns only
+  const numericColumns = columnsOptions.filter(
+    (column) => column.customColumnObj?.fieldType === 'number'
+  );
+
+  // expression types options
+  const expressionTypesOptions = [
+    { key: 'add', value: 'add', label: '+ Add' },
+    { key: 'substract', value: 'substract', label: '- Substract' },
+    { key: 'divide', value: 'divide', label: '/ Divide' },
+    { key: 'multiply', value: 'multiply', label: 'x Multiply' },
   ];
 
   return (
-    <Form.Item
-      name={'expressions'}
-      label={<Typography.Text>Expressions</Typography.Text>}
-    >
-      <div className="grid grid-cols-3 gap-4">
+    <Flex gap={8} align="center" justify="space-between">
+      <Form.Item
+        name={'firstNumericColumn'}
+        label={<Typography.Text>First Column</Typography.Text>}
+      >
+        {/* first numeric column */}
         <Select
-          options={columnsOptions}
-          placeholder="Select input"
+          options={numericColumns.map((col) => ({
+            key: col.key,
+            value: col.key,
+            label: col.name,
+          }))}
+          onChange={(value) => dispatch(setFirstNumericColumn(value))}
+          placeholder="Select first column"
           style={{
             minWidth: '100%',
             width: 150,
@@ -68,11 +60,17 @@ const FormulaTypeColumn = () => {
             borderRadius: 4,
           }}
         />
+      </Form.Item>
 
+      <Form.Item
+        name={'expression'}
+        label={<Typography.Text>Expression</Typography.Text>}
+      >
+        {/* expression type */}
         <Select
           options={expressionTypesOptions}
           value={expression}
-          onChange={(value) => setExpression(value)}
+          onChange={(value) => dispatch(setExpression(value))}
           style={{
             minWidth: '100%',
             width: 150,
@@ -80,10 +78,21 @@ const FormulaTypeColumn = () => {
             borderRadius: 4,
           }}
         />
+      </Form.Item>
 
+      <Form.Item
+        name={'secondNumericColumn'}
+        label={<Typography.Text>Second Column</Typography.Text>}
+      >
+        {/* second numeric column */}
         <Select
-          options={columnsOptions}
-          placeholder="Select input"
+          options={numericColumns.map((col) => ({
+            key: col.key,
+            value: col.key,
+            label: col.name,
+          }))}
+          onChange={(value) => dispatch(setSecondNumericColumn(value))}
+          placeholder="Select second column"
           style={{
             minWidth: '100%',
             width: 150,
@@ -91,8 +100,8 @@ const FormulaTypeColumn = () => {
             borderRadius: 4,
           }}
         />
-      </div>
-    </Form.Item>
+      </Form.Item>
+    </Flex>
   );
 };
 

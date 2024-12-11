@@ -3,16 +3,6 @@ import React, { ReactNode } from 'react';
 import PhaseHeader from '../phase/PhaseHeader';
 import AddCustomColumnButton from '../../../../pages/projects/projectView/taskList/taskListTable/custom-columns/custom-column-modal/add-custom-column-button';
 
-export type CustomColumnType =
-  | 'people'
-  | 'number'
-  | 'date'
-  | 'selection'
-  | 'checkbox'
-  | 'labels'
-  | 'key'
-  | 'formula';
-
 export type CustomTableColumnsType = {
   key: string; // this key identify each column uniquely
   name: string; // this name show the name of the column. this name is used when custom column generated, show in fields filter
@@ -184,9 +174,27 @@ const projectViewTaskListColumnsSlice = createSlice({
         (col) => col.key !== action.payload
       );
     },
+    updateCustomColumn(
+      state,
+      action: PayloadAction<{
+        key: string;
+        updatedColumn: CustomTableColumnsType;
+      }>
+    ) {
+      const index = state.columnList.findIndex(
+        (column) => column.key === action.payload.key
+      );
+      if (index !== -1) {
+        state.columnList[index] = action.payload.updatedColumn;
+      }
+    },
   },
 });
 
-export const { toggleColumnVisibility, addCustomColumn, deleteCustomColumn } =
-  projectViewTaskListColumnsSlice.actions;
+export const {
+  toggleColumnVisibility,
+  addCustomColumn,
+  deleteCustomColumn,
+  updateCustomColumn,
+} = projectViewTaskListColumnsSlice.actions;
 export default projectViewTaskListColumnsSlice.reducer;
