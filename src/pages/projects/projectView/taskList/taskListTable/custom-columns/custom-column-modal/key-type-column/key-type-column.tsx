@@ -10,6 +10,7 @@ const KeyTypeColumn = () => {
         <Input
           value={keyLabel}
           placeholder="ex-:MK"
+          maxLength={5}
           style={{ textTransform: 'uppercase' }}
           onChange={(e) => setKeyLabel(e.currentTarget.value)}
         />
