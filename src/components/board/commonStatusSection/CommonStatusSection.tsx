@@ -21,6 +21,7 @@ import './CommonStatusSection.css';
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
+import { useTranslation } from 'react-i18next';
 
 interface CommonStatusSectionProps {
   statusId: string;
@@ -59,6 +60,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
+  const {t} = useTranslation('kanban-board')
 
   const handleAddTaskClick = () => {
     dispatch(
@@ -113,7 +115,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           }}
           onClick={() => setIsEditable(true)}
         >
-          <EditOutlined /> <span>Rename</span>
+          <EditOutlined /> <span>{t('rename')}</span>
         </div>
       ),
     },
@@ -134,7 +136,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           }}
           onClick={() => dispatch(deleteStatus(id))}
         >
-          <DeleteOutlined /> <span>Delete</span>
+          <DeleteOutlined /> <span>{t('delete')}</span>
         </div>
       ),
     },
@@ -300,7 +302,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
             icon={<PlusOutlined />}
             onClick={handleAddTaskClick}
           >
-            Add Task
+            {t('addTask')}
           </Button>
         </div>
       </div>

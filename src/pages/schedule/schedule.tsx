@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 import { toggleSettingsDrawer } from '@features/schedule/scheduleSlice';
 import ScheduleSettingsDrawer from '@features/schedule/ScheduleSettingsDrawer';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from '../../hooks/useDoumentTItle';
 
 const { Option } = Select;
 
@@ -24,8 +26,11 @@ const PickerWithType = ({
 const Schedule: React.FC = () => {
   const [type, setType] = useState<PickerType>('week');
   const [date, setDate] = useState<Date | null>(null);
+  const {t} = useTranslation('schedule');
 
   const dispatch = useDispatch();
+
+  useDocumentTitle('Schedule');
 
   const handleDateChange = (value: dayjs.Dayjs | null) => {
     if (!value) return;
@@ -49,14 +54,14 @@ const Schedule: React.FC = () => {
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingTop: '25px', paddingBottom: '20px' }}>
-          <Button onClick={handleToday}>Today</Button>
+          <Button onClick={handleToday}>{t('today')}</Button>
           <Space>
             <Select
               value={type}
               onChange={(value) => setType(value as PickerType)}
             >
-              <Option value="week">Week</Option>
-              <Option value="month">Month</Option>
+              <Option value="week">{t('week')}</Option>
+              <Option value="month">{t('month')}</Option>
             </Select>
             <PickerWithType
               type={type}

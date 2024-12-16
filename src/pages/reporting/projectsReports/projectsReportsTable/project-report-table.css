@@ -1,45 +1,49 @@
+[data-theme="dark"] {
+  --table-cell-bg: #181818;
+  --hover-bg: #000;
+}
+
+[data-theme="default"] {
+  --table-cell-bg: #f4f4f4;
+  --hover-bg: #edebf0;
+}
+
 /* change the scroll bar in the table  */
 :where(.css-dev-only-do-not-override-ifo476).ant-table-wrapper .ant-table {
-    scrollbar-color: unset;
+  scrollbar-color: unset;
 }
 
 :where(.css-dev-only-do-not-override-aw0rds).ant-table-wrapper
-.ant-table-ping-left
-.ant-table-cell-fix-left-first::after {
-    box-shadow: 'inset 10px 0 8px -8px #00000026';
+  .ant-table-ping-left
+  .ant-table-cell-fix-left-first::after {
+  box-shadow: "inset 10px 0 8px -8px #00000026";
 }
 
 :where(.css-dev-only-do-not-override-aw0rds).ant-table-wrapper
-.ant-table-ping-right:not(.ant-table-has-fix-right)
-.ant-table-container::after {
-    box-shadow: 'inset -10px 0 8px -8px #00000026';
+  .ant-table-ping-right:not(.ant-table-has-fix-right)
+  .ant-table-container::after {
+  box-shadow: "inset -10px 0 8px -8px #00000026";
 }
 
 .ant-table-wrapper .ant-table-cell-fix-left.even-row,
 .ant-table-wrapper .ant-table-row:nth-child(even) .ant-table-cell-fix-left {
-    background: #f4f4f4;
+  background: var(--table-cell-bg);
 }
 
 .ant-table-wrapper .ant-table-cell-fix-left.even-row:hover,
-.ant-table-wrapper
-.ant-table-row:nth-child(even):hover
-.ant-table-cell-fix-left {
-    background-color: #edebf0;
+.ant-table-wrapper .ant-table-row:nth-child(even):hover .ant-table-cell-fix-left {
+  background: var(--hover-bg) !important;
 }
 
 /* remove select border  */
-:where(.css-dev-only-do-not-override-tmno9t).ant-select-outlined:not(
-    .ant-select-customize-input
-  )
-.ant-select-selector {
-    border: none;
+:where(.css-dev-only-do-not-override-tmno9t).ant-select-outlined:not(.ant-select-customize-input)
+  .ant-select-selector {
+  border: none;
 }
 
-.ant-select-focused:where(
-    .css-dev-only-do-not-override-tmno9t
-  ).ant-select-outlined:not(.ant-select-disabled):not(
-    .ant-select-customize-input
-  ):not(.ant-pagination-size-changer)
-.ant-select-selector {
-    box-shadow: none;
+.ant-select-focused:where(.css-dev-only-do-not-override-tmno9t).ant-select-outlined:not(
+    .ant-select-disabled
+  ):not(.ant-select-customize-input):not(.ant-pagination-size-changer)
+  .ant-select-selector {
+  box-shadow: none;
 }

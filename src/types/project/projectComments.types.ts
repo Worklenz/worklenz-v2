@@ -8,3 +8,18 @@ export interface IMentionMemberViewModel extends IMentionMember {
   avatar_url?: string;
   color_code?: string;
 }
+
+export interface IMentionMemberSelectOption {
+  key: string;
+  value: string;
+  label: string;
+}
+
+export interface IProjectCommentsCreateRequest {
+  project_id?: string;
+  project_name?:string;
+  team_id?: string;
+  team_name?: string;
+  content?: string;
+  mentions?: IMentionMember[];
+}

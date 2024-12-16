@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import CustomSearchbar from '../../../../../components/CustomSearchbar';
 import ProjectReportsMembersTable from './ProjectReportsMembersTable';
 import ProjectReportsMembersTaskDrawer from './projectReportsMembersTaskDrawer/ProjectReportsMembersTaskDrawer';
+import { useTranslation } from 'react-i18next';
 
 type ProjectReportsMembersTabProps = {
   projectId?: string | null;
@@ -12,6 +13,9 @@ const ProjectReportsMembersTab = ({
   projectId = null,
 }: ProjectReportsMembersTabProps) => {
   const [searchQuery, setSearhQuery] = useState<string>('');
+
+  // localization
+  const { t } = useTranslation('reporting-projects-drawer');
 
   // mock data from the original site payload
   type TeamMemberTaskStats = {
@@ -67,7 +71,7 @@ const ProjectReportsMembersTab = ({
   return (
     <Flex vertical gap={24}>
       <CustomSearchbar
-        placeholderText="Search by name"
+        placeholderText={t('searchByNameInputPlaceholder')}
         searchQuery={searchQuery}
         setSearchQuery={setSearhQuery}
       />

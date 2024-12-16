@@ -17,7 +17,6 @@ type TaskCellProps = {
   task: IProjectTask;
   isSubTask?: boolean;
   expandedTasks: string[];
-  hoverRow: string | null;
   setSelectedTaskId: (taskId: string) => void;
   toggleTaskExpansion: (taskId: string) => void;
 };
@@ -26,12 +25,11 @@ const TaskCell = ({
   task,
   isSubTask = false,
   expandedTasks,
-  hoverRow,
   setSelectedTaskId,
   toggleTaskExpansion,
 }: TaskCellProps) => {
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   const dispatch = useAppDispatch();
 
@@ -105,8 +103,6 @@ const TaskCell = ({
             task.id,
             !!task?.sub_tasks?.length
           )
-        ) : hoverRow === task.id ? (
-          renderToggleButtonForNonSubtasks(task.id, isSubTask)
         ) : (
           <div className="h-4 w-4"></div>
         )}
@@ -124,7 +120,7 @@ const TaskCell = ({
         )}
       </Flex>
 
-      {hoverRow === task.id && (
+
         <Button
           type="text"
           icon={<ExpandAltOutlined />}
@@ -140,7 +136,7 @@ const TaskCell = ({
         >
           {t('openButton')}
         </Button>
-      )}
+
     </Flex>
   );
 };

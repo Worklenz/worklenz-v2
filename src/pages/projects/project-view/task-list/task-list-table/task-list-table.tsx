@@ -55,7 +55,7 @@ const TaskListTable = ({
   }>({});
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   const dispatch = useAppDispatch();
 

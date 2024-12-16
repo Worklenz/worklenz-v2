@@ -1,3 +1,4 @@
+// Ant Design
 import {
   DeleteOutlined,
   EditOutlined,
@@ -6,69 +7,134 @@ import {
   SyncOutlined,
   UserSwitchOutlined,
 } from '@ant-design/icons';
-import { Badge, Button, Card, Flex, Input, Popconfirm, Skeleton, Table, TableProps, Tooltip, Typography } from 'antd';
-import React, { useMemo, useState } from 'react';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
-  deleteMember,
-  toggleCreateMemberDrawer,
-  toggleMemberStatus,
-  toggleUpdateMemberDrawer,
-} from '@features/settings/member/memberSlice';
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { MemberType } from '@/types/member.types';
-import { colors } from '@/styles/colors';
-import UpdateMemberDrawer from '@features/settings/member/UpdateMemberDrawer';
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Flex,
+  Input,
+  Popconfirm,
+  Table,
+  TableProps,
+  Tooltip,
+  Typography,
+} from 'antd';
+
+// React & Hooks
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import CustomAvatar from '@components/CustomAvatar';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+
+// Features & Components
+import UpdateMemberDrawer from '@features/settings/member/UpdateMemberDrawer';
+import { toggleInviteMemberDrawer, toggleUpdateMemberDrawer } from '@features/settings/member/memberSlice';
+
+// Types
+import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+
+// Constants & Services
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@/shared/constants';
+import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
+import { colors } from '@/styles/colors';
 
 const TeamMembersSettings = () => {
-  // localization
-  const { t } = useTranslation('teamMembersSettings');
-
-  // get currently hover row
-  const [hoverRow, setHoverRow] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // get currently selected member id
-  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
-
-  // get all members lists from redux - add member reducer
-  const owner = useAppSelector((state) => state.memberReducer.owner);
-  const membersList = useAppSelector(
-    (state) => state.memberReducer.membersList,
-  );
+  // Hooks
+  const { t } = useTranslation('settings-team-members');
   const dispatch = useAppDispatch();
+  useDocumentTitle('Team Members');
 
-  // all members
-  const allMembersList: MemberType[] = useMemo(
-    () => [owner, ...membersList],
-    [owner, membersList],
+  // State
+  const [model, setModel] = useState<ITeamMembersViewModel>({ total: 0, data: [] });
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: DEFAULT_PAGE_SIZE,
+    field: 'name',
+    order: 'asc',
+  });
+
+  // API Functions
+  const getTeamMembers = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await teamMembersApiService.get(
+        pagination.current,
+        pagination.pageSize,
+        pagination.field,
+        pagination.order,
+        searchQuery
+      );
+      if (res.done) {
+        setModel(res.body);
+      }
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [pagination, searchQuery]);
+
+  const handleStatusChange = async (record: ITeamMemberViewModel) => {
+    try {
+      setIsLoading(true);
+      const res = await teamMembersApiService.toggleMemberActiveStatus(
+        record.id || '',
+        record.active as boolean,
+        record.email || ''
+      );
+      if (res.done) {
+        await getTeamMembers();
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteMember = async (record: ITeamMemberViewModel) => {
+    if (!record.id || !record.email) return;
+    try {
+      setIsLoading(true);
+      const res = await teamMembersApiService.delete(record.id, record.email);
+      if (res.done) {
+        await getTeamMembers();
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Event Handlers
+  const handleRefresh = useCallback(() => {
+    setIsLoading(true);
+    getTeamMembers().finally(() => setIsLoading(false));
+  }, [getTeamMembers]);
+
+  const handleMemberClick = useCallback(
+    (memberId: string) => {
+      setSelectedMemberId(memberId);
+      dispatch(toggleUpdateMemberDrawer());
+    },
+    [dispatch]
   );
 
-  // function for handle refresh
-  const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500);
-  };
+  const handleTableChange = useCallback((newPagination: any, filters: any, sorter: any) => {
+    setPagination(prev => ({
+      ...prev,
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+      field: sorter.field,
+      order: sorter.order === 'ascend' ? 'asc' : 'desc',
+    }));
+  }, []);
 
-  // this is for get the current string that type on search bar
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
-  // function to get name
-  const getMemberName = (memberId: string) => {
-    const member = allMembersList.find(
-      (member) => member.memberId === memberId,
-    );
-
-    if (member?.memberName) {
-      return member.memberName;
-    } else return member?.memberEmail.split('@')[0];
-  };
-
-  // function to get colors according to the role
-  const getColor = (role: 'owner' | 'member' | 'admin') => {
-    switch (role) {
+  // Utility Functions
+  const getColor = useCallback((role: string | undefined) => {
+    switch (role?.toLowerCase()) {
       case 'owner':
         return colors.skyBlue;
       case 'member':
@@ -78,102 +144,75 @@ const TeamMembersSettings = () => {
       default:
         return colors.darkGray;
     }
-  };
+  }, []);
 
-  // used useMemo hook for re render the list when searching
-  const filteredMembersData = useMemo(() => {
-    return allMembersList.filter((item) =>
-      (item.memberName || item.memberEmail)
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()),
-    );
-  }, [allMembersList, searchQuery]);
+  // Effects
+  useEffect(() => {
+    getTeamMembers();
+  }, [getTeamMembers]);
 
-  // table columns
+  // Table Configuration
   const columns: TableProps['columns'] = [
     {
       key: 'name',
+      dataIndex: 'name',
       title: t('nameColumn'),
-      sorter: (a, b) => a.name.length - b.name.length,
-      onCell: (record) => ({
-        onClick: () => {
-          setSelectedMemberId(record.memberId);
-          dispatch(toggleUpdateMemberDrawer());
-        },
+      defaultSortOrder: 'ascend',
+      sorter: true,
+      onCell: (record: ITeamMemberViewModel) => ({
+        onClick: () => handleMemberClick(record.id || ''),
+        style: { cursor: 'pointer' },
       }),
-      render: (record: MemberType) => {
-        const name = getMemberName(record.memberId) || '';
-
-        return (
-          <Typography.Text
-            style={{
-              textTransform: 'capitalize',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
-            }}
-          >
-            <CustomAvatar avatarName={name} />
-            {name}
-            {/* shows when activate status */}
-            {record.isActivate ? (
-              <Badge color={colors.limeGreen} />
-            ) : (
-              <Typography.Text
-                style={{
-                  color: colors.yellow,
-                }}
-              >
-                {t('deactivatedText')}
-              </Typography.Text>
-            )}
-          </Typography.Text>
-        );
-      },
-    },
-    {
-      key: 'projects',
-      title: t('projectsColumn'),
-      sorter: (a, b) => a.projects - b.projects,
-      onCell: (record) => ({
-        onClick: () => {
-          setSelectedMemberId(record.memberId);
-          dispatch(toggleUpdateMemberDrawer());
-        },
-      }),
-      render: (record: MemberType) => (
+      render: (_, record: ITeamMemberViewModel) => (
         <Typography.Text
           style={{
-            color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
+            textTransform: 'capitalize',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
           }}
         >
-          0
+          <Avatar size={28} src={record.avatar_url} style={{ backgroundColor: record.color_code }}>
+            {record.name?.charAt(0)}
+          </Avatar>
+
+          {record.name}
+          {record.is_online && <Badge color={colors.limeGreen} />}
+          {!record.active && (
+            <Typography.Text style={{ color: colors.yellow }}>
+              {t('deactivatedText')}
+            </Typography.Text>
+          )}
         </Typography.Text>
       ),
     },
     {
-      key: 'memberEmail',
-      title: t('emailColumn'),
-      sorter: (a, b) => a.memberEmail.localeCompare(b.memberEmail),
-      onCell: (record) => ({
-        onClick: () => {
-          setSelectedMemberId(record.memberId);
-          dispatch(toggleUpdateMemberDrawer());
-        },
+      key: 'projects_count',
+      dataIndex: 'projects_count',
+      title: t('projectsColumn'),
+      sorter: true,
+      onCell: (record: ITeamMemberViewModel) => ({
+        onClick: () => handleMemberClick(record.id || ''),
+        style: { cursor: 'pointer' },
       }),
-      render: (record: MemberType) => (
+      render: (_, record: ITeamMemberViewModel) => (
+        <Typography.Text>{record.projects_count}</Typography.Text>
+      ),
+    },
+    {
+      key: 'email',
+      dataIndex: 'email',
+      title: t('emailColumn'),
+      sorter: true,
+      onCell: (record: ITeamMemberViewModel) => ({
+        onClick: () => handleMemberClick(record.id || ''),
+        style: { cursor: 'pointer' },
+      }),
+      render: (_, record: ITeamMemberViewModel) => (
         <div>
-          <Typography.Text
-            style={{
-              color: hoverRow === record.memberId ? colors.skyBlue : 'inherit',
-            }}
-          >
-            {record.memberEmail}
-          </Typography.Text>
-          {/* this one shown only for the pendinge members  */}
-          {!record.isInivitationAccept && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          <Typography.Text>{record.email}</Typography.Text>
+          {record.pending_invitation && (
+            <Typography.Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>
               {t('pendingInvitationText')}
             </Typography.Text>
           )}
@@ -181,18 +220,23 @@ const TeamMembersSettings = () => {
       ),
     },
     {
-      key: 'memberRole',
+      key: 'role_name',
+      dataIndex: 'role_name',
       title: t('teamAccessColumn'),
-      sorter: (a, b) => a.memberRole.localeCompare(b.memberRole),
-      render: (record: MemberType) => (
+      sorter: true,
+      onCell: (record: ITeamMemberViewModel) => ({
+        onClick: () => handleMemberClick(record.id || ''),
+        style: { cursor: 'pointer' },
+      }),
+      render: (_, record: ITeamMemberViewModel) => (
         <Flex gap={16} align="center">
           <Typography.Text
             style={{
-              color: getColor(record.memberRole),
+              color: getColor(record.role_name),
               textTransform: 'capitalize',
             }}
           >
-            {record.memberRole}
+            {record.role_name}
           </Typography.Text>
         </Flex>
       ),
@@ -200,69 +244,38 @@ const TeamMembersSettings = () => {
     {
       key: 'actionBtns',
       width: 120,
-      render: (record: MemberType) =>
-        record.memberRole !== 'owner' &&
-        hoverRow === record.memberId && (
+      render: (record: ITeamMemberViewModel) =>
+        record.role_name !== 'owner' && (
           <Flex gap={8} style={{ padding: 0 }}>
-            <Tooltip title={t('editTooltip')} trigger={'hover'}>
+            <Tooltip title={t('editTooltip')}>
               <Button
                 size="small"
                 icon={<EditOutlined />}
-                onClick={() => {
-                  setSelectedMemberId(record.memberId);
-                  dispatch(toggleUpdateMemberDrawer());
-                }}
+                onClick={() => record.id && handleMemberClick(record.id)}
               />
             </Tooltip>
 
-            <Tooltip
-              title={
-                record.isActivate
-                  ? t('deactivateTooltip')
-                  : t('activateTooltip')
-              }
-              trigger={'hover'}
-            >
+            <Tooltip title={record.active ? t('deactivateTooltip') : t('activateTooltip')}>
               <Popconfirm
                 title={t('confirmActivateTitle')}
-                icon={
-                  <ExclamationCircleFilled
-                    style={{
-                      color: colors.vibrantOrange,
-                    }}
-                  />
-                }
+                icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
                 okText={t('okText')}
                 cancelText={t('cancelText')}
-                onConfirm={() => dispatch(toggleMemberStatus(record))}
+                onConfirm={() => handleStatusChange(record)}
               >
-                <Button
-                  shape="default"
-                  icon={<UserSwitchOutlined />}
-                  size="small"
-                />
+                <Button size="small" icon={<UserSwitchOutlined />} />
               </Popconfirm>
             </Tooltip>
 
-            <Tooltip title={t('deleteTooltip')} trigger={'hover'}>
+            <Tooltip title={t('deleteTooltip')}>
               <Popconfirm
                 title={t('confirmDeleteTitle')}
-                icon={
-                  <ExclamationCircleFilled
-                    style={{
-                      color: colors.vibrantOrange,
-                    }}
-                  />
-                }
+                icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
                 okText={t('okText')}
                 cancelText={t('cancelText')}
-                onConfirm={() => dispatch(deleteMember(record.memberId))}
+                onConfirm={() => record.id && handleDeleteMember(record)}
               >
-                <Button
-                  shape="default"
-                  icon={<DeleteOutlined />}
-                  size="small"
-                />
+                <Button size="small" icon={<DeleteOutlined />} />
               </Popconfirm>
             </Tooltip>
           </Flex>
@@ -272,75 +285,52 @@ const TeamMembersSettings = () => {
 
   return (
     <div style={{ width: '100%' }}>
-      <Flex
-        align="center"
-        justify="space-between"
-        style={{ marginBlockEnd: 24 }}
-      >
+      <Flex align="center" justify="space-between" style={{ marginBlockEnd: 24 }}>
         <Typography.Title level={4} style={{ marginBlockEnd: 0 }}>
-          {filteredMembersData.length}{' '}
-          {filteredMembersData.length !== 1
-            ? t('membersCountPlural')
-            : t('memberCount')}
+          {model.total} {model.total !== 1 ? t('membersCountPlural') : t('memberCount')}
         </Typography.Title>
 
-        <Flex
-          gap={8}
-          align="center"
-          justify="flex-end"
-          style={{ width: '100%', maxWidth: 400 }}
-        >
-          <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-            <Button
-              shape="circle"
-              icon={<SyncOutlined />}
-              onClick={() => handleRefresh()}
-            />
+        <Flex gap={8} align="center" justify="flex-end" style={{ width: '100%', maxWidth: 400 }}>
+          <Tooltip title={t('pinTooltip')}>
+            <Button shape="circle" icon={<SyncOutlined />} onClick={handleRefresh} />
           </Tooltip>
           <Input
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.currentTarget.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             placeholder={t('searchPlaceholder')}
             style={{ maxWidth: 232 }}
             suffix={<SearchOutlined />}
           />
-          <Button
-            type="primary"
-            onClick={() => dispatch(toggleCreateMemberDrawer())}
-          >
+          <Button type="primary" onClick={() => dispatch(toggleInviteMemberDrawer())}>
             {t('addMemberButton')}
           </Button>
         </Flex>
       </Flex>
 
       <Card style={{ width: '100%' }}>
-        {isLoading ? (
-          <Skeleton />
-        ) : (
+        {
           <Table
-            className="custom-two-colors-row-table"
             columns={columns}
-            dataSource={filteredMembersData}
-            rowKey={(record) => record.memberId}
+            size="small"
+            dataSource={model.data}
+            rowKey={record => record.id}
+            onChange={handleTableChange}
+            loading={isLoading}
             pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
               showSizeChanger: true,
-              defaultPageSize: 20,
+              defaultPageSize: DEFAULT_PAGE_SIZE,
+              pageSizeOptions: PAGE_SIZE_OPTIONS,
+              size: 'small',
+              total: model.total,
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
             }}
-            onRow={(record) => {
-              return {
-                onMouseEnter: () => setHoverRow(record.memberId),
-                onMouseLeave: () => setHoverRow(null),
-                style: {
-                  cursor: 'pointer',
-                  height: 36,
-                },
-              };
-            }}
+            scroll={{ x: 'max-content' }}
           />
-        )}
+        }
       </Card>
 
-      {/* update member drawer ---> the add member drawer is in navbar */}
       <UpdateMemberDrawer selectedMemberId={selectedMemberId} />
     </div>
   );

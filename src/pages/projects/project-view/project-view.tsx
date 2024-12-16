@@ -1,6 +1,6 @@
-import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
+import { PushpinFilled, PushpinOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-import { Button, ConfigProvider, Flex, Tabs, TabsProps } from 'antd';
+import { Avatar, Badge, Button, ConfigProvider, Flex, Tabs, TabsProps, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 
 import { colors } from '@/styles/colors';
@@ -15,6 +15,9 @@ import StatusDrawer from '@features/projects/status/StatusDrawer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { getProject, setProject, setProjectId } from '@/features/project/project.slice';
 import CreateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/createTaskDrawer/CreateTaskDrawer';
+
+import './ProjectView.css';
+import { AvatarNamesMap } from '@/shared/constants';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -65,6 +68,10 @@ const ProjectView = () => {
             <ConfigProvider wave={{ disabled: true }}>
               <Button
                 className="borderless-icon-btn"
+                style={{
+                  backgroundColor: colors.transparent,
+                  boxShadow: 'none',
+                }}
                 icon={
                   getFromLocalStorage('pinnedTab') === item.key ? (
                     <PushpinFilled
@@ -98,14 +105,44 @@ const ProjectView = () => {
       <ProjectViewHeader />
 
       {/* tabs  */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={handleTabChange}
-        items={tabMenuItems}
-        animated={false}
-        defaultActiveKey={tabItems[0].key}
-        destroyInactiveTabPane={true}
-      />
+      <div
+        style={{
+          display: 'flex',
+        }}
+      >
+        {/* Tabs container */}
+        <div style={{ flex: 1, overflow: 'auto', minWidth: '0' }}>
+          <Tabs
+            activeKey={activeTab}
+            onChange={handleTabChange}
+            items={tabMenuItems}
+            animated={false}
+            defaultActiveKey={tabItems[0].key}
+            destroyInactiveTabPane={true}
+          />
+        </div>
+
+        {/* Right-side content */}
+        <div>
+          <Avatar size="small" style={{ backgroundColor: AvatarNamesMap['R'] }}>
+            R
+          </Avatar>
+          <span style={{ position: 'relative', top: '-10px' }}>
+            <Tooltip title="Members who are active on this project will be displayed here.">
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+          <span
+            style={{
+              position: 'relative',
+              right: '20px',
+              top: '10px',
+            }}
+          >
+            <Badge status="success" dot className="profile-badge" />
+          </span>
+        </div>
+      </div>
       {/* drawers  */}
       {/* add project members drawer */}
       <ProjectMemberDrawer />

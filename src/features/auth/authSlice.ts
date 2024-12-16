@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-
 import { authApiService } from '@/api/auth/auth.api.service';
 import { IAuthState, IUserLoginRequest } from '@/types/auth/login.types';
 import { IUserSignUpRequest } from '@/types/auth/signup.types';
 import logger from '@/utils/errorLogger';
-import alertService from '@/services/alerts/alertService';
 
 // Initial state
 const initialState: IAuthState = {
@@ -14,6 +12,12 @@ const initialState: IAuthState = {
   error: null,
   teamId: undefined,
   projectId: undefined,
+};
+
+// Helper function for error handling
+const handleAuthError = (error: any, action: string) => {
+  logger.error(action, error);
+  return error.response?.data?.message || 'An unknown error has occurred';
 };
 
 // Async thunks
@@ -30,8 +34,7 @@ export const login = createAsyncThunk(
 
       return authorizeResponse;
     } catch (error: any) {
-      logger.error('Login', error);
-      return rejectWithValue(error.response?.data?.message || 'An unknown error has occurred');
+      return rejectWithValue(handleAuthError(error, 'Login'));
     }
   }
 );
@@ -53,8 +56,7 @@ export const signUp = createAsyncThunk(
 
       return authorizeResponse;
     } catch (error: any) {
-      logger.error('SignUp', error);
-      return rejectWithValue(error.response?.data?.message || 'An unknown error has occurred');
+      return rejectWithValue(handleAuthError(error, 'SignUp'));
     }
   }
 );
@@ -69,8 +71,7 @@ export const logout = createAsyncThunk(
       }
       return response;
     } catch (error: any) {
-      logger.error('Logout', error);
-      return rejectWithValue(error.response?.data?.message || 'An unknown error has occurred');
+      return rejectWithValue(handleAuthError(error, 'Logout'));
     }
   }
 );
@@ -78,10 +79,20 @@ export const logout = createAsyncThunk(
 export const verifyAuthentication = createAsyncThunk(
   'secure/verify',
   async () => {
-    const user = await authApiService.verify();
-    return user;
+    return await authApiService.verify();
   }
 );
+
+// Common state updates
+const setPending = (state: IAuthState) => {
+  state.isLoading = true;
+  state.error = null;
+};
+
+const setRejected = (state: IAuthState, action: any) => {
+  state.isLoading = false;
+  state.error = action.payload as string;
+};
 
 // Slice
 const authSlice = createSlice({
@@ -96,10 +107,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Login cases
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
+      .addCase(login.pending, setPending)
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
@@ -107,16 +115,12 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.isLoading = false;
+        setRejected(state, action);
         state.isAuthenticated = false;
-        state.error = action.payload as string;
       })
 
       // Logout cases
-      .addCase(logout.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
+      .addCase(logout.pending, setPending)
       .addCase(logout.fulfilled, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
@@ -125,10 +129,7 @@ const authSlice = createSlice({
         state.teamId = undefined;
         state.projectId = undefined;
       })
-      .addCase(logout.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+      .addCase(logout.rejected, setRejected)
 
       // Verify authentication cases
       .addCase(verifyAuthentication.pending, (state) => {

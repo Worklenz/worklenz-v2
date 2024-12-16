@@ -1,5 +1,5 @@
-import type { MenuProps } from 'antd';
-import { Alert, Empty, List, Menu, Skeleton, Tabs, Tag, Typography } from 'antd';
+import type { DescriptionsProps, MenuProps } from 'antd';
+import { Badge, Empty, List, Menu, Skeleton, Tabs, Tag, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -15,12 +15,12 @@ const { Title, Text } = Typography;
 
 interface TemplateDrawerProps {
   showBothTabs: boolean;
-  onTemplateImport: () => void;
+  templateSelected: (templateId: string) => void;
 }
 
 const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
   showBothTabs = false,
-  onTemplateImport = () => { },
+  templateSelected = (templateId: string) => { templateId },
 }) => {
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   const { t } = useTranslation('template-drawer');
@@ -52,6 +52,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
       if (res.done) {
         setTemplates(res.body);
         if (res.body.length > 0 && res.body[0].id) {
+          templateSelected(res.body[0].id);
           await getSelectedTemplate(res.body[0].id);
         }
       }
@@ -73,6 +74,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
   }));
 
   const handleMenuClick = (templateId: string) => {
+    templateSelected(templateId);
     getSelectedTemplate(templateId);
   };
 
@@ -84,7 +86,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
     return (
       <div>
         {/* Description */}
-        <div className="template-detail-row">
+        <div className="template-detail-row mt-2">
           <div className="template-detail-label">
             <Text strong>{t('description')}</Text>
           </div>
@@ -94,7 +96,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         </div>
 
         {/* Phase */}
-        <div className="template-detail-row">
+        <div className="template-detail-row mt-2">
           <div className="template-detail-label">
             <Text strong>{t('phase')}</Text>
           </div>
@@ -116,7 +118,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         </div>
 
         {/* Statuses */}
-        <div className="template-detail-row">
+        <div className="template-detail-row mt-2">
           <div className="template-detail-label">
             <Text strong>{t('statuses')}</Text>
           </div>
@@ -138,7 +140,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         </div>
 
         {/* Priorities */}
-        <div className="template-detail-row">
+        <div className="template-detail-row mt-2">
           <div className="template-detail-label">
             <Text strong>{t('priorities')}</Text>
           </div>
@@ -160,7 +162,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         </div>
 
         {/* Labels */}
-        <div className="template-detail-row">
+        <div className="template-detail-row mt-2">
           <div className="template-detail-label">
             <Text strong>{t('labels')}</Text>
           </div>
@@ -182,7 +184,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         </div>
 
         {/* Tasks */}
-        <div className="template-detail-row">
+        <div className="template-detail-row mt-2">
           <div className="template-detail-label">
             <Text strong>{t('tasks')}</Text>
           </div>

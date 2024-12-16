@@ -1,118 +1,175 @@
-import { Button, Drawer, Flex, Form, message, Select, Typography } from 'antd';
-import React, { useEffect, useMemo } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleUpdateMemberDrawer, updateMember } from './memberSlice';
-import { colors } from '../../../styles/colors';
-import { MemberType } from '../../../types/member.types';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import CustomAvatar from '../../../components/CustomAvatar';
+import { 
+  Avatar, 
+  Button, 
+  Drawer, 
+  Flex, 
+  Form, 
+  message, 
+  Select, 
+  Spin, 
+  Tooltip, 
+  Typography 
+} from 'antd';
+
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAuth } from '@/hooks/useAuth';
+import { colors } from '@/styles/colors';
+import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
+import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
+import { toggleUpdateMemberDrawer } from './memberSlice';
+import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
+import { formatDateTime } from '@/utils/format-time-strings';
+import { IJobTitle } from '@/types/job.types';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import { ITeamMemberCreateRequest } from '@/types/teamMembers/team-member-create-request';
 
 type UpdateMemberDrawerProps = {
   selectedMemberId: string | null;
 };
 
 const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
-  // localization
-  const { t } = useTranslation('teamMembersSettings');
-
-  // get job titles from redux - job reducer
-  const jobsList = useAppSelector((state) => state.jobReducer.jobsList);
-
+  const { t } = useTranslation('settings-team-members');
+  const dispatch = useAppDispatch();
+  const auth = useAuth();
   const [form] = Form.useForm();
 
-  // get all members lists from redux - add member reducer
-  const owner = useAppSelector((state) => state.memberReducer.owner);
-  const membersList = useAppSelector(
-    (state) => state.memberReducer.membersList
-  );
+  const [loading, setLoading] = useState(true);
+  const [resending, setResending] = useState(false);
+  const [resentSuccess, setResentSuccess] = useState(false);
+  const [jobTitles, setJobTitles] = useState<IJobTitle[]>([]);
+  const [selectedJobTitle, setSelectedJobTitle] = useState<string | null>(null);
+  const [teamMember, setTeamMember] = useState<ITeamMemberViewModel | null>({});
 
-  // all members
-  const allMembersList: MemberType[] = useMemo(
-    () => [owner, ...membersList],
-    [owner, membersList]
-  );
+  const isDrawerOpen = useAppSelector(state => state.memberReducer.isUpdateMemberDrawerOpen);
 
-  const isDrawerOpen = useAppSelector(
-    (state) => state.memberReducer.isUpdateMemberDrawerOpen
-  );
-  const dispatch = useAppDispatch();
+  const isOwnAccount = useMemo(() => {
+    return auth.getCurrentSession()?.email === teamMember?.email;
+  }, [auth, teamMember?.email]);
 
-  // get currently selected member
-  const selectedMember = allMembersList.find(
-    (member) => member.memberId === selectedMemberId
-  );
+  const isResendAvailable = useMemo(() => {
+    return teamMember?.pending_invitation && selectedMemberId && !resentSuccess;
+  }, [teamMember?.pending_invitation, selectedMemberId, resentSuccess]);
 
-  useEffect(() => {
-    if (selectedMember) {
-      form.setFieldsValue({
-        jobTitle: selectedMember?.jobTitle,
-        access: selectedMember.memberRole,
-      });
-    }
-  }, [form, selectedMember]);
-
-  // this function for handle form submit
-  const handleFormSubmit = async (values: any) => {
+  const getJobTitles = async () => {
     try {
-      if (selectedMember) {
-        const updatedMember: MemberType = {
-          ...selectedMember,
-          jobTitle: values.jobTitle,
-          memberRole: values.access,
-        };
-        dispatch(updateMember(updatedMember));
-        dispatch(toggleUpdateMemberDrawer());
-        message.success(t('updateMemberSuccessMessage'));
+      setLoading(true);
+      const res = await jobTitlesApiService.getJobTitles(1, 10, null, null, null);
+      if (res.done) {
+        setJobTitles(res.body.data || []);
       }
     } catch (error) {
+      console.error('Error fetching job titles:', error);
+      message.error(t('jobTitlesFetchError'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTeamMember = async () => {
+    if (!selectedMemberId) return;
+
+    try {
+      const res = await teamMembersApiService.getById(selectedMemberId);
+      if (res.done) {
+        setTeamMember(res.body);
+        form.setFieldsValue({
+          jobTitle: jobTitles.find(job => job.id === res.body?.job_title)?.id,
+          access: res.body.is_admin ? 'admin' : 'member',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching team member:', error);
+      message.error(t('teamMemberFetchError'));
+    }
+  };
+
+  const handleFormSubmit = async (values: any) => {
+    if (!selectedMemberId || !teamMember?.email) return;
+
+    try {
+      const body: ITeamMemberCreateRequest = {
+        job_title: selectedJobTitle,
+        emails: [teamMember.email],
+        is_admin: values.access === 'admin',
+      };
+
+      const res = await teamMembersApiService.update(selectedMemberId, body);
+      if (res.done) {
+        message.success(t('updateSuccess'));
+        form.resetFields();
+        setSelectedJobTitle(null);
+        dispatch(toggleUpdateMemberDrawer());
+      }
+    } catch (error) {
+      console.error('Error updating member:', error);
       message.error(t('updateMemberErrorMessage'));
     }
   };
 
-  // function to resend invitation
-  const resendInvitation = () => {
-    dispatch(toggleUpdateMemberDrawer());
-    message.success(t('invitationSentSuccessMessage'));
+  const resendInvitation = async () => {
+    if (!selectedMemberId) return;
+
+    try {
+      setResending(true);
+      const res = await teamMembersApiService.resendInvitation(selectedMemberId);
+      if (res.done) {
+        setResentSuccess(true);
+        message.success(t('invitationResent'));
+      }
+    } catch (error) {
+      console.error('Error resending invitation:', error);
+      message.error(t('resendInvitationError'));
+    } finally {
+      setResending(false);
+    }
   };
 
-  // function to get name
-  const getMemberName = () => {
-    if (selectedMember?.memberName) {
-      return selectedMember.memberName;
-    } else return selectedMember?.memberEmail.split('@')[0];
+  const afterOpenChange = (visible: boolean) => {
+    if (visible) {
+      getJobTitles();
+      getTeamMember();
+    }
   };
-
-  const selectedMemberName: string = getMemberName() || '';
 
   return (
     <Drawer
       title={
         <Flex gap={8} align="center">
-          <CustomAvatar avatarName={selectedMemberName} />
-
+          <Avatar src={teamMember?.avatar_url}>{teamMember?.name?.charAt(0).toUpperCase()}</Avatar>
           <Flex vertical gap={4}>
             <Typography.Text
               style={{
+                fontSize: 16,
+                fontWeight: 500,
                 textTransform: 'capitalize',
               }}
             >
-              {selectedMemberName}
+              {teamMember?.name}
             </Typography.Text>
 
-            <Typography.Text
+            <Typography.Text type="secondary"
               style={{
-                fontSize: 14,
-                color: colors.lightGray,
+                fontSize: 12.8,
+                fontWeight: 400,
               }}
             >
-              {selectedMember?.memberEmail}
+              {teamMember?.email}
             </Typography.Text>
           </Flex>
         </Flex>
       }
       open={isDrawerOpen}
-      onClose={() => dispatch(toggleUpdateMemberDrawer())}
+      onClose={() => {
+        dispatch(toggleUpdateMemberDrawer());
+        form.resetFields();
+      }}
+      afterOpenChange={afterOpenChange}
+      width={400}
+      loading={loading}
+      destroyOnClose
     >
       <Form
         form={form}
@@ -122,31 +179,35 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
       >
         <Form.Item label={t('jobTitleLabel')} name="jobTitle">
           <Select
+            defaultValue={teamMember?.job_title_id}
             size="middle"
             placeholder={t('jobTitlePlaceholder')}
-            options={jobsList.map((job) => ({
-              label: job.jobTitle,
-              value: job.jobTitle,
+            options={jobTitles.map(job => ({
+              label: job.name,
+              value: job.id,
             }))}
             suffixIcon={false}
+            onChange={(value, option) => {
+              if ('label' in option) {
+                form.setFieldsValue({ jobTitle: option.label || value });
+              }
+            }}
+            onSelect={value => setSelectedJobTitle(value)}
+            dropdownRender={menu => (
+              <div>
+                {loading && <Spin size="small" />}
+                {menu}
+              </div>
+            )}
           />
         </Form.Item>
 
-        <Form.Item
-          label={t('memberAccessLabel')}
-          name="access"
-          rules={[{ required: true }]}
-        >
-          <Select
-            disabled={selectedMember?.memberRole === 'owner'}
+        <Form.Item label={t('memberAccessLabel')} name="access" rules={[{ required: true }]}>
+          <Select 
+            disabled={isOwnAccount}
             options={[
               { value: 'member', label: t('memberText') },
               { value: 'admin', label: t('adminText') },
-              {
-                value: 'owner',
-                label: t('ownerText'),
-                disabled: true,
-              },
             ]}
           />
         </Form.Item>
@@ -159,9 +220,10 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
 
             <Button
               type="dashed"
+              loading={resending}
               style={{ width: '100%' }}
               onClick={resendInvitation}
-              disabled={selectedMember?.memberRole === 'owner'}
+              disabled={!isResendAvailable}
             >
               {t('resendInvitationButton')}
             </Button>
@@ -173,7 +235,10 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                   color: colors.lightGray,
                 }}
               >
-                {t('addedText')} 3 hours ago
+                {t('addedText')} 
+                <Tooltip title={formatDateTime(teamMember?.created_at || '')}>
+                  &nbsp;{calculateTimeAgo(teamMember?.created_at || '')}
+                </Tooltip>
               </Typography.Text>
               <Typography.Text
                 style={{
@@ -181,7 +246,10 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                   color: colors.lightGray,
                 }}
               >
-                {t('updatedText')} 3 hours ago
+                {t('updatedText')}
+                <Tooltip title={formatDateTime(teamMember?.updated_at || '')}>
+                  &nbsp;{calculateTimeAgo(teamMember?.updated_at || '')}
+                </Tooltip>
               </Typography.Text>
             </Flex>
           </Flex>

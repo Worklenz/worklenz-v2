@@ -2,8 +2,13 @@ import React from 'react';
 import { statusData } from '../../../../../../lib/project/projectConstants';
 import { ConfigProvider, Select, Typography } from 'antd';
 import { colors } from '../../../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
+import { toCamelCase } from '../../../../../../utils/toCamelCase';
 
 const ProjectStatusCell = ({ status }: { status: string }) => {
+  // localization
+  const { t } = useTranslation('reporting-projects');
+
   // status selection options
   const statusOptions = [
     ...statusData.map((status, index) => ({
@@ -15,18 +20,13 @@ const ProjectStatusCell = ({ status }: { status: string }) => {
           className="group-hover:text-[#1890ff]"
         >
           {status.icon}
-          {status.label}
+          {t(`${status.value}Text`)}
         </Typography.Text>
       ),
     })),
   ];
 
-  //   in this status data that get from the lib/project/projectConstants --> the value attribute is in camel case but in the props it came as the actual status name thats why this function is used
-  const toCamelCase = (str: string) => {
-    return str
-      .toLowerCase()
-      .replace(/[^a-zA-Z0-9]+(.)/g, (_, char) => char.toUpperCase());
-  };
+  //   in this status data that get from the lib/project/projectConstants --> the value attribute is in camel case but in the props which is used as default value it came as the actual status name thats why this function is used
 
   return (
     <ConfigProvider

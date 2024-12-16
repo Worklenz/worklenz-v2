@@ -20,49 +20,49 @@ export type ReportingMenuItems = {
 export const reportingsItems: ReportingMenuItems[] = [
   {
     key: 'overview',
-    name: 'Overview',
+    name: 'overview',
     endpoint: 'overview',
     element: React.createElement(OverviewReports),
   },
   {
     key: 'projects',
-    name: 'Projects',
+    name: 'projects',
     endpoint: 'projects',
     element: React.createElement(ProjectsReports),
   },
   {
     key: 'members',
-    name: 'Members',
+    name: 'members',
     endpoint: 'members',
     element: React.createElement(MembersReports),
   },
   {
     key: 'time-sheet',
-    name: 'Time Reports',
+    name: 'timeReports',
     endpoint: 'time-sheets',
     element: null,
     children: [
       {
         key: 'time-sheet-overview',
-        name: 'Overview',
+        name: 'overview',
         endpoint: 'time-sheet-overview',
         element: React.createElement(OverviewTimeReports),
       },
       {
         key: 'time-sheet-projects',
-        name: 'Projects',
+        name: 'projects',
         endpoint: 'time-sheet-projects',
         element: React.createElement(ProjectsTimeReports),
       },
       {
         key: 'time-sheet-members',
-        name: 'Members',
+        name: 'members',
         endpoint: 'time-sheet-members',
         element: React.createElement(MembersTimeReports),
       },
       {
         key: 'time-sheet-estimate-vs-actual',
-        name: 'Estimate Vs Actual',
+        name: 'estimateVsActual',
         endpoint: 'time-sheet-estimate-vs-actual',
         element: React.createElement(EstimatedVsActualTimeReports),
       },

@@ -1,20 +1,200 @@
 [
-    {
-      "id": "69a1d0d6-0998-46f7-86e9-353bfea3159b",
-      "name": "gfgdf",
-      "logged_time": 174.000000,
-      "estimated": "0",
-      "estimated_value": 0,
-      "color_code": "#3b7ad4",
-      "value": 0.05
-    },
-    {
-      "id": "5177b1c6-c531-4308-a0e6-bb83b30fcd5d",
-      "name": "ghf",
-      "logged_time": 24.000000,
-      "estimated": "0",
-      "estimated_value": 0,
-      "color_code": "#ee87c5",
-      "value": 0.01
-    }
-  ]
+  {
+    "id": "5b5344b3-8c38-45c6-a591-a91e78cd1fbc",
+    "name": "Data leakage detection system",
+    "color_code": "#905b39",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "2840640",
+    "value": 789.07
+  },
+  {
+    "id": "27c9d29c-af6b-443e-b489-3d338ea7a345",
+    "name": "Fingerprint voting system",
+    "color_code": "#cbc8a1",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "2683800",
+    "value": 745.5
+  },
+  {
+    "id": "f3deec9b-c22a-4733-8156-db49e4a1b113",
+    "name": "Weather forecasting system",
+    "color_code": "#ff9c3c",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "2535064",
+    "value": 704.18
+  },
+  {
+    "id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+    "name": "Bug tracker",
+    "color_code": "#bf4949",
+    "estimated": "23505",
+    "estimated_value": 391.75,
+    "logged_time": "2075760",
+    "value": 576.6
+  },
+  {
+    "id": "32aa88d8-ef71-4e2a-9815-19e27f7f1260",
+    "name": "Credit card fraud detection",
+    "color_code": "#75c9c0",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "2071200",
+    "value": 575.33
+  },
+  {
+    "id": "8dd480f6-1cf4-4cb3-ab62-085db01a0bcb",
+    "name": "e-Learning platform",
+    "color_code": "#fbc84c",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "1799820",
+    "value": 499.95
+  },
+  {
+    "id": "d3ed0d8b-b013-4319-8b41-486049e80ff7",
+    "name": "Face detector",
+    "color_code": "#f37070",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "1747067",
+    "value": 485.3
+  },
+  {
+    "id": "a74387ce-2f4b-4f54-8b74-26d0f8fa8998",
+    "name": "Voice Recognition",
+    "color_code": "#767676",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "1508940",
+    "value": 419.15
+  },
+  {
+    "id": "286f9c45-2d94-4f91-bec1-69be15ab7873",
+    "name": "Android task monitoring",
+    "color_code": "#70a6f3",
+    "estimated": "22227",
+    "estimated_value": 370.45,
+    "logged_time": "1226488.000000",
+    "value": 340.69
+  },
+  {
+    "id": "74ee60ca-9021-4e76-a80a-a6c83fd757f1",
+    "name": "Software piracy protection system",
+    "color_code": "#80ca79",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "1062105",
+    "value": 295.03
+  },
+  {
+    "id": "1b700af6-79dc-476c-a220-fee2c26c1810",
+    "name": "Chatbots",
+    "color_code": "#9877ca",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "729960",
+    "value": 202.77
+  },
+  {
+    "id": "7ecf7dc5-ce23-457c-92db-a5c2c83eddee",
+    "name": "Legal estimated actual",
+    "color_code": "#3b7ad4",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "115316.000000",
+    "value": 32.03
+  },
+  {
+    "id": "8ceff8aa-1f0b-48dc-a346-bc5e78c95978",
+    "name": "Manufacturing",
+    "color_code": "#3b7ad4",
+    "estimated": "1460",
+    "estimated_value": 24.33,
+    "logged_time": "93661.000000",
+    "value": 26.02
+  },
+  {
+    "id": "adbbef3b-70fd-4a89-b3d6-d2ec1cdcca4a",
+    "name": "HR & Recruiting",
+    "color_code": "#3b7ad4",
+    "estimated": "690",
+    "estimated_value": 11.5,
+    "logged_time": "79200",
+    "value": 22
+  },
+  {
+    "id": "1314cf03-82a0-417e-8e0f-1909d8b0e1f1",
+    "name": "newwwww",
+    "color_code": "#3b7ad4",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "54000",
+    "value": 15
+  },
+  {
+    "id": "13f78d56-6a69-4ec9-aaa0-bd5f9bd7dbfb",
+    "name": "Manufacturing",
+    "color_code": "#3b7ad4",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "32400",
+    "value": 9
+  },
+  {
+    "id": "705afd05-ef50-401c-8eda-eb4c6265fb85",
+    "name": "Information Technology n",
+    "color_code": "#80ca79",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "25200",
+    "value": 7
+  },
+  {
+    "id": "8f8827ac-35b9-431c-9c6b-abeffa13a362",
+    "name": "Archive project",
+    "color_code": "#3b7ad4",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "18000",
+    "value": 5
+  },
+  {
+    "id": "623831e8-0b97-4cc2-b5d5-02ff0309be0d",
+    "name": "Nonprofit",
+    "color_code": "#3b7ad4",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "18000",
+    "value": 5
+  },
+  {
+    "id": "f6d9b09a-8344-4438-8753-5240643d51bd",
+    "name": "Education",
+    "color_code": "#3b7ad4",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "14400",
+    "value": 4
+  },
+  {
+    "id": "7d223f38-75e9-41d9-a94b-da6fc20bcdc8",
+    "name": "Finance",
+    "color_code": "#3b7ad4",
+    "estimated": "243",
+    "estimated_value": 4.05,
+    "logged_time": "14400",
+    "value": 4
+  },
+  {
+    "id": "48ed5ee7-0961-4383-bafa-521cd939d02d",
+    "name": "Construction",
+    "color_code": "#3b7ad4",
+    "estimated": "0",
+    "estimated_value": 0,
+    "logged_time": "14400",
+    "value": 4
+  }
+]

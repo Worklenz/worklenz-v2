@@ -12,7 +12,7 @@ const ConfigPhaseButton = ({ color }: { color: string }) => {
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   const dispatch = useAppDispatch();
 
@@ -20,6 +20,7 @@ const ConfigPhaseButton = ({ color }: { color: string }) => {
     <Tooltip title={t('configPhaseButtonTooltip')}>
       <Button
         className="borderless-icon-btn"
+        style={{ backgroundColor: colors.transparent, boxShadow: 'none' }}
         onClick={() => dispatch(toggleDrawer())}
         icon={
           <SettingOutlined

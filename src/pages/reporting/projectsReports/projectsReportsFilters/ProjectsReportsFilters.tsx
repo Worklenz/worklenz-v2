@@ -12,7 +12,7 @@ const ProjectsReportsFilters = () => {
   const [searchQuery, setSearhQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('reportingProjectsFilters');
+  const { t } = useTranslation('reporting-projects-filters');
 
   return (
     <Flex gap={8} align="center" justify="space-between">

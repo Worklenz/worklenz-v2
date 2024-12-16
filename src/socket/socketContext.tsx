@@ -16,8 +16,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     const newSocket = io(SOCKET_CONFIG.url, {
       ...SOCKET_CONFIG.options,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
     });
 
     newSocket.on('connect', () => {

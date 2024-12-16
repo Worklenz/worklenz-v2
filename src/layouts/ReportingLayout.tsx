@@ -1,21 +1,8 @@
-import {
-  Button,
-  Col,
-  ConfigProvider,
-  Flex,
-  Layout,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Col, ConfigProvider, Layout } from 'antd';
 import React, { useState } from 'react';
 import Navbar from '../features/navbar/Navbar';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { colors } from '../styles/colors';
-import {
-  GlobalOutlined,
-  LeftCircleOutlined,
-  RightCircleOutlined,
-} from '@ant-design/icons';
 import { themeWiseColor } from '../utils/themeWiseColor';
 import ReportingSider from '../pages/reporting/sidebar/reporting-sider';
 import { Outlet } from 'react-router-dom';

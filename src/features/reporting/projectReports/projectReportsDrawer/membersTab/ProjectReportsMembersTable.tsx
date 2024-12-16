@@ -3,6 +3,7 @@ import React from 'react';
 import CustomTableTitle from '../../../../../components/CustomTableTitle';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
 import { toggleProjectReportsMembersTaskDrawer } from '../../projectReportsSlice';
+import { useTranslation } from 'react-i18next';
 
 type ProjectReportsMembersTableProps = {
   membersData: any[];
@@ -11,6 +12,9 @@ type ProjectReportsMembersTableProps = {
 const ProjectReportsMembersTable = ({
   membersData,
 }: ProjectReportsMembersTableProps) => {
+  // localization
+  const { t } = useTranslation('reporting-projects-drawer');
+
   const dispatch = useAppDispatch();
 
   // function to handle task drawer open
@@ -21,7 +25,7 @@ const ProjectReportsMembersTable = ({
   const columns: TableColumnsType = [
     {
       key: 'name',
-      title: <CustomTableTitle title="Name" />,
+      title: <CustomTableTitle title={t('nameColumn')} />,
       onCell: (record) => {
         return {
           onClick: handleProjectReportsMembersTaskDrawer,
@@ -34,35 +38,35 @@ const ProjectReportsMembersTable = ({
     },
     {
       key: 'tasksCount',
-      title: <CustomTableTitle title="Tasks Count" />,
+      title: <CustomTableTitle title={t('tasksCountColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'tasks_count',
       width: 120,
     },
     {
       key: 'completedTasks',
-      title: <CustomTableTitle title="Completed Tasks" />,
+      title: <CustomTableTitle title={t('completedTasksColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'completed',
       width: 120,
     },
     {
       key: 'incompleteTasks',
-      title: <CustomTableTitle title="Incomplete Tasks" />,
+      title: <CustomTableTitle title={t('incompleteTasksColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'incompleted',
       width: 120,
     },
     {
       key: 'overdueTasks',
-      title: <CustomTableTitle title="Overdue Tasks" />,
+      title: <CustomTableTitle title={t('overdueTasksColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'overdue',
       width: 120,
     },
     {
       key: 'contribution',
-      title: <CustomTableTitle title="Contribution" />,
+      title: <CustomTableTitle title={t('contributionColumn')} />,
       render: (record) => {
         return <Progress percent={record.contribution} />;
       },
@@ -70,7 +74,7 @@ const ProjectReportsMembersTable = ({
     },
     {
       key: 'progress',
-      title: <CustomTableTitle title="Progress" />,
+      title: <CustomTableTitle title={t('progressColumn')} />,
       render: (record) => {
         return <Progress percent={record.progress} />;
       },
@@ -78,7 +82,7 @@ const ProjectReportsMembersTable = ({
     },
     {
       key: 'loggedTime',
-      title: <CustomTableTitle title="Logged Time" />,
+      title: <CustomTableTitle title={t('loggedTimeColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'time_logged',
       width: 120,
@@ -93,7 +97,7 @@ const ProjectReportsMembersTable = ({
       scroll={{ x: 'max-content' }}
       onRow={(record) => {
         return {
-          style: { height: 38 },
+          style: { height: 38, cursor: 'pointer' },
           className: 'group even:bg-[#4e4e4e10]',
         };
       }}

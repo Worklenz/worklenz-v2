@@ -1,6 +1,6 @@
 import { Drawer, Typography, Flex, Button } from 'antd';
 import React, { useMemo, useState } from 'react';
-import { BankOutlined, DownOutlined } from '@ant-design/icons';
+import { FileOutlined } from '@ant-design/icons';
 import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 import { toggleProjectReportsMembersTaskDrawer } from '../../../projectReportsSlice';
@@ -9,6 +9,7 @@ import ProjectReportsMembersTasksTable from './ProjectReportsMembersTaskTable';
 import CustomSearchbar from '../../../../../../components/CustomSearchbar';
 import UpdateTaskDrawer from '../../../../../tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { fetchData } from '../../../../../../utils/fetchData';
+import { useTranslation } from 'react-i18next';
 
 const ProjectReportsMembersTaskDrawer = () => {
   const [taskData, setTaskData] = useState<any[]>([]);
@@ -16,6 +17,9 @@ const ProjectReportsMembersTaskDrawer = () => {
 
   // this state for open task drawer
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
+  // localization
+  const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 
@@ -52,20 +56,18 @@ const ProjectReportsMembersTaskDrawer = () => {
       title={
         <Flex align="center" justify="space-between">
           <Flex gap={8} align="center" style={{ fontWeight: 500 }}>
-            <BankOutlined style={{ color: colors.lightGray }} />
+            <FileOutlined style={{ color: colors.lightGray }} />
             <Typography.Text>/</Typography.Text>
             <Typography.Text>Kavindu Mihiranga</Typography.Text>
           </Flex>
 
-          <Button type="primary" icon={<DownOutlined />} iconPosition="end">
-            Export
-          </Button>
+          <Button type="primary">{t('exportButton')}</Button>
         </Flex>
       }
     >
       <Flex vertical gap={24}>
         <CustomSearchbar
-          placeholderText="Search by name"
+          placeholderText={t('searchByNameInputPlaceholder')}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />

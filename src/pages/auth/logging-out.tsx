@@ -9,7 +9,7 @@ import { authApiService } from '@/api/auth/auth.api.service';
 const LoggingOutPage = () => {
   const navigate = useNavigate();
   const auth = useAuth();
-  const { t } = useTranslation('authCommon');
+  const { t } = useTranslation('auth-common');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
 
   useEffect(() => {

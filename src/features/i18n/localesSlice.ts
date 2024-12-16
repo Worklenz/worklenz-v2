@@ -1,24 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit';
 import i18n from '../../i18n';
 
-type LanguageType = 'en' | 'si';
+type LanguageType = 'en' | 'es';
 
 type LocalesState = {
   lng: LanguageType;
 };
 
-// fuction for get the current language from the local storage
-const getLanguageFromLocalStorage = () => {
-  const savedLng = localStorage.getItem('i18nextLng');
-  return savedLng === 'en'
-    ? (savedLng as 'en')
-    : savedLng === 'si'
-      ? (savedLng as 'si')
-      : 'en';
+const STORAGE_KEY = 'i18nextLng';
+const DEFAULT_LANGUAGE: LanguageType = 'en';
+
+/**
+ * Gets the current language from local storage
+ * @returns The stored language or default language if not found
+ */
+const getLanguageFromLocalStorage = (): LanguageType => {
+  const savedLng = localStorage.getItem(STORAGE_KEY);
+  if (savedLng === 'en' || savedLng === 'es') {
+    return savedLng;
+  }
+  return DEFAULT_LANGUAGE;
 };
-// fuction for save the current language to the local storage
-const saveLanguageInLocalStorage = (lng: LanguageType) => {
-  localStorage.setItem('i18nextLng', lng);
+
+/**
+ * Saves the current language to local storage
+ * @param lng Language to save
+ */
+const saveLanguageInLocalStorage = (lng: LanguageType): void => {
+  localStorage.setItem(STORAGE_KEY, lng);
 };
 
 const initialState: LocalesState = {
@@ -30,9 +39,10 @@ const localesSlice = createSlice({
   initialState,
   reducers: {
     toggleLng: (state) => {
-      state.lng = state.lng === 'en' ? 'si' : 'en';
-      saveLanguageInLocalStorage(state.lng);
-      i18n.changeLanguage(getLanguageFromLocalStorage());
+      const newLang: LanguageType = state.lng === 'en' ? 'es' : 'en';
+      state.lng = newLang;
+      saveLanguageInLocalStorage(newLang);
+      i18n.changeLanguage(newLang);
     },
   },
 });

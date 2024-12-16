@@ -1,9 +1,58 @@
 [
   {
-    "email": "raveeshadilanka1999@gmail.com",
-    "name": "Raveesha Dilanka",
-    "logged_time": 198.000000,
-    "color_code": "#bf4949",
-    "value": 0.06
+      "email": "kavindu@ceydigital.com",
+      "name": "Kavindu Mihiranga",
+      "logged_time": "10348183.000000",
+      "value": 2874.5,
+      "color_code": "#80ca79"
+  },
+  {
+      "email": "dscs@bdb.com",
+      "name": "Franklin Sierra",
+      "logged_time": "4050000",
+      "value": 1125,
+      "color_code": "#c178c9"
+  },
+  {
+      "email": "beckhamboyle@gmail.com",
+      "name": "Bowen Higgins.",
+      "logged_time": "3452400",
+      "value": 959,
+      "color_code": "#3b7ad4"
+  },
+  {
+      "email": "halleenriquez@gmail.com",
+      "name": "Jaylen Blackwell.",
+      "logged_time": "2088000",
+      "value": 580,
+      "color_code": "#75c997"
+  },
+  {
+      "email": "nimesha@ceydigital.com",
+      "name": "Nimesha",
+      "logged_time": "886116",
+      "value": 246.14,
+      "color_code": "#cb9878"
+  },
+  {
+      "email": "lepib94353@fryshare.com",
+      "name": "lepib94353",
+      "logged_time": "14405.000000",
+      "value": 4,
+      "color_code": "#aacb78"
+  },
+  {
+      "email": "chamika@ceydigital.com",
+      "name": "Chamika Jayasri",
+      "logged_time": "3600",
+      "value": 1,
+      "color_code": "#70a6f3"
+  },
+  {
+      "email": "chathuranga@ceydigital.com",
+      "name": "Chathuranga Pathum",
+      "logged_time": "25.000000",
+      "value": 0.01,
+      "color_code": "#70a6f3"
   }
 ]

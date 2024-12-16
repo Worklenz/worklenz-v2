@@ -1,0 +1,24 @@
+{
+  "setupYourAccount": "Configura tu cuenta.",
+  "nameYourOrganization": "Nombra tu organización",
+  "worklenzAccountTitle": "Elige un nombre para tu cuenta de Worklenz.",
+  "continue": "Continuar",
+  "step1Title": "Crea tu primer proyecto",
+
+  "step2Title": "Crea tus primeras tareas",
+  "step2InputLabel": "Escribe algunas tareas que vas a hacer en",
+  "step2AddAnother": "Agregar otra",
+
+  "inputLabel": "¿En qué proyecto estás trabajando ahora?",
+  "or": "o",
+  "templateButton": "Importar desde plantilla",
+  "goBack": "Volver",
+  "cancel": "Cancelar", 
+  "create": "Crear",
+  "templateDrawerTitle": "Seleccionar de plantillas",
+  "step3InputLabel": "Invitar por correo electrónico",
+  "addAnother": "Agregar otro",
+  "skipForNow": "Omitir por ahora",
+  "formTitle": "Crea tu primera tarea.",
+  "step3Title": "Invita a tu equipo a trabajar"
+}

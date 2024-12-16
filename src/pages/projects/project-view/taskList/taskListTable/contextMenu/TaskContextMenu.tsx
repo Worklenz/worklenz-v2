@@ -1,5 +1,6 @@
 import {
   DeleteOutlined,
+  DoubleRightOutlined,
   InboxOutlined,
   RetweetOutlined,
   UserAddOutlined,
@@ -65,6 +66,11 @@ const TaskContextMenu = ({
     },
     {
       key: '4',
+      icon: <DoubleRightOutlined />,
+      label: 'Convert to Sub task',
+    },
+    {
+      key: '5',
       icon: <DeleteOutlined />,
       label: ' Delete',
     },

@@ -21,7 +21,7 @@ const ProjectManagersFilterDropdown = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('reportingProjectsFilters');
+  const { t } = useTranslation('reporting-projects-filters');
 
   // mock projectManager list------------> Temperory
   type ProjectManagerType = {

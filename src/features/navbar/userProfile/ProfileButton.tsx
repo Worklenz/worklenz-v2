@@ -1,23 +1,20 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Card, Dropdown, Flex, MenuProps, Tooltip, Typography } from 'antd';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-// profile dropdown custom css
 import './profileDropdown.css';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAuth } from '../../../hooks/useAuth';
 import { RootState } from '../../../app/store';
 import './ProfileButton.css';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { AvatarNamesMap } from '@/shared/constants';
+import { getRole, getSession } from '@/utils/session-helper';
 
-const ProfileButton = () => {
-  // get user data from redux - user reducer
-  const userDetails = useAppSelector(state => state.userReducer);
-  const role = useAuth().role;
+const ProfileButton = ({ isOwnerOrAdmin }: { isOwnerOrAdmin: boolean }) => {
+  const userDetails = getSession();
+  const role = getRole();
+
   const navigate = useNavigate();
-  // localization
   const { t } = useTranslation('navbar');
 
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
@@ -27,28 +24,28 @@ const ProfileButton = () => {
       key: '1',
       label: (
         <Card
-          className="profile-card"
+          className={`profile-card ${themeMode === 'dark' ? 'dark' : ''}`}
           title={
             <div style={{ paddingBlock: '16px' }}>
               <Typography.Text>Account</Typography.Text>
               <Flex gap={8} align="center" justify="flex-start">
                 <div>
-                  {userDetails.avatar_url ? (
-                    <Avatar src={userDetails.avatar_url} />
+                  {userDetails?.avatar_url ? (
+                    <Avatar src={userDetails?.avatar_url} />
                   ) : (
                     <Avatar
                       style={{
-                        backgroundColor: AvatarNamesMap[userDetails.name?.charAt(0) || ''],
+                        backgroundColor: AvatarNamesMap[userDetails?.name?.charAt(0) || ''],
                         verticalAlign: 'middle',
                       }}
                     >
-                      {userDetails.name?.charAt(0)}
+                      {userDetails?.name?.charAt(0)}
                     </Avatar>
                   )}
                 </div>
                 <Flex vertical>
-                  <Typography.Text>{userDetails.name}</Typography.Text>
-                  <Typography.Text style={{ fontSize: 12 }}>{userDetails.email}</Typography.Text>
+                  <Typography.Text>{userDetails?.name}</Typography.Text>
+                  <Typography.Text style={{ fontSize: 12 }}>{userDetails?.email}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     ({role})
                   </Typography.Text>
@@ -59,14 +56,16 @@ const ProfileButton = () => {
           bordered={false}
           style={{ width: 230 }}
         >
-          <Link
-            to="/worklenz/admin-center/overview"
-            style={{
-              color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
+          {isOwnerOrAdmin && (
+            <Link
+              to="/worklenz/admin-center/overview"
+              style={{
+                color: `${themeMode === 'dark' ? '#ffffffd9' : '#181818'}`,
             }}
           >
-            Admin Center
-          </Link>
+              Admin Center
+            </Link>
+          )}
           <Link
             to="/worklenz/settings/profile"
             style={{

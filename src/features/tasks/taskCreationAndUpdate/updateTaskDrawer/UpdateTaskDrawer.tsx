@@ -43,7 +43,7 @@ const UpdateTaskDrawer = ({ taskId }: { taskId: string }) => {
       onClose={() => dispatch(toggleUpdateTaskDrawer())}
       width={720}
       style={{ justifyContent: 'space-between' }}
-      styles={{ footer: { height: 'auto', justifySelf: 'flex-end' } }}
+      styles={{ footer: { height: 'auto', justifySelf: 'flex-end' }, body: { paddingTop: '8px' } }}
       title={
         <TaskDrawerHeader
           taskName={taskName}

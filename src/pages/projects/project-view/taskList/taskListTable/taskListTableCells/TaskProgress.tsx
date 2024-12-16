@@ -1,5 +1,6 @@
 import { Progress, Tooltip } from 'antd';
 import React from 'react';
+import './TaskProgress.css';
 
 type TaskProgressProps = {
   progress: number;
@@ -13,13 +14,16 @@ const TaskProgress = ({
   const totalTasks = numberOfSubTasks + 1;
   const completedTasks = 0;
 
+  const size = progress === 100 ? 21 : 26;
+
   return (
     <Tooltip title={`${completedTasks} / ${totalTasks}`}>
       <Progress
         percent={progress}
         type="circle"
-        size={26}
-        style={{ cursor: 'default' }}
+        size={size}
+        style={{ cursor: 'default',}}
+        className='task-progress'
       />
     </Tooltip>
   );

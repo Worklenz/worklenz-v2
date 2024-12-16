@@ -1,4 +1,4 @@
-import { Drawer, Typography, Flex, Button } from 'antd';
+import { Drawer, Typography, Flex, Button, Dropdown } from 'antd';
 import React from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
@@ -6,12 +6,16 @@ import { toggleProjectReportsDrawer } from '../projectReportsSlice';
 import { BankOutlined, DownOutlined } from '@ant-design/icons';
 import ProjectReportsDrawerTabs from './ProjectReportsDrawerTabs';
 import { colors } from '../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 type ProjectReportsDrawerProps = {
   projectId: string | null;
 };
 
 const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
+  // localization
+  const { t } = useTranslation('reporting-projects-drawer');
+
   const dispatch = useAppDispatch();
 
   // get drawer open state and project list from the reducer
@@ -46,9 +50,18 @@ const ProjectReportsDrawer = ({ projectId }: ProjectReportsDrawerProps) => {
               <Typography.Text>{selectedProject.name}</Typography.Text>
             </Flex>
 
-            <Button type="primary" icon={<DownOutlined />} iconPosition="end">
-              Export
-            </Button>
+            <Dropdown
+              menu={{
+                items: [
+                  { key: '1', label: t('membersButton') },
+                  { key: '2', label: t('tasksButton') },
+                ],
+              }}
+            >
+              <Button type="primary" icon={<DownOutlined />} iconPosition="end">
+                {t('exportButton')}
+              </Button>
+            </Dropdown>
           </Flex>
         )
       }

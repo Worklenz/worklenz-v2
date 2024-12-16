@@ -4,12 +4,14 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { toggleScheduleDrawer } from './scheduleSlice';
 import { AvatarNamesMap } from '../../shared/constants';
 import WithStartAndEndDates from '../../components/schedule/tabs/withStartAndEndDates/WithStartAndEndDates';
+import { useTranslation } from 'react-i18next';
 
 const ScheduleDrawer = () => {
   const isScheduleDrawerOpen = useAppSelector(
     (state) => state.scheduleReducer.isScheduleDrawerOpen
   );
   const dispatch = useAppDispatch();
+  const {t} = useTranslation('schedule')
 
   const items: TabsProps['items'] = [
     {
@@ -19,7 +21,7 @@ const ScheduleDrawer = () => {
     },
     {
       key: '2',
-      label: 'Task without Start & End dates',
+      label: t('tabTitle'),
       children: 'Content of Tab Pane 2',
     },
   ];

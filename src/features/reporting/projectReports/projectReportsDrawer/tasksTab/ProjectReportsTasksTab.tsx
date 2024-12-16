@@ -5,6 +5,7 @@ import GroupByFilter from './GroupByFilter';
 import ProjectReportsTasksTable from './ProjectReportsTaskTable';
 import UpdateTaskDrawer from '../../../../tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { fetchData } from '../../../../../utils/fetchData';
+import { useTranslation } from 'react-i18next';
 
 type ProjectReportsTasksTabProps = {
   projectId?: string | null;
@@ -27,6 +28,9 @@ const ProjectReportsTasksTab = ({
 
   // this state for open task drawer
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
+  // localization
+  const { t } = useTranslation('reporting-projects-drawer');
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
@@ -67,7 +71,7 @@ const ProjectReportsTasksTab = ({
     <Flex vertical gap={24}>
       <Flex gap={24} align="center" justify="space-between">
         <CustomSearchbar
-          placeholderText="Search by name"
+          placeholderText={t('searchByNameInputPlaceholder')}
           searchQuery={searchQuery}
           setSearchQuery={setSearhQuery}
         />

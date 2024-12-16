@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 const ProjectTableShowFieldsDropdown = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // localization
-  const { t } = useTranslation('reportingProjectsFilters');
+  const { t } = useTranslation('reporting-projects-filters');
 
   const columnsVisibility = useAppSelector(
     (state) => state.projectReportsTableColumnsReducer

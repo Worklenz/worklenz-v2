@@ -6,6 +6,7 @@ import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import { toggleUpdateTaskDrawer } from '../../../../../tasks/taskSlice';
 import CustomTableTitle from '../../../../../../components/CustomTableTitle';
 import { colors } from '../../../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 type ProjectReportsMembersTasksTableProps = {
   tasksData: any[];
@@ -16,6 +17,9 @@ const ProjectReportsMembersTasksTable = ({
   tasksData,
   setSeletedTaskId,
 }: ProjectReportsMembersTasksTableProps) => {
+  // localization
+  const { t } = useTranslation('reporting-projects-drawer');
+
   const dispatch = useAppDispatch();
 
   // function to handle task drawer open
@@ -26,8 +30,8 @@ const ProjectReportsMembersTasksTable = ({
 
   const columns: TableColumnsType = [
     {
-      key: 'name',
-      title: <CustomTableTitle title="Name" />,
+      key: 'task',
+      title: <CustomTableTitle title={t('taskColumn')} />,
       onCell: (record) => {
         return {
           onClick: () => handleUpdateTaskDrawer(record.id),
@@ -36,16 +40,17 @@ const ProjectReportsMembersTasksTable = ({
       render: (record) => (
         <Flex>
           {Number(record.sub_tasks_count) > 0 && <DoubleRightOutlined />}
-          <Typography.Text>{record.name}</Typography.Text>
+          <Typography.Text className="group-hover:text-[#1890ff]">
+            {record.name}
+          </Typography.Text>
         </Flex>
       ),
       width: 260,
-      className: 'group-hover:text-[#1890ff]',
       fixed: 'left' as const,
     },
     {
       key: 'project',
-      title: <CustomTableTitle title="Project" />,
+      title: <CustomTableTitle title={t('projectColumn')} />,
       render: (record) => (
         <Flex gap={8} align="center">
           <Badge color={record.project_color} />
@@ -56,7 +61,7 @@ const ProjectReportsMembersTasksTable = ({
     },
     {
       key: 'status',
-      title: <CustomTableTitle title="Status" />,
+      title: <CustomTableTitle title={t('statusColumn')} />,
       render: (record) => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
@@ -68,7 +73,7 @@ const ProjectReportsMembersTasksTable = ({
     },
     {
       key: 'priority',
-      title: <CustomTableTitle title="Priority" />,
+      title: <CustomTableTitle title={t('priorityColumn')} />,
       render: (record) => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
@@ -80,10 +85,9 @@ const ProjectReportsMembersTasksTable = ({
     },
     {
       key: 'dueDate',
-      title: <CustomTableTitle title="Due Date" />,
-      className: 'text-center group-hover:text-[#1890ff]',
+      title: <CustomTableTitle title={t('dueDateColumn')} />,
       render: (record) => (
-        <Typography.Text>
+        <Typography.Text className="text-center group-hover:text-[#1890ff]">
           {record.end_date
             ? `${dayjs(record.end_date).format('MMM DD, YYYY')}`
             : '-'}
@@ -92,11 +96,10 @@ const ProjectReportsMembersTasksTable = ({
       width: 120,
     },
     {
-      key: 'completedOn',
-      title: <CustomTableTitle title="Completed On" />,
-      className: 'text-center group-hover:text-[#1890ff]',
+      key: 'completedDate',
+      title: <CustomTableTitle title={t('completedDateColumn')} />,
       render: (record) => (
-        <Typography.Text>
+        <Typography.Text className="text-center group-hover:text-[#1890ff]">
           {record.completed_at
             ? `${dayjs(record.completed_at).format('MMM DD, YYYY')}`
             : '-'}
@@ -106,21 +109,21 @@ const ProjectReportsMembersTasksTable = ({
     },
     {
       key: 'estimatedTime',
-      title: <CustomTableTitle title="Estimated Time" />,
+      title: <CustomTableTitle title={t('estimatedTimeColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'estimated_string',
       width: 130,
     },
     {
       key: 'loggedTime',
-      title: <CustomTableTitle title="Logged Time" />,
+      title: <CustomTableTitle title={t('loggedTimeColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'time_spent_string',
       width: 130,
     },
     {
       key: 'overloggedTime',
-      title: <CustomTableTitle title="Overlogged Time" />,
+      title: <CustomTableTitle title={t('overloggedTimeColumn')} />,
       className: 'text-center group-hover:text-[#1890ff]',
       dataIndex: 'overlogged_time',
       width: 150,
@@ -135,7 +138,7 @@ const ProjectReportsMembersTasksTable = ({
       scroll={{ x: 'max-content' }}
       onRow={(record) => {
         return {
-          style: { height: 38 },
+          style: { height: 38, cursor: 'pointer' },
           className: 'group even:bg-[#4e4e4e10]',
         };
       }}

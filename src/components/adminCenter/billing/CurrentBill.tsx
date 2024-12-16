@@ -45,7 +45,7 @@ const CurrentBill: React.FC = () => {
 
   const isTablet = useMediaQuery({ query: '(min-width: 1025px)' });
 
-  const { t } = useTranslation('currentBill');
+  const { t } = useTranslation('current-bill');
 
   return (
     <div style={{ width: '100%' }} className="current-billing">
@@ -99,7 +99,9 @@ const CurrentBill: React.FC = () => {
                   <Typography.Text style={{ fontWeight: 700 }}>
                     {t('cardBodyText01')}
                   </Typography.Text>
-                  <Typography.Text>{t('cardBodyText02')}</Typography.Text>
+                  <Tooltip title = 'Monday,November 18,2024'>
+                    <Typography.Text>{t('cardBodyText02')}</Typography.Text>
+                  </Tooltip>
                 </div>
                 <Button
                   type="link"

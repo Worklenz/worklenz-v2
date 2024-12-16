@@ -2,32 +2,30 @@ import { CaretDownFilled } from '@ant-design/icons';
 import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import { useState } from 'react';
 
-import { colors } from '../../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { ITaskPriority } from '@/types/tasks/taskPriority.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const PriorityFilterDropdown = (props: { priorities: ITaskPriority[] }) => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
 
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
-    setSelectedCount((prev) => (checked ? prev + 1 : prev - 1));
+    setSelectedCount(prev => (checked ? prev + 1 : prev - 1));
   };
 
   // custom dropdown content
   const priorityDropdownContent = (
-    <Card
-      className="custom-card"
-      style={{ width: 120 }}
-      styles={{ body: { padding: 0 } }}
-    >
+    <Card className="custom-card" style={{ width: 120 }} styles={{ body: { padding: 0 } }}>
       <List style={{ padding: 0 }}>
-        {props.priorities?.map((item) => (
+        {props.priorities?.map(item => (
           <List.Item
-            className="custom-list-item"
+            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
             key={item.id}
             style={{
               display: 'flex',
@@ -38,10 +36,7 @@ const PriorityFilterDropdown = (props: { priorities: ITaskPriority[] }) => {
             }}
           >
             <Space>
-              <Checkbox
-                id={item.id}
-                onChange={(e) => handleSelectedFiltersCount(e.target.checked)}
-              />
+              <Checkbox id={item.id} onChange={e => handleSelectedFiltersCount(e.target.checked)} />
               <Badge color={item.color_code} />
               {item.name}
             </Space>
@@ -61,17 +56,14 @@ const PriorityFilterDropdown = (props: { priorities: ITaskPriority[] }) => {
         icon={<CaretDownFilled />}
         iconPosition="end"
         style={{
-          backgroundColor:
-            selectedCount > 0 ? colors.paleBlue : colors.transparent,
+          backgroundColor: selectedCount > 0 ? colors.paleBlue : colors.transparent,
 
           color: selectedCount > 0 ? colors.darkGray : 'inherit',
         }}
       >
         <Space>
           {t('priorityText')}
-          {selectedCount > 0 && (
-            <Badge size="small" count={selectedCount} color={colors.skyBlue} />
-          )}
+          {selectedCount > 0 && <Badge size="small" count={selectedCount} color={colors.skyBlue} />}
         </Space>
       </Button>
     </Dropdown>

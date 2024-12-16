@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const CreateClientDrawer = () => {
   // localization
-  const { t } = useTranslation('clientSettings');
+  const { t } = useTranslation('settings-clients');
 
   // get drawer state from client reducer
   const isDrawerOpen = useAppSelector(

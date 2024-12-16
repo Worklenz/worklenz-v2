@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 const ShowFieldsFilterDropdown = () => {
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   const dispatch = useAppDispatch();
 
@@ -25,6 +25,8 @@ const ShowFieldsFilterDropdown = () => {
     (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
   );
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   const showFieldsDropdownContent = (
     <Card
       className="custom-card"
@@ -35,7 +37,7 @@ const ShowFieldsFilterDropdown = () => {
         {changableColumnList.map((col) => (
           <List.Item
             key={col.key}
-            className="custom-list-item"
+            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
             style={{
               display: 'flex',
               gap: 8,

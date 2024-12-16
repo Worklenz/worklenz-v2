@@ -7,9 +7,11 @@ import { DeleteOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-de
 import { ITaskLabel } from '@/types/label.type';
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
 import CustomColorLabel from '@components/task-list-common/labelsSelector/custom-color-label';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const LabelsSettings = () => {
   const { t } = useTranslation('settings-labels');
+  useDocumentTitle('Manage Labels');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [labels, setLabels] = useState<ITaskLabel[]>([]);
@@ -112,6 +114,8 @@ const LabelsSettings = () => {
         pagination={{
           showSizeChanger: true,
           defaultPageSize: 20,
+          pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+          size: 'small',
         }}
       />
     </Card>

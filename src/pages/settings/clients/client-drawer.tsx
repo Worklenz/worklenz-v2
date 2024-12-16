@@ -12,7 +12,7 @@ type ClientDrawerProps = {
 };
 
 const ClientDrawer = ({ client, drawerClosed }: ClientDrawerProps) => {
-  const { t } = useTranslation('clientSettings');
+  const { t } = useTranslation('settings-clients');
   const { isClientDrawerOpen } = useAppSelector(state => state.clientReducer);
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();

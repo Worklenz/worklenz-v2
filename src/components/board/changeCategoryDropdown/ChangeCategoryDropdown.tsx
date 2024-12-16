@@ -6,6 +6,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import './ChangeCategoryDropdown.css';
 import { updateStatusCategory } from '../../../features/projects/status/StatusSlice';
+import { useTranslation } from 'react-i18next';
 
 interface ChangeCategoryDropdownProps {
   id: string;
@@ -16,6 +17,7 @@ const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   // const [currentStatus, setCurrentStatus] = useState(category);
+  const {t} = useTranslation('kanban-board')
 
   const getStatuColor = (status: TaskStatusType) => {
     if (status === 'todo') return colors.deepLightGray;
@@ -99,7 +101,7 @@ const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({
             gap: '8px',
           }}
         >
-          <RetweetOutlined /> <span>Change category</span>{' '}
+          <RetweetOutlined /> <span>{t('changeCategory')}</span>{' '}
           <RightOutlined style={{ color: '#00000073', fontSize: '10px' }} />
         </div>
       </Dropdown>

@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import { ChartOptions } from 'chart.js';
 import { Typography } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 Chart.register(BarElement, CategoryScale, LinearScale);
 
@@ -19,8 +20,10 @@ const EstimatedVsActualCell = ({
   estimatedTime,
   estimatedTimeString,
 }: EstimatedVsActualCellProps) => {
+  // localization
+  const { t } = useTranslation('reporting-projects');
+
   const options: ChartOptions<'bar'> = {
-    indexAxis: 'y',
     scales: {
       x: {
         display: false,
@@ -29,11 +32,23 @@ const EstimatedVsActualCell = ({
         display: false,
       },
     },
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top' as const,
+      },
+      datalabels: {
+        display: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+    },
   };
 
   // data for the chart
   const graphData = {
-    labels: ['Estimated', 'Actual'],
+    labels: [t('estimatedText'), t('actualText')],
     datasets: [
       {
         data: [estimatedTime, actualTime],
@@ -58,7 +73,7 @@ const EstimatedVsActualCell = ({
               left: 8,
               top: 1,
             }}
-          >{`Estimated: ${estimatedTimeString}`}</Typography.Text>
+          >{`${t('estimatedText')}: ${estimatedTimeString}`}</Typography.Text>
           <Typography.Text
             style={{
               position: 'absolute',
@@ -67,7 +82,7 @@ const EstimatedVsActualCell = ({
               left: 8,
               top: 20,
             }}
-          >{`Actual: ${actualTimeString}`}</Typography.Text>
+          >{`${t('actualText')}: ${actualTimeString}`}</Typography.Text>
         </div>
       ) : (
         <Typography.Text>-</Typography.Text>

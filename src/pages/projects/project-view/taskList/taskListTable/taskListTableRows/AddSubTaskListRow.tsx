@@ -8,7 +8,7 @@ const AddSubTaskListRow = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   // get data theme data from redux
   const themeMode = useAppSelector((state) => state.themeReducer.mode);

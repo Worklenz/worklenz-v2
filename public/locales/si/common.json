@@ -1,6 +1,0 @@
-{
-    "login-success": "Login successful!",
-    "login-failed": "Login failed. Please check your credentials and try again.",
-    "signup-success": "Signup successful! Welcome aboard.",
-    "signup-failed": "Signup failed. Please ensure all required fields are filled and try again."
-}

@@ -1,7 +1,11 @@
 import { Button, Card, Form, Select } from 'antd';
 import React from 'react';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const LanguageAndRegionSettings = () => {
+
+  useDocumentTitle('Language & Region');
+
   // language selection options
   const languageOptions = [
     {

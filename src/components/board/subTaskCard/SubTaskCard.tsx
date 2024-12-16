@@ -4,6 +4,7 @@ import { Avatar, Col, DatePicker, Divider, Flex, Row, Tooltip, Typography } from
 import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import { AvatarNamesMap } from '../../../shared/constants';
 import dayjs, { Dayjs } from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 interface subtaskProps {
   subtask: TaskType;
@@ -14,6 +15,7 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
   const [isSubTomorrow, setIsSubTomorrow] = useState(false);
   const [isItSubPrevDate, setIsItSubPrevDate] = useState(false);
   const [subTaskDueDate, setSubTaskDueDate] = useState<Dayjs | null>(null);
+  const {t} = useTranslation('kanban-board')
 
   const handleSubTaskDateChange = (date: Dayjs | null) => {
     setSubTaskDueDate(date);
@@ -92,7 +94,7 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
         <Flex>
           <DatePicker
             className={`custom-placeholder ${!subTaskDueDate ? 'empty-date' : isSubToday || isSubTomorrow ? 'selected-date' : isItSubPrevDate ? 'red-colored' : ''}`}
-            placeholder="Due date"
+            placeholder={t('dueDate')}
             style={{
               fontSize: '12px',
               opacity: subTaskDueDate ? 1 : 0,

@@ -12,7 +12,7 @@ const PhaseDropdown = ({ projectId }: { projectId: string }) => {
     useState<PhaseOption | null>(null);
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   // get phase data from redux
   const phaseList = useAppSelector((state) => state.phaseReducer.phaseList);

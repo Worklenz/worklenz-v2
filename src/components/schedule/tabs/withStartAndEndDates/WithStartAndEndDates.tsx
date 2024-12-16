@@ -2,11 +2,13 @@ import StatusGroupTables from "@/pages/projects/project-view/taskList/statusTabl
 import { TaskType } from "@/types/task.types";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import GroupByFilterDropdown from "@/pages/projects/project-view/taskList/taskListFilters/GroupByFilterDropdown";
+import { useTranslation } from "react-i18next";
 
 const WithStartAndEndDates = () => {
     const dataSource: TaskType[] = useAppSelector(
         (state) => state.taskReducer.tasks
       );
+      const {t} = useTranslation('schedule')
   return (
     <div style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
         <div style={{display: 'flex', gap: '5px', flexDirection: 'column', border: '1px solid rgba(0, 0, 0, 0.21)', padding: '20px', borderRadius: '15px'}}>
@@ -14,22 +16,22 @@ const WithStartAndEndDates = () => {
             <div style={{display: 'flex', alignItems: 'center', width: '100%', gap: '200px', color: 'rgba(121, 119, 119, 1)'}}>
                 <div style={{width: '50%'}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                        <span>Allocated time</span>
-                        <span>8 hours</span>
+                        <span>{t('allocatedTime')}</span>
+                        <span>8 {t('hours')}</span>
                     </div>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                        <span>Total Logged</span>
-                        <span>7 hours</span>
+                        <span>{t('totalLogged')}</span>
+                        <span>7 {t('hours')}</span>
                     </div>
                 </div>
                 <div style={{width: '50%'}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                        <span>Logged Billable</span>
-                        <span>5 hours</span>
+                        <span>{t('loggedBillable')}</span>
+                        <span>5 {t('hours')}</span>
                     </div>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                        <span>Logged Non Billable</span>
-                        <span>2 hours</span>
+                        <span>{t('loggedNonBillable')}</span>
+                        <span>2 {t('hours')}</span>
                     </div>
                 </div>
             </div>

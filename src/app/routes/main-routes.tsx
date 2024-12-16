@@ -6,6 +6,8 @@ import ProjectView from '@/pages/projects/project-view/project-view';
 import settingsRoutes from './settings-routes';
 import adminCenterRoutes from './admin-center-routes';
 import Schedule from '@/pages/schedule/schedule';
+import ProjectTemplateEditView from '@/pages/settings/project-templates/projectTemplateEditView/ProjectTemplateEditView';
+import LicenseExpired from '@/pages/licenseExpired/LicenseExpired';
 
 const mainRoutes: RouteObject[] = [
   {
@@ -16,6 +18,11 @@ const mainRoutes: RouteObject[] = [
       { path: 'projects', element: <ProjectList /> },
       { path: 'schedule', element: <Schedule /> },
       { path: `projects/:projectId`, element: <ProjectView /> },
+      {
+        path: `settings/project-templates/edit/:templateId/:templateName`,
+        element: <ProjectTemplateEditView />,
+      },
+      { path: 'license-expired', element: <LicenseExpired /> },
       ...settingsRoutes,
       ...adminCenterRoutes,
     ],

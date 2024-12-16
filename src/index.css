@@ -121,8 +121,8 @@ Not supports in Firefox and IE */
 
 /* scrollbar itself */
 *::-webkit-scrollbar-thumb {
-  background-color: #cccccc;
-  border-radius: 16px;
+    background-color: rgba(204, 204, 204, 0.5);
+    border-radius: 16px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -135,5 +135,13 @@ Not supports in Firefox and IE */
 }
 
 .ant-table-row:hover .action-button {
+  opacity: 1;
+}
+
+.action-buttons {
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out;
+}
+tr:hover .action-buttons {
   opacity: 1;
 }

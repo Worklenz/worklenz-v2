@@ -24,6 +24,8 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [refreshSubTask, setRefreshSubTask] = useState<boolean>(false);
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   // get currently selected task if exist
   const selectedTask = useAppSelector((state) => state.taskReducer.tasks).find(
     (task) => task.taskId === taskId
@@ -117,7 +119,7 @@ const TaskDrawerInfoTab = ({ taskId = null }: { taskId: string | null }) => {
       <Collapse
         items={infoItems}
         bordered={false}
-        style={{ maxHeight: 600, overflow: 'auto' }}
+        style={{ maxHeight: 600, overflow: 'auto', backgroundColor: themeMode === 'dark' ? 'black' : 'white'}}
         defaultActiveKey={[
           'details',
           'description',

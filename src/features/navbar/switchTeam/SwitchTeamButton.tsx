@@ -7,9 +7,8 @@ import './switchTeam.css';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import CustomAvatar from '@/components/CustomAvatar';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState } from 'react';
-import { fetchTeams, initializeTeams, setActiveTeam } from '@/features/teams/teamSlice';
-import { ITeamGetResponse } from '@/types/teams/team.type';
+import { useEffect} from 'react';
+import { fetchTeams, setActiveTeam } from '@/features/teams/teamSlice';
 import { verifyAuthentication } from '@/features/auth/authSlice';
 import { setUser } from '@/features/user/userSlice';
 import { createAuthService } from '@/services/auth/auth.service';
@@ -45,6 +44,7 @@ const SwitchTeamButton = () => {
     await verifyAuthStatus();
     window.location.reload();
   };
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   useEffect(() => {
     dispatch(fetchTeams());
@@ -101,8 +101,8 @@ const SwitchTeamButton = () => {
           align="center"
           justify="center"
           style={{
-            color: colors.skyBlue,
-            backgroundColor: colors.paleBlue,
+            color: themeMode === 'dark' ? '#e6f7ff' : colors.skyBlue,
+            backgroundColor: themeMode === 'dark' ? '#153450' : colors.paleBlue,
             fontWeight: 500,
             borderRadius: '50rem',
             padding: '10px 16px',

@@ -2,11 +2,14 @@ import { CaretDownFilled } from "@ant-design/icons";
 import { Button, Checkbox, Divider, Dropdown, Input, MenuProps } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const Categories:React.FC = () => {
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [searchText, setSearchText] = useState("");
   const [selectAll, setSelectAll] = useState(false);
+  const {t} = useTranslation('time-report')
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const allItems = [
     { key: '1', label: 'Category 1' },
@@ -39,7 +42,8 @@ const Categories:React.FC = () => {
         key: 'search',
         label: (
           <Input
-            placeholder="Search by category name"
+            onClick={(e) => e.stopPropagation()}
+            placeholder={t('searchByCategory')}
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
           />
@@ -49,8 +53,8 @@ const Categories:React.FC = () => {
       key: 'selectAll',
       label: (
         <div>
-            <Checkbox onChange={handleSelectAllChange} checked={selectAll}>
-              Select All
+            <Checkbox  onClick={(e) => e.stopPropagation()} onChange={handleSelectAllChange} checked={selectAll}>
+              {t('selectAll')}
             </Checkbox>
             <Divider style={{margin: '4px 0'}}/>
         </div>
@@ -60,6 +64,7 @@ const Categories:React.FC = () => {
       key: item.key,
       label: (
         <Checkbox
+          onClick={(e) => e.stopPropagation()}
           checked={checkedList.includes(item.key)}
           onChange={(e) => handleCheckboxChange(item.key, e.target.checked)}
         >
@@ -76,9 +81,15 @@ const Categories:React.FC = () => {
         placement="bottomLeft"
         trigger={['click']}
         overlayStyle={{maxHeight: '330px', overflowY: 'auto'}}
+        onOpenChange={(visible) => {
+          setDropdownVisible(visible)
+          if (!visible) {
+            setSearchText('')
+          }
+        }}
       >
         <Button >
-          Categories <CaretDownFilled />
+          {t('categories')} <CaretDownFilled />
         </Button>
       </Dropdown>
     </div>

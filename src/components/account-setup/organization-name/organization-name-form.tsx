@@ -1,28 +1,26 @@
 import React, { startTransition, useEffect, useState } from 'react';
 import { Button, Form, Input, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { RootState } from '@/app/store';
 import { setButtonDisabled } from '@features/actionSetup/buttonSlice';
 import './organization-name-form.css';
-import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 
 interface OrganizationNameProps {
-  onContinue: () => void;
+  organizationName: string;
+  onContinue: (inputValue: string) => void;
 }
 
-const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
-  onContinue,
-}) => {
+const OrganizationNameForm: React.FC<OrganizationNameProps> = ({ organizationName, onContinue }) => {
+  console.log('organizationName', organizationName);
   const dispatch = useDispatch();
-  const [inputValue, setInputValue] = useState('');
-  const isButtonDisabled = useSelector(
-    (state: RootState) => state.button.isButtonDisable
-  );
-  const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
+  const { t } = useTranslation('organization-name-form');
+  const [inputValue, setInputValue] = useState(organizationName);
 
-  const { t } = useTranslation('organizationNameFormPage');
+  const isButtonDisabled = useSelector((state: RootState) => state.button.isButtonDisable);
+  const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
   useEffect(() => {
     dispatch(setButtonDisabled(true));
@@ -31,17 +29,12 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
-
-    if (value.trim() === '') {
-      dispatch(setButtonDisabled(true));
-    } else {
-      dispatch(setButtonDisabled(false));
-    }
+    dispatch(setButtonDisabled(value.trim() === ''));
   };
 
   const handleOnContinue = () => {
     startTransition(() => {
-      onContinue();
+      onContinue(inputValue);
     });
   };
 
@@ -50,9 +43,9 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
       className="organization-name-form"
       style={{
         width: '600px',
-        paddingBottom: '1rem',
-        marginBottom: '3rem',
         marginTop: '3rem',
+        marginBottom: '3rem',
+        paddingBottom: '1rem',
       }}
     >
       <Form.Item>
@@ -60,6 +53,7 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
           {t('nameYourOrganization')}
         </Title>
       </Form.Item>
+
       <Form.Item
         layout="vertical"
         rules={[{ required: true }]}
@@ -74,13 +68,11 @@ const OrganizationNameForm: React.FC<OrganizationNameProps> = ({
           </span>
         }
       >
-        <Input
-          placeholder="e.g., test01's Team"
-          value={inputValue}
-          onChange={handleInputChange}
-        />
+        <Input placeholder="e.g., test01's Team" value={inputValue} onChange={handleInputChange} />
       </Form.Item>
-      <div style={{ display: 'flex', marginTop: '5rem' }}></div>
+
+      <div style={{ display: 'flex', marginTop: '5rem' }} />
+
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           type="primary"

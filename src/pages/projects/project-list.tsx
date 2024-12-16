@@ -22,11 +22,13 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import CreateProjectButton from '@/components/projects/projectDrawer/CreateProjectButton';
 import { FilterValue } from 'antd/es/table/interface';
 import { SorterResult } from 'antd/es/table/interface';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const ProjectList: React.FC = () => {
-  const { t } = useTranslation('allProjectList');
+  const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  useDocumentTitle('Projects')
 
   const { loading, projects } = useAppSelector(state => state.projectsReducer);
 
@@ -150,7 +152,7 @@ const ProjectList: React.FC = () => {
         <Table<IProjectViewModel>
           columns={TableColumns(navigate)}
           dataSource={projects.data}
-          rowKey="id"
+          rowKey={record => record.id || ''}
           loading={loading}
           size="small"
           onChange={handleTableChange}

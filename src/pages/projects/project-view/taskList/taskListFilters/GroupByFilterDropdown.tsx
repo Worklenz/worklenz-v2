@@ -14,7 +14,7 @@ const GroupByFilterDropdown = () => {
   const [activeGroup, setActiveGroup] = useState<GroupTypes>('status');
 
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   const handleChange = (value: string) => {
     setActiveGroup(value as GroupTypes);

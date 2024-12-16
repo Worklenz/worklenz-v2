@@ -16,7 +16,7 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   // get label list from label reducer
   const labelList = useAppSelector((state) => state.labelReducer.labelList);
@@ -49,7 +49,7 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
 
   // custom dropdown content
   const labelDropdownContent = (
-    <Card className="custom-card" styles={{ body: { padding: 8 } }}>
+    <Card className="custom-card" styles={{ body: { padding: 8, overflow: 'hidden', overflowY: 'auto', maxHeight: '255px'} }}>
       <Flex vertical gap={8}>
         <Input
           ref={labelInputRef}
@@ -136,7 +136,6 @@ const LabelsSelector = ({ taskId }: { taskId: string | undefined }) => {
 
   return (
     <Dropdown
-      overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => labelDropdownContent}
       onOpenChange={handleLabelDropdownOpen}

@@ -14,7 +14,7 @@ const UpdateJobTitleDrawer = ({
   selectedJobTitleId,
 }: UpdateJobTitleDrawerProps) => {
   // localization
-  const { t } = useTranslation('jobTitlesSettings');
+  const { t } = useTranslation('settings-job-titles');
 
   // get data from client reducer
   const jobTitlesList = useAppSelector((state) => state.jobReducer.jobsList);

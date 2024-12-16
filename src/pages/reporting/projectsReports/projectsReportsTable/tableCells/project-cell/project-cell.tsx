@@ -1,4 +1,4 @@
-import { Badge, Flex, Space, Typography } from 'antd';
+import { Badge, Flex, Space, Tooltip, Typography } from 'antd';
 import React from 'react';
 
 type ProjectCellProps = {
@@ -9,18 +9,20 @@ type ProjectCellProps = {
 
 const ProjectCell = ({ project, projectColor }: ProjectCellProps) => {
   return (
-    <Flex gap={16} align="center" justify="space-between">
-      <Space>
-        <Badge color={projectColor} />
-        <Typography.Text
-          style={{ width: 160 }}
-          ellipsis={{ expanded: false }}
-          className="group-hover:text-[#1890ff]"
-        >
-          {project}
-        </Typography.Text>
-      </Space>
-    </Flex>
+    <Tooltip title={project}>
+      <Flex gap={16} align="center" justify="space-between">
+        <Space>
+          <Badge color={projectColor} />
+          <Typography.Text
+            style={{ width: 160 }}
+            ellipsis={{ expanded: false }}
+            className="group-hover:text-[#1890ff]"
+          >
+            {project}
+          </Typography.Text>
+        </Space>
+      </Flex>
+    </Tooltip>
   );
 };
 

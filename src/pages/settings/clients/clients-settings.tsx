@@ -29,11 +29,14 @@ import PinRouteToNavbarButton from '@components/PinRouteToNavbarButton';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
 import ClientDrawer from './client-drawer';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const ClientsSettings: React.FC = () => {
-  const { t } = useTranslation('clientSettings');
+  const { t } = useTranslation('settings-clients');
   const { clients } = useAppSelector(state => state.clientReducer);
   const dispatch = useAppDispatch();
+
+  useDocumentTitle('Manage Clients');
 
   const [hoverRow, setHoverRow] = useState<string | null>(null);
   const [selectedClient, setSelectedClient] = useState<IClientViewModel | null>(null);
@@ -103,11 +106,13 @@ const ClientsSettings: React.FC = () => {
         render: (record: IClientViewModel) =>
           hoverRow === record.id && (
             <Flex gap={8} style={{ padding: 0 }}>
-              <Button
-                size="small"
-                icon={<EditOutlined />}
-                onClick={() => handleClientSelect(record)}
-              />
+              <Tooltip title="Edit">
+                <Button
+                  size="small"
+                  icon={<EditOutlined />}
+                  onClick={() => handleClientSelect(record)}
+                />
+              </Tooltip>
               <Popconfirm
                 title={t('deleteConfirmationTitle')}
                 icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
@@ -115,7 +120,9 @@ const ClientsSettings: React.FC = () => {
                 cancelText={t('deleteConfirmationCancel')}
                 onConfirm={() => deleteClientHandler(record.id)}
               >
-                <Button shape="default" icon={<DeleteOutlined />} size="small" />
+                <Tooltip title="Delete">
+                  <Button shape="default" icon={<DeleteOutlined />} size="small" />
+                </Tooltip>
               </Popconfirm>
             </Flex>
           ),
@@ -147,7 +154,7 @@ const ClientsSettings: React.FC = () => {
               {t('createClient')}
             </Button>
             <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-              <PinRouteToNavbarButton name="clients" path="/worklenz/settings/clients" />
+              <PinRouteToNavbarButton name="clients" path="/worklenz/settings/clients" adminOnly={true} />
             </Tooltip>
           </Flex>
         </Flex>

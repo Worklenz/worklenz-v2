@@ -9,6 +9,7 @@ import './invite-team-members.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
@@ -30,6 +31,8 @@ const InviteInitialTeamMembers: React.FC<InviteInitialTeamMembersProps> = ({
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
 
   const { t } = useTranslation('invite-team-members');
+
+  const navigate = useNavigate()
 
   const handleInputChange = (
     id: number,
@@ -163,11 +166,12 @@ const InviteInitialTeamMembers: React.FC<InviteInitialTeamMembersProps> = ({
                 fontWeight: 500,
               }}
               type="text"
+              onClick={() => navigate('/worklenz/home')}
             >
               {t('skipForNow')}
             </Button>
           </div>
-          <Button type="primary" htmlType="submit" disabled={isButtonDisabled}>
+          <Button type="primary" htmlType="submit" disabled={isButtonDisabled} onClick={() => navigate('/worklenz/home')}>
             {t('continue')}
           </Button>
         </div>

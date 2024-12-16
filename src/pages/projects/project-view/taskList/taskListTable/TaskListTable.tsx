@@ -1,40 +1,30 @@
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { columnList } from './columns/columnList';
 import AddTaskListRow from './taskListTableRows/AddTaskListRow';
-import {
-  Avatar,
-  Checkbox,
-  DatePicker,
-  Flex,
-  Tag,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Avatar, Checkbox, DatePicker, Flex, Tag, Tooltip, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import CustomAvatar from '../../../../../components/CustomAvatar';
+import CustomAvatar from '@components/CustomAvatar';
 import LabelsSelector from '@components/task-list-common/labelsSelector/labels-selector';
-import { useSelectedProject } from '../../../../../hooks/useSelectedProject';
+import { useSelectedProject } from '@/hooks/useSelectedProject';
 import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import PriorityDropdown from '@components/task-list-common/priorityDropdown/PriorityDropdown';
-import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
-import { durationDateFormat } from '../../../../../utils/durationDateFormat';
+import { simpleDateFormat } from '@/utils/simpleDateFormat';
+import { durationDateFormat } from '@/utils/durationDateFormat';
 import CustomColorLabel from '@components/task-list-common/labelsSelector/custom-color-label';
 import CustomNumberLabel from '@components/task-list-common/labelsSelector/custom-number-label';
 import PhaseDropdown from '@components/task-list-common/phaseDropdown/PhaseDropdown';
 import AssigneeSelector from '@components/task-list-common/assigneeSelector/AssigneeSelector';
 import TaskCell from './taskListTableCells/TaskCell';
 import AddSubTaskListRow from './taskListTableRows/AddSubTaskListRow';
-import { colors } from '../../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import TimeTracker from './taskListTableCells/TimeTracker';
 import TaskContextMenu from './contextMenu/TaskContextMenu';
 import TaskProgress from './taskListTableCells/TaskProgress';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
-import {
-  deselectAll,
-  selectTaskIds,
-} from '../../../../../features/projects/bulkActions/bulkActionSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { deselectAll, selectTaskIds } from '@features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { HolderOutlined } from '@ant-design/icons';
 
 const TaskListTable = ({
   taskList,
@@ -61,30 +51,28 @@ const TaskListTable = ({
   }>({});
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   const dispatch = useAppDispatch();
 
   // get data theme data from redux
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // get the selected project details
   const selectedProject = useSelectedProject();
 
   // get columns list details
   const columnsVisibility = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
+    state => state.projectViewTaskListColumnsReducer.columnsVisibility
   );
   const visibleColumns = columnList.filter(
-    (column) => columnsVisibility[column.key as keyof typeof columnsVisibility]
+    column => columnsVisibility[column.key as keyof typeof columnsVisibility]
   );
 
   // toggle subtasks visibility
   const toggleTaskExpansion = (taskId: string) => {
-    setExpandedTasks((prev) =>
-      prev.includes(taskId)
-        ? prev.filter((id) => id !== taskId)
-        : [...prev, taskId]
+    setExpandedTasks(prev =>
+      prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
     );
   };
 
@@ -95,9 +83,9 @@ const TaskListTable = ({
       dispatch(deselectAll());
     } else {
       const allTaskIds =
-        taskList?.flatMap((task) => [
+        taskList?.flatMap(task => [
           task.id,
-          ...(task.sub_tasks?.map((subtask) => subtask.id) || []),
+          ...(task.sub_tasks?.map(subtask => subtask.id) || []),
         ]) || [];
 
       // setSelectedRows(allTaskIds);
@@ -109,9 +97,9 @@ const TaskListTable = ({
 
   // toggle selected row
   const toggleRowSelection = (task: IProjectTask) => {
-    setSelectedRows((prevSelectedRows) =>
-      prevSelectedRows.includes(task.id || '' )
-        ? prevSelectedRows.filter((id) => id !== task.id || '')
+    setSelectedRows(prevSelectedRows =>
+      prevSelectedRows.includes(task.id || '')
+        ? prevSelectedRows.filter(id => id !== task.id || '')
         : [...prevSelectedRows, task.id || '']
     );
   };
@@ -142,12 +130,10 @@ const TaskListTable = ({
 
   // trigger the table scrolling
   useEffect(() => {
-    const tableContainer = document.querySelector(
-      `.tasklist-container-${tableId}`
-    );
+    const tableContainer = document.querySelector(`.tasklist-container-${tableId}`);
     const handleScroll = () => {
       if (tableContainer) {
-        setScrollingTables((prev) => ({
+        setScrollingTables(prev => ({
           ...prev,
           [tableId]: tableContainer.scrollLeft > 0,
         }));
@@ -177,7 +163,7 @@ const TaskListTable = ({
       case 'taskId':
         return (
           <Tooltip title={task.id} className="flex justify-center">
-            <Tag>{task.id}</Tag>
+            <Tag>{task.task_key}</Tag>
           </Tooltip>
         );
 
@@ -189,7 +175,6 @@ const TaskListTable = ({
             task={task}
             isSubTask={isSubtask}
             expandedTasks={expandedTasks}
-            hoverRow={hoverRow}
             setSelectedTaskId={setSelectedTaskId}
             toggleTaskExpansion={toggleTaskExpansion}
           />
@@ -208,12 +193,7 @@ const TaskListTable = ({
 
       // progress column
       case 'progress': {
-        return task?.progress || task?.progress === 0 ? (
-          <TaskProgress
-            progress={task?.progress}
-            numberOfSubTasks={task?.sub_tasks?.length || 0}
-          />
-        ) : (
+        return (
           <div></div>
         );
       }
@@ -221,56 +201,26 @@ const TaskListTable = ({
       // members column
       case 'members':
         return (
-          <Flex gap={4} align="center">
-            <Avatar.Group>
-              {task.assignees?.map((member) => (
-                <CustomAvatar
-                  key={member.id}
-                  avatarName={member.name}
-                  size={26}
-                />
-              ))}
-            </Avatar.Group>
-            <AssigneeSelector taskId={selectedTaskId || '0'} />
-          </Flex>
+          <div></div>
         );
 
       // labels column
       case 'labels':
         return (
-          <Flex>
-            {task?.labels && task?.labels?.length <= 2 ? (
-              task?.labels?.map((label) => <CustomColorLabel label={label} />)
-            ) : (
-              <Flex>
-                <CustomColorLabel
-                  label={task?.labels ? task.labels[0] : null}
-                />
-                <CustomColorLabel
-                  label={task?.labels ? task.labels[1] : null}
-                />
-                {/* this component show other label names  */}
-                <CustomNumberLabel
-                  // this label list get the labels without 1, 2 elements
-                  labelList={task?.labels ? task.labels : null}
-                />
-              </Flex>
-            )}
-            <LabelsSelector taskId={task.id} />
-          </Flex>
+          <div></div>
         );
 
       // phase column
       case 'phases':
-        return <PhaseDropdown projectId={selectedProject?.id || ''} />;
+        return <div></div>;
 
       // status column
       case 'status':
-        return <StatusDropdown currentStatus={task.status || ''} size={"default"} />;
+        return <div></div>;
 
       // priority column
       case 'priority':
-        return <PriorityDropdown currentPriority={task.priority || ''} />;
+        return <div></div>;
 
       // // time tracking column
       // case 'timeTracking':
@@ -283,59 +233,31 @@ const TaskListTable = ({
 
       // estimation column
       case 'estimation':
-        return <Typography.Text>0h 0m</Typography.Text>;
+        return <div></div>;
 
       // start date column
       case 'startDate':
-        return task.start_date ? (
-          <Typography.Text>{simpleDateFormat(task.start_date)}</Typography.Text>
-        ) : (
-          <DatePicker
-            placeholder="Set a start date"
-            suffixIcon={null}
-            style={{ border: 'none', width: '100%', height: '100%' }}
-          />
-        );
+        return <div></div>;
 
       // due date column
       case 'dueDate':
-        return task.end_date ? (
-          <Typography.Text>{simpleDateFormat(task.end_date)}</Typography.Text>
-        ) : (
-          <DatePicker
-            placeholder="Set a due date"
-            suffixIcon={null}
-            style={{ border: 'none', width: '100%', height: '100%' }}
-          />
-        );
+        return <div></div>;
 
       // completed date column
       case 'completedDate':
-        return (
-          <Typography.Text>
-            {durationDateFormat(task.completed_at || null)}
-          </Typography.Text>
-        );
+        return <div></div>;
 
       // created date column
       case 'createdDate':
-        return (
-          <Typography.Text>
-            {durationDateFormat(task.created_at || null)}
-          </Typography.Text>
-        );
+        return <div></div>;
 
       // last updated column
       case 'lastUpdated':
-        return (
-          <Typography.Text>
-            {durationDateFormat(task.updated_at || null)}
-          </Typography.Text>
-        );
+        return <div></div>;
 
       // recorder column
       case 'reporter':
-        return <Typography.Text>Sachintha Prasad</Typography.Text>;
+        return <div></div>;
 
       // default case for unsupported columns
       default:
@@ -345,9 +267,7 @@ const TaskListTable = ({
 
   return (
     <div className={`border-x border-b ${customBorderColor}`}>
-      <div
-        className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}
-      >
+      <div className={`tasklist-container-${tableId} min-h-0 max-w-full overflow-x-auto`}>
         <table className={`rounded-2 w-full min-w-max border-collapse`}>
           <thead className="h-[42px]">
             <tr>
@@ -355,12 +275,14 @@ const TaskListTable = ({
               <th
                 key={'selector'}
                 className={`${customHeaderColumnStyles('selector')}`}
-                style={{ width: 20, fontWeight: 500 }}
+                style={{ width: 56, fontWeight: 500 }}
               >
-                <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
+                <Flex justify="flex-end">
+                  <Checkbox checked={isSelectAll} onChange={toggleSelectAll} />
+                </Flex>
               </th>
               {/* other header cells  */}
-              {visibleColumns.map((column) => (
+              {visibleColumns.map(column => (
                 <th
                   key={column.key}
                   className={`${customHeaderColumnStyles(column.key)}`}
@@ -374,13 +296,11 @@ const TaskListTable = ({
             </tr>
           </thead>
           <tbody>
-            {taskList?.map((task) => (
+            {taskList?.map(task => (
               <React.Fragment key={task.id}>
                 <tr
                   key={task.id}
-                  onContextMenu={(e) => handleContextMenu(e, task)}
-                  onMouseEnter={() => setHoverRow(task.id || '')}
-                  onMouseLeave={() => setHoverRow(null)}
+                  onContextMenu={e => handleContextMenu(e, task)}
                   className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'}`}
                 >
                   {/* this cell render the select the related task checkbox  */}
@@ -388,7 +308,7 @@ const TaskListTable = ({
                     key={'selector'}
                     className={customBodyColumnStyles('selector')}
                     style={{
-                      width: 20,
+                      width: 56,
                       backgroundColor: selectedRows.includes(task.id || '')
                         ? themeMode === 'dark'
                           ? colors.skyBlue
@@ -402,13 +322,16 @@ const TaskListTable = ({
                             : '#fff',
                     }}
                   >
-                    <Checkbox
-                      checked={selectedRows.includes(task.id || '')}
-                      onChange={() => toggleRowSelection(task)}
-                    />
+                    <Flex gap={8} align="center">
+                      <HolderOutlined />
+                      <Checkbox
+                        checked={selectedRows.includes(task.id || '')}
+                        onChange={() => toggleRowSelection(task)}
+                      />
+                    </Flex>
                   </td>
                   {/* other cells  */}
-                  {visibleColumns.map((column) => (
+                  {visibleColumns.map(column => (
                     <td
                       key={column.key}
                       className={customBodyColumnStyles(column.key)}
@@ -434,10 +357,10 @@ const TaskListTable = ({
 
                 {/* this is for sub tasks  */}
                 {expandedTasks.includes(task.id || '') &&
-                  task?.sub_tasks?.map((subtask) => (
+                  task?.sub_tasks?.map(subtask => (
                     <tr
                       key={subtask.id}
-                      onContextMenu={(e) => handleContextMenu(e, subtask)}
+                      onContextMenu={e => handleContextMenu(e, subtask)}
                       onMouseEnter={() => setHoverRow(subtask.id || '')}
                       onMouseLeave={() => setHoverRow(null)}
                       className={`${taskList.length === 0 ? 'h-0' : 'h-[42px]'}`}
@@ -468,7 +391,7 @@ const TaskListTable = ({
                       </td>
 
                       {/* other sub tasks cells  */}
-                      {visibleColumns.map((column) => (
+                      {visibleColumns.map(column => (
                         <td
                           key={column.key}
                           className={customBodyColumnStyles(column.key)}

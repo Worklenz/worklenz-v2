@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const PhaseHeader = () => {
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   // get selected project for useSelectedProject hook
   const selectedProject = useSelectedProject();

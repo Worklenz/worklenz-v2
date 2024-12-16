@@ -4,6 +4,7 @@ import React from 'react';
 import ProjectReportsOverviewTab from './overviewTab/ProjectReportsOverviewTab';
 import ProjectReportsMembersTab from './membersTab/ProjectReportsMembersTab';
 import ProjectReportsTasksTab from './tasksTab/ProjectReportsTasksTab';
+import { useTranslation } from 'react-i18next';
 
 type ProjectReportsDrawerProps = {
   projectId?: string | null;
@@ -12,20 +13,23 @@ type ProjectReportsDrawerProps = {
 const ProjectReportsDrawerTabs = ({
   projectId = null,
 }: ProjectReportsDrawerProps) => {
+  // localization
+  const { t } = useTranslation('reporting-projects-drawer');
+
   const tabItems: TabsProps['items'] = [
     {
       key: 'overview',
-      label: 'Overview',
+      label: t('overviewTab'),
       children: <ProjectReportsOverviewTab projectId={projectId} />,
     },
     {
       key: 'members',
-      label: 'Members',
+      label: t('membersTab'),
       children: <ProjectReportsMembersTab projectId={projectId} />,
     },
     {
       key: 'tasks',
-      label: 'Tasks',
+      label: t('tasksTab'),
       children: <ProjectReportsTasksTab projectId={projectId} />,
     },
   ];

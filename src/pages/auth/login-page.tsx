@@ -9,13 +9,15 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import PageHeader from '@components/AuthPageHeader';
 import googleIcon from '@assets/images/google-icon.png';
-import { login } from '@/features/auth/authSlice';
+import { login, verifyAuthentication } from '@/features/auth/authSlice';
 import logger from '@/utils/errorLogger';
 import { setUser } from '@/features/user/userSlice';
 import { useAuth } from '@/hooks/useAuth';
 import { Rule } from 'antd/es/form';
+import { setSession } from '@/utils/session-helper';
+import { evt_login_page_visit, evt_login_with_email_click, evt_login_with_google_click, evt_login_remember_me_click } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
-// Types
 interface LoginFormValues {
   email: string;
   password: string;
@@ -23,91 +25,106 @@ interface LoginFormValues {
 }
 
 const LoginPage: React.FC = () => {
-  // Hooks
   const navigate = useNavigate();
-  const { t } = useTranslation('loginPage');
+  const { t } = useTranslation('login');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
   const dispatch = useAppDispatch();
   const authService = useAuth();
   const { isLoading } = useAppSelector(state => state.auth);
+  const { trackMixpanelEvent } = useMixpanelTracking();
+  const [form] = Form.useForm<LoginFormValues>();
 
-  // Form validation rules
   const validationRules = {
-    email: [{ required: true, type: 'email', message: t('emailRequired') }],
-    password: [{ required: true, message: t('passwordRequired'), min: 8 }]
+    email: [
+      { required: true, message: t('emailRequired') },
+      { type: 'email', message: t('invalidEmail') }
+    ],
+    password: [
+      { required: true, message: t('passwordRequired') },
+      { min: 8, message: t('passwordTooShort') }
+    ]
   };
 
-  // Effects
   useEffect(() => {
+    trackMixpanelEvent(evt_login_page_visit);
     const verifyAuthStatus = async () => {
       try {
-        const session = await authService.getCurrentSession();
-        if (session) {
-          dispatch(setUser(session));
+        const session = await dispatch(verifyAuthentication()).unwrap();
+        if (session?.authenticated) {
+          setSession(session.user);
+          dispatch(setUser(session.user));
           navigate('/worklenz/home');
         }
       } catch (error) {
-        logger.error('Verify Auth Status', error);
+        logger.error('Failed to verify authentication status', error);
       }
     };
-    verifyAuthStatus();
-  }, [dispatch, navigate, authService]);
+    void verifyAuthStatus();
+  }, [dispatch, navigate, trackMixpanelEvent]);
 
-  // Handlers
-  const onFinish = useCallback(
-    async (values: LoginFormValues) => {
-      try {
-        const result = await dispatch(login(values)).unwrap();
-        if (result.authenticated) {
-          message.success(t('loginSuccess'));
-          authService.setCurrentSession(result.user);
-          navigate('/auth/authenticating');
-        }
-      } catch (error) {
-        logger.error('LoginPage', error);
-      }
-    },
-    [dispatch, navigate, t, authService]
-  );
-
-  const handleGoogleLogin = () => {
+  const onFinish = useCallback(async (values: LoginFormValues) => {
     try {
+      trackMixpanelEvent(evt_login_with_email_click);
+      const result = await dispatch(login(values)).unwrap();
+      if (result.authenticated) {
+        message.success(t('loginSuccess'));
+        setSession(result.user);
+        dispatch(setUser(result.user));
+        navigate('/auth/authenticating');
+      }
+    } catch (error) {
+      message.error(t('loginError'));
+      logger.error('Login failed', error);
+    }
+  }, [dispatch, navigate, t, trackMixpanelEvent]);
+
+  const handleGoogleLogin = useCallback(() => {
+    try {
+      trackMixpanelEvent(evt_login_with_google_click);
       window.location.href = `${import.meta.env.VITE_API_URL}/secure/google`;
     } catch (error) {
-      message.error('Failed to redirect to Google sign up');
+      message.error(t('googleLoginError'));
+      logger.error('Google login failed', error);
     }
-  };
+  }, [trackMixpanelEvent, t]);
 
-  // Styles
-  const cardStyles = {
-    width: '100%',
-    boxShadow: 'none'
-  };
+  const handleRememberMeChange = useCallback((checked: boolean) => {
+    trackMixpanelEvent(evt_login_remember_me_click, { checked });
+  }, [trackMixpanelEvent]);
 
-  const buttonStyles = {
-    borderRadius: 4
-  };
-
-  const googleButtonStyles = {
-    ...buttonStyles,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  };
-
-  const linkStyles = {
-    fontSize: 14
+  const styles = {
+    card: {
+      width: '100%',
+      boxShadow: 'none'
+    },
+    button: {
+      borderRadius: 4
+    },
+    googleButton: {
+      borderRadius: 4,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    link: {
+      fontSize: 14
+    },
+    googleIcon: {
+      maxWidth: 20,
+      marginRight: 8
+    }
   };
 
   return (
     <Card
-      style={cardStyles}
+      style={styles.card}
       styles={{ body: { paddingInline: isMobile ? 24 : 48 } }}
       bordered={false}
     >
       <PageHeader description={t('headerDescription')} />
       
       <Form
+        form={form}
         name="login"
         layout="vertical"
         autoComplete="off"
@@ -121,7 +138,7 @@ const LoginPage: React.FC = () => {
             prefix={<UserOutlined />}
             placeholder={t('emailPlaceholder')}
             size="large"
-            style={buttonStyles}
+            style={styles.button}
           />
         </Form.Item>
 
@@ -130,19 +147,21 @@ const LoginPage: React.FC = () => {
             prefix={<LockOutlined />}
             placeholder={t('passwordPlaceholder')}
             size="large"
-            style={buttonStyles}
+            style={styles.button}
           />
         </Form.Item>
 
         <Form.Item>
           <Flex justify="space-between" align="center">
             <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>{t('rememberMe')}</Checkbox>
+              <Checkbox onChange={e => handleRememberMeChange(e.target.checked)}>
+                {t('rememberMe')}
+              </Checkbox>
             </Form.Item>
             <Link
               to="/auth/forgot-password"
               className="ant-typography ant-typography-link blue-link"
-              style={linkStyles}
+              style={styles.link}
             >
               {t('forgotPasswordButton')}
             </Link>
@@ -157,7 +176,7 @@ const LoginPage: React.FC = () => {
               htmlType="submit"
               size="large"
               loading={isLoading}
-              style={buttonStyles}
+              style={styles.button}
             >
               {t('loginButton')}
             </Button>
@@ -171,12 +190,12 @@ const LoginPage: React.FC = () => {
               type="default"
               size="large"
               onClick={handleGoogleLogin}
-              style={googleButtonStyles}
+              style={styles.googleButton}
             >
               <img 
                 src={googleIcon} 
-                alt="google icon" 
-                style={{ maxWidth: 20, marginRight: 8 }} 
+                alt="Google"
+                style={styles.googleIcon}
               />
               {t('signInWithGoogleButton')}
             </Button>
@@ -185,13 +204,13 @@ const LoginPage: React.FC = () => {
 
         <Form.Item>
           <Space>
-            <Typography.Text style={linkStyles}>
+            <Typography.Text style={styles.link}>
               {t('dontHaveAccountText')}
             </Typography.Text>
             <Link
               to="/auth/signup"
               className="ant-typography ant-typography-link blue-link"
-              style={linkStyles}
+              style={styles.link}
             >
               {t('signupButton')}
             </Link>

@@ -1,11 +1,14 @@
 import { ConfigProvider, Flex, Menu, MenuProps } from 'antd';
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { colors } from '@/styles/colors';
+import { useTranslation } from 'react-i18next';
 import { reportingsItems } from '@/lib/reporting/reporting-constants';
 
 const ReportingSider = () => {
   const location = useLocation();
+
+  // localization
+  const { t } = useTranslation('reporting-sidebar');
 
   // function to get the active menu key based on the current location
   const getCurrentActiveKey = () => {
@@ -22,12 +25,12 @@ const ReportingSider = () => {
       if (item.children) {
         return {
           key: item.key,
-          label: item.name,
+          label: t(`${item.name}Text`),
           children: item.children.map((child) => ({
             key: child.key,
             label: (
               <Link to={`/worklenz/reporting/${child.endpoint}`}>
-                {child.name}
+                {t(`${child.name}Text`)}
               </Link>
             ),
           })),
@@ -36,7 +39,9 @@ const ReportingSider = () => {
         return {
           key: item.key,
           label: (
-            <Link to={`/worklenz/reporting/${item.endpoint}`}>{item.name}</Link>
+            <Link to={`/worklenz/reporting/${item.endpoint}`}>
+              {t(`${item.name}Text`)}
+            </Link>
           ),
         };
       }

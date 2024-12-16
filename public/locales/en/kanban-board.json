@@ -1,0 +1,14 @@
+{
+    "rename": "Rename",
+    "delete": "Delete",
+    "addTask": "Add Task",
+    "changeCategory": "Change category",
+
+    "dueDate": "Due date",
+    "cancel": "Cancel",
+
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "assignToMe": "Assign to me",
+    "archive": "Archive"
+}

@@ -1,8 +1,12 @@
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, Row, Typography } from 'antd';
 import React from 'react';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
 
 const ChangePassword: React.FC = () => {
+
+  useDocumentTitle('Change Password');
+
   return (
     <Card style={{ width: '100%' }}>
       <Form

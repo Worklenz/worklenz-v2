@@ -1,9 +1,11 @@
 import {
   ArrowLeftOutlined,
+  BellFilled,
   BellOutlined,
   CalendarOutlined,
   DownOutlined,
   EditOutlined,
+  ImportOutlined,
   SaveOutlined,
   SettingOutlined,
   SyncOutlined,
@@ -21,6 +23,9 @@ import { getStatusIcon } from '@/utils/projectUtils';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
+
+  const [isSubcribe, setIsSubcribe] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -41,7 +46,7 @@ const ProjectViewHeader = () => {
     {
       key: '1',
       label: (
-        <div style={{ width: '100%', margin: 0, padding: 0 }}>Import task</div>
+        <div style={{ width: '100%', margin: 0, padding: 0 }}><ImportOutlined/> Import task</div>
       ),
     },
   ];
@@ -130,8 +135,8 @@ const ProjectViewHeader = () => {
             title={'Receive a project summary every evening.'}
             trigger={'hover'}
           >
-            <Button shape="round" icon={<BellOutlined />}>
-              Subscribe
+            <Button shape="round" icon={isSubcribe ? <BellFilled /> : <BellOutlined />} onClick={() => setIsSubcribe(!isSubcribe)}>
+              {isSubcribe ? 'Unsubscribe' : 'Subscribe'}
             </Button>
           </Tooltip>
 

@@ -1,26 +1,23 @@
 import { CaretDownFilled } from "@ant-design/icons";
 import { Button, Checkbox, Dropdown, MenuProps } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const Billable:React.FC = () => {
   
-    const allItems = [
-      { key: '1', label: 'Billable' },
-      { key: '2', label: 'Non Billable' },
-    ];
-  
+    const {t} = useTranslation('time-report')
     // Dropdown items for the menu
     const menuItems: MenuProps['items'] = [
         {
           key: 'search',
           label: (
-            <Checkbox>Billable</Checkbox>
+            <Checkbox>{t('billable')}</Checkbox>
           ),
         },
       {
         key: 'selectAll',
         label: (
-            <Checkbox>Non Billable</Checkbox>
+            <Checkbox>{t('nonBillable')}</Checkbox>
         ),
       },
     ];
@@ -34,7 +31,7 @@ const Billable:React.FC = () => {
           overlayStyle={{maxHeight: '330px', overflowY: 'auto'}}
         >
           <Button >
-            Billable <CaretDownFilled />
+            {t('billable')} <CaretDownFilled />
           </Button>
         </Dropdown>
       </div>

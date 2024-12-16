@@ -13,7 +13,7 @@ interface DataType {
 }
 
 const InvoicesTable: React.FC = () => {
-  const { t } = useTranslation('currentBill');
+  const { t } = useTranslation('current-bill');
 
   const columns: TableProps['columns'] = [
     {

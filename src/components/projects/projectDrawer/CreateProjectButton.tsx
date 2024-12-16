@@ -13,7 +13,7 @@ const CreateProjectButton = () => {
   const [current, setCurrent] = useState<string>('');
   const location = useLocation();
 
-  const { t } = useTranslation('createFirstProjectFormPage');
+  const { t } = useTranslation('create-first-project-form');
 
   const openTemplateSelector = () => {
     startTransition(() => {

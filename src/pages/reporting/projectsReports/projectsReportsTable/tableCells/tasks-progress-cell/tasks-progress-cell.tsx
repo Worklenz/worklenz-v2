@@ -1,12 +1,16 @@
 import { Flex, Tooltip, Typography } from 'antd';
 import React from 'react';
 import { colors } from '../../../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 type TasksProgressCellProps = {
   tasksStat: { todo: number; doing: number; done: number } | null;
 };
 
 const TasksProgressCell = ({ tasksStat }: TasksProgressCellProps) => {
+  // localization
+  const { t } = useTranslation('reporting-projects');
+
   if (!tasksStat) return null;
 
   const totalStat = tasksStat.todo + tasksStat.doing + tasksStat.done;
@@ -17,9 +21,9 @@ const TasksProgressCell = ({ tasksStat }: TasksProgressCellProps) => {
   const donePercent = Math.floor((tasksStat.done / totalStat) * 100);
 
   const segments = [
-    { percent: todoPercent, color: '#98d4b1', label: 'To Do' },
-    { percent: doingPercent, color: '#bce3cc', label: 'Doing' },
-    { percent: donePercent, color: '#e3f4ea', label: 'Done' },
+    { percent: todoPercent, color: '#98d4b1', label: 'todo' },
+    { percent: doingPercent, color: '#bce3cc', label: 'doing' },
+    { percent: donePercent, color: '#e3f4ea', label: 'done' },
   ];
 
   return (
@@ -31,7 +35,7 @@ const TasksProgressCell = ({ tasksStat }: TasksProgressCellProps) => {
             <Typography.Text
               key={index}
               style={{ color: colors.white }}
-            >{`${seg.label}: ${seg.percent}%`}</Typography.Text>
+            >{`${t(`${seg.label}Text`)}: ${seg.percent}%`}</Typography.Text>
           ))}
         </Flex>
       }

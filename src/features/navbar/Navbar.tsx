@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import InviteButton from './invite/InviteButton';
-import SwitchTeamButton from './switchTeam/SwitchTeamButton';
-import NotificationButton from './notification/NotificationButton';
-import ProfileButton from './userProfile/ProfileButton';
+import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd';
+
+// Components
 import AddMemberDrawer from '../settings/member/AddMemberDrawer';
-import NotficationDrawer from './notification/NotficationDrawer';
 import HelpButton from './help/HelpButton';
-import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
+import InviteButton from './invite/InviteButton';
 import MobileMenuButton from './mobileMenu/MobileMenuButton';
 import NavbarLogo from './NavbarLogo';
-import { getFromLocalStorage } from '../../utils/localStorageFunctions';
+import NotficationDrawer from './notification/NotficationDrawer';
+import NotificationButton from './notification/NotificationButton';
+import ProfileButton from './userProfile/ProfileButton';
+import SwitchTeamButton from './switchTeam/SwitchTeamButton';
+import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
+
+// Utils & Hooks
+import { useResponsive } from '@/hooks/useResponsive';
+import { getFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
-import { useResponsive } from '../../hooks/useResponsive';
+import { getSession } from '@/utils/session-helper';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
+  const isOwnerOrAdmin = useAuth().isOwnerOrAdmin();
+
   const location = useLocation();
   // media queries from useResponsive custom hook
   const { isDesktop, isMobile, isTablet } = useResponsive();
@@ -95,13 +103,13 @@ const Navbar = () => {
           <ConfigProvider wave={{ disabled: true }}>
             {isDesktop && (
               <Flex gap={20} align="center">
-                <UpgradePlanButton />
-                <InviteButton />
+                {isOwnerOrAdmin && <UpgradePlanButton />}
+                {isOwnerOrAdmin && <InviteButton />}
                 <Flex align="center">
                   <SwitchTeamButton />
                   <NotificationButton />
                   <HelpButton />
-                  <ProfileButton />
+                  <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
                 </Flex>
               </Flex>
             )}
@@ -109,14 +117,14 @@ const Navbar = () => {
               <Flex gap={12} align="center">
                 <SwitchTeamButton />
                 <NotificationButton />
-                <ProfileButton />
+                <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
                 <MobileMenuButton />
               </Flex>
             )}
             {isMobile && (
               <Flex gap={12} align="center">
                 <NotificationButton />
-                <ProfileButton />
+                <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
                 <MobileMenuButton />
               </Flex>
             )}
@@ -126,7 +134,7 @@ const Navbar = () => {
 
       {/* drawers  */}
       {/* add member drawer  */}
-      <AddMemberDrawer />
+      {isOwnerOrAdmin && <AddMemberDrawer />}
       {/* notification drawer */}
       <NotficationDrawer />
     </Col>

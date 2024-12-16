@@ -31,7 +31,7 @@ const UpgradePlans: React.FC = () => {
     return selectedCard === cardIndex ? { border: '2px solid #1890ff' } : {};
   };
 
-  const { t } = useTranslation('currentBill');
+  const { t } = useTranslation('current-bill');
 
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD';

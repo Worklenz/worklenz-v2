@@ -6,10 +6,9 @@ import { createPortal } from 'react-dom';
 import BulkTasksActionContainer from '@/features/projects/bulkActions/BulkTasksActionContainer';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+import { ITaskListGroup } from '@/types/tasks/taskList.types';
 
-const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
-  const statusList = useAppSelector((state) => state.statusReducer.status);
-
+const StatusGroupTables = ({ group }: { group: ITaskListGroup }) => {
   const dispatch = useAppDispatch();
 
   // get bulk action detatils
@@ -17,33 +16,33 @@ const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
     (state) => state.bulkActionReducer.selectedTaskIdsList
   );
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   // fuction for get a color regariding the status
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'todo':
-        return '#d8d7d8';
+        return themeMode === 'dark' ? '#3a3a3a' : '#d8d7d8';
       case 'doing':
-        return '#c0d5f6';
+        return themeMode === 'dark' ? '#3d506e' : '#c0d5f6';
       case 'done':
-        return '#c2e4d0';
+        return themeMode === 'dark' ? '#3b6149' : '#c2e4d0';
       default:
-        return '#d8d7d8';
+        return themeMode === 'dark' ? '#3a3a3a' : '#d8d7d8';
     }
   };
 
   return (
     <Flex gap={24} vertical>
-      {statusList.map((status) => (
+      {group.tasks.map((status) => (
         <TaskListTableWrapper
           key={status.id}
-          taskList={datasource.filter(
-            (task) => task.status === status.category
-          )}
-          tableId={status.id}
-          name={status.name}
+          taskList={group.tasks}
+          tableId={status.id || ''}
+          name={status.name || ''}
           type="status"
-          statusCategory={status.category}
-          color={getStatusColor(status.category)}
+          statusCategory={status.status || ''}
+          color={getStatusColor(status.status || '')}
         />
       ))}
 

@@ -30,7 +30,7 @@ const ProjectViewFiles = () => {
   const [hoverRow, setHoverRow] = useState<string | null>(null);
 
   // localization
-  const { t } = useTranslation('projectViewFilesTab');
+  const { t } = useTranslation('project-view-files');
 
   // table columns
   const columns: TableProps['columns'] = [
@@ -102,7 +102,9 @@ const ProjectViewFiles = () => {
             color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
           }}
         >
-          {durationDateFormat(record.uploadedDate)}
+          <Tooltip title='Nov 25,2024,10.45.54 AM'>
+            {durationDateFormat(record.uploadedDate)}
+          </Tooltip>
         </Typography.Text>
       ),
     },
@@ -123,10 +125,14 @@ const ProjectViewFiles = () => {
               cancelText={t('deleteConfirmationCancel')}
               onConfirm={() => console.log('File deleted')}
             >
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title='Delete'>
+                <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              </Tooltip>
             </Popconfirm>
 
-            <Button size="small" icon={<CloudDownloadOutlined />} />
+            <Tooltip title='Download'>
+              <Button size="small" icon={<CloudDownloadOutlined />} />
+            </Tooltip>
           </Flex>
         ),
     },

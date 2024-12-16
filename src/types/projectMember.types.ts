@@ -1,9 +1,18 @@
-export type ProjectMemberType = {
-  memberId: string;
-  memberName: string;
-  memberEmail: string;
-  jobTitle?: string;
-  totalAssignedTasks: number;
-  completedTasks: number;
-  memberRole: 'owner' | 'member' | 'admin';
-};
+export interface IProjectMemberViewModel {
+  id?: string;
+  name?: string;
+  email?: string;
+  access?: string;
+  pending_invitation?: boolean;
+  all_tasks_count?: number;
+  completed_tasks_count?: number;
+  progress?: number;
+  job_title?: string;
+  avatar_url?: string;
+  team_member_id?: string;
+}
+
+export interface IProjectMembersViewModel {
+  total?: number;
+  data?: IProjectMemberViewModel[];
+}

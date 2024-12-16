@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 import ProjectTimelineModal from '../../../features/schedule/ProjectTimelineModal';
 import ScheduleDrawer from '../../../features/schedule/ScheduleDrawer';
+import { useTranslation } from 'react-i18next';
 
 interface GanttChartProps {
   members: Member[];
@@ -36,6 +37,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
   );
   const themeMode = useAppSelector((state) => state.themeReducer.mode)
   const dispatch = useDispatch();
+  const {t} = useTranslation('schedule')
 
   const timelineStart = date ? date : new Date();
   const timelineEnd = new Date(timelineStart);
@@ -158,8 +160,8 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                         <div
                           style={{ display: 'flex', flexDirection: 'column' }}
                         >
-                          <span>Start Date: {project.startDate}</span>
-                          <span>End Date: {project.endDate}</span>
+                          <span>{t('startDate')}: {project.startDate}</span>
+                          <span>{t('endDate')}: {project.endDate}</span>
                         </div>
                       }
                     >
@@ -292,11 +294,11 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                               }}
                             >
                               <span>
-                                Totol Allocation -{' '}
+                                {t('totalAllocation')} -{' '}
                                 {totalPerDayHours + loggedHours}
                               </span>
-                              <span>Time logged - {loggedHours}</span>
-                              <span>Remaining time - {totalPerDayHours}</span>
+                              <span>{t('timeLogged')} - {loggedHours}</span>
+                              <span>{t('remainingTime')} - {totalPerDayHours}</span>
                             </div>
                           }
                         >
@@ -442,10 +444,10 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                                       fontWeight: 'bold',
                                     }}
                                   >
-                                    Total {project.totalHours}h
+                                    {t('total')} {project.totalHours}h
                                   </span>
                                   <span style={{ fontSize: '10px' }}>
-                                    Per Day {project.perDayHours}h
+                                    {t('perDay')} {project.perDayHours}h
                                   </span>
                                   <span
                                     style={{
@@ -457,7 +459,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                                       dispatch(toggleScheduleDrawer());
                                     }}
                                   >
-                                    20 tasks
+                                    20 {t('tasks')}
                                   </span>
                                 </div>
                               )}

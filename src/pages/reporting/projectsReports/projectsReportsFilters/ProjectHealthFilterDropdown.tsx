@@ -7,7 +7,7 @@ const ProjectHealthFilterDropdown = () => {
   // state to track dropdown open status
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // localization
-  const { t } = useTranslation('reportingProjectsFilters');
+  const { t } = useTranslation('reporting-projects-filters');
 
   // projectHealth dropdown items
   type ProjectHealthFieldsType = {

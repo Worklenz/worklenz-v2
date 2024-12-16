@@ -1,13 +1,12 @@
 // DescriptionEditor.tsx
 import React, { useState } from 'react';
 import { Input } from 'antd';
-import { Editor } from 'primereact/editor';
 
 const DescriptionEditor = ({ description }: { description: string | null }) => {
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
 
   return isEditorOpen ? (
-    <Editor value={description || ''} style={{ width: '100%', height: 320 }} />
+    <div></div>
   ) : (
     <Input.TextArea
       defaultValue={description || ''}

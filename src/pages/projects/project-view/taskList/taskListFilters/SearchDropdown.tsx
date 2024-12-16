@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 const SearchDropdown = () => {
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   const searchInputRef = useRef<InputRef>(null);
 

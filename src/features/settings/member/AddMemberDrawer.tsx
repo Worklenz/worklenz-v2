@@ -1,66 +1,100 @@
-import {
-  Button,
-  Drawer,
-  Flex,
-  Form,
-  Input,
-  message,
-  Select,
-  Typography,
-} from 'antd';
-import React from 'react';
+import { AutoComplete, Button, Drawer, Flex, Form, message, Select, Spin, Typography } from 'antd';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { addMember, toggleCreateMemberDrawer } from './memberSlice';
-import { colors } from '../../../styles/colors';
-import { MemberType } from '../../../types/member.types';
-import { nanoid } from '@reduxjs/toolkit';
+import { toggleInviteMemberDrawer } from './memberSlice';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect, useCallback } from 'react';
+import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
+import { IJobTitle } from '@/types/job.types';
+import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
+import { ITeamMemberCreateRequest } from '@/types/teamMembers/team-member-create-request';
+
+interface FormValues {
+  email: string[];
+  jobTitle: string;
+  access: 'member' | 'admin';
+}
 
 const AddMemberDrawer = () => {
-  // localization
-  const { t } = useTranslation('teamMembersSettings');
+  const [searching, setSearching] = useState(false);
+  const [jobTitles, setJobTitles] = useState<IJobTitle[]>([]);
+  const [emails, setEmails] = useState<string[]>([]);
+  const [selectedJobTitle, setSelectedJobTitle] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const isDrawerOpen = useAppSelector(
-    (state) => state.memberReducer.isCreateMemberDrawerOpen
-  );
+  const [form] = Form.useForm<FormValues>();
+
+  const { t } = useTranslation('settings-team-members');
+  const isDrawerOpen = useAppSelector(state => state.memberReducer.isInviteMemberDrawerOpen);
   const dispatch = useAppDispatch();
 
-  // get job titles from redux - job reducer
-  const jobsList = useAppSelector((state) => state.jobReducer.jobsList);
+  const handleSearch = useCallback(
+    async (value: string) => {
+      try {
+        setSearching(true);
+        const res = await jobTitlesApiService.getJobTitles(1, 10, null, null, value || null);
+        if (res.done) {
+          setJobTitles(res.body.data || []);
+        }
+      } catch (error) {
+        message.error(t('Failed to fetch job titles'));
+      } finally {
+        setSearching(false);
+      }
+    },
+    [t]
+  );
 
-  const [form] = Form.useForm();
+  useEffect(() => {
+    if (isDrawerOpen) {
+      handleSearch('');
+    }
+  }, [isDrawerOpen, handleSearch]);
 
-  // function for handle form submit
-  const handleFormSubmit = async (values: any) => {
+  const handleFormSubmit = async (values: FormValues) => {
     try {
-      const newMember: MemberType = {
-        memberId: nanoid(),
-        memberName: values.email.split('@')[0] || '',
-        memberEmail: values.email,
-        memberRole: values.access,
-        jobTitle: values.jobTitle,
-        isActivate: null,
-        isInivitationAccept: false,
+      setLoading(true);
+      const body: ITeamMemberCreateRequest = {
+        job_title: selectedJobTitle,
+        emails: emails,
+        is_admin: values.access === 'admin',
       };
-      dispatch(addMember(newMember));
-      form.resetFields();
-      message.success(t('createMemberSuccessMessage'));
-      dispatch(toggleCreateMemberDrawer());
+      const res = await teamMembersApiService.createTeamMember(body);
+      if (res.done) {
+        form.resetFields();
+        setEmails([]);
+        setSelectedJobTitle(null);
+        dispatch(toggleInviteMemberDrawer());
+      }
     } catch (error) {
       message.error(t('createMemberErrorMessage'));
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleClose = () => {
+    form.resetFields();
+    dispatch(toggleInviteMemberDrawer());
+  };
+
+  const handleEmailChange = (value: string[]) => {
+    setEmails(value);
   };
 
   return (
     <Drawer
       title={
-        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
+        <Typography.Text strong style={{ fontSize: 16 }}>
           {t('addMemberDrawerTitle')}
         </Typography.Text>
       }
       open={isDrawerOpen}
-      onClose={() => dispatch(toggleCreateMemberDrawer())}
+      onClose={handleClose}
+      destroyOnClose
+      afterOpenChange={visible => visible && handleSearch('')}
+      width={400}
+      loading={loading}
     >
       <Form
         form={form}
@@ -69,54 +103,55 @@ const AddMemberDrawer = () => {
         initialValues={{ access: 'member' }}
       >
         <Form.Item
-          name="email"
+          name="emails"
           label={t('memberEmailLabel')}
           rules={[
             {
-              type: 'email',
+              type: 'array',
               required: true,
-              message: t('memberEmailRequiredError'),
+              validator: (_, value) => {
+                if (!value?.length) return Promise.reject(t('memberEmailRequiredError'));
+                return Promise.resolve();
+              },
             },
           ]}
         >
           <Flex vertical gap={4}>
-            <Input type="email" placeholder={t('memberEmailPlaceholder')} />
+            <Select
+              mode="tags"
+              style={{ width: '100%' }}
+              placeholder={t('memberEmailPlaceholder')}
+              onChange={handleEmailChange}
+              notFoundContent={
+                <Typography.Text type="secondary">{t('noResultFound')}</Typography.Text>
+              }
+              tokenSeparators={[',', ' ', ';']}
+            />
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {t('addMemberEmailHint')}
             </Typography.Text>
           </Flex>
         </Form.Item>
 
-        <Form.Item label="Job Title" name="jobTitle">
-          <Select
-            size="middle"
-            placeholder={t('jobTitlePlaceholder')}
-            // dropdownRender={(menu) => (
-            //     <>
-            //         {menu}
-            //         <Divider style={{ margin: '8px 0' }} />
-            //         <Space style={{ padding: '0 8px 4px' }}>
-            //             <Input
-            //                 placeholder="Please enter item"
-            //                 ref={inputRef}
-            //                 value={name}
-            //                 onChange={onNameChange}
-            //             />
-            //             <Button
-            //                 type="text"
-            //                 icon={<PlusOutlined />}
-            //                 onClick={addItem}
-            //             >
-            //                 Add item
-            //             </Button>
-            //         </Space>
-            //     </>
-            // )}
-            options={jobsList.map((job) => ({
-              label: job.jobTitle,
-              value: job.jobTitle,
+        <Form.Item label={t('jobTitleLabel')} name="jobTitle">
+          <AutoComplete
+            options={jobTitles.map(job => ({
+              label: job.name,
+              value: job.id,
             }))}
-            suffixIcon={false}
+            allowClear
+            onSearch={handleSearch}
+            placeholder={t('jobTitlePlaceholder')}
+            onChange={(value, option) => {
+              form.setFieldsValue({ jobTitle: option?.label || value });
+            }}
+            onSelect={value => setSelectedJobTitle(value)}
+            dropdownRender={menu => (
+              <div>
+                {searching && <Spin size="small" />}
+                {menu}
+              </div>
+            )}
           />
         </Form.Item>
 
@@ -128,8 +163,9 @@ const AddMemberDrawer = () => {
             ]}
           />
         </Form.Item>
+
         <Form.Item>
-          <Button type="primary" style={{ width: '100%' }} htmlType="submit">
+          <Button type="primary" block htmlType="submit">
             {t('addToTeamButton')}
           </Button>
         </Form.Item>

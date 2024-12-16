@@ -1,43 +1,33 @@
 import { StarFilled } from '@ant-design/icons';
 import { Button, ConfigProvider, Tooltip } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { colors } from '@/styles/colors';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { ProjectType } from '@/types/project.types';
-import { toggleFavoriteProject } from '@/features/projects/projectsSlice';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { projectsApiService } from '@/api/projects/projects.api.service';
 
 type AddFavouriteProjectButtonProps = {
-  record: ProjectType;
+  record: IProjectViewModel;
+  handleRefresh: () => void;
 };
 
-const AddFavouriteProjectButton = ({
-  record,
-}: AddFavouriteProjectButtonProps) => {
-  const dispatch = useAppDispatch();
-  const [checkIconColor, setCheckIconColor] = useState<string>(
-    colors.lightGray
+const AddFavouriteProjectButton = ({ record, handleRefresh }: AddFavouriteProjectButtonProps) => {
+  const checkIconColor = useMemo(() => 
+    record.favorite ? colors.yellow : colors.lightGray,
+    [record.favorite]
   );
 
-  // function for handle favourite project toggle
-  const handleToggleFavoriteProject = () => {
-    dispatch(toggleFavoriteProject(record.projectId));
+  const handleToggleFavoriteProject = async () => {
+    if (!record.id) return;
+    await projectsApiService.toggleFavoriteProject(record.id);
+    handleRefresh();
   };
-
-  // this useEffect handles the button color status when click  the favourite button
-  useEffect(
-    () =>
-      record.isFavourite
-        ? setCheckIconColor(colors.yellow)
-        : setCheckIconColor(colors.lightGray),
-
-    [record.isFavourite]
-  );
 
   return (
     <ConfigProvider wave={{ disabled: true }}>
-      <Tooltip title={'Add to favourites'}>
+      <Tooltip title={record.favorite ? 'Remove from favorites' : 'Add to favourites'}>
         <Button
-          className="borderless-icon-btn"
+          type='text'
+          className="borderless-icon-btn" 
           style={{ backgroundColor: colors.transparent }}
           shape="circle"
           icon={<StarFilled style={{ color: checkIconColor }} />}

@@ -10,7 +10,7 @@ const PriorityDropdown = ({ currentPriority: selectedPriority }: { currentPriori
   const priorityList = useAppSelector((state) => state.priorityReducer.priorities);
 
   // localization
-  const { t } = useTranslation('taskListTable');
+  const { t } = useTranslation('task-list-table');
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 

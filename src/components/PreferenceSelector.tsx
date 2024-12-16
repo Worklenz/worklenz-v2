@@ -1,7 +1,6 @@
 import { FloatButton, Space, Tooltip } from 'antd';
-import React from 'react';
 import { FormatPainterOutlined } from '@ant-design/icons';
-import LanguageSelector from '../features/i18n/LanguageSelector';
+import LanguageSelector from '../features/i18n/language-selector';
 import ThemeSelector from '../features/theme/ThemeSelector';
 
 const PreferenceSelector = () => {

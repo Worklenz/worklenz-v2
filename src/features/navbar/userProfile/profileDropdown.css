@@ -27,6 +27,12 @@
     box-sizing: border-box;
 }
 
+.profile-card.dark .ant-card-body a:hover {
+    color: #1890ff !important;
+    background-color: #424242 !important;
+    box-sizing: border-box;
+}
+
 .profile-card {
     border: none !important;
     box-shadow: none !important;

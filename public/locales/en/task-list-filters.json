@@ -1,0 +1,40 @@
+{
+  "searchButton": "Search",
+  "resetButton": "Reset",
+  "searchInputPlaceholder": "Search by name",
+
+  "sortText": "Sort",
+  "statusText": "Status",
+  "phaseText": "Phase",
+  "priorityText": "Priority",
+  "labelsText": "Labels",
+  "membersText": "Members",
+  "groupByText": "Group by",
+  "showArchivedText": "Show archived",
+  "showFieldsText": "Show fields",
+  "keyText": "Key",
+  "taskText": "Task",
+  "descriptionText": "Description",
+  "phasesText": "Phases",
+  "progressText": "Progress",
+  "timeTrackingText": "Time Tracking",
+  "estimationText": "Estimation",
+  "startDateText": "Start Date",
+  "endDateText": "End Date",
+  "dueDateText": "DueDate",
+  "completedDateText": "Completed Date",
+  "createdDateText": "Created Date",
+  "lastUpdatedText": "Last Updated",
+  "reporterText": "Reporter",
+
+  "lowText": "Low",
+  "mediumText": "Medium",
+  "highText": "High",
+
+  "createStatusButtonTooltip": "Status settings",
+  "configPhaseButtonTooltip": "Phase settings",
+  "noLabelsFound": "No labels found",
+
+  "addStatusButton": "Add Status",
+  "addPhaseButton": "Add Phase"
+}

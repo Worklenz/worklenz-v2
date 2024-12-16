@@ -18,6 +18,7 @@ import phaseReducer from '@features/projects/singleProject/phase/phaseSlice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
+import projectInsightsReducer from '@features/projects/insights/project-insights.slice';
 
 // Project Lookups
 import projectCategoriesReducer from '@features/projects/lookups/projectCategories/projectCategoriesSlice';
@@ -26,7 +27,6 @@ import projectHealthReducer from '@features/projects/lookups/projectHealth/proje
 
 // Tasks
 import taskReducer from '@features/tasks/taskSlice';
-import todoReducer from '@features/todo/todoSlice';
 import createCardReducer from '@features/board/createCardSlice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
@@ -48,8 +48,13 @@ import buttonReducer from '@features/actionSetup/buttonSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 
 // Reports
+import timeLogReducer from '../features/timeReport/projects/timeLogSlice';
+import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplateSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
+import overviewReportsReducer from '../features/reporting/overviewReports/overviewReportsSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
+import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
+import roadmapReducer from '../features/roadmap/roadmap-slice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -75,6 +80,7 @@ export const store = configureStore({
     updatesReducer: updatesReducer,
     statusReducer: statusReducer,
     bulkActionReducer: bulkActionReducer,
+    projectInsightsReducer: projectInsightsReducer,
 
     // Project Lookups
     projectCategoriesReducer: projectCategoriesReducer,
@@ -83,7 +89,6 @@ export const store = configureStore({
 
     // Tasks
     taskReducer: taskReducer,
-    todoReducer: todoReducer,
     createCardReducer: createCardReducer,
     priorityReducer: priorityReducer,
     taskLabelsReducer: taskLabelsReducer,
@@ -105,8 +110,13 @@ export const store = configureStore({
     scheduleReducer: scheduleReducer,
 
     // Reports
+    timeLogReducer: timeLogReducer,
+    taskTemplateReducer: taskTemplateReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
+    overviewReportsReducer: overviewReportsReducer,
     projectReportsReducer: projectReportsReducer,
+    membersReportsReducer: membersReportsReducer,
+    roadmapReducer: roadmapReducer,
   },
 });
 

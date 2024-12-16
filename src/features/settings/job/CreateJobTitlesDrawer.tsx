@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const CreateJobTitlesDrawer = () => {
   // localization
-  const { t } = useTranslation('jobTitlesSettings');
+  const { t } = useTranslation('settings-job-titles');
 
   const isDrawerOpen = useAppSelector(
     (state) => state.jobReducer.isCreateJobTitleDrawerOpen

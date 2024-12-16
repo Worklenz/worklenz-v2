@@ -1,22 +1,14 @@
-import { Button, Checkbox, Drawer, Form, Input } from "antd";
+import { Button, Checkbox, Col, Drawer, Form, Input, Row } from "antd";
 import React, { ReactHTMLElement, useState } from "react";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { toggleSettingsDrawer, updateSettings } from "./scheduleSlice";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const ScheduleSettingsDrawer: React.FC = () => {
   const isDrawerOpen = useAppSelector((state) => state.scheduleReducer.isSettingsDrawerOpen);
   const dispatch = useDispatch();
-
-  const options = [
-    { label: 'Monday', value: 'Monday' },
-    { label: 'Tuesday', value: 'Tuesday' },
-    { label: 'Wednesday', value: 'Wednesday' },
-    { label: 'Thursday', value: 'Thursday' },
-    { label: 'Friday', value: 'Friday' },
-    { label: 'Saturday', value: 'Saturday' },
-    { label: 'Sunday', value: 'Sunday' },
-  ];
+  const {t} = useTranslation('schedule');
 
   const [workingDays, setWorkingDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
   const [workingHours, setWorkingHours] = useState(8);
@@ -37,34 +29,57 @@ const ScheduleSettingsDrawer: React.FC = () => {
   return (
     <div>
       <Drawer
-        title="Settings"
+        title={t('settings')}
         open={isDrawerOpen}
         onClose={() => {
           dispatch(toggleSettingsDrawer());
         }}
       >
         <Form layout="vertical">
-          <Form.Item label="Working days">
+          <Form.Item label={t('workingDays')}>
             <Checkbox.Group
-              options={options}
               defaultValue={workingDays}
               onChange={onChangeWorkingDays}
-            />
+            >
+              <Row>
+                <Col span={8} style={{paddingBottom: '8px'}}>
+                <Checkbox value="Monday">{t('monday')}</Checkbox>
+                </Col>
+                <Col span={8} style={{paddingBottom: '8px'}}>
+                <Checkbox value="Tuesday">{t('tuesday')}</Checkbox>
+                </Col>
+                <Col span={8} style={{paddingBottom: '8px'}}>
+                <Checkbox value="Wednesday">{t('wednesday')}</Checkbox>
+                </Col>
+                <Col span={8} style={{paddingBottom: '8px'}}>
+                <Checkbox value="Thursday">{t('thursday')}</Checkbox>
+                </Col>
+                <Col span={8} style={{paddingBottom: '8px'}}>
+                <Checkbox value="Friday">{t('friday')}</Checkbox>
+                </Col>
+                <Col span={8} style={{paddingBottom: '8px'}}>
+                <Checkbox value="Saturday">{t('saturday')}</Checkbox>
+                </Col>
+                <Col span={8} style={{paddingBottom: '8px'}}>
+                <Checkbox value="Sunday">{t('sunday')}</Checkbox>
+                </Col>
+              </Row>
+            </Checkbox.Group>
           </Form.Item>
 
-          <Form.Item label="Working hours">
+          <Form.Item label={t('workingHours')}>
             <Input
               max={24}
               defaultValue={workingHours}
               type="number"
-              suffix={<span style={{ color: 'rgba(0, 0, 0, 0.46)' }}>hours</span>}
+              suffix={<span style={{ color: 'rgba(0, 0, 0, 0.46)' }}>{t('hours')}</span>}
               onChange={onChangeWorkingHours}
             />
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" style={{ width: '100%' }} onClick={onSave}>
-              Save
+              {t('saveButton')}
             </Button>
           </Form.Item>
         </Form>

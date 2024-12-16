@@ -1,0 +1,24 @@
+{
+  "setupYourAccount": "Setup Your Account.",
+  "nameYourOrganization": "Name Your Organization",
+  "worklenzAccountTitle": "Pick a name for your Worklenz account.",
+  "continue": "Continue",
+  "step1Title": "Create your first project",
+
+  "step2Title": "Create your first tasks",
+  "step2InputLabel": "Type a few tasks that you are going to do in",
+  "step2AddAnother": "Add another",
+
+  "inputLabel": "What project are you working on right now?",
+  "or": "or",
+  "templateButton": "Import from template",
+  "goBack": "Go Back",
+  "cancel": "Cancel",
+  "create": "Create",
+  "templateDrawerTitle": "Select from templates",
+  "step3InputLabel": "Invite with email",
+  "addAnother": "Add another",
+  "skipForNow": "Skip for now",
+  "formTitle": "Create your first task.",
+  "step3Title": "Invite your team to work with"
+}

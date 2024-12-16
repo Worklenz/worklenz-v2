@@ -1,24 +1,7 @@
 import { ILocalSession } from '@/types/auth/local-session.types';
 import logger from '@/utils/errorLogger';
+import { deleteSession, getSession, hasSession, setSession } from '@/utils/session-helper';
 import { NavigateFunction } from 'react-router-dom';
-
-// Session helper functions
-const setSession = (user: ILocalSession): void => {
-  localStorage.setItem('session', JSON.stringify(user));
-};
-
-const getSession = (): ILocalSession | null => {
-  const session = localStorage.getItem('session');
-  return session ? JSON.parse(session) : null;
-};
-
-const hasSession = (): boolean => {
-  return !!localStorage.getItem('session');
-};
-
-const deleteSession = (): void => {
-  localStorage.removeItem('session');
-};
 
 class AuthService {
   private readonly navigate: NavigateFunction;

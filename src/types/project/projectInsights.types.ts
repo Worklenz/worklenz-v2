@@ -37,6 +37,7 @@ export interface IInsightTasks {
   status?: string;
   status_id?: string;
   status_color?: string;
+  status_name?: string;
   updated_at?: string;
   total_minutes?: string;
   overlogged_time?: string;

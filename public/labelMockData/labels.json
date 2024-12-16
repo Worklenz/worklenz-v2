@@ -1,0 +1,326 @@
+[
+  {
+    "id": "092118ed-7dab-4255-8d11-5e63f5fdb8e9",
+    "name": "Audit in Progress",
+    "color_code": "#ff9c3c",
+    "usage": "1"
+  },
+  {
+    "id": "a0703a20-4a8b-4542-bbd1-ff65a230b816",
+    "name": "Awaiting review",
+    "color_code": "#905b39",
+    "usage": "4"
+  },
+  {
+    "id": "91e341a3-a28b-4fa9-974e-ff57417c54fc",
+    "name": "Backlog",
+    "color_code": "#c178c9",
+    "usage": "1"
+  },
+  {
+    "id": "e3f5d42d-3a59-4c53-90bb-3dbb5fe4bfe7",
+    "name": "Balance Sheets",
+    "color_code": "#905b39",
+    "usage": "1"
+  },
+  {
+    "id": "dc20e711-3c41-4cf9-9583-166f9b135981",
+    "name": "Bug",
+    "color_code": "#cbbc78",
+    "usage": "10"
+  },
+  {
+    "id": "418c6bf8-f51e-4e99-92c3-17b3bbed2e44",
+    "name": "Capital Expenses",
+    "color_code": "#154c9b",
+    "usage": "1"
+  },
+  {
+    "id": "ffff24b7-5a9d-4249-bf6f-835b5dd3b2c4",
+    "name": "Closed",
+    "color_code": "#9877ca",
+    "usage": "0"
+  },
+  {
+    "id": "64bde62c-fa04-41b6-9aef-424eab44994f",
+    "name": "Contracts",
+    "color_code": "#154c9b",
+    "usage": "1"
+  },
+  {
+    "id": "7135b8fc-2622-4200-8da3-9f26439e3cff",
+    "name": "Court Filings",
+    "color_code": "#f37070",
+    "usage": "1"
+  },
+  {
+    "id": "e9e210d8-3cb6-4120-bdc6-c54211f05c63",
+    "name": "Critical",
+    "color_code": "#154c9b",
+    "usage": "3"
+  },
+  {
+    "id": "863380a2-929f-46e1-ab5d-fa2704fddc73",
+    "name": "Customer Retention",
+    "color_code": "#ca7881",
+    "usage": "1"
+  },
+  {
+    "id": "e672fdc0-120b-4079-8dc6-8e846c286928",
+    "name": "Data Migration",
+    "color_code": "#903737",
+    "usage": "1"
+  },
+  {
+    "id": "0b4b2b08-c526-4135-9168-343bdb8731f5",
+    "name": "Depositions",
+    "color_code": "#ee87c5",
+    "usage": "1"
+  },
+  {
+    "id": "c45ff34c-d614-4f33-b5f9-e160e089a106",
+    "name": "Developement",
+    "color_code": "#154c9b",
+    "usage": "1"
+  },
+  {
+    "id": "f374a357-abef-4fc6-a84f-671063391205",
+    "name": "Development",
+    "color_code": "#80ca79",
+    "usage": "17"
+  },
+  {
+    "id": "11a31513-aa80-4b6e-8a09-04fb7c82d893",
+    "name": "Documentation",
+    "color_code": "#ee87c5",
+    "usage": "3"
+  },
+  {
+    "id": "38c9fb4e-dc1e-4225-bd71-3ec6da030a33",
+    "name": "Document Review",
+    "color_code": "#7781ca",
+    "usage": "1"
+  },
+  {
+    "id": "b952c221-d2ea-4f1c-84eb-cc8fdef741bb",
+    "name": "Duplicate",
+    "color_code": "#aacb78",
+    "usage": "3"
+  },
+  {
+    "id": "a5aa94ff-9676-4d29-8522-15b59b0eea2c",
+    "name": "Enhancement",
+    "color_code": "#ff9c3c",
+    "usage": "13"
+  },
+  {
+    "id": "4c912ac3-8d5d-4712-8972-d773ed4b1cdd",
+    "name": "Equipment Costs",
+    "color_code": "#154c9b",
+    "usage": "1"
+  },
+  {
+    "id": "6fc6da11-650e-4fc3-804d-d1036e76c38c",
+    "name": "Feature",
+    "color_code": "#ca7881",
+    "usage": "38"
+  },
+  {
+    "id": "94353f3b-15a6-4ac7-8d51-e72742414f8b",
+    "name": "Fixed",
+    "color_code": "#cbc8a1",
+    "usage": "3"
+  },
+  {
+    "id": "cd36352e-8f7f-4c1e-a657-4d3752b80b55",
+    "name": "Fixing",
+    "color_code": "#80ca79",
+    "usage": "3"
+  },
+  {
+    "id": "f3c0d4fc-baa2-42de-87ac-5563473abddc",
+    "name": "Improvement",
+    "color_code": "#903737",
+    "usage": "2"
+  },
+  {
+    "id": "5e14940f-3bb7-44d2-b1ad-fc6b088bc185",
+    "name": "Income Statements",
+    "color_code": "#ff9c3c",
+    "usage": "2"
+  },
+  {
+    "id": "62817982-ceae-41c0-93cc-396266f7f208",
+    "name": "Income Tax",
+    "color_code": "#a9a9a9",
+    "usage": "1"
+  },
+  {
+    "id": "93954c61-5217-4c73-bb6d-2c54dd9ec497",
+    "name": "Legal Research",
+    "color_code": "#75c997",
+    "usage": "1"
+  },
+  {
+    "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+    "name": "Maintenance",
+    "color_code": "#fbc84c",
+    "usage": "16"
+  },
+  {
+    "id": "3410fde9-2b9c-4470-933d-41d387c41d76",
+    "name": "Marketing Analytics",
+    "color_code": "#905b39",
+    "usage": "1"
+  },
+  {
+    "id": "ed0d6690-80cf-4edc-86c6-aa9c18a8aa80",
+    "name": "Mediation",
+    "color_code": "#767676",
+    "usage": "1"
+  },
+  {
+    "id": "c1e46120-8fbb-48b0-b91e-b2d5c090361d",
+    "name": "Open",
+    "color_code": "#ca7881",
+    "usage": "0"
+  },
+  {
+    "id": "7c1504c2-7160-4966-836c-e46696d7ac28",
+    "name": "Opportunities",
+    "color_code": "#9877ca",
+    "usage": "1"
+  },
+  {
+    "id": "d6db9ab2-ef6b-43f1-ba09-89e495c79668",
+    "name": "Opportunity Management",
+    "color_code": "#bf4949",
+    "usage": "1"
+  },
+  {
+    "id": "de045ebc-608c-4049-9d87-e53d4abdee64",
+    "name": "Optimization",
+    "color_code": "#ff9c3c",
+    "usage": "0"
+  },
+  {
+    "id": "fe3557e9-3053-4f8a-b686-be19340db6b9",
+    "name": "Personnel Costs",
+    "color_code": "#75c9c0",
+    "usage": "1"
+  },
+  {
+    "id": "12fc1590-ecfd-4a11-bfcd-746e7f847706",
+    "name": "Prospective Client",
+    "color_code": "#bb774c",
+    "usage": "1"
+  },
+  {
+    "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+    "name": "QA",
+    "color_code": "#154c9b",
+    "usage": "12"
+  },
+  {
+    "id": "abffe039-33e8-462b-8a12-74ad35ac2730",
+    "name": "Ready for Dev",
+    "color_code": "#7781ca",
+    "usage": "3"
+  },
+  {
+    "id": "2e149f2f-2a6a-4530-9aac-ad3e7344ca60",
+    "name": "Refactoring",
+    "color_code": "#ff9c3c",
+    "usage": "9"
+  },
+  {
+    "id": "c0fb730d-a3f0-442c-9c04-e7487430e274",
+    "name": "Regression",
+    "color_code": "#cb9878",
+    "usage": "3"
+  },
+  {
+    "id": "575685ff-d691-4f54-b40a-5f573f349f23",
+    "name": "Reporting and Analytics",
+    "color_code": "#bb774c",
+    "usage": "0"
+  },
+  {
+    "id": "2b9c20da-b1ec-42e5-8a7c-59cf3e7a6fdf",
+    "name": "Research",
+    "color_code": "#154c9b",
+    "usage": "8"
+  },
+  {
+    "id": "bf16af40-4a65-4371-bf26-8f2bd98a9c43",
+    "name": "Risk Management",
+    "color_code": "#ff9c3c",
+    "usage": "0"
+  },
+  {
+    "id": "a20d32a6-de84-4fc5-a2aa-3e92c280743c",
+    "name": "Sales Metrics",
+    "color_code": "#ca7881",
+    "usage": "1"
+  },
+  {
+    "id": "7a31f7b7-4d71-4269-80ad-bef48d79960d",
+    "name": "Sales Tax",
+    "color_code": "#ee87c5",
+    "usage": "1"
+  },
+  {
+    "id": "abf4e747-1c6e-48fb-be2a-ffa72e532892",
+    "name": "SE",
+    "color_code": "#767676",
+    "usage": "0"
+  },
+  {
+    "id": "7cf2d97a-677e-422c-b825-5a836eb40a63",
+    "name": "Security",
+    "color_code": "#767676",
+    "usage": "16"
+  },
+  {
+    "id": "ceba271c-a5b0-4c18-a4fb-24fbb2c4a836",
+    "name": "Sub task",
+    "color_code": "#bb774c",
+    "usage": "0"
+  },
+  {
+    "id": "c323abf2-5fa8-4f2b-b36e-0a600e78d3c9",
+    "name": "Testing",
+    "color_code": "#aacb78",
+    "usage": "5"
+  },
+  {
+    "id": "78cdacb2-ebb5-45db-aae2-483977cc0d37",
+    "name": "Travel Expenses",
+    "color_code": "#75c9c0",
+    "usage": "2"
+  },
+  {
+    "id": "e565cf6c-ae22-4408-a7e7-1b32109871ae",
+    "name": "UI/UX",
+    "color_code": "#a9a9a9",
+    "usage": "5"
+  },
+  {
+    "id": "792eb58e-0dce-4214-8551-d7b7288320fd",
+    "name": "UI/UX Bug",
+    "color_code": "#cbbc78",
+    "usage": "3"
+  },
+  {
+    "id": "b6638b50-0f7d-4332-977f-b4cab5e440f1",
+    "name": "User Stories",
+    "color_code": "#a9a9a9",
+    "usage": "0"
+  },
+  {
+    "id": "2aad9173-4ee7-4c95-a005-a7cbcc93b6a5",
+    "name": "User Training",
+    "color_code": "#cbc8a1",
+    "usage": "1"
+  }
+]

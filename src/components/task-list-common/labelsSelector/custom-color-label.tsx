@@ -14,6 +14,7 @@ const CustomColorLabel = ({ label }: { label: ITaskLabel | null }) => {
         justifyItems: 'center',
         height: 18,
         width: 'fit-content',
+        fontSize: 11,
       }}
     >
       <Typography.Text style={{ fontSize: 11, color: colors.darkGray }}>

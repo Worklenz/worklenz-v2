@@ -6,121 +6,151 @@ import {
   Empty,
   Flex,
   Segmented,
-  Skeleton,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from 'antd';
-import React, { useState } from 'react';
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { ProjectType } from '@/types/project.types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import AddFavouriteProjectButton from './add-favourite-project-button';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { homePageApiService } from '@/api/home-page/home-page.api.service';
+import { useTranslation } from 'react-i18next';
 
 const RecentAndFavouriteProjectList = () => {
   const [projectSegment, setProjectSegment] = useState<'Recent' | 'Favourites'>('Recent');
   const [isLoading, setIsLoading] = useState(false);
-  const projectsList = useAppSelector(state => state.projectsReducer.projects);
+  const [projectsList, setProjectsList] = useState<IProjectViewModel[]>([]);
+  const { t } = useTranslation('home');
 
-  // this project list check wheather it's recent projects or favourite projects
-  const activeProjectsList =
-    projectSegment === 'Recent'
-      ? projectsList.data
-      : projectsList.data.filter(project => project.favorite);
+  const myProjectsActiveFilterKey = 'my-dashboard-active-projects-filter';
 
-  // function for handle refresh
-  const handleRefresh = () => {
+  const getActiveProjectsFilter = useCallback(() => {
+    return +(localStorage.getItem(myProjectsActiveFilterKey) || 0);
+  }, [myProjectsActiveFilterKey]);
+
+  const setActiveProjectsFilter = useCallback(
+    (value: number) => {
+      localStorage.setItem(myProjectsActiveFilterKey, value.toString());
+    },
+    [myProjectsActiveFilterKey]
+  );
+
+  const getProjectsList = useCallback(async () => {
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500);
-  };
-
-  // function for handle segmaent change between recent and favourites
-  const handleSegmentChange = (value: 'Recent' | 'Favourites') => {
-    if (value === 'Recent') {
-      setProjectSegment('Recent');
-      handleRefresh();
-    } else {
-      setProjectSegment('Favourites');
-      handleRefresh();
+    try {
+      const res = await homePageApiService.getProjects(getActiveProjectsFilter());
+      if (res.done) {
+        setProjectsList(res.body);
+      }
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [getActiveProjectsFilter]);
 
-  // table columns
-  const columns: TableProps<IProjectViewModel>['columns'] = [
-    {
-      key: 'completeBtn',
-      width: 32,
-      render: (record: ProjectType) => (
-        <AddFavouriteProjectButton key={record.projectId} record={record} />
-      ),
+  const handleRefresh = useCallback(() => {
+    getProjectsList();
+  }, [getProjectsList]);
+
+  const handleSegmentChange = useCallback(
+    (value: 'Recent' | 'Favourites') => {
+      setProjectSegment(value);
+      setActiveProjectsFilter(value === 'Recent' ? 0 : 1);
+      getProjectsList();
     },
-    {
-      key: 'name',
-      render: (record: ProjectType) => (
-        <Typography.Paragraph key={record.projectId} style={{ margin: 0, paddingInlineEnd: 6 }}>
-          <Badge color={record.projectColor} style={{ marginInlineEnd: 4 }} />
-          {record.projectName}
-        </Typography.Paragraph>
-      ),
-    },
-  ];
+    [getProjectsList, setActiveProjectsFilter]
+  );
+
+  const columns = useMemo<TableProps<IProjectViewModel>['columns']>(
+    () => [
+      {
+        key: 'completeBtn',
+        width: 32,
+        render: (record: IProjectViewModel) => (
+          <AddFavouriteProjectButton
+            key={record.id}
+            record={record}
+            handleRefresh={handleRefresh}
+          />
+        ),
+      },
+      {
+        key: 'name',
+        render: (record: IProjectViewModel) => (
+          <Typography.Paragraph key={record.id} style={{ margin: 0, paddingInlineEnd: 6 }}>
+            <Badge color={record.color_code} style={{ marginInlineEnd: 4 }} />
+            {record.name}
+          </Typography.Paragraph>
+        ),
+      },
+    ],
+    [handleRefresh]
+  );
+
+  useEffect(() => {
+    getProjectsList();
+  }, [getProjectsList]);
+
+  const emptyDescription = useMemo(
+    () => (
+      <Typography.Text>
+        {projectSegment === 'Recent'
+          ? t('projects.noRecentProjects')
+          : t('projects.noFavouriteProjects')}
+      </Typography.Text>
+    ),
+    [projectSegment, t]
+  );
 
   return (
     <Card
       title={
         <Typography.Title level={5} style={{ marginBlockEnd: 0 }}>
-          Projects ({activeProjectsList.length})
+          {t('projects.title')} ({projectsList.length})
         </Typography.Title>
       }
       extra={
         <Flex gap={8} align="center">
-          <Button
-            shape="circle"
-            icon={<SyncOutlined spin={isLoading} />}
-            onClick={() => handleRefresh()}
-          />
+          <Tooltip title={t('projects.refreshProjects')}>
+            <Button
+              shape="circle"
+              icon={<SyncOutlined spin={isLoading} />}
+              onClick={handleRefresh}
+            />
+          </Tooltip>
           <Segmented<'Recent' | 'Favourites'>
             options={['Recent', 'Favourites']}
             defaultValue="Recent"
-            onChange={(value: 'Recent' | 'Favourites') => handleSegmentChange(value)}
+            onChange={handleSegmentChange}
           />
         </Flex>
       }
       style={{ width: '100%' }}
     >
-      {isLoading ? (
-        <Skeleton />
-      ) : (
-        <div>
-          {activeProjectsList.length === 0 ? (
-            <Empty
-              image="https://app.worklenz.com/assets/images/empty-box.webp"
-              imageStyle={{ height: 60 }}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-              description={
-                <Typography.Text>
-                  {projectSegment === 'Recent'
-                    ? 'You have not assigned to any project yet.'
-                    : 'No any favourite projects yet.'}
-                </Typography.Text>
-              }
-            />
-          ) : (
-            <Table
-              className="custom-two-colors-row-table"
-              rowKey="id"
-              dataSource={activeProjectsList}
-              columns={columns}
-              showHeader={false}
-              pagination={false}
-            />
-          )}
-        </div>
-      )}
+      <div>
+        {projectsList.length === 0 ? (
+          <Empty
+            image="https://app.worklenz.com/assets/images/empty-box.webp"
+            imageStyle={{ height: 60 }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+            description={emptyDescription}
+          />
+        ) : (
+          <Table
+            className="custom-two-colors-row-table"
+            rowKey="id"
+            dataSource={projectsList}
+            columns={columns}
+            showHeader={false}
+            pagination={false}
+            loading={isLoading}
+          />
+        )}
+      </div>
     </Card>
   );
 };

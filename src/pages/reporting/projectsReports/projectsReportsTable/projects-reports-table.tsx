@@ -20,7 +20,8 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleProjectReportsDrawer } from '@features/reporting/projectReports/projectReportsSlice';
 import { ExpandAltOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
-import CustomTableTitle from '@components/CustomTableTitle';
+import CustomTableTitle from '@/components/CustomTableTitle';
+import { useTranslation } from 'react-i18next';
 
 type ProjectReportsTableProps = {
   projectList: any[];
@@ -28,6 +29,9 @@ type ProjectReportsTableProps = {
 
 const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // localization
+  const { t } = useTranslation('reporting-projects');
 
   const dispatch = useAppDispatch();
 
@@ -44,7 +48,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
   const columns: TableColumnsType = [
     {
       key: 'project',
-      title: <CustomTableTitle title="Project" />,
+      title: <CustomTableTitle title={t('projectColumn')} />,
       width: 300,
       onCell: (record) => {
         return {
@@ -71,7 +75,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
               gap: 8,
             }}
           >
-            Open <ExpandAltOutlined />
+            {t('openButton')} <ExpandAltOutlined />
           </Button>
         </Flex>
       ),
@@ -80,7 +84,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'estimatedVsActual',
-      title: <CustomTableTitle title="Estimated vs Actual" />,
+      title: <CustomTableTitle title={t('estimatedVsActualColumn')} />,
       render: (record) => (
         <EstimatedVsActualCell
           actualTime={record.actual_time}
@@ -93,13 +97,13 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'tasksProgress',
-      title: <CustomTableTitle title="Tasks Progress" />,
+      title: <CustomTableTitle title={t('tasksProgressColumn')} />,
       render: (record) => <TasksProgressCell tasksStat={record.tasks_stat} />,
       width: 200,
     },
     {
       key: 'lastActivity',
-      title: <CustomTableTitle title="Last Activity" />,
+      title: <CustomTableTitle title={t('lastActivityColumn')} />,
       render: (record) => (
         <LastActivityCell
           activity={record.last_activity?.last_activity_string}
@@ -109,14 +113,14 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'status',
-      title: <CustomTableTitle title="Status" />,
+      title: <CustomTableTitle title={t('statusColumn')} />,
       render: (record) => <ProjectStatusCell status={record.status_name} />,
       sorter: (a, b) => a.status_name.localeCompare(b.status_name),
       width: 200,
     },
     {
       key: 'dates',
-      title: <CustomTableTitle title="Start/End Dates" />,
+      title: <CustomTableTitle title={t('datesColumn')} />,
       render: (record) => (
         <ProjectDatesCell
           startDate={record.start_date}
@@ -127,7 +131,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'daysLeft',
-      title: <CustomTableTitle title="Days Left/Overdue" />,
+      title: <CustomTableTitle title={t('daysLeftColumn')} />,
       render: (record) => (
         <ProjectDaysLeftAndOverdueCell daysLeft={record.days_left} />
       ),
@@ -135,7 +139,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'projectHealth',
-      title: <CustomTableTitle title="Project Health" />,
+      title: <CustomTableTitle title={t('projectHealthColumn')} />,
       render: (record) => <ProjectHealthCell />,
       width: 200,
     },
@@ -153,27 +157,27 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
     },
     {
       key: 'projectUpdate',
-      title: <CustomTableTitle title="Project Update" />,
+      title: <CustomTableTitle title={t('projectUpdateColumn')} />,
       render: (record) => <ProjectUpdateCell updates={record.update} />,
       width: 200,
     },
     {
       key: 'client',
-      title: <CustomTableTitle title="Client" />,
+      title: <CustomTableTitle title={t('clientColumn')} />,
       render: (record) => <ProjectClientCell client={record.client} />,
       sorter: (a, b) => a.client.localeCompare(b.client),
       width: 200,
     },
     {
       key: 'team',
-      title: <CustomTableTitle title="Team" />,
+      title: <CustomTableTitle title={t('teamColumn')} />,
       render: (record) => <ProjectTeamCell team={record.team_name} />,
       sorter: (a, b) => a.team_name.localeCompare(b.team_name),
       width: 200,
     },
     {
       key: 'projectManager',
-      title: <CustomTableTitle title="Project Manager" />,
+      title: <CustomTableTitle title={t('projectManagerColumn')} />,
       render: (record) => (
         <ProjectManagerCell manager={record.project_manager} />
       ),
@@ -204,7 +208,7 @@ const ProjectsReportsTable = ({ projectList }: ProjectReportsTableProps) => {
         scroll={{ x: 'max-content' }}
         onRow={(record) => {
           return {
-            style: { height: 56 },
+            style: { height: 56, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',
           };
         }}

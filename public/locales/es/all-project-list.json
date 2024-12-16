@@ -1,0 +1,17 @@
+{
+  "name": "Nombre",
+  "client": "Cliente",
+  "category": "Categoría",
+  "status": "Estado",
+  "tasksProgress": "Progreso de tareas",
+  "updated_at": "Última actualización",
+  "members": "Miembros",
+  "setting": "Configuración",
+  "archive": "Archivar",
+  "projects": "Proyectos",
+  "refreshProjects": "Actualizar proyectos",
+  "all": "Todos",
+  "favorites": "Favoritos",
+  "archived": "Archivados",
+  "placeholder": "Buscar por nombre"
+}

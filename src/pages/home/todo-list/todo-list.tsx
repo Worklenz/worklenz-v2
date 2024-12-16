@@ -1,8 +1,9 @@
-import { SyncOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   Alert,
   Button,
   Card,
+  ConfigProvider,
   Flex,
   Form,
   Input,
@@ -10,24 +11,24 @@ import {
   Skeleton,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from 'antd';
-import React, { useRef, useState } from 'react';
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { TodoType } from '@/types/todo.types';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useEffect, useRef, useState } from 'react';
 
-import { addTodo } from '@features/todo/todoSlice';
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
-import { nanoid } from '@reduxjs/toolkit';
 import TodoDoneButton from './todo-done-button';
+import { IMyTask } from '@/types/home/my-tasks.types';
+import { homePageApiService } from '@/api/home-page/home-page.api.service';
+import { useTranslation } from 'react-i18next';
+import { colors } from '@/styles/colors';
 
 const TodoList = () => {
-  const todoList = useAppSelector((state) => state.todoReducer.todoList);
-  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isAlertShowing, setIsAlertShowing] = useState(false);
   const [form] = Form.useForm();
+  const [personalTasks, setPersonalTasks] = useState<IMyTask[]>([]);
+  const { t } = useTranslation('home');
 
   // ref for todo input field
   const todoInputRef = useRef<InputRef | null>(null);
@@ -38,71 +39,112 @@ const TodoList = () => {
     setTimeout(() => setIsLoading(false), 500);
   };
 
-  // function to handle todo submit
-  const handleTodoSubmit = (values: any) => {
-    const newTodo: TodoType = {
-      todoId: nanoid(),
-      todoName: values.name,
-      isCompleted: false,
-    };
-    setIsAlertShowing(false);
-    dispatch(addTodo(newTodo));
-    form.resetFields();
+  const getPersonalTasks = async () => {
+    setIsLoading(true);
+    const res = await homePageApiService.getPersonalTasks();
+    if (res.done) {
+      setPersonalTasks(res.body);
+    }
+    setIsLoading(false);
+  };
 
-    //? there is an issue (input field focused but can't type) occurs when immediately focus the input, so this timeout fuction held to create a small delay
-    setTimeout(() => {
-      if (todoInputRef.current) {
-        todoInputRef.current.focus({
-          cursor: 'start',
-        });
+  // function to handle todo submit
+  const handleTodoSubmit = async (values: any) => {
+    const newTodo: IMyTask = {
+      name: values.name,
+      done: false,
+      is_task: false,
+      color_code: '#000',
+    };
+
+    const res = await homePageApiService.createPersonalTask(newTodo);
+    if (res.done) {
+      getPersonalTasks();
+    }
+
+    setIsAlertShowing(false);
+    form.resetFields();
+  };
+
+  const handleCompleteTodo = async (id: string | undefined) => {
+    if (!id) return;
+    const updatedTasks = personalTasks.map(task => {
+      if (task.id === id) {
+        return { ...task, done: true };
       }
-    }, 100);
+      return task;
+    });
+    setPersonalTasks(updatedTasks);
+    
+    const res = await homePageApiService.markPersonalTaskAsDone(id);
+    if (res.done) {
+      setTimeout(() => {
+        getPersonalTasks();
+      }, 500);
+    }
   };
 
   // table columns
-  const columns: TableProps<TodoType>['columns'] = [
+  const columns: TableProps<IMyTask>['columns'] = [
     {
       key: 'completeBtn',
       width: 32,
-      render: (record: TodoType) => <TodoDoneButton record={record} />,
+      render: (record: IMyTask) => (
+        <ConfigProvider wave={{ disabled: true }}>
+          <Tooltip title={t('home:todoList.markAsDone')}>
+            <Button
+              type="text"
+              className="borderless-icon-btn"
+              style={{ backgroundColor: colors.transparent }}
+              shape="circle"
+              icon={<CheckCircleOutlined style={{ color: record.done ? colors.limeGreen : colors.lightGray }} />}
+              onClick={() => handleCompleteTodo(record.id)}
+            />
+          </Tooltip>
+        </ConfigProvider>
+      ),
     },
     {
       key: 'name',
-      render: (record: TodoType) => (
+      render: (record: IMyTask) => (
         <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
-          {record.todoName}
+          <Tooltip title={record.name}>{record.name}</Tooltip>
         </Typography.Paragraph>
       ),
     },
   ];
 
+  useEffect(() => {
+    getPersonalTasks();
+  }, []);
+
   return (
     <Card
       title={
         <Typography.Title level={5} style={{ marginBlockEnd: 0 }}>
-          To do list ({todoList.length})
+          {t('home:todoList.title')} ({personalTasks.length})
         </Typography.Title>
       }
       extra={
-        <Button
-          shape="circle"
-          icon={<SyncOutlined spin={isLoading} />}
-          onClick={() => handleRefresh()}
-        />
+        <Tooltip title={t('home:todoList.refreshTasks')}>
+          <Button
+            shape="circle"
+            icon={<SyncOutlined spin={isLoading} />}
+            onClick={() => handleRefresh()}
+          />
+        </Tooltip>
       }
       style={{ width: '100%' }}
     >
-      {isLoading ? (
-        <Skeleton />
-      ) : (
+      {(
         <div>
           <Form form={form} onFinish={handleTodoSubmit}>
             <Form.Item name="name">
               <Flex vertical gap={4}>
                 <Input
                   ref={todoInputRef}
-                  placeholder="+ Add Task"
-                  onChange={(e) => {
+                  placeholder={t('home:todoList.addTask')}
+                  onChange={e => {
                     const inputValue = e.currentTarget.value;
 
                     if (inputValue.length >= 1) setIsAlertShowing(true);
@@ -113,7 +155,8 @@ const TodoList = () => {
                   <Alert
                     message={
                       <Typography.Text style={{ fontSize: 11 }}>
-                        Press <strong>Enter</strong> to create.
+                        {t('home:todoList.pressEnter')} <strong>Enter</strong>{' '}
+                        {t('home:todoList.toCreate')}
                       </Typography.Text>
                     }
                     type="info"
@@ -128,22 +171,21 @@ const TodoList = () => {
             </Form.Item>
           </Form>
 
-          {todoList.length === 0 ? (
+          {personalTasks.length === 0 ? (
             <EmptyListPlaceholder
               imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-              text=" No tasks to show."
+              text={t('home:todoList.noTasks')}
             />
           ) : (
             <Table
               className="custom-two-colors-row-table"
-              rowKey={(record) => record.todoId}
-              dataSource={todoList}
+              rowKey={record => record.id || ''}
+              dataSource={personalTasks}
               columns={columns}
               showHeader={false}
               pagination={false}
-              // scroll={{
-              //     y: 55 * 5,
-              // }}
+              size="small"
+              loading={isLoading}
             />
           )}
         </div>

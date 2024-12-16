@@ -22,7 +22,7 @@ const ProjectCategoriesFilterDropdown = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // localization
-  const { t } = useTranslation('reportingProjectsFilters');
+  const { t } = useTranslation('reporting-projects-filters');
 
   // mock category list------------> Temperory
   type CategoryType = {

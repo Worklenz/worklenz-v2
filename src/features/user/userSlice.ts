@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ILocalSession } from '@/types/auth/local-session.types';
+import { getSession } from '@/utils/session-helper';
 
-const sessionData = JSON.parse(localStorage.getItem('session') || '{}');
+const sessionData = getSession();
+
 const initialState: ILocalSession = {
   id: sessionData?.id || '',
   name: sessionData?.name || '',

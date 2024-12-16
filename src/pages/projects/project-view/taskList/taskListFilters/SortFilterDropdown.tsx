@@ -7,6 +7,7 @@ import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React, { useState } from 'react';
 import { colors } from '../../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
 const SortFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);
@@ -14,8 +15,10 @@ const SortFilterDropdown = () => {
     Record<string, 'ascending' | 'descending'>
   >({});
 
+  const themeMode = useAppSelector((state) => state.themeReducer.mode)
+
   // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
@@ -53,7 +56,7 @@ const SortFilterDropdown = () => {
       <List style={{ padding: 0 }}>
         {sortFieldsList.map((item) => (
           <List.Item
-            className="custom-list-item"
+            className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
             key={item.key}
             style={{
               display: 'flex',
@@ -87,7 +90,7 @@ const SortFilterDropdown = () => {
 
   return (
     <Dropdown
-      overlayClassName="custom-dropdown"
+      overlayClassName='custom-dropdown'
       trigger={['click']}
       dropdownRender={() => sortDropdownContent}
     >

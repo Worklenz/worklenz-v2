@@ -17,7 +17,7 @@ const ChargesTable: React.FC = () => {
   const perUserValue = 5.99;
   const users = 23;
 
-  const { t } = useTranslation('currentBill');
+  const { t } = useTranslation('current-bill');
 
   const columns: TableProps['columns'] = [
     {

@@ -9,7 +9,7 @@ import './admin-center-sidebar.css';
 
 const AdminCenterSidebar: React.FC = () => {
   // localization
-  const { t } = useTranslation('adminCenterSidebar');
+  const { t } = useTranslation('admin-center-sidebar');
   const location = useLocation();
 
   type MenuItem = Required<MenuProps>['items'][number];

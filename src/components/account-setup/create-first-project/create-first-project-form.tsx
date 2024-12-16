@@ -17,7 +17,7 @@ interface CreateFirstProjectProps {
 const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue, onGoBack }) => {
   // State & Hooks
   const dispatch = useDispatch();
-  const { t } = useTranslation('createFirstProjectFormPage');
+  const { t } = useTranslation('create-first-project-form');
   const [inputValue, setInputValue] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -59,7 +59,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue,
     });
   };
 
-  const handleTemplateImport = () => {
+  const handleTemplateSelected = () => {
     console.log('template imported');
   };
 
@@ -67,8 +67,9 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue,
   const formStyles = {
     width: '600px',
     paddingBottom: '1rem',
-    marginBottom: '3rem',
     marginTop: '3rem',
+    height: '100%',
+    overflow: 'hidden'
   };
 
   const labelStyles = {
@@ -134,7 +135,7 @@ const CreateFirstProjectForm: React.FC<CreateFirstProjectProps> = ({ onContinue,
             </div>
           }
         >
-          <TemplateDrawer showBothTabs={false} onTemplateImport={handleTemplateImport} />
+          <TemplateDrawer showBothTabs={false} templateSelected={handleTemplateSelected} />
         </Drawer>
       </div>
 

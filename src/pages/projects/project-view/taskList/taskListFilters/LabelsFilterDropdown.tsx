@@ -16,9 +16,10 @@ import { useEffect, useRef, useState } from 'react';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const LabelsFilterDropdown = (props: { labels: ITaskLabel[] }) => {
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
   const labelInputRef = useRef<InputRef>(null);
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const [filteredLabelList, setFilteredLabelList] = useState<ITaskLabel[]>(props.labels);
@@ -27,6 +28,8 @@ const LabelsFilterDropdown = (props: { labels: ITaskLabel[] }) => {
   useEffect(() => {
     setFilteredLabelList(props.labels);
   }, [props.labels]);
+
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // handle selected filters count
   const handleSelectedFiltersCount = (checked: boolean) => {
@@ -74,7 +77,7 @@ const LabelsFilterDropdown = (props: { labels: ITaskLabel[] }) => {
           {filteredLabelList.length ? (
             filteredLabelList.map(label => (
               <List.Item
-                className="custom-list-item"
+                className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
                 key={label.id}
                 style={{
                   display: 'flex',

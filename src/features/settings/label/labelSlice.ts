@@ -7,22 +7,22 @@ type LabelState = {
 
 const initialState: LabelState = {
   labelList: [
-    { labelId: 'label1', labelName: 'Bug', labelColor: '#dcbfe3' },
-    { labelId: 'label2', labelName: 'Test', labelColor: '#bce0cd' },
+    { labelId: 'label1', labelName: 'Bug', labelColor: '#ff9c3c' },
+    { labelId: 'label2', labelName: 'Test', labelColor: '#905b39' },
     {
       labelId: 'label3',
       labelName: 'Documentation',
-      labelColor: '#a3c4dc',
+      labelColor: '#cbbc78',
     },
     {
       labelId: 'label4',
       labelName: 'Template',
-      labelColor: '#e2dcbf',
+      labelColor: '#154c9b',
     },
     {
       labelId: 'label5',
       labelName: 'UI',
-      labelColor: '#dce3a3',
+      labelColor: '#f37070',
     },
   ],
 };

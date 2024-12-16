@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const AdminCenterLayout: React.FC = () => {
   const isTablet = useMediaQuery({ query: '(min-width:768px)' });
   const isMarginAvailable = useMediaQuery({ query: '(min-width: 1000px)' });
-  const { t } = useTranslation('adminCenterSidebar');
+  const { t } = useTranslation('admin-center-sidebar');
 
   return (
     <div

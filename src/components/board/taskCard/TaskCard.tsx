@@ -32,6 +32,7 @@ import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { deleteTask } from '../../../features/tasks/taskSlice';
 import SubTaskCard from '../subTaskCard/SubTaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 interface taskProps {
   task: TaskType;
@@ -50,6 +51,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
   const handleDateChange = (date: Dayjs | null) => {
     setDueDate(date);
   };
+  const {t} = useTranslation('kanban-board')
 
   const formatDate = (date: Dayjs | null) => {
     if (!date) return '';
@@ -58,9 +60,9 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     const tomorrow = today.add(1, 'day');
 
     if (date.isSame(today, 'day')) {
-      return 'Today';
+      return t('today');
     } else if (date.isSame(tomorrow, 'day')) {
-      return 'Tomorrow';
+      return t('tomorrow');
     } else {
       return date.isSame(today, 'year')
         ? date.format('MMM DD')
@@ -88,7 +90,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     {
       label: (
         <span>
-          <UserAddOutlined /> <Typography.Text>Assign to me</Typography.Text>
+          <UserAddOutlined /> <Typography.Text>{t('assignToMe')}</Typography.Text>
         </span>
       ),
       key: '1',
@@ -96,7 +98,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     {
       label: (
         <span>
-          <InboxOutlined /> <Typography.Text>Archive</Typography.Text>
+          <InboxOutlined /> <Typography.Text>{t('archive')}</Typography.Text>
         </span>
       ),
       key: '2',
@@ -104,7 +106,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     {
       label: (
         <span onClick={handleDelete}>
-          <DeleteOutlined /> <Typography.Text>Delete</Typography.Text>
+          <DeleteOutlined /> <Typography.Text>{t('delete')}</Typography.Text>
         </span>
       ),
       key: '3',
@@ -276,7 +278,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                             ? 'red-colored'
                             : ''
                   }`}
-                  placeholder="Due date"
+                  placeholder={t('dueDate')}
                   style={{
                     fontSize: '12px',
                     opacity: dueDate ? 1 : 0,

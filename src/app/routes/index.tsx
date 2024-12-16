@@ -12,11 +12,11 @@ interface GuardProps {
 }
 
 export const AuthGuard = ({ children }: GuardProps) => {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useAuth().isAuthenticated();
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

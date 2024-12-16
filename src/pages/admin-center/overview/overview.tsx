@@ -5,7 +5,7 @@ import {
   PhoneOutlined,
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
-import { Button, Card, Input, Tooltip, Typography } from 'antd';
+import { Button, Card, Input, notification, Tooltip, Typography } from 'antd';
 import React, { useState } from 'react';
 import OrganizationAdminsTable from './organization-admins-table';
 import TextArea from 'antd/es/input/TextArea';
@@ -34,8 +34,17 @@ const Overview: React.FC = () => {
     setIsEditableContactNumber(true);
   };
 
+  const [api, contextHolder] = notification.useNotification()
+
   const handleBlur = () => {
     setIsEditable(false);
+    if (name.trim() === '') {
+      api.open({
+        message: '',
+        description: 'Name is required',
+        duration: 4.5,
+      });
+    }
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -68,6 +77,7 @@ const Overview: React.FC = () => {
 
   return (
     <div style={{ width: '100%' }}>
+      {contextHolder}
       <PageHeader
         title={<span>{t('overview')}</span>}
         style={{ padding: '16px 0' }}
@@ -161,7 +171,9 @@ const Overview: React.FC = () => {
             }}
           >
             <span style={{ marginRight: '8px' }}>
-              <MailOutlined />
+              <Tooltip title='Email Address'>
+                <MailOutlined />
+              </Tooltip>
             </span>
             raveeshadilanka1999@gmail.com
           </Text>

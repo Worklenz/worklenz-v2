@@ -1,8 +1,4 @@
-import {
-  DeleteOutlined,
-  ExclamationCircleFilled,
-  SearchOutlined,
-} from '@ant-design/icons';
+import { DeleteOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -11,6 +7,7 @@ import {
   Popconfirm,
   Table,
   TableProps,
+  Tooltip,
   Typography,
 } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
@@ -21,11 +18,16 @@ import CustomColorsCategoryTag from '@features/settings/categories/CustomColorsC
 import { deleteCategory } from '@features/settings/categories/categoriesSlice';
 import { categoriesApiService } from '@/api/settings/categories/categories.api.service';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const CategoriesSettings = () => {
   // localization
   const { t } = useTranslation('settings-categories');
 
+  useDocumentTitle('Manage Categories');
+
+  const dispatch = useAppDispatch();
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
   const [categories, setCategories] = useState<IProjectCategory[]>([]);
@@ -33,11 +35,15 @@ const CategoriesSettings = () => {
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const filteredData = useMemo(() => categories.filter(record => 
-    Object.values(record).some(value => 
-      value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  ), [categories, searchQuery]);
+  const filteredData = useMemo(
+    () =>
+      categories.filter(record =>
+        Object.values(record).some(value =>
+          value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      ),
+    [categories, searchQuery]
+  );
 
   const getCategories = useMemo(() => {
     setLoading(true);
@@ -59,9 +65,7 @@ const CategoriesSettings = () => {
     {
       key: 'category',
       title: t('categoryColumn'),
-      render: (record: CategoryType) => (
-        <CustomColorsCategoryTag category={record} />
-      ),
+      render: (record: CategoryType) => <CustomColorsCategoryTag category={record} />,
     },
     {
       key: 'associatedTask',
@@ -75,16 +79,14 @@ const CategoriesSettings = () => {
         hoverRow === record.categoryId && (
           <Popconfirm
             title={t('deleteConfirmationTitle')}
-            icon={
-              <ExclamationCircleFilled
-                style={{ color: colors.vibrantOrange }}
-              />
-            }
+            icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
             okText={t('deleteConfirmationOk')}
             cancelText={t('deleteConfirmationCancel')}
             onConfirm={() => dispatch(deleteCategory(record.categoryId))}
           >
-            <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            <Tooltip title="Delete">
+              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+            </Tooltip>
           </Popconfirm>
         ),
     },
@@ -95,15 +97,10 @@ const CategoriesSettings = () => {
       style={{ width: '100%' }}
       title={
         <Flex justify="flex-end">
-          <Flex
-            gap={8}
-            align="center"
-            justify="flex-end"
-            style={{ width: '100%', maxWidth: 400 }}
-          >
+          <Flex gap={8} align="center" justify="flex-end" style={{ width: '100%', maxWidth: 400 }}>
             <Input
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.currentTarget.value)}
+              onChange={e => setSearchQuery(e.currentTarget.value)}
               placeholder={t('searchPlaceholder')}
               style={{ maxWidth: 232 }}
               suffix={<SearchOutlined />}
@@ -119,12 +116,14 @@ const CategoriesSettings = () => {
         className="custom-two-colors-row-table"
         dataSource={filteredData}
         columns={columns}
-        rowKey={(record) => record.categoryId}
+        rowKey={record => record.categoryId}
         pagination={{
           showSizeChanger: true,
           defaultPageSize: 20,
+          pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
+          size: 'small',
         }}
-        onRow={(record) => {
+        onRow={record => {
           return {
             onMouseEnter: () => setHoverRow(record.categoryId),
             onMouseLeave: () => setHoverRow(null),

@@ -8,7 +8,6 @@ import {
 } from './projectMembersSlice';
 import { colors } from '../../../../styles/colors';
 import CustomAvatar from '../../../../components/CustomAvatar';
-import { ProjectMemberType } from '../../../../types/projectMember.types';
 import { nanoid } from '@reduxjs/toolkit';
 // import { MemberType } from '../../../../types/member.types';
 // import { nanoid } from '@reduxjs/toolkit';
@@ -40,7 +39,7 @@ const ProjectMemberDrawer = () => {
   // this function for handle form submit
   const handleFormSubmit = async (values: any) => {
     try {
-      const newMember: ProjectMemberType = {
+      const newMember: any = {
         memberId: nanoid(),
         memberName: values.name,
         memberEmail: values.email,
@@ -48,7 +47,6 @@ const ProjectMemberDrawer = () => {
         completedTasks: 0,
         totalAssignedTasks: 0,
       };
-      dispatch(addProjectMember(newMember));
       dispatch(toggleProjectMemberDrawer());
       form.resetFields();
     } catch (error) {
@@ -72,6 +70,7 @@ const ProjectMemberDrawer = () => {
           label="Add members by adding their name or email"
         >
           <Select
+            placeholder="Type name or email"
             showSearch
             onSearch={onSearch}
             onChange={onChange}

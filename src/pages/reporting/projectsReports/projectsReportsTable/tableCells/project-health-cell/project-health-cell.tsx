@@ -1,9 +1,10 @@
 import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
 import React, { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { healthStatusData } from '../../../../../../lib/project/projectConstants';
-import { colors } from '../../../../../../styles/colors';
+import { healthStatusData } from '@/lib/project/projectConstants';
+import { colors } from '@/styles/colors';
 import './project-health-cell.css';
+import { useTranslation } from 'react-i18next';
 
 type HealthStatusDataType = {
   value: string;
@@ -15,6 +16,9 @@ const ProjectHealthCell = () => {
   const [projectHealth, setProjectHealth] =
     useState<HealthStatusDataType | null>(healthStatusData[0] || null);
 
+  // localization
+  const { t } = useTranslation('reporting-projects');
+
   // health selection options
   const healthOptions = healthStatusData.map((status) => ({
     key: status.value,
@@ -22,7 +26,7 @@ const ProjectHealthCell = () => {
       <Typography.Text
         style={{ display: 'flex', alignItems: 'center', gap: 4 }}
       >
-        <Badge color={status.color} /> {status.label}
+        <Badge color={status.color} /> {t(`${status.value}Text`)}
       </Typography.Text>
     ),
   }));
@@ -80,7 +84,7 @@ const ProjectHealthCell = () => {
             fontSize: 13,
           }}
         >
-          {projectHealth?.label || 'Not Set'}
+          {projectHealth?.label || t('notSetText')}
         </Typography.Text>
 
         <DownOutlined />

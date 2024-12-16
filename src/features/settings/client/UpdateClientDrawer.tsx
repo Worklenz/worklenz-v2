@@ -12,7 +12,7 @@ type UpdateClientDrawerProps = {
 
 const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
   // localization
-  const { t } = useTranslation('clientSettings');
+  const { t } = useTranslation('settings-clients');
 
   // get data from client reducer
   const clientsList = useAppSelector(state => state.clientReducer.clients);

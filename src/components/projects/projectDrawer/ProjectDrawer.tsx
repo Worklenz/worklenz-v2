@@ -75,7 +75,6 @@ const ProjectDrawer = () => {
       hours_per_day: values.hrsPerDay,
     };
     dispatch(createProject(newProject));
-    message.success('project created!');
     form.resetFields();
     dispatch(toggleDrawer());
   };

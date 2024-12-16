@@ -10,6 +10,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { addCategory } from '@features/settings/categories/categoriesSlice';
 import { themeWiseColor } from '@utils/themeWiseColor';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { useTranslation } from 'react-i18next';
 
 const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
   const [projectCategory, setProjectCategory] = useState<IProjectCategory>({ id, name, color_code });
@@ -17,7 +18,10 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
   const categoryInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // get theme from theme slice
+  // localization
+  const { t } = useTranslation('reporting-projects');
+
+  //   get theme from theme slice
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // get categories list from the categories reducer
@@ -80,7 +84,7 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
               ref={categoryInputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.currentTarget.value)}
-              placeholder="Search by name"
+              placeholder={t('searchByNameInputPlaceholder')}
               onKeyDown={(e) => {
                 const isCategory = filteredCategoriesData.findIndex(
                   (category) =>
@@ -151,7 +155,7 @@ const ProjectCategoryCell = ({ id, name, color_code }: IProjectCategory) => {
       >
         {projectCategory.id
           ? projectCategory.name
-          : 'Set Category'}
+          : t('setCategoryText')}
 
         <DownOutlined />
       </Flex>

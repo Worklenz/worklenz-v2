@@ -8,7 +8,7 @@ import { toggleDrawer } from './billingSlice';
 
 const RedeemCodeDrawer: React.FC = () => {
   const [form] = Form.useForm();
-  const { t } = useTranslation('currentBill');
+  const { t } = useTranslation('current-bill');
   const [redeemCode, setRedeemCode] = useState<number | null>(null);
   const isDrawerOpen = useAppSelector(
     (state: RootState) => state.billingReducer.isDrawerOpen
