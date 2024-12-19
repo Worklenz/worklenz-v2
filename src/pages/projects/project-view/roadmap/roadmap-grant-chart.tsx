@@ -42,11 +42,6 @@ const RoadmapGrantChart = ({ view }: RoadmapGrantChartProps) => {
     );
   };
 
-  //   function to handle progress change
-  const handleTaskProgressChange = (task: Task) => {
-    dispatch(updateTaskProgress({ taskId: task.id, progress: task.progress }));
-  };
-
   // function to convert the tasklist comming form roadmap slice which has NewTaskType converted to Task type which is the default type of the tasks list in the grant chart
   const flattenTasks = (tasks: NewTaskType[]): Task[] => {
     const flattened: Task[] = [];
@@ -80,7 +75,6 @@ const RoadmapGrantChart = ({ view }: RoadmapGrantChartProps) => {
         tasks={flattenedTasksList}
         viewMode={view}
         onDateChange={handleTaskDateChange}
-        onProgressChange={handleTaskProgressChange}
         onDoubleClick={handleDoubleClick}
         listCellWidth={''}
         columnWidth={columnWidth}

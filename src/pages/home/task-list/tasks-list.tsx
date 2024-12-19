@@ -205,6 +205,14 @@ const TasksList = () => {
           pagination={false}
           size="middle"
           rowClassName={() => 'custom-row-height'}
+          onRow={(record) => {
+            return {
+              className: 'group',
+              style: {
+                height: 44,
+              },
+            };
+          }}
         />
       )}
       <UpdateTaskDrawer taskId={'SP-1'} />

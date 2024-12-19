@@ -71,7 +71,7 @@ const InfoTabFooter = () => {
             style={{
               minHeight: isCommentBoxExpand ? 180 : 60,
               maxHeight: 480,
-              overflow: 'scroll',
+              overflow: 'auto',
               paddingBlockEnd: 24,
             }}
           />

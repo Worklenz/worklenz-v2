@@ -1,12 +1,9 @@
 import { MoreOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import {
-  projectViewTaskListColumnsState,
-  toggleColumnVisibility,
-} from '@features/projects/singleProject/taskListColumns/taskColumnsSlice';
-import { columnList } from '../taskListTable/columns/columnList';
+import React from 'react';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import { toggleColumnVisibility } from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import { useTranslation } from 'react-i18next';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
@@ -16,13 +13,17 @@ const ShowFieldsFilterDropdown = () => {
   const { trackMixpanelEvent } = useMixpanelTracking();
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  // Filter out fixed columns
-  const changableColumnList = columnList.filter(
-    (column) => !['selector', 'task'].includes(column.key)
+  // access the updated columnList with isVisible properties
+  const columnList = useAppSelector(
+    (state) => state.projectViewTaskListColumnsReducer.columnList
   );
 
-  const columnsVisibility = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
+  // remove the task and selector columns as they are fixed
+  const visibilityChangableColumnList = columnList.filter(
+    (column) =>
+      column.key !== 'selector' &&
+      column.key !== 'task' &&
+      column.key !== 'customColumn'
   );
 
   const handleColumnToggle = (columnKey: string) => {
@@ -44,7 +45,7 @@ const ShowFieldsFilterDropdown = () => {
       styles={{ body: { padding: 0 } }}
     >
       <List style={{ padding: 0 }}>
-        {changableColumnList.map((col) => (
+        {visibilityChangableColumnList.map((col) => (
           <List.Item
             key={col.key}
             className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
@@ -59,13 +60,14 @@ const ShowFieldsFilterDropdown = () => {
           >
             <Space>
               <Checkbox
-                checked={
-                  columnsVisibility[
-                    col.key as keyof projectViewTaskListColumnsState['columnsVisibility']
-                  ]
-                }
+                checked={col.isVisible}
+                onClick={() => dispatch(toggleColumnVisibility(col.key))}
               />
-              {t(col.key === 'phases' ? 'phasesText' : `${col.columnHeader}Text`)}
+              {col.isCustomColumn
+                ? col.name
+                : t(
+                    `${col.key === 'phases' ? 'phasesText' : col.columnHeader + 'Text'}`
+                  )}
             </Space>
           </List.Item>
         ))}

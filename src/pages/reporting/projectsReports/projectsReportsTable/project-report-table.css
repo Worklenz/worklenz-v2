@@ -1,9 +1,9 @@
-[data-theme="dark"] {
+[data-theme='dark'] {
   --table-cell-bg: #181818;
   --hover-bg: #000;
 }
 
-[data-theme="default"] {
+[data-theme='default'] {
   --table-cell-bg: #f4f4f4;
   --hover-bg: #edebf0;
 }
@@ -44,6 +44,11 @@
 .ant-select-focused:where(.css-dev-only-do-not-override-tmno9t).ant-select-outlined:not(
     .ant-select-disabled
   ):not(.ant-select-customize-input):not(.ant-pagination-size-changer)
+.ant-select-focused:where(
+    .css-dev-only-do-not-override-tmno9t
+  ).ant-select-outlined:not(.ant-select-disabled):not(
+    .ant-select-customize-input
+  ):not(.ant-pagination-size-changer)
   .ant-select-selector {
   box-shadow: none;
 }

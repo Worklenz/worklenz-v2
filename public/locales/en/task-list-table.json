@@ -27,6 +27,7 @@
 
   "selectText": "Select",
   "labelsSelectorInputTip": "Hit enter to create!",
+  "labelInputPlaceholder": "Search or create",
 
   "addTaskText": "+ Add Task",
   "addSubTaskText": "+ Add Sub Task",
@@ -37,5 +38,11 @@
 
   "noLabelsFound": "No labels found",
   "searchInputPlaceholder": "Search or create",
-  "assigneeSelectorInviteButton": "Invite a new member by email"
+  "assigneeSelectorInviteButton": "Invite a new member by email",
+
+  "deleteTooltip": "Delete",
+  "deleteConfirmationTitle": "Are you sure?",
+  "deleteConfirmationOk": "Yes",
+  "deleteConfirmationCancel": "Cancel",
+  "editTooltip": "Edit"
 }

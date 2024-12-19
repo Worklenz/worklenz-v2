@@ -7,7 +7,6 @@ import {
 } from '@ant-design/icons';
 import { Badge, Dropdown, Flex, Typography } from 'antd';
 import { MenuProps } from 'antd/lib';
-import React from 'react';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 
 type TaskContextMenuProps = {

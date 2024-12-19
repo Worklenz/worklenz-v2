@@ -1,5 +1,6 @@
 {
   "labelColumn": "Label",
+  "deleteTooltip": "Delete",
   "deleteConfirmationTitle": "Are you sure?",
   "deleteConfirmationOk": "Yes",
   "deleteConfirmationCancel": "Cancel",
