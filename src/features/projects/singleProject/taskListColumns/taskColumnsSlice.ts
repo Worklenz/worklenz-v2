@@ -111,6 +111,13 @@ const initialState: projectViewTaskListColumnsState = {
       isVisible: true,
     },
     {
+      key: 'dueTime',
+      name: 'dueTime',
+      columnHeader: 'dueTime',
+      width: 150,
+      isVisible: true,
+    },
+    {
       key: 'completedDate',
       name: 'completedDate',
       columnHeader: 'completedDate',

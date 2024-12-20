@@ -45,6 +45,8 @@ import { CustomFieldsTypes } from '../../../../../features/projects/singleProjec
 import { LabelType } from '../../../../../types/label.type';
 import CustomColumnSelectionCell from './custom-columns/custom-column-cells/custom-column-selection-cell/custom-column-selection-cell';
 import { SelectionType } from './custom-columns/custom-column-modal/selection-type-column/selection-type-column';
+import TaskListEndTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
+import TaskListDueTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
 
 const TaskListTable = ({
   taskList,
@@ -253,6 +255,9 @@ const TaskListTable = ({
       // due date column
       case 'dueDate':
         return <TaskListDueDateCell dueDate={task?.dueDate || null} />;
+      // due time column
+      case 'dueTime':
+        return <TaskListDueTimeCell />;
       // completed date column
       case 'completedDate':
         return (

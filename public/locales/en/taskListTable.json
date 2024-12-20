@@ -12,6 +12,7 @@
   "estimationColumn": "Estimation",
   "startDateColumn": "Start Date",
   "dueDateColumn": "Due Date",
+  "dueTimeColumn": "Due Time",
   "completedDateColumn": "Completed Date",
   "createdDateColumn": "Created Date",
   "lastUpdatedColumn": "Last Updated",
