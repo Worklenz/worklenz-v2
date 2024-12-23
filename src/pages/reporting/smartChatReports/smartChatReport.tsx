@@ -39,6 +39,8 @@ const SmartChatReport = () => {
     const [loading, setLoading] = useState(false);
     const [renderKey, setRenderKey] = useState(0);
     const [lastResponseLength, setLastResponseLength] = useState(0);
+    const [typingText, setTypingText] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
 
     React.useEffect(() => {
         if (lastResponseLength > 0) {
@@ -84,14 +86,19 @@ const SmartChatReport = () => {
             const response = await axios.request(config);
             const responseText = `${response.data.response}`.trim();
             setLastResponseLength(responseText.length);
+            setTypingText(responseText);
+            setIsTyping(true);
             
-            // Add AI response
-            const aiMessage = {
-                role: "assistant",
-                content: responseText
-            };
-            
-            setChatMessages(prevMessages => [...prevMessages, aiMessage]);
+            // Don't immediately add the AI message - wait for typing animation
+            setTimeout(() => {
+                const aiMessage = {
+                    role: "assistant",
+                    content: responseText
+                };
+                setChatMessages(prevMessages => [...prevMessages, aiMessage]);
+                setIsTyping(false);
+            }, responseText.length * 100 + 2000);
+
         } catch (error) {
             console.error("Error communicating with backend:", error);
             const errorMessage = {
@@ -109,14 +116,23 @@ const SmartChatReport = () => {
             {/* Chat messages container */}
             <Flex gap="middle" style={{height: '70vh', overflowY: 'auto'}} vertical>
                 {chatMessages.map((message, index) => (
-                    <Bubble style={{padding: '0.5rem'}}
-                        key={renderKey}
+                    <Bubble 
+                        key={`${index}-${renderKey}`}
                         placement={message.role === "user" ? "end" : "start"}
                         content={message.content}
                         messageRender={renderMarkdown}
                         avatar={{ icon: <UserOutlined />, style: message.role === "user" ? fooAvatar : barAvatar }}
                     />
                 ))}
+                {isTyping && (
+                    <Bubble 
+                        typing
+                        placement="start"
+                        content={typingText}
+                        messageRender={renderMarkdown}
+                        avatar={{ icon: <UserOutlined />, style: barAvatar }}
+                    />
+                )}
                 {loading && <Bubble style={{padding: '0.5rem'}} placement="start" loading={loading} />}
             </Flex>
 
