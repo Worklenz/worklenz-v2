@@ -1,20 +1,19 @@
 import { Empty, Typography } from 'antd';
 import React from 'react';
+import emptyImg from '../assets/images/empty-box.webp';
 
 type EmptyListPlaceholderProps = {
-  imageSrc?: string;
   imageHeight?: number;
   text: string;
 };
 
 const EmptyListPlaceholder = ({
-  imageSrc = 'https://app.worklenz.com/assets/images/empty-box.webp',
   imageHeight = 60,
   text,
 }: EmptyListPlaceholderProps) => {
   return (
     <Empty
-      image={imageSrc}
+      image={emptyImg}
       imageStyle={{ height: imageHeight }}
       style={{
         display: 'flex',

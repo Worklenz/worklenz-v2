@@ -71,10 +71,8 @@ const TodoList = () => {
       key: 'name',
       render: (record: TodoType) => (
         <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
-          <Tooltip title={record.todoName}>
-            {record.todoName}
-          </Tooltip>
-          </Typography.Paragraph>
+          <Tooltip title={record.todoName}>{record.todoName}</Tooltip>
+        </Typography.Paragraph>
       ),
     },
   ];
@@ -87,7 +85,7 @@ const TodoList = () => {
         </Typography.Title>
       }
       extra={
-        <Tooltip title='Refresh tasks'>
+        <Tooltip title="Refresh tasks">
           <Button
             shape="circle"
             icon={<SyncOutlined spin={isLoading} />}
@@ -134,10 +132,7 @@ const TodoList = () => {
           </Form>
 
           {todoList.length === 0 ? (
-            <EmptyListPlaceholder
-              imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-              text=" No tasks to show."
-            />
+            <EmptyListPlaceholder text=" No tasks to show." />
           ) : (
             <Table
               className="custom-two-colors-row-table"

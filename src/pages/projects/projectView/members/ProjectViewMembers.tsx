@@ -186,11 +186,7 @@ const ProjectViewMembers = () => {
       }
     >
       {projectMembersList?.length === 0 ? (
-        <EmptyListPlaceholder
-          imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-          imageHeight={120}
-          text={t('emptyText')}
-        />
+        <EmptyListPlaceholder imageHeight={120} text={t('emptyText')} />
       ) : isLoading ? (
         <Skeleton />
       ) : (

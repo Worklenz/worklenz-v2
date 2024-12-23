@@ -102,7 +102,7 @@ const ProjectViewFiles = () => {
             color: hoverRow === record.fileId ? colors.skyBlue : 'inherit',
           }}
         >
-          <Tooltip title='Nov 25,2024,10.45.54 AM'>
+          <Tooltip title="Nov 25,2024,10.45.54 AM">
             {durationDateFormat(record.uploadedDate)}
           </Tooltip>
         </Typography.Text>
@@ -125,12 +125,16 @@ const ProjectViewFiles = () => {
               cancelText={t('deleteConfirmationCancel')}
               onConfirm={() => console.log('File deleted')}
             >
-              <Tooltip title='Delete'>
-                <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title="Delete">
+                <Button
+                  shape="default"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
               </Tooltip>
             </Popconfirm>
 
-            <Tooltip title='Download'>
+            <Tooltip title="Download">
               <Button size="small" icon={<CloudDownloadOutlined />} />
             </Tooltip>
           </Flex>
@@ -171,11 +175,7 @@ const ProjectViewFiles = () => {
       }
     >
       {filesData.length === 0 ? (
-        <EmptyListPlaceholder
-          imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-          imageHeight={120}
-          text={t('emptyText')}
-        />
+        <EmptyListPlaceholder imageHeight={120} text={t('emptyText')} />
       ) : (
         <Table
           className="custom-two-colors-row-table"

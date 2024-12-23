@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { DownOutlined } from '@ant-design/icons';
+import { CloseCircleFilled, DownOutlined } from '@ant-design/icons';
 import {
   Badge,
   Card,
@@ -175,7 +175,22 @@ const ProjectCategoryCell = ({
           ? projectCategory.categoryName
           : t('setCategoryText')}
 
-        <DownOutlined />
+        {/* Conditionally render the close icon */}
+        {projectCategory.categoryId ? (
+          <CloseCircleFilled
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the dropdown
+              setProjectCategory({
+                categoryId: '',
+                categoryName: '',
+                categoryColor: '',
+              }); // Reset the category
+            }}
+            style={{ cursor: 'pointer' }}
+          />
+        ) : (
+          <DownOutlined />
+        )}
       </Flex>
     </Dropdown>
   );

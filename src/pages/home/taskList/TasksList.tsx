@@ -178,10 +178,7 @@ const TasksList = () => {
       {isLoading ? (
         <Skeleton />
       ) : tasksList.length === 0 ? (
-        <EmptyListPlaceholder
-          imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-          text=" No tasks to show."
-        />
+        <EmptyListPlaceholder text=" No tasks to show." />
       ) : (
         <Table
           className="custom-two-colors-row-table"
