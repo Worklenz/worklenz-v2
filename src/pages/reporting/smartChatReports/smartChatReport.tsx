@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { fooAvatar, barAvatar } from '../../../styles/colors';
 import axios from 'axios';
 import { UserOutlined } from '@ant-design/icons';
 import { Flex, Typography } from 'antd';
 import { Bubble, BubbleProps, Sender } from '@ant-design/x';
 import Markdownit from 'markdown-it';
-
 const md = Markdownit({ html: true, breaks: true });
+
 
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
     <Typography>
@@ -13,16 +14,6 @@ const renderMarkdown: BubbleProps['messageRender'] = (content) => (
       <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
     </Typography>
   );
-
-const fooAvatar: React.CSSProperties = {
-    color: '#f56a00',
-    backgroundColor: '#fde3cf',
-};
-
-const barAvatar: React.CSSProperties = {
-    color: '#fff',
-    backgroundColor: '#87d068',
-};
 
 const messages = [
     {

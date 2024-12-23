@@ -15,6 +15,16 @@ export const colors = {
   transparent: 'transparent',
 };
 
+export const fooAvatar: React.CSSProperties = {
+  color: '#f56a00',
+  backgroundColor: '#fde3cf',
+};
+
+export const barAvatar: React.CSSProperties = {
+  color: '#fff',
+  backgroundColor: '#87d068',
+};
+
 export const applyCssVariables = () => {
   const root = document.documentElement;
   Object.entries(colors).forEach(([key, value]) => {
