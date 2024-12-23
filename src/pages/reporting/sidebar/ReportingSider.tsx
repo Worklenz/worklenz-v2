@@ -41,7 +41,7 @@ const ReportingSider = () => {
           key: item.key,
           label: (
             <Link to={`/worklenz/reporting/${item.endpoint}`}>
-              {t(`${item.name}Text`)}
+              {t(`${item.name}`)}
             </Link>
           ),
         };

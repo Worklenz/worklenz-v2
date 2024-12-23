@@ -5,6 +5,7 @@ import MembersReports from '../../pages/reporting/membersReports/MembersReports'
 import OverviewTimeReports from '../../pages/reporting/timeReports/OverviewTimeReports';
 import ProjectsTimeReports from '../../pages/reporting/timeReports/ProjectsTimeReports';
 import MembersTimeReports from '../../pages/reporting/timeReports/MembersTimeReports';
+import SmartChatReport from '../../pages/reporting/smartChatReports/smartChatReport';
 import EstimatedVsActualTimeReports from '../../pages/reporting/timeReports/EstimatedVsActualTimeReports';
 
 // Type definition for a menu item
@@ -67,5 +68,11 @@ export const reportingsItems: ReportingMenuItems[] = [
         element: React.createElement(EstimatedVsActualTimeReports),
       },
     ],
+  },
+  {
+    key: 'smart-chat',
+    name: 'Smart Chat',
+    endpoint: 'smart-chat',
+    element: React.createElement(SmartChatReport),
   },
 ];

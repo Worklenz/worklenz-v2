@@ -6,6 +6,7 @@
     "@ant-design/colors": "^7.1.0",
     "@ant-design/icons": "^5.4.0",
     "@ant-design/pro-components": "^2.7.19",
+    "@ant-design/x": "^1.0.3",
     "@bitnoi.se/react-scheduler": "^0.3.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@testing-library/jest-dom": "^5.17.0",
@@ -17,6 +18,7 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "antd": "^5.20.5",
+    "axios": "^1.7.9",
     "chart.js": "^4.4.6",
     "chartjs-plugin-datalabels": "^2.2.0",
     "date-fns": "^4.1.0",
@@ -24,6 +26,7 @@
     "i18next": "^23.15.1",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.6.2",
+    "markdown-it": "^14.1.0",
     "primereact": "^10.8.4",
     "quill": "^2.0.2",
     "react": "^18.3.1",
@@ -66,6 +69,7 @@
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.41",
+    "@types/markdown-it": "^14.1.2",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.13"
   }
