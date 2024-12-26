@@ -17,7 +17,7 @@ const UserGreetingWithTime = () => {
 
   return (
     <Flex vertical gap={8} align="center">
-      <Typography.Title level={3} style={{ fontWeight: 500, marginBlock: 0 }}>
+      <Typography.Title level={3} style={{ fontWeight: 500, marginBlock: 0, color: '#6D6D6D'}}>
         {greet}
       </Typography.Title>
       <Typography.Title

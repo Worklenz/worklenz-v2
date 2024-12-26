@@ -6,15 +6,6 @@ const ListView = () => {
   // tasks filter tab items
   const tabItems = [
     {
-      key: 'all',
-      label: `All (0)`,
-      children: <AddTaskInlineForm />,
-    },
-    {
-      key: 'today',
-      label: `Today (0)`,
-    },
-    {
       key: 'upcoming',
       label: `Upcoming (0)`,
     },
@@ -23,8 +14,8 @@ const ListView = () => {
       label: `Overdue (0)`,
     },
     {
-      key: 'no due date',
-      label: `No due date (0)`,
+      key: 'completed',
+      label: `Completed (0)`,
     },
   ];
 

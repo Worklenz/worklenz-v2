@@ -17,8 +17,9 @@ const Homepage = () => {
   useDocumentTitle('Home');
 
   return (
-    <div style={{ marginBlock: 96, minHeight: '90vh' }}>
-      <Col style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ paddingTop: 96, minHeight: '100vh', paddingInline: isDesktop ? 64 : 24, position: 'relative'}}>
+      <div style={{ background: '#E7ECFF', width: '55%', height: '100vh', position:'absolute', borderTopRightRadius: '50%', borderBottomRightRadius: '35%', top: -5, left: 0}}></div>
+      <Col style={{ display: 'flex', flexDirection: 'column', gap: 24, }}>
         <UserGreetingWithTime />
         {isDesktop ? (
           <div className="absolute right-0 top-1/2 -translate-y-1/2">
@@ -43,7 +44,6 @@ const Homepage = () => {
             <TasksList />
           </Flex>
           <Flex vertical gap={24} style={{ width: '100%', maxWidth: 400 }}>
-            <TodoList />
             <RecentAndFavouriteProjecList />
           </Flex>
         </Flex>

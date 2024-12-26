@@ -44,8 +44,8 @@ const MainLayout = () => {
 
         <Layout.Content>
           <Col
-            xxl={{ span: 18, offset: 3, flex: '100%' }}
-            style={{ paddingInline: isDesktop ? 64 : 24, overflowX: 'hidden' }}
+            xxl={{ span: 18,  flex: '100%' }}
+            style={{ overflowX: 'hidden', }}
           >
             <Outlet />
           </Col>
