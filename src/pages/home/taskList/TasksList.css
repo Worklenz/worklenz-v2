@@ -1,0 +1,10 @@
+.custom-row-height .hover-button {
+    visibility: hidden;
+    transition: visibility 0s, opacity ease-in-out;
+    opacity: 0;
+}
+
+.custom-row-height:hover .hover-button {
+    visibility: visible;
+    opacity: 1;
+}

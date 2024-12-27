@@ -18,7 +18,7 @@ const Homepage = () => {
 
   return (
     <div style={{ paddingTop: 96, minHeight: '100vh', paddingInline: isDesktop ? 64 : 24, position: 'relative'}}>
-      <div style={{ background: '#E7ECFF', width: '55%', height: '100vh', position:'absolute', borderTopRightRadius: '50%', borderBottomRightRadius: '35%', top: -5, left: 0}}></div>
+      <div style={{ background: '#E7ECFF', width: '55%', height: '100vh', position:'absolute', borderTopRightRadius: '50%', borderBottomRightRadius: '30%', top: -5, left: 0}}></div>
       <Col style={{ display: 'flex', flexDirection: 'column', gap: 24, }}>
         <UserGreetingWithTime />
         {isDesktop ? (

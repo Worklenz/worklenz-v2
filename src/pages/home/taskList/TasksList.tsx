@@ -1,9 +1,11 @@
-import { ExpandAltOutlined, SyncOutlined } from '@ant-design/icons';
+import { ExpandAltOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
   Card,
+  Dropdown,
   Flex,
+  MenuProps,
   Segmented,
   Select,
   Skeleton,
@@ -22,6 +24,7 @@ import { TaskType } from '../../../types/task.types';
 import { toggleUpdateTaskDrawer } from '../../../features/tasks/taskSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { colors } from '../../../styles/colors';
+import './TasksList.css';
 import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 
 const TasksList = () => {
@@ -51,6 +54,27 @@ const TasksList = () => {
     }
   };
 
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <Typography.Text>Project 01</Typography.Text>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <Typography.Text>Project 01</Typography.Text>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <Typography.Text>Project 01</Typography.Text>
+      ),
+    },
+  ];
+
   // table columns
   const columns: TableProps<TaskType>['columns'] = [
     {
@@ -64,7 +88,7 @@ const TasksList = () => {
               {values.task}
             </Typography.Text>
           </Tooltip>
-          <div className="row-button">
+          <div className="hover-button">
             <Tooltip title={'Click open task form'}>
               <Button
                 type="text"
@@ -94,7 +118,7 @@ const TasksList = () => {
           (project) => project.projectName === values.project
         );
         return (
-          project && (
+          project ? (
             <Tooltip title={project.projectName}>
               <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
                 <Badge
@@ -104,6 +128,11 @@ const TasksList = () => {
                 {project.projectName}
               </Typography.Paragraph>
             </Tooltip>
+          ) :
+          (
+            <Dropdown menu={{ items }} trigger={['click']}>
+              <Button shape='circle' type='dashed'><PlusOutlined /></Button>
+          </Dropdown>
           )
         );
       },
