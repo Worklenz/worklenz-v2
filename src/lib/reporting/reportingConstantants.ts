@@ -5,7 +5,7 @@ import MembersReports from '../../pages/reporting/membersReports/MembersReports'
 import OverviewTimeReports from '../../pages/reporting/timeReports/OverviewTimeReports';
 import ProjectsTimeReports from '../../pages/reporting/timeReports/ProjectsTimeReports';
 import MembersTimeReports from '../../pages/reporting/timeReports/MembersTimeReports';
-import SmartChatReport from '../../pages/reporting/smartChatReports/smartChatReport';
+import SmartChatReport from '../../pages/reporting/smartChatReports/smart-chat-report';
 import EstimatedVsActualTimeReports from '../../pages/reporting/timeReports/EstimatedVsActualTimeReports';
 
 // Type definition for a menu item

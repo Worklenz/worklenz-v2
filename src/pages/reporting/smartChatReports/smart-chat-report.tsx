@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fooAvatar, barAvatar } from '../../../styles/colors';
 import axios from 'axios';
 import { UserOutlined } from '@ant-design/icons';
 import { Flex, Typography } from 'antd';
 import { Bubble, BubbleProps, Sender } from '@ant-design/x';
 import Markdownit from 'markdown-it';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '../../../hooks/useAppSelector';
+import { fetchTeamsData } from '../../../features/reporting/overviewReports/overviewReportsSlice';
 const md = Markdownit({ html: true, breaks: true });
+
 
 
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
@@ -33,6 +37,25 @@ const SmartChatReport = () => {
     const [typingText, setTypingText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
 
+    const dispatch = useAppDispatch();
+
+    // get teams list and loading state from teams repors reducer
+    const { teamsList, isLoading } = useAppSelector(
+        (state) => state.overviewReportsReducer
+    );
+    // load data from project reports reducer
+    useEffect(() => {
+        dispatch(fetchTeamsData());
+    }, [dispatch]);
+
+    // Transform teamsList to only include id and name
+    const simplifiedTeamsList = React.useMemo(() => 
+        teamsList.map(team => ({
+            id: team.id,
+            name: team.name
+        }))
+    , [teamsList]); 
+    
     React.useEffect(() => {
         if (lastResponseLength > 0) {
             const id = setTimeout(
@@ -60,7 +83,6 @@ const SmartChatReport = () => {
         setChatMessages([...chatMessages, userMessage]);
         setLoading(true);
         setMessageInput('');
-
         try {
             const config = {
                 method: 'post',
@@ -69,7 +91,8 @@ const SmartChatReport = () => {
                     'Content-Type': 'application/json'
                 },
                 data: {
-                    input_text: messageInput
+                    input_text: messageInput,
+                    teams_list: simplifiedTeamsList
                 }
             };
 
