@@ -8,6 +8,7 @@ const ListView = () => {
     {
       key: 'upcoming',
       label: `Upcoming (0)`,
+      children: <AddTaskInlineForm />,
     },
     {
       key: 'overdue',

@@ -1,4 +1,4 @@
-import { Alert, Flex, Form, Input, InputRef, Select, Typography } from 'antd';
+import { Alert, Button, Flex, Form, Input, InputRef, Select, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { nanoid } from '@reduxjs/toolkit';
@@ -15,6 +15,7 @@ const AddTaskInlineForm = () => {
   const projectList = useAppSelector(
     (state) => state.projectReducer.projectsList
   );
+  const [isButtonShowing, setIsButtonShowing] = useState(true);
 
   // ref for task input field
   const taskInputRef = useRef<InputRef | null>(null);
@@ -101,7 +102,8 @@ const AddTaskInlineForm = () => {
         ]}
       >
         <Flex vertical gap={4}>
-          <Input
+          {isButtonShowing ? <Button onClick={() => setIsButtonShowing(false)} type='link' style={{width: '100px'}}>+ Add Task</Button>
+           : <Input
             ref={taskInputRef}
             placeholder="+ Add Task"
             style={{ width: '100%' }}
@@ -116,7 +118,7 @@ const AddTaskInlineForm = () => {
                 setIsDueDateFieldShowing(true);
               }
             }}
-          />
+          />}
           {isAlertShowing && (
             <Alert
               message={

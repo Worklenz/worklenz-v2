@@ -71,7 +71,7 @@ const ProjectList: React.FC = () => {
   };
 
   return (
-    <div style={{ marginBlock: 65, minHeight: '90vh' }}>
+    <div style={{marginBlock: 65, minHeight: '90vh'}}>
       <PageHeader
         className="site-page-header"
         title={`${projectList.length} ${t('projects')}`}

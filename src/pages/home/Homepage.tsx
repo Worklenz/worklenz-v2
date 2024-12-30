@@ -8,17 +8,19 @@ import { useMediaQuery } from 'react-responsive';
 import CreateProjectDrawer from '../../features/projects/createProject/CreateProjectDrawer';
 import CreateProjectButton from '../../features/projects/createProject/CreateProjectButton';
 import { useDocumentTitle } from '../../hooks/useDoumentTItle';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 
 const Homepage = () => {
   // media queries from react-responsive package
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   useDocumentTitle('Home');
 
   return (
-    <div style={{ paddingTop: 96, minHeight: '100vh', paddingInline: isDesktop ? 64 : 24, position: 'relative'}}>
-      <div style={{ background: '#E7ECFF', width: '55%', height: '100vh', position:'absolute', borderTopRightRadius: '50%', borderBottomRightRadius: '30%', top: -5, left: 0}}></div>
+    <div style={{ paddingTop: 96, minHeight: '100vh', position: 'relative'}}>
+      <div style={{ background: themeMode === 'dark' ? '#1A1E3A' : '#E7ECFF', width: '60%', height: '100vh', position:'absolute', borderTopRightRadius: '50%', borderBottomRightRadius: '30%', top: -1, left: -65}}></div>
       <Col style={{ display: 'flex', flexDirection: 'column', gap: 24, }}>
         <UserGreetingWithTime />
         {isDesktop ? (
