@@ -1,7 +1,6 @@
 import React, { memo, useState } from 'react';
 import { ConfigProvider, Table, TableColumnsType } from 'antd';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleProjectReportsDrawer } from '../../../../features/reporting/projectReports/projectReportsSlice';
 import CustomTableTitle from '../../../../components/CustomTableTitle';
 import { useTranslation } from 'react-i18next';
 import MembersAvatarGroupCell from './MembersAvatarGroupCell';

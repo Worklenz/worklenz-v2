@@ -4,14 +4,14 @@ type ThemeMode = 'default' | 'dark';
 
 const priorityColors = {
   default: {
-    low: '#c2e4d0',
-    medium: '#f9e3b1',
     high: '#f6bfc0',
+    medium: '#f9e3b1',
+    low: '#c2e4d0',
   },
   dark: {
-    low: '#75c997',
-    medium: '#fbc84c',
-    high: '#f37070',
+    high: '#8b3a3b',
+    medium: '#916c33',
+    low: '#3b6149',
   },
 };
 
