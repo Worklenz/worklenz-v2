@@ -20,6 +20,7 @@ type FinanceTableProps = {
 
 const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   // get theme data from theme reducer
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -56,6 +57,12 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
     }),
     [table]
   );
+
+  // function to click task
+  const onTaskClick = (task: any) => {
+    setSelectedTask(task);
+    dispatch(toggleFinanceDrawer());
+  };
 
   const renderFinancialTableHeaderContent = (columnKey: any) => {
     switch (columnKey) {
@@ -225,7 +232,6 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
           key={task.taskId}
           style={{ height: 52 }}
           className={`${isCollapse ? 'hidden' : 'static'} cursor-pointer border-b-[1px] ${themeMode === 'dark' ? 'hover:bg-[#000000]' : 'hover:bg-[#f8f7f9]'} `}
-          onClick={() => dispatch(toggleFinanceDrawer())}
         >
           <td
             style={{ paddingInline: 16 }}
@@ -245,6 +251,7 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
                     ? 'end'
                     : 'start',
               }}
+              onClick={() => onTaskClick(task)}
             >
               {renderFinancialTableColumnContent(col.key, task)}
             </td>
@@ -252,7 +259,7 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
         </tr>
       ))}
 
-      <FinanceDrawer />
+      <FinanceDrawer task={selectedTask} />
     </>
   );
 };
