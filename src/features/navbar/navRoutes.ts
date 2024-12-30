@@ -20,4 +20,8 @@ export const navRoutes: NavRoutesType[] = [
     name: 'reporting',
     path: '/worklenz/reporting/overview',
   },
+  {
+    name: 'client portal',
+    path: '/worklenz/client-portal',
+  },
 ];

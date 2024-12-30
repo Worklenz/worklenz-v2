@@ -19,7 +19,6 @@ interface DataType {
   members: string[];
 }
 
-
 const AllProjectList: React.FC = () => {
   // get data from project reducer
   const projectList: ProjectType[] = useAppSelector(

@@ -9,10 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'; // Assuming you're using i18next for translations
 import './TableColumns.css';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  toggleDrawer,
-  toggleUpdatedrawer,
-} from '../../features/projects/projectSlice';
+import { toggleDrawer, toggleUpdatedrawer } from '../../features/projects/projectSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 interface DataType {
@@ -29,14 +26,15 @@ interface DataType {
   members: string[];
 }
 
+
 const avatarColors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068'];
 
 const TableColumns = (): ColumnsType<DataType> => {
   const { t } = useTranslation('allProjectList'); // Use translation hook if you're using i18next
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
   const navigate = useNavigate();
-  const location = useLocation();
-  console.log(location.pathname);
+  const location = useLocation()
+  console.log(location.pathname)
 
   return [
     {
@@ -46,6 +44,7 @@ const TableColumns = (): ColumnsType<DataType> => {
       sorter: (a, b) => a.name.length - b.name.length,
       onCell: (record) => {
         return {
+          
           style: {
             cursor: 'pointer',
           },
@@ -74,10 +73,10 @@ const TableColumns = (): ColumnsType<DataType> => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Rate
               count={1}
-              style={{ marginRight: '0.5rem', zIndex: 99 }}
+              style={{ marginRight: '0.5rem', zIndex: 99}}
               tooltips={['Add to favourites']}
             />
-            <div onClick={() => navigate(`/worklenz/projects/${record.key}`)}>
+            <div onClick={ () => navigate('/worklenz/client-portal/profile')}>
               <Badge color="geekblue" style={{ marginRight: '0.5rem' }} />
               <>
                 {text}
@@ -228,17 +227,15 @@ const TableColumns = (): ColumnsType<DataType> => {
 
         return (
           <>
-            <Tooltip
-              title={updatedDate.toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: true,
-              })}
-            >
+            <Tooltip title={updatedDate.toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+              second: 'numeric',
+              hour12: true,
+            })}>
               {displayText}
             </Tooltip>
           </>
@@ -273,13 +270,9 @@ const TableColumns = (): ColumnsType<DataType> => {
       key: 'button',
       dataIndex: '',
       render: (render) => (
-        <div className="hover-button">
+        <div className='hover-button'>
           <Tooltip title={t('setting')}>
-            <Button
-              onClick={() => dispatch(toggleUpdatedrawer(render.id))}
-              style={{ marginRight: '8px' }}
-              size="small"
-            >
+            <Button onClick={() => dispatch(toggleUpdatedrawer(render.id))} style={{ marginRight: '8px' }} size="small">
               <SettingOutlined />
             </Button>
           </Tooltip>
