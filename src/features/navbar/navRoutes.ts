@@ -22,6 +22,6 @@ export const navRoutes: NavRoutesType[] = [
   },
   {
     name: 'client portal',
-    path: '/worklenz/client-portal',
+    path: '/worklenz/client-portal/clients',
   },
 ];

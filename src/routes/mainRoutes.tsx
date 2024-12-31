@@ -9,9 +9,7 @@ import adminCenterRoutes from './adminCenterRoutes';
 import Schedule from '../pages/schedule/Schedule';
 import ProjectTemplateEditView from '../pages/settings/projectTemplates/projectTemplateEditView/ProjectTemplateEditView';
 import LicenseExpired from '../pages/licenseExpired/LicenseExpired';
-import ClientPortal from '../pages/client-portal/client-portal';
-import ClientPortalView from '../pages/client-portal/client-portal-view/client-portal-view';
-import ClientPortalRoutes from './client-portal-routes';
+import clientPortalRoutes from './client-portal-routes';
 
 const mainRoutes: RouteObject[] = [
   {
@@ -24,10 +22,9 @@ const mainRoutes: RouteObject[] = [
       { path: `projects/:projectId`, element: <ProjectView /> },
       { path: `settings/project-templates/edit/:templateId/:templateName`, element: <ProjectTemplateEditView />},
       { path: 'license-expired', element: <LicenseExpired />},
-      { path: 'client-portal', element: <ClientPortal />},
       ...settingsRoutes,
       ...adminCenterRoutes,
-      ...ClientPortalRoutes,
+      ...clientPortalRoutes,
     ],
   },
 ];

@@ -2,23 +2,16 @@ import { Flex, Typography } from 'antd';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import AdminCenterSidebar from '../pages/adminCenter/sidebar/AdminCenterSidebar';
-import { useTranslation } from 'react-i18next';
+import ClientPortalSidebar from '../pages/client-portal/sidebar/client-portal-sidebar';
 
-const AdminCenterLayout: React.FC = () => {
-  const isTablet = useMediaQuery({ query: '(min-width:768px)' });
-  const isMarginAvailable = useMediaQuery({ query: '(min-width: 1000px)' });
-  const { t } = useTranslation('adminCenterSidebar');
+// this layout is a sub layout of the main layout
+const ClientPortalLayout = () => {
+  // media queries from react-responsive package
+  const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
 
   return (
-    <div
-      style={{
-        marginBlock: 96,
-        minHeight: '90vh',
-        
-      }}
-    >
-      <Typography.Title level={4}>{t('adminCenter')}</Typography.Title>
+    <div style={{ marginBlock: 96, minHeight: '90vh' }}>
+      <Typography.Title level={4}>Client Portal</Typography.Title>
 
       {isTablet ? (
         <Flex
@@ -30,7 +23,7 @@ const AdminCenterLayout: React.FC = () => {
           }}
         >
           <Flex style={{ width: '100%', maxWidth: 240 }}>
-            <AdminCenterSidebar />
+            <ClientPortalSidebar />
           </Flex>
           <Flex style={{ width: '100%' }}>
             <Outlet />
@@ -44,7 +37,7 @@ const AdminCenterLayout: React.FC = () => {
             marginBlockStart: 24,
           }}
         >
-          <AdminCenterSidebar />
+          <ClientPortalSidebar />
           <Outlet />
         </Flex>
       )}
@@ -52,4 +45,4 @@ const AdminCenterLayout: React.FC = () => {
   );
 };
 
-export default AdminCenterLayout;
+export default ClientPortalLayout;

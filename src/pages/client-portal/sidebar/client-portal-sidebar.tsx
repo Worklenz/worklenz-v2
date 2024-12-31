@@ -2,14 +2,14 @@ import { RightOutlined } from '@ant-design/icons';
 import { ConfigProvider, Flex, Menu, MenuProps } from 'antd';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { colors } from '../../../../styles/colors';
+import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
-import { clientPortalItems } from '../../../../lib/client-portal-constants/client-portal-constants';
+import { clientPortalItems } from '../../../lib/client-portal-constants/client-portal-constants';
 
-const SettingSidebar = () => {
+const ClientPortalSidebar = () => {
   const location = useLocation();
   // localization
-  const { t } = useTranslation('settingsSidebar');
+  const { t } = useTranslation('client-portal-sidebar');
 
   type MenuItem = Required<MenuProps>['items'][number];
   // import menu items from settings sidebar constants
@@ -69,4 +69,4 @@ const SettingSidebar = () => {
   );
 };
 
-export default SettingSidebar;
+export default ClientPortalSidebar;
