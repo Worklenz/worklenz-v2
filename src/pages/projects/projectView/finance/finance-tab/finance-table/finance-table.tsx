@@ -1,5 +1,5 @@
 import { Avatar, Checkbox, Flex, Input, Tooltip, Typography } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { financeTableColumns } from '../../../../../../lib/project/project-view-finance-table-columns';
 import CustomAvatar from '../../../../../../components/CustomAvatar';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
@@ -60,9 +60,14 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
 
   // function to click task
   const onTaskClick = (task: any) => {
+    console.log('Task clicked:', task);
     setSelectedTask(task);
     dispatch(toggleFinanceDrawer());
   };
+
+  useEffect(() => {
+    console.log('Selected Task:', selectedTask);
+  }, [selectedTask]);
 
   const renderFinancialTableHeaderContent = (columnKey: any) => {
     switch (columnKey) {
@@ -232,6 +237,7 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
           key={task.taskId}
           style={{ height: 52 }}
           className={`${isCollapse ? 'hidden' : 'static'} cursor-pointer border-b-[1px] ${themeMode === 'dark' ? 'hover:bg-[#000000]' : 'hover:bg-[#f8f7f9]'} `}
+          onClick={() => onTaskClick(task)}
         >
           <td
             style={{ paddingInline: 16 }}
@@ -251,7 +257,6 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
                     ? 'end'
                     : 'start',
               }}
-              onClick={() => onTaskClick(task)}
             >
               {renderFinancialTableColumnContent(col.key, task)}
             </td>
@@ -259,7 +264,7 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
         </tr>
       ))}
 
-      <FinanceDrawer task={selectedTask} />
+      {selectedTask && <FinanceDrawer task={selectedTask} />}
     </>
   );
 };

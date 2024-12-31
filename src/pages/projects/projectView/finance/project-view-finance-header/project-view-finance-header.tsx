@@ -7,6 +7,7 @@ import {
   changeCurrency,
   toggleImportRatecardsDrawer,
 } from '../../../../../features/finance/finance-slice';
+import { useTranslation } from 'react-i18next';
 
 type ProjectViewFinanceHeaderProps = {
   activeTab: 'finance' | 'ratecard';
@@ -21,6 +22,9 @@ const ProjectViewFinanceHeader = ({
   activeGroup,
   setActiveGroup,
 }: ProjectViewFinanceHeaderProps) => {
+  // localization
+  const { t } = useTranslation('project-view-finance');
+
   const dispatch = useAppDispatch();
 
   return (
@@ -32,13 +36,13 @@ const ProjectViewFinanceHeader = ({
               className={`${activeTab === 'finance' && 'border-[#1890ff] text-[#1890ff]'} rounded-r-none`}
               onClick={() => setActiveTab('finance')}
             >
-              Finance
+              {t('financeText')}
             </Button>
             <Button
               className={`${activeTab === 'ratecard' && 'border-[#1890ff] text-[#1890ff]'} rounded-l-none`}
               onClick={() => setActiveTab('ratecard')}
             >
-              Rate Card
+              {t('ratecardSingularText')}
             </Button>
           </Flex>
 
@@ -52,12 +56,12 @@ const ProjectViewFinanceHeader = ({
 
         {activeTab === 'finance' ? (
           <Button type="primary" icon={<DownOutlined />} iconPosition="end">
-            Export
+            {t('exportButton')}
           </Button>
         ) : (
           <Flex gap={8} align="center">
             <Flex gap={8} align="center">
-              <Typography.Text>Currency</Typography.Text>
+              <Typography.Text>{t('currencyText')}</Typography.Text>
               <Select
                 defaultValue={'lkr'}
                 options={[
@@ -72,7 +76,7 @@ const ProjectViewFinanceHeader = ({
               type="primary"
               onClick={() => dispatch(toggleImportRatecardsDrawer())}
             >
-              Import
+              {t('importButton')}
             </Button>
           </Flex>
         )}

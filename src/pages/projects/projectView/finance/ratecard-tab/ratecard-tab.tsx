@@ -2,8 +2,12 @@ import React from 'react';
 import RatecardTable from './reatecard-table/ratecard-table';
 import { Button, Flex, Typography } from 'antd';
 import ImportRatecardsDrawer from '../../../../../features/finance/ratecard-drawer/import-ratecards-drawer';
+import { useTranslation } from 'react-i18next';
 
 const RatecardTab = () => {
+  // localization
+  const { t } = useTranslation('project-view-finance');
+
   return (
     <Flex vertical gap={8}>
       <RatecardTable />
@@ -12,10 +16,7 @@ const RatecardTab = () => {
         type="danger"
         style={{ display: 'block', marginTop: '10px' }}
       >
-        * This rate card is generated based on the company's standard job titles
-        and rates. However, you have the flexibility to modify it according to
-        the project. These changes will not impact the organization's standard
-        job titles and rates.
+        {t('ratecardImportantNotice')}
       </Typography.Text>
       <Button
         type="primary"
@@ -25,7 +26,7 @@ const RatecardTab = () => {
           alignSelf: 'flex-end',
         }}
       >
-        Save
+        {t('saveButton')}
       </Button>
 
       {/* import ratecards drawer  */}

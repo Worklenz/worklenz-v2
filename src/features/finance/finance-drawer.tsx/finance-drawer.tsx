@@ -1,83 +1,187 @@
-import { Button, Drawer, Table, Typography } from 'antd';
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Drawer, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { TableProps } from 'antd/lib';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleFinanceDrawer } from '../finance-slice';
+import { themeWiseColor } from '../../../utils/themeWiseColor';
 
 const FinanceDrawer = ({ task }: { task: any }) => {
-  const { t } = useTranslation('ratecard-settings');
+  const [selectedTask, setSelectedTask] = useState(task);
+
+  useEffect(() => {
+    setSelectedTask(task);
+  }, [task]);
+
+  // localization
+  const { t } = useTranslation('project-view-finance');
+
+  // get theme data from theme reducer
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+
   const isDrawerOpen = useAppSelector(
     (state) => state.financeReducer.isFinanceDrawerOpen
   );
   const dispatch = useAppDispatch();
+  const currency = useAppSelector(
+    (state) => state.financeReducer.currency
+  ).toUpperCase();
 
-  console.log('here', task);
+  // Group members by job roles and calculate labor hours and costs
+  const groupedMembers = selectedTask?.members?.reduce(
+    (acc: any, member: any) => {
+      const memberHours = selectedTask.hours / selectedTask.members.length; // Split total hours equally
+      const memberCost = memberHours * member.hourlyRate;
 
-  // transform members data into a table-compatible format with null-checks
-  const dataSource = useMemo(() => {
-    if (!task || !task.members) {
-      return [];
-    }
+      if (!acc[member.jobRole]) {
+        acc[member.jobRole] = {
+          jobRole: member.jobRole,
+          laborHours: 0,
+          cost: 0,
+          members: [],
+        };
+      }
 
-    const totalMembers = task.members.length || 1; // Avoid division by zero
-    const laborHoursPerMember = task.hours ? task.hours / totalMembers : 0;
+      acc[member.jobRole].laborHours += memberHours;
+      acc[member.jobRole].cost += memberCost;
+      acc[member.jobRole].members.push({
+        name: member.name,
+        laborHours: memberHours,
+        cost: memberCost,
+      });
 
-    return task.members.map(
-      (member: { jobRole: any; hourlyRate: number }, index: number) => ({
-        key: index + 1,
-        jobTitle: member.jobRole || 'N/A',
-        laborHours: laborHoursPerMember,
-        cost: member.hourlyRate ? laborHoursPerMember * member.hourlyRate : 0,
-      })
-    );
-  }, [task]);
-
-  // table columns
-  const columns: TableProps['columns'] = [
-    {
-      key: 'jobTitle',
-      title: 'Job Title',
-      dataIndex: 'jobTitle',
-      render: (text) => (
-        <Typography.Text className="pl-4">{text}</Typography.Text>
-      ),
+      return acc;
     },
-    {
-      key: 'laborHours',
-      title: 'Labor Hours',
-      dataIndex: 'laborHours',
-      align: 'right',
-      render: (hours) => <Typography.Text>{hours.toFixed(2)}</Typography.Text>,
-    },
-    {
-      key: 'cost',
-      title: 'Cost',
-      dataIndex: 'cost',
-      align: 'right',
-      render: (cost) => <Typography.Text>{cost.toFixed(2)}</Typography.Text>,
-    },
-  ];
+    {}
+  );
 
   return (
     <Drawer
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          {task?.task}
+          {selectedTask?.task || t('noTaskSelected')}
         </Typography.Text>
       }
       open={isDrawerOpen}
       onClose={() => dispatch(toggleFinanceDrawer())}
-      width={600}
+      width={480}
     >
-      <div className="rounded-lg bg-[#fafafa] p-4">
-        <Table
-          columns={columns}
-          dataSource={dataSource}
-          pagination={false}
-          className="finance-table"
-        />
+      <div>
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginBottom: '16px',
+          }}
+        >
+          <thead>
+            <tr
+              style={{
+                height: 48,
+                backgroundColor: themeWiseColor(
+                  '#F5F5F5',
+                  '#1d1d1d',
+                  themeMode
+                ),
+              }}
+            >
+              <th
+                style={{
+                  textAlign: 'left',
+                  padding: 8,
+                }}
+              ></th>
+              <th
+                style={{
+                  textAlign: 'right',
+                  padding: 8,
+                }}
+              >
+                {t('labourHoursColumn')}
+              </th>
+              <th
+                style={{
+                  textAlign: 'right',
+                  padding: 8,
+                }}
+              >
+                {t('costColumn')} ({currency})
+              </th>
+            </tr>
+          </thead>
+
+          <div className="mb-4"></div>
+
+          <tbody>
+            {Object.values(groupedMembers).map((group: any) => (
+              <React.Fragment key={group.jobRole}>
+                {/* Group Header */}
+                <tr
+                  style={{
+                    backgroundColor: themeWiseColor(
+                      '#D9D9D9',
+                      '#000',
+                      themeMode
+                    ),
+                    height: 56,
+                  }}
+                  className="border-b-[1px] font-semibold"
+                >
+                  <td style={{ padding: 8 }}>{group.jobRole}</td>
+                  <td
+                    style={{
+                      textAlign: 'right',
+                      padding: 8,
+                    }}
+                  >
+                    {group.laborHours}
+                  </td>
+                  <td
+                    style={{
+                      textAlign: 'right',
+                      padding: 8,
+                    }}
+                  >
+                    {group.cost}
+                  </td>
+                </tr>
+                {/* Member Rows */}
+                {group.members.map((member: any, index: number) => (
+                  <tr
+                    key={`${group.jobRole}-${index}`}
+                    className="border-b-[1px]"
+                    style={{ height: 56 }}
+                  >
+                    <td
+                      style={{
+                        padding: 8,
+                        paddingLeft: 32,
+                      }}
+                    >
+                      {member.name}
+                    </td>
+                    <td
+                      style={{
+                        textAlign: 'right',
+                        padding: 8,
+                      }}
+                    >
+                      {member.laborHours}
+                    </td>
+                    <td
+                      style={{
+                        textAlign: 'right',
+                        padding: 8,
+                      }}
+                    >
+                      {member.cost}
+                    </td>
+                  </tr>
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
       </div>
     </Drawer>
   );

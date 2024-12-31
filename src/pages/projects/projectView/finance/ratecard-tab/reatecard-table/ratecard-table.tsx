@@ -4,6 +4,7 @@ import CustomAvatar from '../../../../../../components/CustomAvatar';
 import { JobRoleType } from '../../../../../../types/ratecard.types';
 import { PlusOutlined } from '@ant-design/icons';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 const initialJobRolesList: JobRoleType[] = [
   {
@@ -35,6 +36,9 @@ const initialJobRolesList: JobRoleType[] = [
 const RatecardTable: React.FC = () => {
   const [roles, setRoles] = useState<JobRoleType[]>(initialJobRolesList);
 
+  // localization
+  const { t } = useTranslation('project-view-finance');
+
   // get currently using currency from finance reducer
   const currency = useAppSelector(
     (state) => state.financeReducer.currency
@@ -52,7 +56,7 @@ const RatecardTable: React.FC = () => {
 
   const columns: TableProps<JobRoleType>['columns'] = [
     {
-      title: 'Job Title',
+      title: t('jobTitleColumn'),
       dataIndex: 'jobTitle',
       render: (text: string, record: JobRoleType, index: number) => (
         <Input
@@ -74,7 +78,7 @@ const RatecardTable: React.FC = () => {
       ),
     },
     {
-      title: `Rate per hour (${currency})`,
+      title: `${t('ratePerHourColumn')} (${currency})`,
       dataIndex: 'ratePerHour',
       render: (text: number, record: JobRoleType, index: number) => (
         <Input
@@ -95,7 +99,7 @@ const RatecardTable: React.FC = () => {
       ),
     },
     {
-      title: 'Members',
+      title: t('membersColumn'),
       dataIndex: 'members',
       render: (members: string[]) =>
         members?.length > 0 ? (
@@ -136,7 +140,7 @@ const RatecardTable: React.FC = () => {
           onClick={handleAddRole}
           style={{ width: 'fit-content' }}
         >
-          + Add Role
+          {t('addRoleButton')}
         </Button>
       )}
     />

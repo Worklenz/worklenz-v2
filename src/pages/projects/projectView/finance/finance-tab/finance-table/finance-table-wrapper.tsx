@@ -4,6 +4,7 @@ import { Checkbox, Flex, Typography } from 'antd';
 import FinanceTable from './finance-table';
 import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 const FinanceTableWrapper = ({
   activeTablesList,
@@ -11,6 +12,9 @@ const FinanceTableWrapper = ({
   activeTablesList: any;
 }) => {
   const [isScrolling, setIsScrolling] = useState(false);
+
+  // localization
+  const { t } = useTranslation('project-view-finance');
 
   // trigger the table scrolling
   useEffect(() => {
@@ -159,7 +163,7 @@ const FinanceTableWrapper = ({
                 className={`${customColumnHeaderStyles(col.key)} before:constent relative before:absolute before:left-0 before:top-1/2 before:h-[36px] before:w-0.5 before:-translate-y-1/2 ${themeMode === 'dark' ? 'before:bg-white/10' : 'before:bg-black/5'}`}
               >
                 <Typography.Text>
-                  {col.name}{' '}
+                  {t(`${col.name}Column`)}{' '}
                   {col.type === 'currency' && `(${currency.toUpperCase()})`}
                 </Typography.Text>
               </td>
@@ -185,7 +189,9 @@ const FinanceTableWrapper = ({
               }}
               className={customColumnStyles('totalRow')}
             >
-              <Typography.Text style={{ fontSize: 18 }}>Total</Typography.Text>
+              <Typography.Text style={{ fontSize: 18 }}>
+                {t('totalText')}
+              </Typography.Text>
             </td>
             {financeTableColumns.map(
               (col) =>

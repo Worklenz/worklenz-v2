@@ -65,8 +65,6 @@ const RatecardDrawer = ({
         ]);
   }, [selectedRatecard?.jobRolesList, type]);
 
-  console.log(roles);
-
   // get currently using currency from finance reducer
   const currency = useAppSelector(
     (state) => state.financeReducer.currency
@@ -85,7 +83,7 @@ const RatecardDrawer = ({
   // table columns
   const columns = [
     {
-      title: 'Job Title',
+      title: t('jobTitleColumn'),
       dataIndex: 'jobTitle',
       render: (text: string, record: any, index: number) => (
         <Input
@@ -107,7 +105,7 @@ const RatecardDrawer = ({
       ),
     },
     {
-      title: `Rate per hour (${currency})`,
+      title: `${t('ratePerHourColumn')} (${currency})`,
       dataIndex: 'ratePerHour',
       render: (text: number, record: any, index: number) => (
         <Input
@@ -168,16 +166,13 @@ const RatecardDrawer = ({
             onClick={handleAddRole}
             style={{ width: 'fit-content' }}
           >
-            + Add Role
+            {t('addRoleButton')}
           </Button>
         )}
       />
 
       <Flex justify="end" gap={16} style={{ marginTop: 16 }}>
-        <Button type="default" onClick={() => dispatch(toggleRatecardDrawer())}>
-          {t('close')}
-        </Button>
-        <Button type="primary">{t('save')}</Button>
+        <Button type="primary">{t('saveButton')}</Button>
       </Flex>
     </Drawer>
   );

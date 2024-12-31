@@ -7,8 +7,9 @@
   "deleteConfirmationCancel": "Cancel",
   "searchPlaceholder": "Search by name",
   "createRatecard": "Create Rate Card",
+
   "jobTitleColumn": "Job title",
-  "ratePerHourColumn": "Rate per hour (Rs.)",
+  "ratePerHourColumn": "Rate per hour",
   "saveButton": "Save",
   "addRoleButton": "+ Add Role",
   "createRatecardSuccessMessage": "Create Rate Card success!",

@@ -14,7 +14,7 @@ const ImportRatecardsDrawer: React.FC = () => {
   );
 
   // localization
-  const { t } = useTranslation('ratecard-settings');
+  const { t } = useTranslation('project-view-finance');
 
   // get drawer state from client reducer
   const isDrawerOpen = useAppSelector(
@@ -41,7 +41,7 @@ const ImportRatecardsDrawer: React.FC = () => {
   // table columns
   const columns = [
     {
-      title: 'Job Title',
+      title: t('jobTitleColumn'),
       dataIndex: 'jobTitle',
       render: (text: string) => (
         <Typography.Text className="group-hover:text-[#1890ff]">
@@ -50,7 +50,7 @@ const ImportRatecardsDrawer: React.FC = () => {
       ),
     },
     {
-      title: `Rate per hour (${currency})`,
+      title: `${t('ratePerHourColumn')} (${currency})`,
       dataIndex: 'ratePerHour',
       render: (text: number) => <Typography.Text>{text}</Typography.Text>,
     },
@@ -60,7 +60,7 @@ const ImportRatecardsDrawer: React.FC = () => {
     <Drawer
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          Rate cards
+          {t('ratecardsPluralText')}
         </Typography.Text>
       }
       footer={

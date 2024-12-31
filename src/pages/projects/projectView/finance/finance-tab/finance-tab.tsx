@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import FinanceTableWrapper from './finance-table/finance-table-wrapper';
 import { fetchData } from '../../../../../utils/fetchData';
 
@@ -13,12 +13,12 @@ const FinanceTab = ({
   const [activeTablesList, setActiveTablesList] = useState<any[]>([]);
 
   // Fetch data for status tables
-  useEffect(() => {
+  useMemo(() => {
     fetchData('/finance-mock-data/finance-task-status.json', setStatusTables);
   }, []);
 
   // Fetch data for priority tables
-  useEffect(() => {
+  useMemo(() => {
     fetchData(
       '/finance-mock-data/finance-task-priority.json',
       setPriorityTables
