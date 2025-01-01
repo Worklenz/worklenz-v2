@@ -1,0 +1,24 @@
+[
+    {
+        "clientId": "1",
+        "clientName": "Client 1",
+        "assignedProjects": 10,
+        "teamMembers": [
+            {
+                "memberName": "Raveesha Dilanka",
+                "memberId": "1"
+            }
+        ]
+    },
+    {
+        "clientId": "2",
+        "clientName": "Client 2",
+        "assignedProjects": 5,
+        "teamMembers": [
+            {
+                "memberName": "Raveesha Dilanka",
+                "memberId": "1"
+            }
+        ]
+    }
+]
