@@ -5,6 +5,9 @@ import FinanceTable from './finance-table';
 import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import FinanceDrawer from '../../../../../../features/finance/finance-drawer.tsx/finance-drawer';
+import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
+import { toggleFinanceDrawer } from '../../../../../../features/finance/finance-slice';
 
 const FinanceTableWrapper = ({
   activeTablesList,
@@ -13,8 +16,19 @@ const FinanceTableWrapper = ({
 }) => {
   const [isScrolling, setIsScrolling] = useState(false);
 
+  //? this state for inside this state individualy in finance table only display the data of the last table's task when a task is clicked The selectedTask state does not synchronize across tables so thats why move the selectedTask state to a parent component
+  const [selectedTask, setSelectedTask] = useState(null);
+
   // localization
   const { t } = useTranslation('project-view-finance');
+
+  const dispatch = useAppDispatch();
+
+  // function on task click
+  const onTaskClick = (task: any) => {
+    setSelectedTask(task);
+    dispatch(toggleFinanceDrawer());
+  };
 
   // trigger the table scrolling
   useEffect(() => {
@@ -129,93 +143,110 @@ const FinanceTableWrapper = ({
     `px-2 text-left  ${key === 'totalRow' && `sticky left-0 z-10 ${isScrolling ? 'after:content after:absolute after:top-0 after:-right-1 after:-z-10  after:h-[68px] after:w-1.5 after:bg-transparent after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent' : ''}`}`;
 
   return (
-    <Flex
-      vertical
-      className="tasklist-container min-h-0 max-w-full overflow-x-auto"
-    >
-      <table>
-        <tbody>
-          <tr
-            style={{
-              height: 56,
-              fontWeight: 600,
-              backgroundColor: themeWiseColor('#fafafa', '#1d1d1d', themeMode),
-              borderBlockEnd: `2px solid rgb(0 0 0 / 0.05)`,
-            }}
-          >
-            <td
-              style={{ width: 32, paddingInline: 16 }}
-              className={customColumnHeaderStyles('selector')}
-            >
-              <Checkbox />
-            </td>
-            {financeTableColumns.map((col) => (
-              <td
-                key={col.key}
-                style={{
-                  minWidth: col.width,
-                  paddingInline: 16,
-                  textAlign:
-                    col.type === 'hours' || col.type === 'currency'
-                      ? 'center'
-                      : 'start',
-                }}
-                className={`${customColumnHeaderStyles(col.key)} before:constent relative before:absolute before:left-0 before:top-1/2 before:h-[36px] before:w-0.5 before:-translate-y-1/2 ${themeMode === 'dark' ? 'before:bg-white/10' : 'before:bg-black/5'}`}
-              >
-                <Typography.Text>
-                  {t(`${col.name}Column`)}{' '}
-                  {col.type === 'currency' && `(${currency.toUpperCase()})`}
-                </Typography.Text>
-              </td>
-            ))}
-          </tr>
-
-          <tr
-            style={{
-              height: 56,
-              fontWeight: 500,
-              backgroundColor: themeWiseColor('#fbfbfb', '#141414', themeMode),
-            }}
-          >
-            <td
-              colSpan={3}
+    <>
+      <Flex
+        vertical
+        className="tasklist-container min-h-0 max-w-full overflow-x-auto"
+      >
+        <table>
+          <tbody>
+            <tr
               style={{
-                paddingInline: 16,
+                height: 56,
+                fontWeight: 600,
+                backgroundColor: themeWiseColor(
+                  '#fafafa',
+                  '#1d1d1d',
+                  themeMode
+                ),
+                borderBlockEnd: `2px solid rgb(0 0 0 / 0.05)`,
+              }}
+            >
+              <td
+                style={{ width: 32, paddingInline: 16 }}
+                className={customColumnHeaderStyles('selector')}
+              >
+                <Checkbox />
+              </td>
+              {financeTableColumns.map((col) => (
+                <td
+                  key={col.key}
+                  style={{
+                    minWidth: col.width,
+                    paddingInline: 16,
+                    textAlign:
+                      col.type === 'hours' || col.type === 'currency'
+                        ? 'center'
+                        : 'start',
+                  }}
+                  className={`${customColumnHeaderStyles(col.key)} before:constent relative before:absolute before:left-0 before:top-1/2 before:h-[36px] before:w-0.5 before:-translate-y-1/2 ${themeMode === 'dark' ? 'before:bg-white/10' : 'before:bg-black/5'}`}
+                >
+                  <Typography.Text>
+                    {t(`${col.name}Column`)}{' '}
+                    {col.type === 'currency' && `(${currency.toUpperCase()})`}
+                  </Typography.Text>
+                </td>
+              ))}
+            </tr>
+
+            <tr
+              style={{
+                height: 56,
+                fontWeight: 500,
                 backgroundColor: themeWiseColor(
                   '#fbfbfb',
                   '#141414',
                   themeMode
                 ),
               }}
-              className={customColumnStyles('totalRow')}
             >
-              <Typography.Text style={{ fontSize: 18 }}>
-                {t('totalText')}
-              </Typography.Text>
-            </td>
-            {financeTableColumns.map(
-              (col) =>
-                (col.type === 'hours' || col.type === 'currency') && (
-                  <td
-                    key={col.key}
-                    style={{
-                      minWidth: col.width,
-                      paddingInline: 16,
-                      textAlign: 'end',
-                    }}
-                  >
-                    {renderFinancialTableHeaderContent(col.key)}
-                  </td>
-                )
-            )}
-          </tr>
+              <td
+                colSpan={3}
+                style={{
+                  paddingInline: 16,
+                  backgroundColor: themeWiseColor(
+                    '#fbfbfb',
+                    '#141414',
+                    themeMode
+                  ),
+                }}
+                className={customColumnStyles('totalRow')}
+              >
+                <Typography.Text style={{ fontSize: 18 }}>
+                  {t('totalText')}
+                </Typography.Text>
+              </td>
+              {financeTableColumns.map(
+                (col) =>
+                  (col.type === 'hours' || col.type === 'currency') && (
+                    <td
+                      key={col.key}
+                      style={{
+                        minWidth: col.width,
+                        paddingInline: 16,
+                        textAlign: 'end',
+                      }}
+                    >
+                      {renderFinancialTableHeaderContent(col.key)}
+                    </td>
+                  )
+              )}
+            </tr>
 
-          {activeTablesList.map((table: any) => (
-            <FinanceTable table={table} isScrolling={isScrolling} />
-          ))}
-        </tbody>
-      </table>
-    </Flex>
+            {activeTablesList.map((table: any, index: number) => (
+              <FinanceTable
+                key={index}
+                table={table}
+                isScrolling={isScrolling}
+                onTaskClick={onTaskClick}
+              />
+            ))}
+          </tbody>
+        </table>
+      </Flex>
+
+      {selectedTask && <FinanceDrawer task={selectedTask} />}
+    </>
   );
 };
 

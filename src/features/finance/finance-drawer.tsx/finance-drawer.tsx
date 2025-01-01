@@ -27,10 +27,16 @@ const FinanceDrawer = ({ task }: { task: any }) => {
     (state) => state.financeReducer.currency
   ).toUpperCase();
 
-  // Group members by job roles and calculate labor hours and costs
-  const groupedMembers = selectedTask?.members?.reduce(
-    (acc: any, member: any) => {
-      const memberHours = selectedTask.hours / selectedTask.members.length; // Split total hours equally
+  // function handle drawer close
+  const handleClose = () => {
+    setSelectedTask(null);
+    dispatch(toggleFinanceDrawer());
+  };
+
+  // group members by job roles and calculate labor hours and costs
+  const groupedMembers =
+    selectedTask?.members?.reduce((acc: any, member: any) => {
+      const memberHours = selectedTask.hours / selectedTask.members.length;
       const memberCost = memberHours * member.hourlyRate;
 
       if (!acc[member.jobRole]) {
@@ -51,9 +57,7 @@ const FinanceDrawer = ({ task }: { task: any }) => {
       });
 
       return acc;
-    },
-    {}
-  );
+    }, {}) || {};
 
   return (
     <Drawer
@@ -63,7 +67,8 @@ const FinanceDrawer = ({ task }: { task: any }) => {
         </Typography.Text>
       }
       open={isDrawerOpen}
-      onClose={() => dispatch(toggleFinanceDrawer())}
+      onClose={handleClose}
+      destroyOnClose={true}
       width={480}
     >
       <div>

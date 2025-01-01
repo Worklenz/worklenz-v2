@@ -16,9 +16,14 @@ import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
 type FinanceTableProps = {
   table: any;
   isScrolling: boolean;
+  onTaskClick: (task: any) => void;
 };
 
-const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
+const FinanceTable = ({
+  table,
+  isScrolling,
+  onTaskClick,
+}: FinanceTableProps) => {
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
@@ -57,13 +62,6 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
     }),
     [table]
   );
-
-  // function to click task
-  const onTaskClick = (task: any) => {
-    console.log('Task clicked:', task);
-    setSelectedTask(task);
-    dispatch(toggleFinanceDrawer());
-  };
 
   useEffect(() => {
     console.log('Selected Task:', selectedTask);
@@ -263,8 +261,6 @@ const FinanceTable = ({ table, isScrolling }: FinanceTableProps) => {
           ))}
         </tr>
       ))}
-
-      {selectedTask && <FinanceDrawer task={selectedTask} />}
     </>
   );
 };
