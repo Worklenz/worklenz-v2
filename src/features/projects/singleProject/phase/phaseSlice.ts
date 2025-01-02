@@ -11,7 +11,7 @@ const initialState: PhaseState = {
   phaseList: [
     {
       phaseId: '1',
-      projectId: 'YAu9wUxwdvXPLvd9M3pfn',
+      projectId: 'Sz0UEKMCRjYCReyvOXhyK',
       phase: 'New Phase',
       phaseOptions: [
         {

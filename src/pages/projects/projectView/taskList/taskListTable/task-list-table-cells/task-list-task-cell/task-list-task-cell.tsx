@@ -7,13 +7,13 @@ import {
   RightOutlined,
   ExpandAltOutlined,
 } from '@ant-design/icons';
-import { TaskType } from '../../../../../../types/task.types';
-import { colors } from '../../../../../../styles/colors';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '../../../../../../features/tasks/taskSlice';
+import { TaskType } from '../../../../../../../types/task.types';
+import { colors } from '../../../../../../../styles/colors';
+import { useAppDispatch } from '../../../../../../../hooks/useAppDispatch';
+import { toggleUpdateTaskDrawer } from '../../../../../../../features/tasks/taskSlice';
 import { useTranslation } from 'react-i18next';
 
-type TaskCellProps = {
+type TaskListTaskCellProps = {
   task: TaskType;
   isSubTask?: boolean;
   expandedTasks: string[];
@@ -22,14 +22,14 @@ type TaskCellProps = {
   toggleTaskExpansion: (taskId: string) => void;
 };
 
-const TaskCell = ({
+const TaskListTaskCell = ({
   task,
   isSubTask = false,
   expandedTasks,
   hoverRow,
   setSelectedTaskId,
   toggleTaskExpansion,
-}: TaskCellProps) => {
+}: TaskListTaskCellProps) => {
   // localization
   const { t } = useTranslation('taskListTable');
 
@@ -145,4 +145,4 @@ const TaskCell = ({
   );
 };
 
-export default TaskCell;
+export default TaskListTaskCell;

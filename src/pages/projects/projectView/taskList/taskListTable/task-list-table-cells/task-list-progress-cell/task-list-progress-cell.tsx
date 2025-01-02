@@ -1,16 +1,16 @@
 import { Progress, Tooltip } from 'antd';
 import React from 'react';
-import './TaskProgress.css';
+import './task-progress-cell.css';
 
-type TaskProgressProps = {
+type TaskListProgressCellProps = {
   progress: number;
   numberOfSubTasks: number;
 };
 
-const TaskProgress = ({
+const TaskListProgressCell = ({
   progress = 0,
   numberOfSubTasks = 0,
-}: TaskProgressProps) => {
+}: TaskListProgressCellProps) => {
   const totalTasks = numberOfSubTasks + 1;
   const completedTasks = 0;
 
@@ -22,11 +22,11 @@ const TaskProgress = ({
         percent={progress}
         type="circle"
         size={size}
-        style={{ cursor: 'default',}}
-        className='task-progress'
+        style={{ cursor: 'default' }}
+        className="task-progress"
       />
     </Tooltip>
   );
 };
 
-export default TaskProgress;
+export default TaskListProgressCell;

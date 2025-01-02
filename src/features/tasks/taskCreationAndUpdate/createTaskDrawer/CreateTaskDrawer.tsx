@@ -30,6 +30,7 @@ const CreateTaskDrawer = () => {
       onClose={() => dispatch(toggleCreateTaskDrawer())}
       width={720}
       style={{ justifyContent: 'space-between' }}
+      styles={{ body: { paddingBlock: 8 } }}
       title={
         <TaskDrawerHeader
           taskName={taskName}

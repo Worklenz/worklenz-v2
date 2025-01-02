@@ -127,8 +127,12 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
               cancelText={'No'}
               onConfirm={() => handleDeleteSubTask(record.taskId)}
             >
-              <Tooltip title='Delete'>
-              <Button shape="default" icon={<DeleteOutlined />} size="small" />
+              <Tooltip title="Delete">
+                <Button
+                  shape="default"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
               </Tooltip>
             </Popconfirm>
           </Flex>
@@ -163,7 +167,6 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
           {isEdit ? (
             <Input
               style={{
-                backgroundColor: themeMode === 'dark' ? '' : '#edebf0',
                 border: 'none',
                 boxShadow: 'none',
                 height: 48,
@@ -184,7 +187,7 @@ const SubTaskTable = ({ datasource }: SubTaskTableProps) => {
             <Input
               onFocus={() => setIsEdit(true)}
               value="+ Add Subtask"
-              className={`border-none ${themeMode === 'dark' ? `hover:bg-[#343a40]` : `hover:bg-[#edebf0]`} hover:text-[#1890ff]`}
+              className={`${themeMode === 'default' && 'border-none hover:bg-[#edebf0]'} ${themeMode === 'dark' && 'border-[1px] border-[#424242] hover:border-[#1890ff]'} hover:text-[#1890ff]`}
             />
           )}
         </div>

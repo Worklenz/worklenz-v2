@@ -7,7 +7,6 @@ import {
   Flex,
   Form,
   Input,
-  message,
   Space,
   Typography,
 } from 'antd';

@@ -8,16 +8,18 @@ import {
   Select,
   Typography,
 } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { addMember, toggleCreateMemberDrawer } from './memberSlice';
-import { colors } from '../../../styles/colors';
 import { MemberType } from '../../../types/member.types';
 import { nanoid } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 
 const AddMemberDrawer = () => {
+  const [emailQuery, setEmailQuery] = useState('');
+  const [membersEmails, setMembersEmails] = useState<string[]>([]);
+
   // localization
   const { t } = useTranslation('teamMembersSettings');
 
@@ -31,20 +33,31 @@ const AddMemberDrawer = () => {
 
   const [form] = Form.useForm();
 
-  // function for handle form submit
+  // function to add members into selected members array
+  const onSelectEmail = (value: string) => {
+    if (!membersEmails.includes(value)) {
+      setMembersEmails([...membersEmails, value]);
+    }
+  };
+
+  // function to handle form submit
   const handleFormSubmit = async (values: any) => {
     try {
-      const newMember: MemberType = {
+      const newMembers = membersEmails.map((email) => ({
         memberId: nanoid(),
-        memberName: values.email.split('@')[0] || '',
-        memberEmail: values.email,
+        memberName: email.split('@')[0] || '',
+        memberEmail: email,
         memberRole: values.access,
         jobTitle: values.jobTitle,
         isActivate: null,
         isInivitationAccept: false,
-      };
-      dispatch(addMember(newMember));
+      }));
+
+      // dispatch each new member
+      newMembers.forEach((member) => dispatch(addMember(member)));
+
       form.resetFields();
+      setMembersEmails([]); // Clear the emails array
       message.success(t('createMemberSuccessMessage'));
       dispatch(toggleCreateMemberDrawer());
     } catch (error) {
@@ -80,7 +93,13 @@ const AddMemberDrawer = () => {
           ]}
         >
           <Flex vertical gap={4}>
-            <Input type="email" placeholder={t('memberEmailPlaceholder')} />
+            <Select
+              mode="tags"
+              style={{ width: '100%' }}
+              placeholder={t('memberEmailPlaceholder')}
+              onChange={onSelectEmail}
+              suffixIcon={null}
+            />
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {t('addMemberEmailHint')}
             </Typography.Text>
@@ -91,27 +110,6 @@ const AddMemberDrawer = () => {
           <Select
             size="middle"
             placeholder={t('jobTitlePlaceholder')}
-            // dropdownRender={(menu) => (
-            //     <>
-            //         {menu}
-            //         <Divider style={{ margin: '8px 0' }} />
-            //         <Space style={{ padding: '0 8px 4px' }}>
-            //             <Input
-            //                 placeholder="Please enter item"
-            //                 ref={inputRef}
-            //                 value={name}
-            //                 onChange={onNameChange}
-            //             />
-            //             <Button
-            //                 type="text"
-            //                 icon={<PlusOutlined />}
-            //                 onClick={addItem}
-            //             >
-            //                 Add item
-            //             </Button>
-            //         </Space>
-            //     </>
-            // )}
             options={jobsList.map((job) => ({
               label: job.jobTitle,
               value: job.jobTitle,

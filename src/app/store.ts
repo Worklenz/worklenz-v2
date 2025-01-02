@@ -32,6 +32,8 @@ import membersReportsReducer from '../features/reporting/membersReports/membersR
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice'
 import priorityReducer from '../features/projects/priority/prioritySlice';
+import taskListCustomColumnsReducer from '../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
+import financeReducer from '../features/finance/finance-slice';
 
 export const store = configureStore({
   // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -73,6 +75,8 @@ export const store = configureStore({
     roadmapReducer: roadmapReducer,
     groupByFilterDropdownReducer: groupByFilterDropdownReducer,
     priorityReducer: priorityReducer
+    taskListCustomColumnsReducer: taskListCustomColumnsReducer,
+    financeReducer: financeReducer,
   },
 });
 
