@@ -1,0 +1,2019 @@
+[
+  {
+    "id": "15d17ffb-1b19-4f8e-9f03-f43f9f2b7007",
+    "name": "To Do",
+    "category_id": "66c914b9-efd1-438f-af71-fe6d12d10c10",
+    "color_code": "#d8d7d8",
+    "color_code_dark": "#989898",
+    "start_date": null,
+    "end_date": null,
+    "todo_progress": 100,
+    "doing_progress": 0,
+    "done_progress": 0,
+    "tasks": [
+      {
+        "id": "25b38aee-5d5e-4b2d-8704-c1a3379a249c",
+        "name": "Data Inventory and Classification",
+        "task_key": "DLDS-1",
+        "project_name": "Data leakage detection system",
+        "project_id": "5b5344b3-8c38-45c6-a591-a91e78cd1fbc",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 3,
+        "status": "5a9a2f03-8578-49de-b339-522151fe99a0",
+        "archived": false,
+        "description": null,
+        "sort_order": 0,
+        "phase_id": null,
+        "phase_name": null,
+        "phase_color_code": null,
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#a9a9a969",
+        "status_category": {
+          "is_done": false,
+          "is_doing": false,
+          "is_todo": true
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 0,
+        "assignees": [
+          {
+            "team_member_id": "ed07de21-c578-40d5-84fe-b2658c32345f",
+            "project_member_id": "ed325cba-baec-4b1d-93e3-77d9ca78957c",
+            "name": "Bowen Higgins.",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/cb593469-8abd-4bc2-9e58-2a24dd3509d9.webp?v=7372",
+            "user_id": "cb593469-8abd-4bc2-9e58-2a24dd3509d9",
+            "email": "beckhamboyle@gmail.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#3b7ad4"
+          }
+        ],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "f374a357-abef-4fc6-a84f-671063391205",
+            "name": "Development",
+            "color_code": "#80ca79"
+          }
+        ],
+        "is_complete": false,
+        "reporter": "Kavindu Mihiranga",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": "208800",
+        "created_at": "2023-09-07T05:14:29.111Z",
+        "updated_at": "2023-09-07T05:14:29.111Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": "2023-10-21T08:44:02.608Z",
+        "index": 0,
+        "progress": 0,
+        "overdue": true,
+        "time_spent": {
+          "hours": 3480,
+          "minutes": 0
+        },
+        "time_spent_string": "3480h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#7781ca",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "names": [
+          {
+            "team_member_id": "ed07de21-c578-40d5-84fe-b2658c32345f",
+            "project_member_id": "ed325cba-baec-4b1d-93e3-77d9ca78957c",
+            "name": "Bowen Higgins.",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/cb593469-8abd-4bc2-9e58-2a24dd3509d9.webp?v=7372",
+            "user_id": "cb593469-8abd-4bc2-9e58-2a24dd3509d9",
+            "email": "beckhamboyle@gmail.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#3b7ad4"
+          }
+        ],
+        "all_labels": [
+          {
+            "id": "f374a357-abef-4fc6-a84f-671063391205",
+            "name": "Development",
+            "color_code": "#80ca79"
+          }
+        ],
+        "complete_ratio": "0",
+        "completed_count": 0,
+        "total_tasks_count": 4,
+        "width": 35,
+        "sub_tasks": [
+          {
+            "id": "91847746-ef7c-4eda-bd7d-af1bffa7ce98",
+            "name": "Automated Testing",
+            "task_key": "P3-19",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Running automated test suites to catch regressions and ensure software quality.</p>",
+            "sort_order": 15,
+            "phase_id": "9efec08c-1e77-427f-9150-dd1bae8bc9fb",
+            "phase_name": "Planning",
+            "phase_color_code": "#905b39",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [
+              {
+                "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+                "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+                "name": "Franklin Sierra",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+                "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+                "email": "dscs@bdb.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#c178c9"
+              }
+            ],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "a5aa94ff-9676-4d29-8522-15b59b0eea2c",
+                "name": "Enhancement",
+                "color_code": "#ff9c3c"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "26c78b51-cea2-4749-8a2d-eaba31f51ba0",
+            "priority_value": 2,
+            "total_minutes": "300",
+            "total_minutes_spent": "14640",
+            "created_at": "2023-09-07T07:24:13.256Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-07-11T08:43:58.115Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-10-21T08:44:02.608Z",
+            "progress": 4880,
+            "overdue": false,
+            "time_spent": {
+              "hours": 244,
+              "minutes": 0
+            },
+            "time_spent_string": "244h 0m",
+            "total_time_string": "5h 0m",
+            "name_color": "#154c9b",
+            "priority_color": "#f3707069",
+            "show_sub_tasks": false,
+            "phase_color": "#905b39",
+            "names": [
+              {
+                "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+                "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+                "name": "Franklin Sierra",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+                "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+                "email": "dscs@bdb.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#c178c9"
+              }
+            ],
+            "all_labels": [
+              {
+                "id": "a5aa94ff-9676-4d29-8522-15b59b0eea2c",
+                "name": "Enhancement",
+                "color_code": "#ff9c3c"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          },
+          {
+            "id": "eedc87d1-97d7-465a-80ad-81b8b7a6f1a0",
+            "name": "Test Case Creation",
+            "task_key": "P3-17",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Creating test cases to validate bug fixes or new features</p>",
+            "sort_order": 19,
+            "phase_id": "9efec08c-1e77-427f-9150-dd1bae8bc9fb",
+            "phase_name": "Planning",
+            "phase_color_code": "#905b39",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [
+              {
+                "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+                "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+                "name": "evanphan",
+                "email_notifications_enabled": null,
+                "avatar_url": null,
+                "user_id": null,
+                "email": null,
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#9877ca"
+              }
+            ],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+                "name": "Maintenance",
+                "color_code": "#fbc84c"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+            "priority_value": 1,
+            "total_minutes": "370",
+            "total_minutes_spent": "108000",
+            "created_at": "2023-09-07T07:22:42.579Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-06-12T08:41:05.435Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-12-08T08:41:10.770Z",
+            "progress": 29189,
+            "overdue": false,
+            "time_spent": {
+              "hours": 1800,
+              "minutes": 0
+            },
+            "time_spent_string": "1800h 0m",
+            "total_time_string": "6h 10m",
+            "name_color": "#ff9c3c",
+            "priority_color": "#fbc84c69",
+            "show_sub_tasks": false,
+            "phase_color": "#905b39",
+            "names": [
+              {
+                "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+                "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+                "name": "evanphan",
+                "email_notifications_enabled": null,
+                "avatar_url": null,
+                "user_id": null,
+                "email": null,
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#9877ca"
+              }
+            ],
+            "all_labels": [
+              {
+                "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+                "name": "Maintenance",
+                "color_code": "#fbc84c"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          },
+          {
+            "id": "98e20374-d17b-443c-beda-6656d536fff3",
+            "name": "Manual Testing",
+            "task_key": "P3-18",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "ef096e74-ed11-489c-9673-25a9b781828b",
+            "archived": false,
+            "description": "<p>Conducting manual testing to verify that the reported issues have been resolved and new features work as intended.</p>",
+            "sort_order": 21,
+            "phase_id": "34d2abbb-c1de-4ad8-8b55-e4482b84a781",
+            "phase_name": "Execution",
+            "phase_color_code": "#9877ca",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+                "name": "QA",
+                "color_code": "#154c9b"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "c850b9bc-ad12-4c04-9b11-c94c29b4a932",
+            "priority_value": 0,
+            "total_minutes": "360",
+            "total_minutes_spent": "127200",
+            "created_at": "2023-09-07T07:23:47.120Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-07-12T08:42:41.402Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-09-22T08:42:46.162Z",
+            "progress": 35333,
+            "overdue": false,
+            "time_spent": {
+              "hours": 2120,
+              "minutes": 0
+            },
+            "time_spent_string": "2120h 0m",
+            "total_time_string": "6h 0m",
+            "name_color": "#cbbc78",
+            "priority_color": "#75c99769",
+            "show_sub_tasks": false,
+            "phase_color": "#9877ca",
+            "names": [],
+            "all_labels": [
+              {
+                "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+                "name": "QA",
+                "color_code": "#154c9b"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "b801d0ae-030e-4519-85dc-b35d05fb32d5",
+    "name": "Doing",
+    "category_id": "9d638e60-9cbe-4ad1-97db-c9de12529a09",
+    "color_code": "#c0d5f6",
+    "color_code_dark": "#4190ff",
+    "start_date": null,
+    "end_date": null,
+    "todo_progress": 0,
+    "doing_progress": 100,
+    "done_progress": 0,
+    "tasks": [
+      {
+        "id": "c081ca0f-9104-4493-96f4-c92d0870a26a",
+        "name": "Data Leakage Detection",
+        "task_key": "DLDS-9",
+        "project_name": "Data leakage detection system",
+        "project_id": "5b5344b3-8c38-45c6-a591-a91e78cd1fbc",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 2,
+        "status": "bff06089-6c46-4bb7-a020-4b481c511f1b",
+        "archived": false,
+        "description": null,
+        "sort_order": 8,
+        "phase_id": null,
+        "phase_name": null,
+        "phase_color_code": null,
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#70a6f369",
+        "status_category": {
+          "is_done": false,
+          "is_doing": true,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 0,
+        "assignees": [
+          {
+            "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+            "project_member_id": "feb481ed-ef11-465a-8887-fbaa7e0a47b0",
+            "name": "Franklin Sierra",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+            "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+            "email": "dscs@bdb.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#c178c9"
+          }
+        ],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "6fc6da11-650e-4fc3-804d-d1036e76c38c",
+            "name": "Feature",
+            "color_code": "#ca7881"
+          }
+        ],
+        "is_complete": false,
+        "reporter": "Kavindu Mihiranga",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": "165600",
+        "created_at": "2023-09-07T05:17:22.750Z",
+        "updated_at": "2023-09-07T05:17:22.750Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 1,
+        "progress": 0,
+        "overdue": true,
+        "time_spent": {
+          "hours": 2760,
+          "minutes": 0
+        },
+        "time_spent_string": "2760h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#7781ca",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "names": [
+          {
+            "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+            "project_member_id": "feb481ed-ef11-465a-8887-fbaa7e0a47b0",
+            "name": "Franklin Sierra",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+            "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+            "email": "dscs@bdb.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#c178c9"
+          }
+        ],
+        "all_labels": [
+          {
+            "id": "6fc6da11-650e-4fc3-804d-d1036e76c38c",
+            "name": "Feature",
+            "color_code": "#ca7881"
+          }
+        ],
+        "complete_ratio": "0",
+        "completed_count": 0,
+        "total_tasks_count": 3,
+        "width": 35,
+        "sub_tasks": [
+          {
+            "id": "fbb47ba8-5f76-436a-9944-f3410e1716bb",
+            "name": "Feature Request",
+            "task_key": "P3-3",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "db5fac99-b0d7-4110-a50e-2b09035e6856",
+            "is_sub_task": true,
+            "parent_task_name": "Issue Reporting",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Users submit requests for new features or improvements, often with use cases and expected outcomes.</p>",
+            "sort_order": 16,
+            "phase_id": "8230053c-0df4-4ad5-a764-c32a675739d2",
+            "phase_name": "Implementation",
+            "phase_color_code": "#c178c9",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "2b9c20da-b1ec-42e5-8a7c-59cf3e7a6fdf",
+                "name": "Research",
+                "color_code": "#154c9b"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "c850b9bc-ad12-4c04-9b11-c94c29b4a932",
+            "priority_value": 0,
+            "total_minutes": "120",
+            "total_minutes_spent": "165600",
+            "created_at": "2023-09-07T07:17:20.220Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-08-14T07:11:40.440Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-09-30T07:11:44.239Z",
+            "progress": 138000,
+            "overdue": true,
+            "time_spent": {
+              "hours": 2760,
+              "minutes": 0
+            },
+            "time_spent_string": "2760h 0m",
+            "total_time_string": "2h 0m",
+            "name_color": "#c178c9",
+            "priority_color": "#75c99769",
+            "show_sub_tasks": false,
+            "phase_color": "#c178c9",
+            "names": [],
+            "all_labels": [
+              {
+                "id": "2b9c20da-b1ec-42e5-8a7c-59cf3e7a6fdf",
+                "name": "Research",
+                "color_code": "#154c9b"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          },
+          {
+            "id": "64535717-4119-4b8f-8361-0248898ed4f5",
+            "name": "Bug Reporting",
+            "task_key": "P3-2",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "db5fac99-b0d7-4110-a50e-2b09035e6856",
+            "is_sub_task": true,
+            "parent_task_name": "Issue Reporting",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Users or team members report bugs they encounter, including detailed information about the issue, steps to reproduce it, and any attachments.</p>",
+            "sort_order": 18,
+            "phase_id": "34d2abbb-c1de-4ad8-8b55-e4482b84a781",
+            "phase_name": "Execution",
+            "phase_color_code": "#9877ca",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [
+              {
+                "team_member_id": "df3d0a6e-0b48-4dd6-b794-22c371731ebc",
+                "project_member_id": "860d3574-b027-4d27-be76-8df729a4b18d",
+                "name": "Kavindu Mihiranga",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/debd9008-6843-4acd-ac29-a01f1a2bc697.webp?v=8031",
+                "user_id": "debd9008-6843-4acd-ac29-a01f1a2bc697",
+                "email": "kavindu@ceydigital.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#80ca79"
+              }
+            ],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "6fc6da11-650e-4fc3-804d-d1036e76c38c",
+                "name": "Feature",
+                "color_code": "#ca7881"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "26c78b51-cea2-4749-8a2d-eaba31f51ba0",
+            "priority_value": 2,
+            "total_minutes": "240",
+            "total_minutes_spent": "112800",
+            "created_at": "2023-09-07T07:16:53.914Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-09-20T07:08:03.817Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-09-30T07:08:06.128Z",
+            "progress": 47000,
+            "overdue": false,
+            "time_spent": {
+              "hours": 1880,
+              "minutes": 0
+            },
+            "time_spent_string": "1880h 0m",
+            "total_time_string": "4h 0m",
+            "name_color": "#3b7ad4",
+            "priority_color": "#f3707069",
+            "show_sub_tasks": false,
+            "phase_color": "#9877ca",
+            "names": [
+              {
+                "team_member_id": "df3d0a6e-0b48-4dd6-b794-22c371731ebc",
+                "project_member_id": "860d3574-b027-4d27-be76-8df729a4b18d",
+                "name": "Kavindu Mihiranga",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/debd9008-6843-4acd-ac29-a01f1a2bc697.webp?v=8031",
+                "user_id": "debd9008-6843-4acd-ac29-a01f1a2bc697",
+                "email": "kavindu@ceydigital.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#80ca79"
+              }
+            ],
+            "all_labels": [
+              {
+                "id": "6fc6da11-650e-4fc3-804d-d1036e76c38c",
+                "name": "Feature",
+                "color_code": "#ca7881"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          }
+        ]
+      },
+      {
+        "id": "0db76117-6db0-46ba-989f-b662e6223629",
+        "name": "Data Masking and Encryption",
+        "task_key": "DLDS-13",
+        "project_name": "Data leakage detection system",
+        "project_id": "5b5344b3-8c38-45c6-a591-a91e78cd1fbc",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 3,
+        "status": "bff06089-6c46-4bb7-a020-4b481c511f1b",
+        "archived": false,
+        "description": null,
+        "sort_order": 12,
+        "phase_id": null,
+        "phase_name": null,
+        "phase_color_code": null,
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#70a6f369",
+        "status_category": {
+          "is_done": false,
+          "is_doing": true,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 0,
+        "assignees": [
+          {
+            "team_member_id": "74d3393b-94ad-4bd2-9a62-b63bcdbc316d",
+            "project_member_id": "cd48269f-c8fb-4a85-9d8e-3c85117c75ec",
+            "name": "Jaylen Blackwell.",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/a7202877-73cd-4559-b68c-3692e89af03b.webp?v=2936",
+            "user_id": "a7202877-73cd-4559-b68c-3692e89af03b",
+            "email": "halleenriquez@gmail.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#75c997"
+          }
+        ],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+            "name": "Maintenance",
+            "color_code": "#fbc84c"
+          }
+        ],
+        "is_complete": false,
+        "reporter": "Kavindu Mihiranga",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": "219720",
+        "created_at": "2023-09-07T05:18:41.098Z",
+        "updated_at": "2023-09-07T05:18:41.098Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 2,
+        "progress": 0,
+        "overdue": true,
+        "time_spent": {
+          "hours": 3662,
+          "minutes": 0
+        },
+        "time_spent_string": "3662h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#7781ca",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "names": [
+          {
+            "team_member_id": "74d3393b-94ad-4bd2-9a62-b63bcdbc316d",
+            "project_member_id": "cd48269f-c8fb-4a85-9d8e-3c85117c75ec",
+            "name": "Jaylen Blackwell.",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/a7202877-73cd-4559-b68c-3692e89af03b.webp?v=2936",
+            "user_id": "a7202877-73cd-4559-b68c-3692e89af03b",
+            "email": "halleenriquez@gmail.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#75c997"
+          }
+        ],
+        "all_labels": [
+          {
+            "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+            "name": "Maintenance",
+            "color_code": "#fbc84c"
+          }
+        ],
+        "complete_ratio": "0",
+        "completed_count": 0,
+        "total_tasks_count": 4,
+        "width": 35,
+        "sub_tasks": [
+          {
+            "id": "91847746-ef7c-4eda-bd7d-af1bffa7ce98",
+            "name": "Automated Testing",
+            "task_key": "P3-19",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Running automated test suites to catch regressions and ensure software quality.</p>",
+            "sort_order": 15,
+            "phase_id": "9efec08c-1e77-427f-9150-dd1bae8bc9fb",
+            "phase_name": "Planning",
+            "phase_color_code": "#905b39",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [
+              {
+                "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+                "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+                "name": "Franklin Sierra",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+                "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+                "email": "dscs@bdb.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#c178c9"
+              }
+            ],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "a5aa94ff-9676-4d29-8522-15b59b0eea2c",
+                "name": "Enhancement",
+                "color_code": "#ff9c3c"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "26c78b51-cea2-4749-8a2d-eaba31f51ba0",
+            "priority_value": 2,
+            "total_minutes": "300",
+            "total_minutes_spent": "14640",
+            "created_at": "2023-09-07T07:24:13.256Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-07-11T08:43:58.115Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-10-21T08:44:02.608Z",
+            "progress": 4880,
+            "overdue": false,
+            "time_spent": {
+              "hours": 244,
+              "minutes": 0
+            },
+            "time_spent_string": "244h 0m",
+            "total_time_string": "5h 0m",
+            "name_color": "#154c9b",
+            "priority_color": "#f3707069",
+            "show_sub_tasks": false,
+            "phase_color": "#905b39",
+            "names": [
+              {
+                "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+                "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+                "name": "Franklin Sierra",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+                "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+                "email": "dscs@bdb.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#c178c9"
+              }
+            ],
+            "all_labels": [
+              {
+                "id": "a5aa94ff-9676-4d29-8522-15b59b0eea2c",
+                "name": "Enhancement",
+                "color_code": "#ff9c3c"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          },
+          {
+            "id": "eedc87d1-97d7-465a-80ad-81b8b7a6f1a0",
+            "name": "Test Case Creation",
+            "task_key": "P3-17",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Creating test cases to validate bug fixes or new features</p>",
+            "sort_order": 19,
+            "phase_id": "9efec08c-1e77-427f-9150-dd1bae8bc9fb",
+            "phase_name": "Planning",
+            "phase_color_code": "#905b39",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [
+              {
+                "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+                "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+                "name": "evanphan",
+                "email_notifications_enabled": null,
+                "avatar_url": null,
+                "user_id": null,
+                "email": null,
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#9877ca"
+              }
+            ],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+                "name": "Maintenance",
+                "color_code": "#fbc84c"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+            "priority_value": 1,
+            "total_minutes": "370",
+            "total_minutes_spent": "108000",
+            "created_at": "2023-09-07T07:22:42.579Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-06-12T08:41:05.435Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-12-08T08:41:10.770Z",
+            "progress": 29189,
+            "overdue": false,
+            "time_spent": {
+              "hours": 1800,
+              "minutes": 0
+            },
+            "time_spent_string": "1800h 0m",
+            "total_time_string": "6h 10m",
+            "name_color": "#ff9c3c",
+            "priority_color": "#fbc84c69",
+            "show_sub_tasks": false,
+            "phase_color": "#905b39",
+            "names": [
+              {
+                "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+                "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+                "name": "evanphan",
+                "email_notifications_enabled": null,
+                "avatar_url": null,
+                "user_id": null,
+                "email": null,
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#9877ca"
+              }
+            ],
+            "all_labels": [
+              {
+                "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+                "name": "Maintenance",
+                "color_code": "#fbc84c"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          },
+          {
+            "id": "98e20374-d17b-443c-beda-6656d536fff3",
+            "name": "Manual Testing",
+            "task_key": "P3-18",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "ef096e74-ed11-489c-9673-25a9b781828b",
+            "archived": false,
+            "description": "<p>Conducting manual testing to verify that the reported issues have been resolved and new features work as intended.</p>",
+            "sort_order": 21,
+            "phase_id": "34d2abbb-c1de-4ad8-8b55-e4482b84a781",
+            "phase_name": "Execution",
+            "phase_color_code": "#9877ca",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+                "name": "QA",
+                "color_code": "#154c9b"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "c850b9bc-ad12-4c04-9b11-c94c29b4a932",
+            "priority_value": 0,
+            "total_minutes": "360",
+            "total_minutes_spent": "127200",
+            "created_at": "2023-09-07T07:23:47.120Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-07-12T08:42:41.402Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-09-22T08:42:46.162Z",
+            "progress": 35333,
+            "overdue": false,
+            "time_spent": {
+              "hours": 2120,
+              "minutes": 0
+            },
+            "time_spent_string": "2120h 0m",
+            "total_time_string": "6h 0m",
+            "name_color": "#cbbc78",
+            "priority_color": "#75c99769",
+            "show_sub_tasks": false,
+            "phase_color": "#9877ca",
+            "names": [],
+            "all_labels": [
+              {
+                "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+                "name": "QA",
+                "color_code": "#154c9b"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          }
+        ]
+      },
+      {
+        "id": "5945a96f-6052-45df-a73a-86d76d95a3c8",
+        "name": "Bug Prioritization",
+        "task_key": "BTU-2",
+        "project_name": "Bug Tracking - BTU",
+        "project_id": "29c2346e-1590-427b-8c0c-1bb0dcf06f0a",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 0,
+        "status": "b801d0ae-030e-4519-85dc-b35d05fb32d5",
+        "archived": false,
+        "description": null,
+        "sort_order": 1,
+        "phase_id": "eaeb1e91-72ed-4962-8d21-b19e8a069657",
+        "phase_name": "Development work",
+        "phase_color_code": "#7781ca",
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#70a6f369",
+        "status_category": {
+          "is_done": false,
+          "is_doing": true,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 0,
+        "assignees": [
+          {
+            "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+            "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+            "name": "evanphan",
+            "email_notifications_enabled": null,
+            "avatar_url": null,
+            "user_id": null,
+            "email": null,
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#9877ca"
+          },
+          {
+            "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+            "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+            "name": "Franklin Sierra",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+            "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+            "email": "dscs@bdb.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#c178c9"
+          },
+          {
+            "team_member_id": "28b23519-e77b-413e-8aec-b10226975448",
+            "project_member_id": "8e73a693-4cf2-4c02-80fa-b8fff06808d6",
+            "name": "sadew",
+            "email_notifications_enabled": true,
+            "avatar_url": null,
+            "user_id": "5b1bc8de-7255-471e-a6dc-e0a8a672b060",
+            "email": "sadew@ceydigital.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#f37070"
+          }
+        ],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "a0703a20-4a8b-4542-bbd1-ff65a230b816",
+            "name": "Awaiting review",
+            "color_code": "#905b39"
+          }
+        ],
+        "is_complete": false,
+        "reporter": "Chathuranga Pathum",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": null,
+        "created_at": "2024-03-06T04:35:07.817Z",
+        "updated_at": "2024-03-06T04:35:07.817Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 1,
+        "progress": 0,
+        "overdue": false,
+        "time_spent": {
+          "hours": 0,
+          "minutes": 0
+        },
+        "time_spent_string": "0h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#3b7ad4",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "phase_color": "#7781ca",
+        "names": [],
+        "all_labels": [
+          {
+            "id": "a0703a20-4a8b-4542-bbd1-ff65a230b816",
+            "name": "Awaiting review",
+            "color_code": "#905b39"
+          }
+        ],
+        "complete_ratio": "0",
+        "completed_count": 0,
+        "total_tasks_count": 1,
+        "width": 35
+      },
+      {
+        "id": "b340686a-b5af-4839-bc5a-1ccf437f53bf",
+        "name": "Bug Assignment",
+        "task_key": "BTU-4",
+        "project_name": "Bug Tracking - BTU",
+        "project_id": "29c2346e-1590-427b-8c0c-1bb0dcf06f0a",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 0,
+        "status": "b801d0ae-030e-4519-85dc-b35d05fb32d5",
+        "archived": false,
+        "description": null,
+        "sort_order": 3,
+        "phase_id": "a1d4bc3a-fbdc-4fa8-b0f3-bd5896c1d93e",
+        "phase_name": "Incoming",
+        "phase_color_code": "#75c9c0",
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#70a6f369",
+        "status_category": {
+          "is_done": false,
+          "is_doing": true,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 0,
+        "assignees": [
+          {
+            "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+            "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+            "name": "evanphan",
+            "email_notifications_enabled": null,
+            "avatar_url": null,
+            "user_id": null,
+            "email": null,
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#9877ca"
+          },
+          {
+            "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+            "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+            "name": "Franklin Sierra",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+            "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+            "email": "dscs@bdb.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#c178c9"
+          },
+          {
+            "team_member_id": "28b23519-e77b-413e-8aec-b10226975448",
+            "project_member_id": "8e73a693-4cf2-4c02-80fa-b8fff06808d6",
+            "name": "sadew",
+            "email_notifications_enabled": true,
+            "avatar_url": null,
+            "user_id": "5b1bc8de-7255-471e-a6dc-e0a8a672b060",
+            "email": "sadew@ceydigital.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#f37070"
+          }
+        ],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "792eb58e-0dce-4214-8551-d7b7288320fd",
+            "name": "UI/UX Bug",
+            "color_code": "#cbbc78"
+          },
+          {
+            "id": "c0fb730d-a3f0-442c-9c04-e7487430e274",
+            "name": "Regression",
+            "color_code": "#cb9878"
+          }
+        ],
+        "is_complete": false,
+        "reporter": "Chathuranga Pathum",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": null,
+        "created_at": "2024-03-06T04:35:07.850Z",
+        "updated_at": "2024-03-06T04:35:07.850Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 3,
+        "progress": 0,
+        "overdue": false,
+        "time_spent": {
+          "hours": 0,
+          "minutes": 0
+        },
+        "time_spent_string": "0h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#3b7ad4",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "phase_color": "#75c9c0",
+        "names": [],
+        "all_labels": [
+          {
+            "id": "792eb58e-0dce-4214-8551-d7b7288320fd",
+            "name": "UI/UX Bug",
+            "color_code": "#cbbc78"
+          },
+          {
+            "id": "c0fb730d-a3f0-442c-9c04-e7487430e274",
+            "name": "Regression",
+            "color_code": "#cb9878"
+          }
+        ],
+        "complete_ratio": "0",
+        "completed_count": 0,
+        "total_tasks_count": 1,
+        "width": 35
+      }
+    ]
+  },
+  {
+    "id": "2fe7c6e3-d12c-401e-a70f-cb1be68f44f3",
+    "name": "Done",
+    "category_id": "f80362b5-dd57-4a0d-977e-21b080e27c2c",
+    "color_code": "#c2e4d0",
+    "color_code_dark": "#46d980",
+    "start_date": null,
+    "end_date": null,
+    "todo_progress": 0,
+    "doing_progress": 0,
+    "done_progress": 100,
+    "tasks": [
+      {
+        "id": "871d4cba-4df6-4920-8691-7c986390f20a",
+        "name": "Data Loss Prevention (DLP) Policies",
+        "task_key": "DLDS-17",
+        "project_name": "Data leakage detection system",
+        "project_id": "5b5344b3-8c38-45c6-a591-a91e78cd1fbc",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 3,
+        "status": "a6085ac2-1aba-4a30-8678-eb01c0e82f97",
+        "archived": false,
+        "description": "",
+        "sort_order": 16,
+        "phase_id": null,
+        "phase_name": null,
+        "phase_color_code": null,
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#75c99769",
+        "status_category": {
+          "is_done": true,
+          "is_doing": false,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 1,
+        "assignees": [
+          {
+            "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+            "project_member_id": "feb481ed-ef11-465a-8887-fbaa7e0a47b0",
+            "name": "Franklin Sierra",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+            "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+            "email": "dscs@bdb.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#c178c9"
+          }
+        ],
+        "completed_sub_tasks": 3,
+        "labels": [
+          {
+            "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+            "name": "QA",
+            "color_code": "#154c9b"
+          }
+        ],
+        "is_complete": true,
+        "reporter": "Kavindu Mihiranga",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": "180000",
+        "created_at": "2023-09-07T05:20:01.250Z",
+        "updated_at": "2023-09-07T05:20:11.895Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 3,
+        "progress": 0,
+        "overdue": true,
+        "time_spent": {
+          "hours": 3000,
+          "minutes": 0
+        },
+        "time_spent_string": "3000h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#7781ca",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "names": [
+          {
+            "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+            "project_member_id": "feb481ed-ef11-465a-8887-fbaa7e0a47b0",
+            "name": "Franklin Sierra",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+            "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+            "email": "dscs@bdb.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#c178c9"
+          }
+        ],
+        "all_labels": [
+          {
+            "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+            "name": "QA",
+            "color_code": "#154c9b"
+          }
+        ],
+        "complete_ratio": "100",
+        "completed_count": 4,
+        "total_tasks_count": 4,
+        "width": 35,
+        "sub_tasks": [
+          {
+            "id": "91847746-ef7c-4eda-bd7d-af1bffa7ce98",
+            "name": "Automated Testing",
+            "task_key": "P3-19",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Running automated test suites to catch regressions and ensure software quality.</p>",
+            "sort_order": 15,
+            "phase_id": "9efec08c-1e77-427f-9150-dd1bae8bc9fb",
+            "phase_name": "Planning",
+            "phase_color_code": "#905b39",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [
+              {
+                "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+                "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+                "name": "Franklin Sierra",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+                "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+                "email": "dscs@bdb.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#c178c9"
+              }
+            ],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "a5aa94ff-9676-4d29-8522-15b59b0eea2c",
+                "name": "Enhancement",
+                "color_code": "#ff9c3c"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "26c78b51-cea2-4749-8a2d-eaba31f51ba0",
+            "priority_value": 2,
+            "total_minutes": "300",
+            "total_minutes_spent": "14640",
+            "created_at": "2023-09-07T07:24:13.256Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-07-11T08:43:58.115Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-10-21T08:44:02.608Z",
+            "progress": 4880,
+            "overdue": false,
+            "time_spent": {
+              "hours": 244,
+              "minutes": 0
+            },
+            "time_spent_string": "244h 0m",
+            "total_time_string": "5h 0m",
+            "name_color": "#154c9b",
+            "priority_color": "#f3707069",
+            "show_sub_tasks": false,
+            "phase_color": "#905b39",
+            "names": [
+              {
+                "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+                "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+                "name": "Franklin Sierra",
+                "email_notifications_enabled": false,
+                "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+                "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+                "email": "dscs@bdb.com",
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#c178c9"
+              }
+            ],
+            "all_labels": [
+              {
+                "id": "a5aa94ff-9676-4d29-8522-15b59b0eea2c",
+                "name": "Enhancement",
+                "color_code": "#ff9c3c"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          },
+          {
+            "id": "eedc87d1-97d7-465a-80ad-81b8b7a6f1a0",
+            "name": "Test Case Creation",
+            "task_key": "P3-17",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "4ace4844-6372-437d-8d94-b4aa9ba50dd5",
+            "archived": false,
+            "description": "<p>Creating test cases to validate bug fixes or new features</p>",
+            "sort_order": 19,
+            "phase_id": "9efec08c-1e77-427f-9150-dd1bae8bc9fb",
+            "phase_name": "Planning",
+            "phase_color_code": "#905b39",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [
+              {
+                "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+                "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+                "name": "evanphan",
+                "email_notifications_enabled": null,
+                "avatar_url": null,
+                "user_id": null,
+                "email": null,
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#9877ca"
+              }
+            ],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+                "name": "Maintenance",
+                "color_code": "#fbc84c"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+            "priority_value": 1,
+            "total_minutes": "370",
+            "total_minutes_spent": "108000",
+            "created_at": "2023-09-07T07:22:42.579Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-06-12T08:41:05.435Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-12-08T08:41:10.770Z",
+            "progress": 29189,
+            "overdue": false,
+            "time_spent": {
+              "hours": 1800,
+              "minutes": 0
+            },
+            "time_spent_string": "1800h 0m",
+            "total_time_string": "6h 10m",
+            "name_color": "#ff9c3c",
+            "priority_color": "#fbc84c69",
+            "show_sub_tasks": false,
+            "phase_color": "#905b39",
+            "names": [
+              {
+                "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+                "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+                "name": "evanphan",
+                "email_notifications_enabled": null,
+                "avatar_url": null,
+                "user_id": null,
+                "email": null,
+                "socket_id": null,
+                "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+                "color_code": "#9877ca"
+              }
+            ],
+            "all_labels": [
+              {
+                "id": "0fba2c96-ac06-4b4b-82a7-6ffe622dc71c",
+                "name": "Maintenance",
+                "color_code": "#fbc84c"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          },
+          {
+            "id": "98e20374-d17b-443c-beda-6656d536fff3",
+            "name": "Manual Testing",
+            "task_key": "P3-18",
+            "project_name": "Bug tracker",
+            "project_id": "f1c5f1c6-e701-418b-9922-66be7b0e88e1",
+            "parent_task_id": "7557585e-86ce-442a-8ae2-d0f81bb5654a",
+            "is_sub_task": true,
+            "parent_task_name": "Testing and Verification",
+            "sub_tasks_count": 0,
+            "status": "ef096e74-ed11-489c-9673-25a9b781828b",
+            "archived": false,
+            "description": "<p>Conducting manual testing to verify that the reported issues have been resolved and new features work as intended.</p>",
+            "sort_order": 21,
+            "phase_id": "34d2abbb-c1de-4ad8-8b55-e4482b84a781",
+            "phase_name": "Execution",
+            "phase_color_code": "#9877ca",
+            "has_subscribers": true,
+            "has_dependencies": false,
+            "timer_start_time": null,
+            "status_color": "#a9a9a969",
+            "status_category": {
+              "is_done": false,
+              "is_doing": false,
+              "is_todo": true
+            },
+            "comments_count": 1,
+            "attachments_count": 1,
+            "parent_task_completed": 0,
+            "assignees": [],
+            "completed_sub_tasks": 0,
+            "labels": [
+              {
+                "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+                "name": "QA",
+                "color_code": "#154c9b"
+              }
+            ],
+            "is_complete": false,
+            "reporter": "Kavindu Mihiranga",
+            "priority": "c850b9bc-ad12-4c04-9b11-c94c29b4a932",
+            "priority_value": 0,
+            "total_minutes": "360",
+            "total_minutes_spent": "127200",
+            "created_at": "2023-09-07T07:23:47.120Z",
+            "updated_at": "2023-12-27T06:26:44.761Z",
+            "completed_at": null,
+            "start_date": "2023-07-12T08:42:41.402Z",
+            "billable": false,
+            "schedule_id": null,
+            "end_date": "2023-09-22T08:42:46.162Z",
+            "progress": 35333,
+            "overdue": false,
+            "time_spent": {
+              "hours": 2120,
+              "minutes": 0
+            },
+            "time_spent_string": "2120h 0m",
+            "total_time_string": "6h 0m",
+            "name_color": "#cbbc78",
+            "priority_color": "#75c99769",
+            "show_sub_tasks": false,
+            "phase_color": "#9877ca",
+            "names": [],
+            "all_labels": [
+              {
+                "id": "d70f7661-30dc-40d1-946d-9523e623d834",
+                "name": "QA",
+                "color_code": "#154c9b"
+              }
+            ],
+            "complete_ratio": "0",
+            "completed_count": 0,
+            "total_tasks_count": 1,
+            "width": 35
+          }
+        ]
+      },
+      {
+        "id": "5bea70e4-c8ab-4153-97a2-60f4e1b08ed4",
+        "name": "Bug Closure",
+        "task_key": "BTU-5",
+        "project_name": "Bug Tracking - BTU",
+        "project_id": "29c2346e-1590-427b-8c0c-1bb0dcf06f0a",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 0,
+        "status": "2fe7c6e3-d12c-401e-a70f-cb1be68f44f3",
+        "archived": false,
+        "description": null,
+        "sort_order": 4,
+        "phase_id": "9ca49417-e9da-4c79-b6fa-8e617ad83d4c",
+        "phase_name": "Testing & Review",
+        "phase_color_code": "#ff9c3c",
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#75c99769",
+        "status_category": {
+          "is_done": true,
+          "is_doing": false,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 1,
+        "assignees": [
+          {
+            "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+            "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+            "name": "evanphan",
+            "email_notifications_enabled": null,
+            "avatar_url": null,
+            "user_id": null,
+            "email": null,
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#9877ca"
+          },
+          {
+            "team_member_id": "de10510f-fdd5-4af7-b68c-7318e458aa03",
+            "project_member_id": "6b2113d5-64c6-4bcb-b433-0adc4f2e6309",
+            "name": "Franklin Sierra",
+            "email_notifications_enabled": false,
+            "avatar_url": "https://s3.us-west-2.amazonaws.com/worklenz.com/avatars/secure/d1406278-95d7-4c5c-bd87-1a3bd3c8210d.webp?v=9574",
+            "user_id": "d1406278-95d7-4c5c-bd87-1a3bd3c8210d",
+            "email": "dscs@bdb.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#c178c9"
+          },
+          {
+            "team_member_id": "28b23519-e77b-413e-8aec-b10226975448",
+            "project_member_id": "8e73a693-4cf2-4c02-80fa-b8fff06808d6",
+            "name": "sadew",
+            "email_notifications_enabled": true,
+            "avatar_url": null,
+            "user_id": "5b1bc8de-7255-471e-a6dc-e0a8a672b060",
+            "email": "sadew@ceydigital.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#f37070"
+          }
+        ],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "abffe039-33e8-462b-8a12-74ad35ac2730",
+            "name": "Ready for Dev",
+            "color_code": "#7781ca"
+          }
+        ],
+        "is_complete": true,
+        "reporter": "Chathuranga Pathum",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": null,
+        "created_at": "2024-03-06T04:35:07.872Z",
+        "updated_at": "2024-03-06T04:35:07.872Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 4,
+        "progress": 0,
+        "overdue": false,
+        "time_spent": {
+          "hours": 0,
+          "minutes": 0
+        },
+        "time_spent_string": "0h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#3b7ad4",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "phase_color": "#ff9c3c",
+        "names": [],
+        "all_labels": [
+          {
+            "id": "abffe039-33e8-462b-8a12-74ad35ac2730",
+            "name": "Ready for Dev",
+            "color_code": "#7781ca"
+          }
+        ],
+        "complete_ratio": "100",
+        "completed_count": 1,
+        "total_tasks_count": 1,
+        "width": 35
+      },
+      {
+        "id": "58e4f1d1-f69b-4a3a-852b-3e6d3a08a174",
+        "name": "Documentation",
+        "task_key": "BTU-6",
+        "project_name": "Bug Tracking - BTU",
+        "project_id": "29c2346e-1590-427b-8c0c-1bb0dcf06f0a",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 0,
+        "status": "2fe7c6e3-d12c-401e-a70f-cb1be68f44f3",
+        "archived": false,
+        "description": null,
+        "sort_order": 5,
+        "phase_id": "fbdcf370-490f-41b6-bd13-bb35db757be0",
+        "phase_name": "Backlog",
+        "phase_color_code": "#3b7ad4",
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#75c99769",
+        "status_category": {
+          "is_done": true,
+          "is_doing": false,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 1,
+        "assignees": [
+          {
+            "team_member_id": "065a5c86-ab2f-44ad-ac0b-58efd9d40196",
+            "project_member_id": "1ca5833c-a8b8-4dea-808c-c1435da4d1b7",
+            "name": "evanphan",
+            "email_notifications_enabled": null,
+            "avatar_url": null,
+            "user_id": null,
+            "email": null,
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#9877ca"
+          },
+          {
+            "team_member_id": "28b23519-e77b-413e-8aec-b10226975448",
+            "project_member_id": "8e73a693-4cf2-4c02-80fa-b8fff06808d6",
+            "name": "sadew",
+            "email_notifications_enabled": true,
+            "avatar_url": null,
+            "user_id": "5b1bc8de-7255-471e-a6dc-e0a8a672b060",
+            "email": "sadew@ceydigital.com",
+            "socket_id": null,
+            "team_id": "c8886541-f2ac-4948-9721-24fef6a1d03a",
+            "color_code": "#f37070"
+          }
+        ],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "94353f3b-15a6-4ac7-8d51-e72742414f8b",
+            "name": "Fixed",
+            "color_code": "#cbc8a1"
+          },
+          {
+            "id": "cd36352e-8f7f-4c1e-a657-4d3752b80b55",
+            "name": "Fixing",
+            "color_code": "#80ca79"
+          }
+        ],
+        "is_complete": true,
+        "reporter": "Chathuranga Pathum",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": null,
+        "created_at": "2024-03-06T04:35:07.885Z",
+        "updated_at": "2024-03-06T04:35:07.885Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 5,
+        "progress": 80,
+        "overdue": false,
+        "time_spent": {
+          "hours": 0,
+          "minutes": 0
+        },
+        "time_spent_string": "0h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#7781ca",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "phase_color": "#3b7ad4",
+        "names": [],
+        "all_labels": [
+          {
+            "id": "94353f3b-15a6-4ac7-8d51-e72742414f8b",
+            "name": "Fixed",
+            "color_code": "#cbc8a1"
+          },
+          {
+            "id": "cd36352e-8f7f-4c1e-a657-4d3752b80b55",
+            "name": "Fixing",
+            "color_code": "#80ca79"
+          }
+        ],
+        "complete_ratio": "100",
+        "completed_count": 1,
+        "total_tasks_count": 1,
+        "width": 35
+      },
+      {
+        "id": "c1e6a6f5-4140-4714-983d-140062ab52b7",
+        "name": "Reporting",
+        "task_key": "BTU-7",
+        "project_name": "Bug Tracking - BTU",
+        "project_id": "29c2346e-1590-427b-8c0c-1bb0dcf06f0a",
+        "parent_task_id": null,
+        "is_sub_task": false,
+        "parent_task_name": null,
+        "sub_tasks_count": 0,
+        "status": "2fe7c6e3-d12c-401e-a70f-cb1be68f44f3",
+        "archived": false,
+        "description": null,
+        "sort_order": 6,
+        "phase_id": "fbdcf370-490f-41b6-bd13-bb35db757be0",
+        "phase_name": "Backlog",
+        "phase_color_code": "#3b7ad4",
+        "has_subscribers": false,
+        "has_dependencies": false,
+        "timer_start_time": null,
+        "status_color": "#75c99769",
+        "status_category": {
+          "is_done": true,
+          "is_doing": false,
+          "is_todo": false
+        },
+        "comments_count": 0,
+        "attachments_count": 0,
+        "parent_task_completed": 1,
+        "assignees": [],
+        "completed_sub_tasks": 0,
+        "labels": [
+          {
+            "id": "11a31513-aa80-4b6e-8a09-04fb7c82d893",
+            "name": "Documentation",
+            "color_code": "#ee87c5"
+          }
+        ],
+        "is_complete": true,
+        "reporter": "Chathuranga Pathum",
+        "priority": "e1b5e26c-2035-4e27-9d46-9304f332c131",
+        "priority_value": 1,
+        "total_minutes": "0",
+        "total_minutes_spent": null,
+        "created_at": "2024-03-06T04:35:07.909Z",
+        "updated_at": "2024-03-06T04:35:07.909Z",
+        "completed_at": null,
+        "start_date": null,
+        "billable": false,
+        "schedule_id": null,
+        "end_date": null,
+        "index": 6,
+        "progress": 0,
+        "overdue": false,
+        "time_spent": {
+          "hours": 0,
+          "minutes": 0
+        },
+        "time_spent_string": "0h 0m",
+        "total_time_string": "0h 0m",
+        "name_color": "#bf4949",
+        "priority_color": "#fbc84c69",
+        "show_sub_tasks": false,
+        "phase_color": "#3b7ad4",
+        "names": [],
+        "all_labels": [
+          {
+            "id": "11a31513-aa80-4b6e-8a09-04fb7c82d893",
+            "name": "Documentation",
+            "color_code": "#ee87c5"
+          }
+        ],
+        "complete_ratio": "100",
+        "completed_count": 1,
+        "total_tasks_count": 1,
+        "width": 35
+      }
+    ]
+  }
+]
