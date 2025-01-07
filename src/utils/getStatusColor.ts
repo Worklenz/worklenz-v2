@@ -9,9 +9,9 @@ const statusColors = {
     done: '#c2e4d0',
   },
   dark: {
-    todo: '#3a3a3a',
-    doing: '#3d506e',
-    done: '#3b6149',
+    todo: '#989898',
+    doing: '#4190ff',
+    done: '#46d980',
   },
 };
 

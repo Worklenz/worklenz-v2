@@ -9,9 +9,9 @@ const priorityColors = {
     low: '#c2e4d0',
   },
   dark: {
-    high: '#8b3a3b',
-    medium: '#916c33',
-    low: '#3b6149',
+    high: '#ff4141',
+    medium: '#ffc227',
+    low: '#46d980',
   },
 };
 
