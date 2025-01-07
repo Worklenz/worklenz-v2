@@ -54,8 +54,6 @@ const SmartChatReport = () => {
         }
     };
 
-    const dispatch = useAppDispatch();
-
     React.useEffect(() => {
         if (lastResponseLength > 0) {
             const id = setTimeout(
