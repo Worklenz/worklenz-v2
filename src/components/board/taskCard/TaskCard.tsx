@@ -6,7 +6,6 @@ import {
   Avatar,
   Progress,
   Typography,
-  Divider,
   Dropdown,
   MenuProps,
   Button,
@@ -24,16 +23,14 @@ import {
 } from '@ant-design/icons';
 import './TaskCard.css';
 import dayjs, { Dayjs } from 'dayjs';
-import { AvatarNamesMap } from '../../../shared/constants';
-import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown';
-import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
+import AddMembersDropdown from '../../add-members-dropdown/add-members-dropdown';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { deleteTask } from '../../../features/tasks/taskSlice';
 import SubTaskCard from '../subTaskCard/SubTaskCard';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import Avatars from '@/components/avatars/Avatars';
+import Avatars from '@/components/avatars/avatars';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { UniqueIdentifier } from '@dnd-kit/core';

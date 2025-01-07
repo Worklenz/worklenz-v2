@@ -6,7 +6,7 @@ export interface ITaskAssignee {
   team_member_id: any;
   id: string;
   project_member_id: string;
-  name: string
+  name: string;
 }
 
 export interface ITaskStatusCategory {
@@ -16,6 +16,7 @@ export interface ITaskStatusCategory {
 }
 
 export interface IProjectTask {
+  due_time?: string;
   id?: string;
   name?: string;
   task_key?: string;
@@ -79,8 +80,8 @@ export interface IProjectTask {
   overlogged_time_string?: string;
   offset_from?: number;
   width?: number;
-  isVisible?: boolean,
-  estimated_string?: string
+  isVisible?: boolean;
+  estimated_string?: string;
 }
 
 export interface IProjectTasksViewModel {

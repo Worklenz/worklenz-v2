@@ -14,7 +14,7 @@ import { verifyAuthentication } from '@/features/auth/authSlice';
 import { setUser } from '@/features/user/userSlice';
 
 // Hooks & Services
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthService } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { createAuthService } from '@/services/auth/auth.service';
@@ -31,7 +31,7 @@ const SwitchTeamButton = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const authService = createAuthService(navigate);
-  const { getCurrentSession } = useAuth();
+  const { getCurrentSession } = useAuthService();
   const session = getCurrentSession();
   const { t } = useTranslation('navbar');
 

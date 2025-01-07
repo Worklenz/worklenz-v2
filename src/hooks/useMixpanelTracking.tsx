@@ -1,11 +1,11 @@
 import mixpanel, { Dict } from 'mixpanel-browser';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useAuth } from './useAuth';
+import { useAuthService } from './useAuth';
 import { initMixpanel } from '@/utils/mixpanelInit';
 import logger from '@/utils/errorLogger';
 
 export const useMixpanelTracking = () => {
-  const auth = useAuth();
+  const auth = useAuthService();
 
   const token = useMemo(() => {
     const host = window.location.host;

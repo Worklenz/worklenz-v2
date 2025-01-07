@@ -28,6 +28,8 @@ interface ITemplateTask {
 }
 
 export interface IProjectTemplate {
+  id?: string;
+  name?: string;
   image_url?: string;
   description?: string;
   phases?: IPhase[];
@@ -46,7 +48,7 @@ export interface ICustomTemplate {
 
 export interface IAccountSetupRequest {
   team_name?: string;
-  project_name?: string;
+  project_name?: string | null;
   tasks: string[];
   team_members: string[];
   template_id?: string | null;

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { TaskType } from '@/types/task.types';
 import { MemberType } from '@/types/member.types';
-import { ITaskListConfigV2, ITaskListGroup } from '@/types/tasks/taskList.types';
+import { IGroupByOption, ITaskListColumn, ITaskListConfigV2, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import logger from '@/utils/errorLogger';
 import { ITaskLabel } from '@/types/label.type';
@@ -13,6 +13,7 @@ type TaskState = {
   isSubtasksInclude: boolean;
   tasks: TaskType[];
   taskGroups: ITaskListGroup[];
+  columns: ITaskListColumn[];
   isCreateTaskDrawerOpen: boolean;
   isUpdateTaskDrawerOpen: boolean;
   loadingGroups: boolean;
@@ -25,12 +26,63 @@ const initialState: TaskState = {
   group: 'phase',
   isSubtasksInclude: false,
   tasks: [],
+  columns: [],
   isCreateTaskDrawerOpen: false,
   isUpdateTaskDrawerOpen: false,
   taskGroups: [],
   loadingGroups: false,
   error: null
 };
+
+export const GROUP_BY_STATUS_VALUE = "status";
+export const GROUP_BY_PRIORITY_VALUE = "priority";
+export const GROUP_BY_PHASE_VALUE = "phase";
+
+export const GROUP_BY_OPTIONS: IGroupByOption[] = [
+  {label: "Status", value: GROUP_BY_STATUS_VALUE},
+  {label: "Priority", value: GROUP_BY_PRIORITY_VALUE},
+  {label: "Phase", value: GROUP_BY_PHASE_VALUE}
+];
+
+export const COLUMN_KEYS = {
+  KEY: "KEY",
+  NAME: "NAME",
+  DESCRIPTION: "DESCRIPTION",
+  PROGRESS: "PROGRESS",
+  ASSIGNEES: "ASSIGNEES",
+  LABELS: "LABELS",
+  STATUS: "STATUS",
+  PRIORITY: "PRIORITY",
+  TIME_TRACKING: "TIME_TRACKING",
+  ESTIMATION: "ESTIMATION",
+  START_DATE: "START_DATE",
+  DUE_DATE: "DUE_DATE",
+  DUE_TIME: "DUE_TIME",
+  COMPLETED_DATE: "COMPLETED_DATE",
+  CREATED_DATE: "CREATED_DATE",
+  LAST_UPDATED: "LAST_UPDATED",
+  REPORTER: "REPORTER",
+  PHASE: "PHASE"
+};
+
+export const COLUMN_KEYS_LIST = Object.values(COLUMN_KEYS).map(key => ({
+  key,
+  show: true
+}));
+
+export const getCurrentGroup = () => {
+  const key = localStorage.getItem("worklenz.tasklist.group_by");
+  if (key) {
+    const g = GROUP_BY_OPTIONS.find(o => o.value === key);
+    if (g)
+      return g;
+  }
+  return GROUP_BY_OPTIONS[0];
+} 
+
+export const setCurrentGroup = (group: IGroupByOption) => {
+  localStorage.setItem("worklenz.tasklist.group_by", group.value);
+}
 
 export const fetchTaskGroups = createAsyncThunk(
   'tasks/fetchTaskGroups',
@@ -66,8 +118,16 @@ const taskSlice = createSlice({
     },
 
     // task crud
-    addTask: (state, action: PayloadAction<TaskType>) => {
-      // state.tasks.push(action.payload);
+    addTask: (state, action: PayloadAction<any>) => {
+      const newTask = action.payload;
+      console.log('addTask', newTask);
+      const group = state.taskGroups.find(group => group.id === newTask.groupId);
+      if (group) {
+        const taskExists = group.tasks.some(task => task.id === newTask.id);
+        if (!taskExists) {
+          group.tasks.push(newTask);
+        }
+      }
     },
 
     addTaskToTop: (state, action: PayloadAction<TaskType>) => {
@@ -110,6 +170,14 @@ const taskSlice = createSlice({
       //       )
       //     : [...(task.labels || []), label];
       // }
+    },
+    updateTaskGroup: (state, action: PayloadAction<{ task: TaskType; isSubtasksIncluded: boolean }>) => {
+      // state.taskGroups = state.taskGroups.map(group => {
+      //   if (group.id === action.payload.task.id) {
+      //     return { ...group, tasks: [...group.tasks, action.payload.task] };
+      //   }
+      //   return group;
+      // });
     },
   },
   extraReducers: (builder) => {

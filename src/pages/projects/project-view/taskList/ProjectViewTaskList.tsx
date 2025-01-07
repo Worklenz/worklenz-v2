@@ -36,32 +36,6 @@ const ProjectViewTaskList = () => {
     }
   }, [dispatch, projectId]);
 
-  const columns = [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-    },
-    {
-      accessorKey: 'age',
-      header: 'Age',
-    },
-    {
-      accessorKey: 'city',
-      header: 'City',
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-    },
-    {
-      accessorKey: 'phone',
-      header: 'Phone',
-    },
-    {
-      accessorKey: 'company',
-      header: 'Company',
-    },
-  ];
   return (
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />

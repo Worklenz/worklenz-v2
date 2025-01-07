@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 // Services & API
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import { projectMembersApiService } from '@/api/project-members/project-members.api.service';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthService } from '@/hooks/useAuth';
 
 // Types
 import { IProjectMembersViewModel, IProjectMemberViewModel } from '@/types/projectMember.types';
@@ -51,7 +51,7 @@ const ProjectViewMembers = () => {
   // Hooks
   const { projectId } = useParams();
   const { t } = useTranslation('project-view-members');
-  const auth = useAuth();
+  const auth = useAuthService();
   const user = auth.getCurrentSession();
   const isOwnerOrAdmin = auth.isOwnerOrAdmin();
 

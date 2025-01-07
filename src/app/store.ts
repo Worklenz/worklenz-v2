@@ -4,6 +4,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '@features/auth/authSlice';
 import userReducer from '@features/user/userSlice';
 
+// Home Page
+import homePageReducer from '@features/home-page/home-page.slice';
+
+// Account Setup
+import accountSetupReducer from '@features/account-setup/account-setup.slice';
+
 // Core UI
 import themeReducer from '@features/theme/themeSlice';
 import localesReducer from '@features/i18n/localesSlice';
@@ -56,7 +62,7 @@ import projectReportsReducer from '../features/reporting/projectReports/projectR
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import teamMembersReducer from '@features/team-members/team-members.slice';
-import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice'
+import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -67,6 +73,12 @@ export const store = configureStore({
     // Auth & User
     auth: authReducer,
     userReducer: userReducer,
+
+    // Account Setup
+    accountSetupReducer: accountSetupReducer,
+
+    // Home Page
+    homePageReducer: homePageReducer,
 
     // Core UI
     themeReducer: themeReducer,

@@ -23,7 +23,6 @@ import { MenuProps } from 'antd/lib';
 import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { VirtualTable } from '../../task-list/task-list-custom';
 
 type TaskListTableWrapperProps = {
   taskList: IProjectTask[];

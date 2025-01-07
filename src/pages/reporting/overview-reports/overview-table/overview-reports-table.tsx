@@ -7,7 +7,7 @@ import { IRPTTeam } from '@/types/reporting/reporting.types';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import logger from '@/utils/errorLogger';
-import Avatars from '@/components/avatars/Avatars';
+import Avatars from '@/components/avatars/avatars';
 import OverviewTeamInfoDrawer from '@/components/reporting/drawers/overview-team-info/overview-team-info-drawer';
 import { toggleOverViewTeamDrawer } from '@/features/reporting/reporting.slice';
 

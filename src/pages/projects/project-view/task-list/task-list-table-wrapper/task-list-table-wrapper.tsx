@@ -171,7 +171,7 @@ const TaskListTableWrapper = ({
             {
               key: groupId || '1',
               className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 ${color} after:z-10 after:top-0 after:left-0`,
-              children: <TaskListCustom tasks={taskList.tasks} color={color || ''} />,
+              children: <TaskListCustom key={groupId} groupId={groupId} tasks={taskList.tasks} color={color || ''} />,
             },
           ]}
         />

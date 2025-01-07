@@ -5,7 +5,7 @@ import mainRoutes from './main-routes';
 import notFoundRoute from './not-found-route';
 import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 
 interface GuardProps {
@@ -13,7 +13,7 @@ interface GuardProps {
 }
 
 export const AuthGuard = ({ children }: GuardProps) => {
-  const isAuthenticated = useAuth().isAuthenticated();
+  const isAuthenticated = useAuthService().isAuthenticated();
   const location = useLocation();
 
   if (!isAuthenticated) {
@@ -24,7 +24,7 @@ export const AuthGuard = ({ children }: GuardProps) => {
 };
 
 export const AdminGuard = ({ children }: GuardProps) => {
-  const { isAuthenticated, isOwnerOrAdmin } = useAuth();
+  const { isAuthenticated, isOwnerOrAdmin } = useAuthService();
 
   const location = useLocation();
 
@@ -40,7 +40,7 @@ export const AdminGuard = ({ children }: GuardProps) => {
 };
 
 export const SetupGuard = ({ children }: GuardProps) => {
-  const isAuthenticated = useAuth().isAuthenticated();
+  const isAuthenticated = useAuthService().isAuthenticated();
 
   const location = useLocation();
 

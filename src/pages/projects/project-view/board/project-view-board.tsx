@@ -22,22 +22,23 @@ const ProjectViewBoard: React.FC = () => {
   const projectId = useAppSelector(state => state.projectReducer.projectId);
 
   useEffect(() => {
-    if (projectId) {
-      const config: ITaskListConfigV2 = {
-        id: projectId,
-        field: 'id',
-        order: 'desc',
-        search: '',
-        statuses: '',
-        members: '',
-        projects: '',
-        isSubtasksInclude: false,
-      };
-      dispatch(fetchTaskGroups(config) as any);
-    }
-    if (!statusCategories.length) {
-      dispatch(fetchStatusesCategories() as any);
-    }
+    console.log('projectId', projectId);
+    // if (projectId) {
+    //   const config: ITaskListConfigV2 = {
+    //     id: projectId,
+    //     field: 'id',
+    //     order: 'desc',
+    //     search: '',
+    //     statuses: '',
+    //     members: '',
+    //     projects: '',
+    //     isSubtasksInclude: false,
+    //   };
+    //   dispatch(fetchTaskGroups(config) as any);
+    // }
+    // if (!statusCategories.length) {
+    //   dispatch(fetchStatusesCategories() as any);
+    // }
   }, [dispatch, projectId, groupBy]);
 
   const sensors = useSensors(

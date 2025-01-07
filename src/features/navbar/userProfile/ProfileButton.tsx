@@ -82,7 +82,7 @@ const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
             {t('settings')}
           </Link>
           <Link to="/auth/logging-out" style={getLinkStyle()}>
-            {t('log-out')}
+            {t('logOut')}
           </Link>
         </Card>
       ),

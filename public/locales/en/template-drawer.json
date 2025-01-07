@@ -12,5 +12,8 @@
     "labels": "Labels",
     "tasks": "Tasks",
     "noTemplateSelected": "No template selected",
-    "noDescription": "No description"
+    "noDescription": "No description",
+    "worklenzTemplates": "Worklenz Templates",
+    "yourTemplatesLibrary": "Your Library",
+    "searchTemplates": "Search Templates"
 }

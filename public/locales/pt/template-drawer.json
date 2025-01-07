@@ -12,5 +12,8 @@
     "labels": "Rótulos",
     "tasks": "Tarefas",
     "noTemplateSelected": "Nenhum template selecionado",
-    "noDescription": "Sem descrição"
+    "noDescription": "Sem descrição",
+    "worklenzTemplates": "Templates de Worklenz",
+    "yourTemplatesLibrary": "Sua Biblioteca",
+    "searchTemplates": "Pesquisar Templates"
 }

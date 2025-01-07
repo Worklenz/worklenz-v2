@@ -2,16 +2,19 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { projectsApiService } from '@/api/projects/projects.api.service';
 import logger from '@/utils/errorLogger';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { IProjectCategory } from '@/types/project/projectCategory.types';
 
 interface ProjectState {
   projects: {
     data: IProjectViewModel[];
     total: number;
   };
+  categories: IProjectCategory[];
   loading: boolean;
   creatingProject: boolean;
   initialized: boolean;
   isProjectDrawerOpen: boolean;
+  filteredCategories: string[];
 }
 
 const initialState: ProjectState = {
@@ -19,10 +22,12 @@ const initialState: ProjectState = {
     data: [],
     total: 0,
   },
+  categories: [],
   loading: false,
   creatingProject: false,
   initialized: false,
   isProjectDrawerOpen: false,
+  filteredCategories: [],
 };
 
 // Create async thunk for fetching teams
@@ -37,7 +42,7 @@ export const fetchProjects = createAsyncThunk(
       search: string;
       filter: number;
       statuses: string | null;
-      categories: string | null;
+      categories: string[];
     },
     { rejectWithValue }
   ) => {
@@ -50,7 +55,7 @@ export const fetchProjects = createAsyncThunk(
         params.search,
         params.filter,
         params.statuses,
-        params.categories
+        params.categories.join(',')
       );
       return projectsResponse.body;
     } catch (error) {
@@ -93,10 +98,34 @@ export const createProject = createAsyncThunk(
   }
 );
 
+export const updateProject = createAsyncThunk(
+  'projects/updateProject',
+  async ({ id, project }: { id: string; project: IProjectViewModel }, { rejectWithValue }) => {
+    const response = await projectsApiService.updateProject(id, project);
+    return response.body;
+  }
+);
+
 export const deleteProject = createAsyncThunk(
   'projects/deleteProject',
   async (id: string, { rejectWithValue }) => {
     const response = await projectsApiService.deleteProject(id);
+    return response.body;
+  }
+);
+
+export const toggleArchiveProject = createAsyncThunk(
+  'projects/toggleArchiveProject',
+  async (id: string, { rejectWithValue }) => {
+    const response = await projectsApiService.toggleArchiveProject(id);
+    return response.body;
+  }
+);
+
+export const toggleArchiveProjectForAll = createAsyncThunk(
+  'projects/toggleArchiveProjectForAll',
+  async (id: string, { rejectWithValue }) => {
+    const response = await projectsApiService.toggleArchiveProjectForAll(id);
     return response.body;
   }
 );
@@ -112,6 +141,12 @@ const projectSlice = createSlice({
       state.creatingProject = true;
     },
     deleteProject: (state, action: PayloadAction<string>) => {},
+    setCategories: (state, action: PayloadAction<IProjectCategory[]>) => {
+      state.categories = action.payload;
+    },
+    setFilteredCategories: (state, action: PayloadAction<string[]>) => {
+      state.filteredCategories = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -137,9 +172,15 @@ const projectSlice = createSlice({
       })
       .addCase(createProject.rejected, state => {
         state.creatingProject = false;
-      });
+      })
+      .addCase(toggleArchiveProject.fulfilled, state => {
+        state.loading = false;
+      })
+      .addCase(toggleArchiveProjectForAll.fulfilled, state => {
+        state.loading = false;
+      })
   },
 });
 
-export const { toggleDrawer } = projectSlice.actions;
+export const { toggleDrawer, setCategories, setFilteredCategories } = projectSlice.actions;
 export default projectSlice.reducer;

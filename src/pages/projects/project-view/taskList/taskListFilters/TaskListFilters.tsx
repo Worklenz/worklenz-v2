@@ -54,7 +54,7 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
         {/* members dropdown  */}
         <MembersFilterDropdown members={members} />
         {/* group by dropdown */}
-        {<GroupByFilterDropdown />}
+        {<GroupByFilterDropdown position={position} />}
       </Flex>
 
       {position === 'list' && (

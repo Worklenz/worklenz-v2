@@ -1,4 +1,4 @@
-import Avatars from '@/components/avatars/Avatars';
+import Avatars from '@/components/avatars/avatars';
 import { setActiveMembers } from '@/features/project/project.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -24,7 +24,6 @@ const ProjectViewExtra = () => {
 
   const handleMemberView = (res: any) => {
     // dispatch(setActiveMembers(res));
-
   };
 
   const handleProjectUpdates = (res: any) => {

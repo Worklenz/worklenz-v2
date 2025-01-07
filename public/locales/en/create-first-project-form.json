@@ -7,5 +7,6 @@
     "continue": "Continue",
     "cancel": "Cancel",
     "create": "Create",
-    "templateDrawerTitle": "Select from templates"
+    "templateDrawerTitle": "Select from templates",
+    "createProject": "Create Project"
 }

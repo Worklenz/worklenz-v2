@@ -287,7 +287,7 @@ const KanbanGroup: React.FC<KanbanGroupProps> = ({ title, tasks, id, color }) =>
           )}
 
           <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-            <div className="App" style={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
+            <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
               {tasks.map(task => (
                 <TaskCard key={task.id} task={task} />
               ))}

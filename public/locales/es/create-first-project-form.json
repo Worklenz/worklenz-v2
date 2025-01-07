@@ -7,5 +7,6 @@
     "continue": "Continuar", 
     "cancel": "Cancelar",
     "create": "Crear",
-    "templateDrawerTitle": "Seleccionar de plantillas"
+    "templateDrawerTitle": "Seleccionar de plantillas",
+    "createProject": "Crear proyecto"
 }

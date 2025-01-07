@@ -17,6 +17,7 @@
   "taskText": "Task",
   "descriptionText": "Description",
   "phasesText": "Phases",
+  "listText": "List",
   "progressText": "Progress",
   "timeTrackingText": "Time Tracking",
   "estimationText": "Estimation",

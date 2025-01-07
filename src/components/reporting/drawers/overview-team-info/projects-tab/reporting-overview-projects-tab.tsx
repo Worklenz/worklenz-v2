@@ -2,33 +2,35 @@ import { Flex, PaginationProps, Skeleton } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import CustomSearchbar from '@components/CustomSearchbar';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import ProjectsReportsTable from '@/pages/reporting/projectsReports/projectsReportsTable/projects-reports-table';
 import { IRPTProject } from '@/types/reporting/reporting.types';
 import logger from '@/utils/errorLogger';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';
 import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
-type OverviewReportsProjectsTabProps = { teamsId?: string | null };
+interface OverviewReportsProjectsTabProps {
+  teamsId?: string | null;
+}
 
 const OverviewReportsProjectsTab = ({
   teamsId = null,
 }: OverviewReportsProjectsTabProps) => {
-  const [searchQuery, setSearhQuery] = useState<string>('');
+  const { t } = useTranslation('reporting-projects-drawer');
+  const { includeArchivedProjects } = useAppSelector((state) => state.reportingReducer);
+  const [searchQuery, setSearchQuery] = useState('');
   const [projectList, setProjectList] = useState<IRPTProject[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     total: 0,
   });
-  const { includeArchivedProjects } = useAppSelector((state) => state.reportingReducer);
 
-  const getOverviewProjects = async () => {
+  const fetchOverviewProjects = async () => {
     setIsLoading(true);
     try {
-      const data = {
+      const params = {
         team_id: teamsId,
         index: pagination.current,
         size: pagination.pageSize,
@@ -38,40 +40,39 @@ const OverviewReportsProjectsTab = ({
         filter: 0,
         archived: includeArchivedProjects,
       };
-      const { done, body } = await reportingApiService.getOverviewProjects(data);
-      if (done) {
-        setProjectList(body.projects || []);
-        setPagination({ ...pagination, total: body.total });
+      const response = await reportingApiService.getOverviewProjects(params);
+      if (response.done) {
+        setProjectList(response.body.projects || []);
+        setPagination({ ...pagination, total: response.body.total });
       }
     } catch (error) {
-      logger.error('getOverviewProjects', error);
+      logger.error('fetchOverviewProjects', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    getOverviewProjects();
-  }, [pagination.current, pagination.pageSize, searchQuery, teamsId, includeArchivedProjects]);
-
-  const { t } = useTranslation('reporting-projects-drawer');
-
-  const dispatch = useAppDispatch();
+    fetchOverviewProjects();
+  }, [
+    searchQuery,
+    includeArchivedProjects,
+  ]);
 
   return (
     <Flex vertical gap={24}>
       <CustomSearchbar
         placeholderText={t('searchByNameInputPlaceholder')}
         searchQuery={searchQuery}
-        setSearchQuery={setSearhQuery}
+        setSearchQuery={setSearchQuery}
       />
 
-      <ProjectsReportsTable
+      {/* <ProjectsReportsTable
         projectList={projectList}
         loading={isLoading}
         pagination={pagination}
         setPagination={setPagination}
-      />
+      /> */}
     </Flex>
   );
 };

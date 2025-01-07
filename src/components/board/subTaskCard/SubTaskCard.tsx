@@ -4,7 +4,7 @@ import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import Avatars from '@/components/avatars/Avatars';
+import Avatars from '@/components/avatars/avatars';
 
 interface SubTaskProps {
   subtask: IProjectTask;

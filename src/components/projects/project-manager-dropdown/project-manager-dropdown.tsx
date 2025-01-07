@@ -1,4 +1,4 @@
-import Avatars from '@/components/avatars/Avatars';
+import Avatars from '@/components/avatars/avatars';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';

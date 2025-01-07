@@ -4,6 +4,7 @@ import { ITask } from '../tasks/task.types';
 import { InlineMember } from '../teamMembers/inlineMember.types';
 
 export interface IProjectViewModel extends IProject {
+  key?: string;
   client_name?: string | null;
   project_owner?: string;
   updated_at?: string;

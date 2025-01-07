@@ -15,7 +15,7 @@ import {
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthService } from '@/hooks/useAuth';
 import { colors } from '@/styles/colors';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
 import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
@@ -33,7 +33,7 @@ type UpdateMemberDrawerProps = {
 const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
   const { t } = useTranslation('settings-team-members');
   const dispatch = useAppDispatch();
-  const auth = useAuth();
+  const auth = useAuthService();
   const [form] = Form.useForm();
 
   const [loading, setLoading] = useState(true);

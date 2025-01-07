@@ -13,5 +13,10 @@
   "all": "Todos",
   "favorites": "Favoritos",
   "archived": "Arquivados",
-  "placeholder": "Pesquisar por nome"
+  "placeholder": "Pesquisar por nome",
+  "archiveConfirm": "Tem certeza de que deseja arquivar este projeto?",
+  "unarchive": "Desarquivar",
+  "unarchiveConfirm": "Tem certeza de que deseja desarquivar este projeto?",
+  "clickToFilter": "Clique para filtrar por",
+  "noProjects": "Nenhum projeto encontrado"
 }

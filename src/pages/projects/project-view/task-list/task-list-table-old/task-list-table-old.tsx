@@ -27,8 +27,7 @@ import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
-import { HolderOutlined } from '@ant-design/icons';
-import Avatars from '@/components/avatars/Avatars';
+import Avatars from '@/components/avatars/avatars';
 
 const TaskListTable = ({
   taskList,
