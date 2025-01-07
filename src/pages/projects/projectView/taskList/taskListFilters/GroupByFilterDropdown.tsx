@@ -8,20 +8,21 @@ import { useAppSelector } from '../../../../../hooks/useAppSelector';
 import CreateStatusButton from '../../../../../features/projects/status/CreateStatusButton';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
-import { setGroupBy } from '../../../../../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
+// import { setGroupBy } from '../../../../../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
+import { setGroup } from '../../../../../features/board/board-slice';
 
 const GroupByFilterDropdown = () => {
-  type GroupTypes = 'status' | 'priority' | 'phase';
+  type GroupTypes = 'status' | 'priority' | 'phase' | 'members';
 
   const [activeGroup, setActiveGroup] = useState<GroupTypes>('status');
 
   // localization
   const { t } = useTranslation('taskListFilters');
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const handleChange = (value: string) => {
     setActiveGroup(value as GroupTypes);
-    dispatch(setGroupBy(value as GroupTypes))
+    dispatch(setGroup(value as GroupTypes));
   };
 
   // get selected project from useSelectedPro
@@ -52,7 +53,7 @@ const GroupByFilterDropdown = () => {
         options={groupDropdownMenuItems}
         onChange={handleChange}
         suffixIcon={<CaretDownFilled />}
-        dropdownStyle={{width: 'wrap-content'}}
+        dropdownStyle={{ width: 'wrap-content' }}
       />
       {(activeGroup === 'status' || activeGroup === 'phase') && (
         <ConfigProvider wave={{ disabled: true }}>
