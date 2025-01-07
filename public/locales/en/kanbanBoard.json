@@ -1,14 +1,22 @@
 {
-    "rename": "Rename",
-    "delete": "Delete",
-    "addTask": "Add Task",
-    "changeCategory": "Change category",
+  "rename": "Rename",
+  "delete": "Delete",
+  "addTask": "Add Task",
+  "addSectionButton": "Add Section",
+  "changeCategory": "Change category",
 
-    "dueDate": "Due date",
-    "cancel": "Cancel",
+  "deleteTooltip": "Delete",
+  "deleteConfirmationTitle": "Are you sure?",
+  "deleteConfirmationOk": "Yes",
+  "deleteConfirmationCancel": "Cancel",
 
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "assignToMe": "Assign to me",
-    "archive": "Archive"
+  "dueDate": "Due date",
+  "cancel": "Cancel",
+
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "assignToMe": "Assign to me",
+  "archive": "Archive",
+
+  "newTaskNamePlaceholder": "Write a task Name"
 }

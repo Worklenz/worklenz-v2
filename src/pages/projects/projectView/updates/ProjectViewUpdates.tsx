@@ -56,12 +56,12 @@ const ProjectViewUpdates = () => {
               >
                 Sachintha Prasad
               </Typography.Text>
-              <Tooltip title = 'Nov 25,2024,10.45.54 AM'>
-              <Typography.Text
-                style={{ fontSize: 13, color: colors.deepLightGray }}
-              >
-                7 hours ago
-              </Typography.Text>
+              <Tooltip title="Nov 25,2024,10.45.54 AM">
+                <Typography.Text
+                  style={{ fontSize: 13, color: colors.deepLightGray }}
+                >
+                  7 hours ago
+                </Typography.Text>
               </Tooltip>
             </Space>
             <Typography.Paragraph>
@@ -79,7 +79,7 @@ const ProjectViewUpdates = () => {
               }}
             >
               <Button
-              type='text'
+                type="text"
                 style={{
                   width: 'fit-content',
                   border: 'none',

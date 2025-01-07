@@ -15,6 +15,8 @@ import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
 import { toggleUpdateTaskDrawer } from '../../../../tasks/taskSlice';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { themeWiseColor } from '../../../../../utils/themeWiseColor';
 
 type ProjectReportsTasksTableProps = {
   tasksData: any[];
@@ -33,6 +35,9 @@ const ProjectReportsTasksTable = ({
 }: ProjectReportsTasksTableProps) => {
   // localization
   const { t } = useTranslation('reportingProjectsDrawer');
+
+  // get theme details theme reducer
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
@@ -69,7 +74,11 @@ const ProjectReportsTasksTable = ({
       render: (record) => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
-          color={record.status_color}
+          color={
+            themeMode === 'dark'
+              ? record.status_color_dark
+              : record.status_color
+          }
           children={record.status_name}
         />
       ),
@@ -81,7 +90,11 @@ const ProjectReportsTasksTable = ({
       render: (record) => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
-          color={record.priority_color}
+          color={
+            themeMode === 'dark'
+              ? record.priority_color_dark
+              : record.priority_color
+          }
           children={record.priority_name}
         />
       ),

@@ -26,13 +26,13 @@ ChartJS.register(
 const MembersTimeSheet: React.FC = () => {
   const labels = jsonData.map((item) => item.name);
   const dataValues = jsonData.map((item) => {
-    const loggedTimeInHours = parseFloat(item.logged_time) / 3600; 
-    return loggedTimeInHours.toFixed(2); 
+    const loggedTimeInHours = parseFloat(item.logged_time) / 3600;
+    return loggedTimeInHours.toFixed(2);
   });
   const colors = jsonData.map((item) => item.color_code);
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const {t} = useTranslation('timeReport')
+  const { t } = useTranslation('timeReport');
 
   // Chart data
   const data = {
@@ -106,10 +106,10 @@ const MembersTimeSheet: React.FC = () => {
           maxWidth: 'calc(100vw - 220px)',
           minWidth: 'calc(100vw - 260px)',
           minHeight: 'calc(100vh - 300px)',
-          height: `${60 * data.labels.length}px`, 
+          height: `${60 * data.labels.length}px`,
         }}
       >
-        <Bar data={data} options={options}/>
+        <Bar data={data} options={options} />
       </div>
     </div>
   );

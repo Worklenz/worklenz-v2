@@ -6,6 +6,7 @@ import ProjectReportsTasksTable from './ProjectReportsTaskTable';
 import UpdateTaskDrawer from '../../../../tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { fetchData } from '../../../../../utils/fetchData';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
 
 type ProjectReportsTasksTabProps = {
   projectId?: string | null;
@@ -31,6 +32,9 @@ const ProjectReportsTasksTab = ({
 
   // localization
   const { t } = useTranslation('reportingProjectsDrawer');
+
+  // get theme details theme reducer
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
@@ -84,7 +88,9 @@ const ProjectReportsTasksTab = ({
             <ProjectReportsTasksTable
               tasksData={item.tasks}
               title={item.name}
-              color={item.color_code}
+              color={
+                themeMode === 'dark' ? item.color_code_dark : item.color_code
+              }
               type={activeGroup}
               setSeletedTaskId={setSelectedTaskId}
             />

@@ -8,10 +8,8 @@ import {
   DownOutlined,
   RightOutlined,
 } from '@ant-design/icons';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { toggleFinanceDrawer } from '../../../../../../features/finance/finance-slice';
-import FinanceDrawer from '../../../../../../features/finance/finance-drawer.tsx/finance-drawer';
 import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
+import { colors } from '../../../../../../styles/colors';
 
 type FinanceTableProps = {
   table: any;
@@ -29,8 +27,6 @@ const FinanceTable = ({
 
   // get theme data from theme reducer
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
-
-  const dispatch = useAppDispatch();
 
   // totals of the current table
   const totals = useMemo(
@@ -70,20 +66,43 @@ const FinanceTable = ({
   const renderFinancialTableHeaderContent = (columnKey: any) => {
     switch (columnKey) {
       case 'hours':
-        return <Typography.Text>{totals.hours}</Typography.Text>;
+        return (
+          <Typography.Text style={{ color: colors.darkGray }}>
+            {totals.hours}
+          </Typography.Text>
+        );
       case 'cost':
-        return <Typography.Text>{totals.cost}</Typography.Text>;
+        return (
+          <Typography.Text style={{ color: colors.darkGray }}>
+            {totals.cost}
+          </Typography.Text>
+        );
       case 'fixedCost':
-        return <Typography.Text>{totals.fixedCost}</Typography.Text>;
+        return (
+          <Typography.Text style={{ color: colors.darkGray }}>
+            {totals.fixedCost}
+          </Typography.Text>
+        );
       case 'totalBudget':
-        return <Typography.Text>{totals.totalBudget}</Typography.Text>;
+        return (
+          <Typography.Text style={{ color: colors.darkGray }}>
+            {totals.totalBudget}
+          </Typography.Text>
+        );
       case 'totalActual':
-        return <Typography.Text>{totals.totalActual}</Typography.Text>;
+        return (
+          <Typography.Text style={{ color: colors.darkGray }}>
+            {totals.totalActual}
+          </Typography.Text>
+        );
       case 'variance':
         return (
           <Typography.Text
             style={{
-              color: totals.variance < 0 ? '#FF0000' : '#6DC376',
+              color:
+                totals.variance < 0
+                  ? '#FF0000'
+                  : themeWiseColor('#6DC376', colors.darkGray, themeMode),
             }}
           >
             {totals.variance}
@@ -180,7 +199,7 @@ const FinanceTable = ({
         style={{
           height: 40,
           backgroundColor: themeWiseColor(
-            table.color_code_default,
+            table.color_code,
             table.color_code_dark,
             themeMode
           ),
@@ -196,7 +215,7 @@ const FinanceTable = ({
             textAlign: 'left',
             paddingInline: 16,
             backgroundColor: themeWiseColor(
-              table.color_code_default,
+              table.color_code,
               table.color_code_dark,
               themeMode
             ),
@@ -205,7 +224,7 @@ const FinanceTable = ({
           className={customColumnHeaderStyles('tableTitle')}
           onClick={(e) => setIsCollapse((prev) => !prev)}
         >
-          <Flex gap={8} align="center">
+          <Flex gap={8} align="center" style={{ color: colors.darkGray }}>
             {isCollapse ? <RightOutlined /> : <DownOutlined />}
             {table.name} ({table.tasks.length})
           </Flex>

@@ -12,13 +12,13 @@ const OverviewStatCard = ({ icon, title, children }: InsightCardProps) => {
     <Card
       className="custom-insights-card"
       style={{ width: '100%' }}
-      styles={{ body: { paddingInline: 16 } }}
+      styles={{ body: { paddingInline: 16, paddingBlock: 8 } }}
     >
-      <Flex gap={16} align="flex-start">
+      <Flex gap={16} align="center">
         {icon}
 
-        <Flex vertical gap={12}>
-          <Typography.Text style={{ fontSize: 16 }}>{title}</Typography.Text>
+        <Flex vertical>
+          <Typography.Text style={{ fontSize: 22 }}>{title}</Typography.Text>
 
           <>{children}</>
         </Flex>

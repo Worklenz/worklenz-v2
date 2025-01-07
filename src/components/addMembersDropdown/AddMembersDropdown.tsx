@@ -8,7 +8,11 @@ import {
   Menu,
   Typography,
 } from 'antd';
-import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  UserAddOutlined,
+  UsergroupAddOutlined,
+} from '@ant-design/icons';
 import './AddMembersDropdown.css';
 import { avatarNamesMap } from '../../shared/constants';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -93,7 +97,13 @@ const AddMembersDropdown: React.FC = () => {
         }}
       />
 
-      <Button style={{ width: '100%', backgroundColor: themeMode === 'dark' ? 'black' : 'white' }} type="link">
+      <Button
+        style={{
+          width: '100%',
+          backgroundColor: themeMode === 'dark' ? 'black' : 'white',
+        }}
+        type="link"
+      >
         <UsergroupAddOutlined /> Invite a new member by email
       </Button>
 
@@ -131,7 +141,7 @@ const AddMembersDropdown: React.FC = () => {
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
       }}
     >
-      <PlusOutlined />
+      <UserAddOutlined />
     </Dropdown>
   );
 };

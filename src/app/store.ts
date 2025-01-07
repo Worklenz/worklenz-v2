@@ -16,7 +16,7 @@ import billingReducer from '../features/adminCenter/billing/billingSlice';
 import projectMemberReducer from '../features/projects/singleProject/members/projectMembersSlice';
 import categoriesReducer from '../features/settings/categories/categoriesSlice';
 import projectViewTaskListColumnsReducer from '../features/projects/singleProject/taskListColumns/taskColumnsSlice';
-import createCardReducer from '../features/board/createCardSlice';
+import boardReducer from '../features/board/board-slice';
 import phaseReducer from '../features/projects/singleProject/phase/phaseSlice';
 import labelReducer from '../features/settings/label/labelSlice';
 import statusReducer from '../features/projects/status/StatusSlice';
@@ -30,7 +30,7 @@ import overviewReportsReducer from '../features/reporting/overviewReports/overvi
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
-import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice'
+import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
 import priorityReducer from '../features/projects/priority/prioritySlice';
 import taskListCustomColumnsReducer from '../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import financeReducer from '../features/finance/finance-slice';
@@ -59,7 +59,6 @@ export const store = configureStore({
     projectMemberReducer: projectMemberReducer,
     categoriesReducer: categoriesReducer,
     projectViewTaskListColumnsReducer: projectViewTaskListColumnsReducer,
-    createCardReducer: createCardReducer,
     phaseReducer: phaseReducer,
     labelReducer: labelReducer,
     statusReducer: statusReducer,
@@ -74,9 +73,10 @@ export const store = configureStore({
     membersReportsReducer: membersReportsReducer,
     roadmapReducer: roadmapReducer,
     groupByFilterDropdownReducer: groupByFilterDropdownReducer,
-    priorityReducer: priorityReducer
+    priorityReducer: priorityReducer,
     taskListCustomColumnsReducer: taskListCustomColumnsReducer,
     financeReducer: financeReducer,
+    boardReducer: boardReducer,
   },
 });
 

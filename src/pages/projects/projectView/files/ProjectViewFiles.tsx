@@ -10,7 +10,7 @@ import {
   Typography,
 } from 'antd';
 import React, { useState } from 'react';
-import { filesData, FilesDataType } from './filesDate';
+import { filesData, FilesDataType } from './filesData';
 import { colors } from '../../../../styles/colors';
 import {
   AppstoreOutlined,

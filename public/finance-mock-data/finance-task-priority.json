@@ -3,8 +3,8 @@
     "id": "c2669c5f-a019-445b-b703-b941bbefdab7",
     "type": "low",
     "name": "Low",
-    "color_code_default": "#c2e4d0",
-    "color_code_dark": "#3b6149",
+    "color_code": "#c2e4d0",
+    "color_code_dark": "#46d980",
     "tasks": [
       {
         "id": "4be5ef5c-1234-4247-b159-6d8df2b37d04",
@@ -52,8 +52,8 @@
     "id": "d3f9c5f1-b019-445b-b703-b941bbefdab8",
     "type": "medium",
     "name": "Medium",
-    "color_code_default": "#f9e3b1",
-    "color_code_dark": "#916c33",
+    "color_code": "#f9e3b1",
+    "color_code_dark": "#ffc227",
     "tasks": [
       {
         "id": "1be5ef5c-1234-4247-b159-6d8df2b37d01",
@@ -108,8 +108,8 @@
     "id": "e3f9c5f1-b019-445b-b703-b941bbefdab9",
     "type": "high",
     "name": "High",
-    "color_code_default": "#f6bfc0",
-    "color_code_dark": "#8b3a3b",
+    "color_code": "#f6bfc0",
+    "color_code_dark": "#ff4141",
     "tasks": [
       {
         "id": "5be5ef5c-1234-4247-b159-6d8df2b37d05",

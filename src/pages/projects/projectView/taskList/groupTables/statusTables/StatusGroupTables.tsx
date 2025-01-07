@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom';
 import BulkTasksActionContainer from '../../../../../../features/projects/bulkActions/BulkTasksActionContainer';
 import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import { deselectAll } from '../../../../../../features/projects/bulkActions/bulkActionSlice';
+import { getStatusColor } from '../../../../../../utils/getStatusColor';
 
 const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
   const statusList = useAppSelector((state) => state.statusReducer.status);
@@ -20,20 +21,6 @@ const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  // fuction for get a color regariding the status
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'todo':
-        return themeMode === 'dark' ? '#3a3a3a' : '#d8d7d8';
-      case 'doing':
-        return themeMode === 'dark' ? '#3d506e' : '#c0d5f6';
-      case 'done':
-        return themeMode === 'dark' ? '#3b6149' : '#c2e4d0';
-      default:
-        return themeMode === 'dark' ? '#3a3a3a' : '#d8d7d8';
-    }
-  };
-
   return (
     <Flex gap={24} vertical>
       {statusList.map((status) => (
@@ -46,7 +33,7 @@ const StatusGroupTables = ({ datasource }: { datasource: TaskType[] }) => {
           name={status.name}
           type="status"
           statusCategory={status.category}
-          color={getStatusColor(status.category)}
+          color={getStatusColor(status.category, themeMode)}
         />
       ))}
 

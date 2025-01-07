@@ -7,6 +7,7 @@ import {
 import {
   Badge,
   Button,
+  Col,
   ConfigProvider,
   Flex,
   Tabs,
@@ -32,10 +33,14 @@ import StatusDrawer from '../../../features/projects/status/StatusDrawer';
 import UpdateTaskDrawer from '../../../features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import './ProjectView.css';
 import CustomAvatar from '../../../components/CustomAvatar';
+import { useResponsive } from '../../../hooks/useResponsive';
 
 const ProjectView = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // useResponsive custom hook
+  const { isDesktop } = useResponsive();
 
   // useSelectedProject custom hook returns currently selected project
   const selectedProject = useSelectedProject();
@@ -126,7 +131,9 @@ const ProjectView = () => {
   ];
 
   return (
-    <div style={{ marginBlock: 80, minHeight: '80vh' }}>
+    <div
+      style={{ marginBlockStart: 80, marginBlockEnd: 24, minHeight: '80vh' }}
+    >
       {/* page header for the project view  */}
       <ProjectViewHeader />
 
@@ -135,6 +142,7 @@ const ProjectView = () => {
         activeKey={activeTab}
         onChange={handleTabChange}
         items={tabMenuItems}
+        tabBarStyle={{ paddingInline: isDesktop ? 240 : 0 }}
         tabBarExtraContent={
           <div>
             <CustomAvatar avatarName={'Raveesha dilanka'} size={26} />

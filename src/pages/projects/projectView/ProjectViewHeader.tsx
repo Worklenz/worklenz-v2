@@ -11,7 +11,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
-import { Button, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
+import { Button, Col, Dropdown, Flex, Tag, Tooltip, Typography } from 'antd';
 import React, { useState } from 'react';
 import ProjectMemberInviteButton from '../../../features/projects/singleProject/members/ProjectMemberInviteButton';
 import { useNavigate } from 'react-router-dom';
@@ -21,12 +21,16 @@ import dayjs from 'dayjs';
 import { statusData } from '../../../lib/project/projectConstants';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleCreateTaskDrawer } from '../../../features/tasks/taskSlice';
+import { useResponsive } from '../../../hooks/useResponsive';
 
 const ProjectViewHeader = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const [isSubcribe, setIsSubcribe] = useState<boolean>(false);
+
+  // useResponsive for media queries
+  const { isDesktop } = useResponsive();
 
   const dispatch = useAppDispatch();
 
@@ -55,7 +59,9 @@ const ProjectViewHeader = () => {
     {
       key: '1',
       label: (
-        <div style={{ width: '100%', margin: 0, padding: 0 }}><ImportOutlined/> Import task</div>
+        <div style={{ width: '100%', margin: 0, padding: 0 }}>
+          <ImportOutlined /> Import task
+        </div>
       ),
     },
   ];
@@ -121,7 +127,7 @@ const ProjectViewHeader = () => {
           )}
         </Flex>
       }
-      style={{ padding: 0, marginBlockEnd: 24 }}
+      style={{ paddingInline: isDesktop ? 240 : 0, marginBlockEnd: 12 }}
       extra={
         <Flex gap={8} align="center">
           <Tooltip title={'Refresh project'} trigger={'hover'}>
@@ -144,7 +150,11 @@ const ProjectViewHeader = () => {
             title={'Receive a project summary every evening.'}
             trigger={'hover'}
           >
-            <Button shape="round" icon={isSubcribe ? <BellFilled /> : <BellOutlined />} onClick={() => setIsSubcribe(!isSubcribe)}>
+            <Button
+              shape="round"
+              icon={isSubcribe ? <BellFilled /> : <BellOutlined />}
+              onClick={() => setIsSubcribe(!isSubcribe)}
+            >
               {isSubcribe ? 'Unsubscribe' : 'Subscribe'}
             </Button>
           </Tooltip>

@@ -3,7 +3,6 @@ import { RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import Homepage from '../pages/home/Homepage';
 import ProjectList from '../pages/projects/ProjectList';
-import ProjectView from '../pages/projects/projectView/ProjectView';
 import settingsRoutes from './settingsRoutes';
 import adminCenterRoutes from './adminCenterRoutes';
 import Schedule from '../pages/schedule/Schedule';
@@ -18,9 +17,11 @@ const mainRoutes: RouteObject[] = [
       { path: 'home', element: <Homepage /> },
       { path: 'projects', element: <ProjectList /> },
       { path: 'schedule', element: <Schedule /> },
-      { path: `projects/:projectId`, element: <ProjectView /> },
-      { path: `settings/project-templates/edit/:templateId/:templateName`, element: <ProjectTemplateEditView />},
-      { path: 'license-expired', element: <LicenseExpired />},
+      {
+        path: `settings/project-templates/edit/:templateId/:templateName`,
+        element: <ProjectTemplateEditView />,
+      },
+      { path: 'license-expired', element: <LicenseExpired /> },
       ...settingsRoutes,
       ...adminCenterRoutes,
     ],

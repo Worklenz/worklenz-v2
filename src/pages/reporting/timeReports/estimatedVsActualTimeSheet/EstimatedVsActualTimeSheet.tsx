@@ -23,13 +23,14 @@ ChartJS.register(
   Legend,
   ChartDataLabels
 );
-const EstimatedVsActualTimeSheet = () => {
+
+const EstimatedVsActualTimeSheet: React.FC = () => {
   const labels = jsonData.map((item) => item.name);
   const actualDays = jsonData.map((item) => item.value); // Convert seconds to hours
   const estimatedDays = jsonData.map((item) => item.estimated_value);
 
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const {t} = useTranslation('timeReport')
+  const { t } = useTranslation('timeReport');
 
   // Chart data
   const data = {
@@ -39,13 +40,13 @@ const EstimatedVsActualTimeSheet = () => {
         label: t('estimatedDays'),
         data: estimatedDays,
         backgroundColor: '#A5AAD9',
-        barThickness: 50,
+        barThickness: 40,
       },
       {
         label: t('actualDays'),
         data: actualDays,
         backgroundColor: '#c191cc',
-        barThickness: 50,
+        barThickness: 40,
       },
     ],
   };
@@ -56,10 +57,9 @@ const EstimatedVsActualTimeSheet = () => {
     plugins: {
       datalabels: {
         color: 'white',
-        anchor: 'start' as const,
-        align: 'start' as const,
-        offset: -30,
-        borderColor: '#000',
+        anchor: 'end' as const,
+        align: 'end' as const,
+        offset: 20,
         textStrokeColor: 'black',
         textStrokeWidth: 4,
       },
@@ -69,13 +69,13 @@ const EstimatedVsActualTimeSheet = () => {
       },
     },
     backgroundColor: 'black',
-    indexAxis: 'x' as const,
+    indexAxis: 'y' as const, // Horizontal orientation
     responsive: true,
     scales: {
       x: {
         title: {
           display: true,
-          text: t('projects'),
+          text: t('days'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',
@@ -89,7 +89,7 @@ const EstimatedVsActualTimeSheet = () => {
       y: {
         title: {
           display: true,
-          text: t('days'),
+          text: t('projects'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',
@@ -107,12 +107,13 @@ const EstimatedVsActualTimeSheet = () => {
     <div style={{ position: 'relative' }}>
       <div
         style={{
-          minWidth: 'calc(100vw - 260px)',
-          height: 'calc(100vh - 300px)',
-          width: `${120 * data.labels.length}px`,
+          maxWidth: 'calc(100vw - 220px)', // Set maximum width for the chart container
+          minWidth: 'calc(100vw - 260px)', // Minimum width
+          minHeight: 'calc(100vh - 300px)', // Minimum height for scrolling
+          height: `${100 * data.labels.length}px`, // Dynamically adjust height based on labels
         }}
       >
-        <Bar data={data} options={options}/>
+        <Bar data={data} options={options} />
       </div>
     </div>
   );

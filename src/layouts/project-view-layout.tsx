@@ -6,7 +6,7 @@ import { useAppSelector } from '../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';
 import { colors } from '../styles/colors';
 
-const MainLayout = () => {
+const ProjectViewLayout = () => {
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const isDesktop = useMediaQuery({ query: '(min-width: 1024px)' });
 
@@ -44,7 +44,6 @@ const MainLayout = () => {
 
         <Layout.Content>
           <Col
-            xxl={{ span: 18, offset: 3, flex: '100%' }}
             style={{ paddingInline: isDesktop ? 64 : 24, overflowX: 'hidden' }}
           >
             <Outlet />
@@ -55,4 +54,4 @@ const MainLayout = () => {
   );
 };
 
-export default MainLayout;
+export default ProjectViewLayout;

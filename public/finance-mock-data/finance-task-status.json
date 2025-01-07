@@ -3,8 +3,8 @@
     "id": "c2669c5f-a019-445b-b703-b941bbefdab7",
     "type": "todo",
     "name": "To Do",
-    "color_code_default": "#d8d7d8",
-    "color_code_dark": "#3a3a3a",
+    "color_code": "#d8d7d8",
+    "color_code_dark": "#989898",
     "tasks": [
       {
         "id": "1be5ef5c-1234-4247-b159-6d8df2b37d01",
@@ -59,8 +59,8 @@
     "id": "d3f9c5f1-b019-445b-b703-b941bbefdab8",
     "type": "doing",
     "name": "In Progress",
-    "color_code_default": "#c0d5f6",
-    "color_code_dark": "#3d506e",
+    "color_code": "#c0d5f6",
+    "color_code_dark": "#4190ff",
     "tasks": [
       {
         "id": "3be5ef5c-1234-4247-b159-6d8df2b37d03",
@@ -115,8 +115,8 @@
     "id": "e3f9c5f1-b019-445b-b703-b941bbefdab9",
     "type": "done",
     "name": "Done",
-    "color_code_default": "#c2e4d0",
-    "color_code_dark": "#3b6149",
+    "color_code": "#c2e4d0",
+    "color_code_dark": "#46d980",
     "tasks": [
       {
         "id": "5be5ef5c-1234-4247-b159-6d8df2b37d05",
