@@ -7,8 +7,8 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { IInsightTasks } from '@/types/project/projectInsights.types';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
 import logger from '@/utils/errorLogger';
-import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
-import { formatDateTime } from '@/utils/format-time-strings';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 
 const LastUpdatedTasks = () => {
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
@@ -87,9 +87,9 @@ const LastUpdatedTasks = () => {
       key: 'lastUpdated',
       title: 'Last Updated',
       render: (record: IInsightTasks) => (
-        <Tooltip title={record.updated_at ? formatDateTime(record.updated_at) : 'N/A'}>
+        <Tooltip title={record.updated_at ? formatDateTimeWithLocale(record.updated_at) : 'N/A'}>
           <Typography.Text>
-            {record.updated_at ? calculateTimeAgo(record.updated_at) : 'N/A'}
+            {record.updated_at ? calculateTimeDifference(record.updated_at) : 'N/A'}
           </Typography.Text>
         </Tooltip>
       ),

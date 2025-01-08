@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ILocalSession } from '@/types/auth/local-session.types';
-import { getSession } from '@/utils/session-helper';
+import { getUserSession } from '@/utils/session-helper';
 
-const sessionData = getSession();
+const sessionData = getUserSession();
 
 const initialState: ILocalSession = {
   id: sessionData?.id || '',

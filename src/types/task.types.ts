@@ -21,7 +21,7 @@ export type TaskType = {
   members?: MemberType[];
   labels?: LabelType[];
   status: TaskStatusType | string;
-  priority: TaskPriorityType;
+  priority: TaskPriorityType | string;
   timeTracking?: number;
   estimation?: string;
   startDate?: Date | null;

@@ -1,33 +1,55 @@
-import { Button } from 'antd';
+import { Button, Dropdown } from 'antd';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { toggleLng } from './localesSlice';
+import { ILanguageType, setLanguage } from './localesSlice';
 
 const LanguageSelector = () => {
   const language = useAppSelector((state) => state.localesReducer.lng);
   const dispatch = useAppDispatch();
 
-  const handleLanguageChange = () => {
-    dispatch(toggleLng());
+  const handleLanguageChange = (lang: ILanguageType) => {
+    dispatch(setLanguage(lang));
+  };
+
+  const items = [
+    { key: 'en', label: 'English' },
+    { key: 'es', label: 'Español' },
+    { key: 'pt', label: 'Português' }
+  ];
+
+  const languageLabels = {
+    en: 'En',
+    es: 'Es', 
+    pt: 'Pt'
   };
 
   return (
-    <Button
-      shape="circle"
-      onClick={handleLanguageChange}
-      style={{
-        textTransform: 'capitalize',
-        fontWeight: 500,
-        minWidth: '40px',
-        height: '40px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+    <Dropdown
+      menu={{
+        items: items.map(item => ({
+          ...item,
+          onClick: () => handleLanguageChange(item.key as ILanguageType)
+        }))
       }}
-      aria-label={`Change language to ${language === 'en' ? 'Spanish' : 'English'}`}
+      placement="bottom"
+      trigger={['click']}
     >
-      {language === 'en' ? 'Es' : 'En'}
-    </Button>
+      <Button
+        shape="circle"
+        style={{
+          textTransform: 'capitalize',
+          fontWeight: 500,
+          minWidth: '40px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        aria-label="Change language"
+      >
+        {languageLabels[language]}
+      </Button>
+    </Dropdown>
   );
 };
 

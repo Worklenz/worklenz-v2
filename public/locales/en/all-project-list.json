@@ -7,11 +7,16 @@
   "updated_at": "Last Updated",
   "members": "Members",
   "setting": "Setting",
-  "archive": "Archive",
   "projects": "Projects",
   "refreshProjects": "Refresh projects",
   "all": "All",
   "favorites": "Favorites",
   "archived": "Archived",
-  "placeholder": "Search by name"
+  "placeholder": "Search by name",
+  "archive": "Archive",
+  "unarchive": "Unarchive",
+  "archiveConfirm": "Are you sure you want to archive this project?",
+  "unarchiveConfirm": "Are you sure you want to unarchive this project?",
+  "clickToFilter": "Click to filter by",
+  "noProjects": "No projects found"
 }

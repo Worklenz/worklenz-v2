@@ -5,18 +5,41 @@ import ForgotPasswordPage from '@/pages/auth/forgot-password-page';
 import LoggingOutPage from '@/pages/auth/logging-out';
 import AuthenticatingPage from '@/pages/auth/authenticating';
 import { Navigate } from 'react-router-dom';
+import VerifyResetEmailPage from '@/pages/auth/verify-reset-email';
 
 const authRoutes = [
   {
     path: '/auth',
     element: <AuthLayout />,
     children: [
-      { path: '', element: <Navigate to="login" replace /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'signup', element: <SignupPage /> },
-      { path: 'forgot-password', element: <ForgotPasswordPage /> },
-      { path: 'logging-out', element: <LoggingOutPage /> },
-      { path: 'authenticating', element: <AuthenticatingPage /> },
+      {
+        path: '',
+        element: <Navigate to="login" replace />,
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'signup', 
+        element: <SignupPage />,
+      },
+      {
+        path: 'forgot-password',
+        element: <ForgotPasswordPage />,
+      },
+      {
+        path: 'logging-out',
+        element: <LoggingOutPage />,
+      },
+      {
+        path: 'authenticating',
+        element: <AuthenticatingPage />,
+      },
+      {
+        path: 'verify-reset-email/:user/:hash',
+        element: <VerifyResetEmailPage />,
+      },
     ],
   },
 ];

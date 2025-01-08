@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { TaskType } from '../../../types/task.types';
 import { Avatar, Col, DatePicker, Divider, Flex, Row, Tooltip, Typography } from 'antd';
-import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
-import { AvatarNamesMap } from '../../../shared/constants';
+import StatusDropdown from '../../taskListCommon/statusDropdown/StatusDropdown';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import Avatars from '@/components/avatars/avatars';
 
-interface subtaskProps {
-  subtask: TaskType;
+interface SubTaskProps {
+  subtask: IProjectTask;
 }
 
-const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
+const SubTaskCard: React.FC<SubTaskProps> = ({ subtask }) => {
   const [isSubToday, setIsSubToday] = useState(false);
   const [isSubTomorrow, setIsSubTomorrow] = useState(false);
   const [isItSubPrevDate, setIsItSubPrevDate] = useState(false);
   const [subTaskDueDate, setSubTaskDueDate] = useState<Dayjs | null>(null);
-  const {t} = useTranslation('kanban-board')
+  const {t} = useTranslation('kanbanBoard')
 
   const handleSubTaskDateChange = (date: Dayjs | null) => {
     setSubTaskDueDate(date);
@@ -52,7 +52,7 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
 
   return (
     <Row
-      key={subtask.taskId}
+      key={subtask.id}
       style={{
         marginTop: '0.5rem',
         width: '100%',
@@ -63,7 +63,7 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
           style={{ fontWeight: 500, fontSize: '12px' }}
           delete={subtask.status === 'done'}
         >
-          {subtask.task}
+          {subtask.name}
         </Typography.Text>
       </Col>
       <Col span={4}>
@@ -77,17 +77,7 @@ const SubTaskCard: React.FC<subtaskProps> = ({ subtask }) => {
             },
           }}
         >
-          {subtask.members?.map((member) => (
-            <Avatar
-              style={{
-                backgroundColor: AvatarNamesMap[member.memberName.charAt(0)],
-                fontSize: '12px',
-              }}
-              size="small"
-            >
-              {member.memberName.charAt(0)}
-            </Avatar>
-          ))}
+          <Avatars members={subtask.names || []} />
         </Avatar.Group>
       </Col>
       <Col span={10}>

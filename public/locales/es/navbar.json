@@ -15,5 +15,8 @@
     "switchTeamTooltip": "Cambiar equipo",
     "help": "Ayuda",
     "notificationTooltip": "Ver notificaciones",
-    "profileTooltip": "Ver perfil"
+    "profileTooltip": "Ver perfil",
+    "adminCenter": "Centro de administración",
+    "settings": "Configuración",
+    "logOut": "Cerrar sesión"
 }

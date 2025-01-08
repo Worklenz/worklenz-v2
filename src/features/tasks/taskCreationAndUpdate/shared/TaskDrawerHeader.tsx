@@ -7,7 +7,7 @@ import { EllipsisOutlined } from '@ant-design/icons';
 type TaskDrawerHeaderProps = {
   taskName: string;
   setTaskName: (name: string) => void;
-  inputRef: React.RefObject<InputRef>;
+  inputRef: React.RefObject<InputRef | null>;
 };
 
 const TaskDrawerHeader = ({

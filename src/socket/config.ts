@@ -1,10 +1,8 @@
 export const SOCKET_CONFIG = {
-  url: process.env.NODE_ENV === 'production' ? '' : 'ws://localhost:3000',
+  url: process.env.NODE_ENV === 'production' ? 'wss://dev.worklenz.com' : 'ws://localhost:3000',
   options: {
     transports: ['websocket'],
-    path: '/socket.io',
+    path: '/socket',
     upgrade: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
   },
 };

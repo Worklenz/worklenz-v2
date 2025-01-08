@@ -1,0 +1,21 @@
+{
+    "todoList": {
+        "title": "Lista de tarefas",
+        "refreshTasks": "Atualizar tarefas",
+        "addTask": "+ Adicionar tarefa",
+        "noTasks": "Nenhuma tarefa",
+        "pressEnter": "Pressione",
+        "toCreate": "para criar.",
+        "markAsDone": "Marcar como feito"
+    },
+    "projects": {
+        "title": "Projetos",
+        "refreshProjects": "Atualizar projetos",
+        "noRecentProjects": "Você não está atribuído a nenhum projeto.",
+        "noFavouriteProjects": "Nenhum projeto foi marcado como favorito."
+    },
+    "tasks": {
+        "assignedToMe": "Atribuído a mim",
+        "assignedByMe": "Atribuído por mim"
+    }
+}

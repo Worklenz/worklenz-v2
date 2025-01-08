@@ -1,36 +1,46 @@
 import { MoreOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import React from 'react';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   projectViewTaskListColumnsState,
   toggleColumnVisibility,
-} from '../../../../../features/projects/singleProject/taskListColumns/taskColumnsSlice';
+} from '@features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import { columnList } from '../taskListTable/columns/columnList';
 import { useTranslation } from 'react-i18next';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 const ShowFieldsFilterDropdown = () => {
-  // localization
   const { t } = useTranslation('task-list-filters');
-
   const dispatch = useAppDispatch();
+  const { trackMixpanelEvent } = useMixpanelTracking();
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
-  // remove the task and selector column from the list because those are fixrd columns
+  // Filter out fixed columns
   const changableColumnList = columnList.filter(
-    (column) => column.key !== 'selector' && column.key !== 'task'
+    (column) => !['selector', 'task'].includes(column.key)
   );
 
   const columnsVisibility = useAppSelector(
     (state) => state.projectViewTaskListColumnsReducer.columnsVisibility
   );
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const handleColumnToggle = (columnKey: string) => {
+    dispatch(toggleColumnVisibility(columnKey));
+    trackMixpanelEvent('task_list_column_visibility_changed', {
+      column: columnKey,
+      visible: !columnsVisibility[columnKey as keyof typeof columnsVisibility]
+    });
+  };
 
   const showFieldsDropdownContent = (
     <Card
       className="custom-card"
-      style={{ height: 300, overflowY: 'scroll' }}
+      style={{ 
+        height: 300, 
+        overflowY: 'auto',
+        minWidth: 130
+      }}
       styles={{ body: { padding: 0 } }}
     >
       <List style={{ padding: 0 }}>
@@ -43,7 +53,9 @@ const ShowFieldsFilterDropdown = () => {
               gap: 8,
               padding: '4px 8px',
               border: 'none',
+              cursor: 'pointer'
             }}
+            onClick={() => handleColumnToggle(col.key)}
           >
             <Space>
               <Checkbox
@@ -52,11 +64,8 @@ const ShowFieldsFilterDropdown = () => {
                     col.key as keyof projectViewTaskListColumnsState['columnsVisibility']
                   ]
                 }
-                onClick={() => dispatch(toggleColumnVisibility(col.key))}
               />
-              {t(
-                `${col.key === 'phases' ? 'phasesText' : col.columnHeader + 'Text'}`
-              )}
+              {t(col.key === 'phases' ? 'phasesText' : `${col.columnHeader}Text`)}
             </Space>
           </List.Item>
         ))}
@@ -65,7 +74,11 @@ const ShowFieldsFilterDropdown = () => {
   );
 
   return (
-    <Dropdown overlay={showFieldsDropdownContent} trigger={['click']}>
+    <Dropdown 
+      overlay={showFieldsDropdownContent} 
+      trigger={['click']}
+      placement="bottomRight"
+    >
       <Button icon={<MoreOutlined />}>{t('showFieldsText')}</Button>
     </Dropdown>
   );

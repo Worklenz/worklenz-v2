@@ -24,12 +24,12 @@ import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDrop
 import { useTranslation } from 'react-i18next';
 
 interface CommonStatusSectionProps {
-  statusId: string;
   status: string;
   dataSource: TaskType[];
   category: string;
   id: string;
 }
+
 
 const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   status,
@@ -184,7 +184,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
                   : category === 'doing'
                     ? '#b9cef1'
                     : '#c2e4d0',
-              borderRadius: '19px',
+              borderRadius: '10px',
             }}
           >
             <div
@@ -267,7 +267,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           {!isTopCardDisabled && (
             <TaskCreateCard
               ref={createTaskInputRef}
-              status={category}
+              status={status}
               position={'top'}
             />
           )}
@@ -279,7 +279,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           {!isBottomCardDisabled && (
             <TaskCreateCard
               ref={createTaskInputRef}
-              status={category}
+              status={status}
               position={'bottom'}
             />
           )}

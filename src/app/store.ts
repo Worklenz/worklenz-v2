@@ -4,6 +4,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '@features/auth/authSlice';
 import userReducer from '@features/user/userSlice';
 
+// Home Page
+import homePageReducer from '@features/home-page/home-page.slice';
+
+// Account Setup
+import accountSetupReducer from '@features/account-setup/account-setup.slice';
+
 // Core UI
 import themeReducer from '@features/theme/themeSlice';
 import localesReducer from '@features/i18n/localesSlice';
@@ -48,13 +54,15 @@ import buttonReducer from '@features/actionSetup/buttonSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 
 // Reports
+import reportingReducer from '@features/reporting/reporting.slice';
 import timeLogReducer from '../features/timeReport/projects/timeLogSlice';
 import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplateSlice';
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/projectReportsTableColumns/projectReportsTableColumnSlice';
-import overviewReportsReducer from '../features/reporting/overviewReports/overviewReportsSlice';
 import projectReportsReducer from '../features/reporting/projectReports/projectReportsSlice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
 import roadmapReducer from '../features/roadmap/roadmap-slice';
+import teamMembersReducer from '@features/team-members/team-members.slice';
+import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -66,6 +74,12 @@ export const store = configureStore({
     auth: authReducer,
     userReducer: userReducer,
 
+    // Account Setup
+    accountSetupReducer: accountSetupReducer,
+
+    // Home Page
+    homePageReducer: homePageReducer,
+
     // Core UI
     themeReducer: themeReducer,
     localesReducer: localesReducer,
@@ -75,6 +89,7 @@ export const store = configureStore({
     projectReducer: projectReducer,
     projectsReducer: projectsReducer,
     projectMemberReducer: projectMemberReducer,
+    teamMembersReducer: teamMembersReducer,
     projectViewTaskListColumnsReducer: projectViewTaskListColumnsReducer,
     phaseReducer: phaseReducer,
     updatesReducer: updatesReducer,
@@ -110,13 +125,14 @@ export const store = configureStore({
     scheduleReducer: scheduleReducer,
 
     // Reports
+    reportingReducer: reportingReducer,
     timeLogReducer: timeLogReducer,
     taskTemplateReducer: taskTemplateReducer,
     projectReportsTableColumnsReducer: projectReportsTableColumnsReducer,
-    overviewReportsReducer: overviewReportsReducer,
     projectReportsReducer: projectReportsReducer,
     membersReportsReducer: membersReportsReducer,
     roadmapReducer: roadmapReducer,
+    groupByFilterDropdownReducer: groupByFilterDropdownReducer,
   },
 });
 

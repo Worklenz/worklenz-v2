@@ -7,10 +7,8 @@ import alertService from './alertService';
 export const notificationMiddleware: Middleware = (store) => (next) => (action) => {
   if (showAlert.match(action)) {
     const notification: any = action.payload;
-    
     // Show notification using service
-    alertService.(
-      notification.type,
+    alertService.error(
       notification.title,
       notification.message,
       notification.duration

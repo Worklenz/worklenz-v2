@@ -46,8 +46,6 @@ const MembersOverviewProjectsStatsDrawer = ({
     );
   }, []);
 
-  console.log(projectsData);
-
   return (
     <Drawer
       open={isDrawerOpen}

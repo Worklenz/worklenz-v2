@@ -1,23 +1,35 @@
-import { PushpinFilled, PushpinOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+// Ant Design
+import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
+import { Button, ConfigProvider, Flex, Tabs, TabsProps } from 'antd';
 
-import { Avatar, Badge, Button, ConfigProvider, Flex, Tabs, TabsProps, Tooltip } from 'antd';
+// React & Router
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+// Redux
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { getProject, setProjectId } from '@/features/project/project.slice';
+
+
+// Components
+import ProjectViewHeader from './project-view-header';
+import ProjectViewExtra from './project-view-extra';
+import ProjectMemberDrawer from '@features/projects/singleProject/members/ProjectMemberDrawer';
+import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
+import StatusDrawer from '@features/projects/status/StatusDrawer';
+import CreateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/createTaskDrawer/CreateTaskDrawer';
+
+// Hooks
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+
+// Constants & Utils
 import { colors } from '@/styles/colors';
 import { tabItems } from '@/lib/project/projectViewConstants';
 import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunctions';
-import ProjectMemberDrawer from '@features/projects/singleProject/members/ProjectMemberDrawer';
-import { useDocumentTitle } from '@/hooks/useDoumentTItle';
-import ProjectViewHeader from './project-view-header';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '@features/projects/status/StatusDrawer';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { getProject, setProject, setProjectId } from '@/features/project/project.slice';
-import CreateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/createTaskDrawer/CreateTaskDrawer';
 
-import './ProjectView.css';
-import { AvatarNamesMap } from '@/shared/constants';
+// Styles
+import './project-view.css';
+import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -37,8 +49,13 @@ const ProjectView = () => {
   useEffect(() => {
     if (activeTab) setActiveTab(activeTab);
     if (pinnedTab) setPinnedTab(pinnedTab);
-    if (projectId)
-      dispatch(getProject(projectId)).then(res => res.payload && dispatch(setProject(res.payload)));
+    if (projectId) {
+      dispatch(getProject(projectId)).then((res: any) => {
+        if (!res.payload) navigate('/worklenz/projects');
+
+        dispatch(fetchStatuses(projectId));
+      });
+    }
   }, [activeTab, pinnedTab, location.search, projectId]);
 
   // function for pin a tab and update url
@@ -123,25 +140,7 @@ const ProjectView = () => {
         </div>
 
         {/* Right-side content */}
-        <div>
-          <Avatar size="small" style={{ backgroundColor: AvatarNamesMap['R'] }}>
-            R
-          </Avatar>
-          <span style={{ position: 'relative', top: '-10px' }}>
-            <Tooltip title="Members who are active on this project will be displayed here.">
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-          <span
-            style={{
-              position: 'relative',
-              right: '20px',
-              top: '10px',
-            }}
-          >
-            <Badge status="success" dot className="profile-badge" />
-          </span>
-        </div>
+        <ProjectViewExtra />
       </div>
       {/* drawers  */}
       {/* add project members drawer */}

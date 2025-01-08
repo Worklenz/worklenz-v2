@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { getLanguageFromLocalStorage } from './language-utils';
 
 export const greetingString = (name: string): string => {
   const date = dayjs();
@@ -9,5 +10,26 @@ export const greetingString = (name: string): string => {
   else if (hours >= 12 && hours < 16) greet = 'afternoon';
   else if (hours >= 16 && hours < 24) greet = 'evening';
 
-  return `Hi ${name},  Good ${greet}!`;
+  const language = getLanguageFromLocalStorage();
+  let greetingPrefix = 'Hi';
+  let greetingSuffix = 'Good';
+  let morning = 'morning';
+  let afternoon = 'afternoon';
+  let evening = 'evening';
+
+  if (language === 'es') {
+    greetingPrefix = 'Hola';
+    greetingSuffix = 'Buen';
+    morning = 'mañana';
+    afternoon = 'tarde';
+    evening = 'noche';
+  } else if (language === 'pt') {
+    greetingPrefix = 'Olá';
+    greetingSuffix = 'Bom';
+    morning = 'manhã';
+    afternoon = 'tarde';
+    evening = 'noite';
+  }
+
+  return `${greetingPrefix} ${name}, ${greetingSuffix} ${greet}!`;
 };

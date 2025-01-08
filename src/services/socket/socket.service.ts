@@ -1,4 +1,5 @@
 import { Message, User } from '@/types/socket.types';
+import logger from '@/utils/errorLogger';
 import { Socket } from 'socket.io-client';
 
 export class SocketService {
@@ -25,15 +26,15 @@ export class SocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Socket connected in service');
+      logger.info('Socket connected in service');
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Socket disconnected in service');
+      logger.info('Socket disconnected in service');
     });
 
     this.socket.on('error', (error: Error) => {
-      console.error('Socket error:', error);
+      logger.error('Socket error', { error });
     });
   }
 

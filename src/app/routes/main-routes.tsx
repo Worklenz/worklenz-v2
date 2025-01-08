@@ -7,7 +7,7 @@ import settingsRoutes from './settings-routes';
 import adminCenterRoutes from './admin-center-routes';
 import Schedule from '@/pages/schedule/schedule';
 import ProjectTemplateEditView from '@/pages/settings/project-templates/projectTemplateEditView/ProjectTemplateEditView';
-import LicenseExpired from '@/pages/licenseExpired/LicenseExpired';
+import LicenseExpired from '@/pages/license-expired/license-expired';
 
 const mainRoutes: RouteObject[] = [
   {

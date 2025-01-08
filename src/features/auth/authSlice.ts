@@ -3,6 +3,7 @@ import { authApiService } from '@/api/auth/auth.api.service';
 import { IAuthState, IUserLoginRequest } from '@/types/auth/login.types';
 import { IUserSignUpRequest } from '@/types/auth/signup.types';
 import logger from '@/utils/errorLogger';
+import { setSession } from '@/utils/session-helper';
 
 // Initial state
 const initialState: IAuthState = {
@@ -83,6 +84,20 @@ export const verifyAuthentication = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async (email: string) => {
+    return await authApiService.resetPassword(email);
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  'auth/updatePassword',
+  async (values: any) => {
+    return await authApiService.updatePassword(values);
+  }
+);
+
 // Common state updates
 const setPending = (state: IAuthState) => {
   state.isLoading = true;
@@ -139,6 +154,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = !!action.payload;
         state.user = action.payload.user;
+        setSession(action.payload.user);
       })
       .addCase(verifyAuthentication.rejected, (state) => {
         state.isLoading = false;

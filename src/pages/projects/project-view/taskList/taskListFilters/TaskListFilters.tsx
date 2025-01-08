@@ -1,7 +1,4 @@
-// Ant Design Components
 import { Checkbox, Flex, Typography } from 'antd';
-
-// Components
 import SearchDropdown from './SearchDropdown';
 import SortFilterDropdown from './SortFilterDropdown';
 import LabelsFilterDropdown from './LabelsFilterDropdown';
@@ -9,24 +6,20 @@ import MembersFilterDropdown from './MembersFilterDropdown';
 import GroupByFilterDropdown from './GroupByFilterDropdown';
 import ShowFieldsFilterDropdown from './ShowFieldsFilterDropdown';
 import PriorityFilterDropdown from './PriorityFilterDropdown';
-
-// Hooks & Utils
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-
-// Redux Actions
+import { useEffect } from 'react';
 import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 interface TaskListFiltersProps {
   position: 'board' | 'list';
 }
 
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
-  const dispatch = useAppDispatch();
   const { t } = useTranslation('task-list-filters');
+  const dispatch = useAppDispatch();
 
   // Selectors
   const priorities = useAppSelector(state => state.priorityReducer.priorities);
@@ -47,37 +40,33 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
     fetchInitialData();
   }, [dispatch, priorities.length, labels.length]);
 
-  const renderCommonFilters = () => (
-    <>
-      <SearchDropdown />
-      <SortFilterDropdown />
-      <PriorityFilterDropdown priorities={priorities} />
-      <LabelsFilterDropdown labels={labels} />
-      <MembersFilterDropdown members={members} />
-    </>
-  );
-
-  const renderListSpecificFilters = () => (
-    <>
-      <GroupByFilterDropdown />
-      <Flex gap={12} wrap="wrap">
-        <Flex gap={4} align="center">
-          <Checkbox />
-          <Typography.Text>{t('showArchivedText')}</Typography.Text>
-        </Flex>
-        <ShowFieldsFilterDropdown />
-      </Flex>
-    </>
-  );
-
   return (
     <Flex gap={8} align="center" justify="space-between">
-      <Flex gap={8} wrap="wrap">
-        {renderCommonFilters()}
-        {position === 'list' && <GroupByFilterDropdown />}
+      <Flex gap={8} wrap={'wrap'}>
+        {/* search dropdown  */}
+        <SearchDropdown />
+        {/* sort dropdown  */}
+        <SortFilterDropdown />
+        {/* prioriy dropdown  */}
+        <PriorityFilterDropdown priorities={priorities} />
+        {/* labels dropdown  */}
+        <LabelsFilterDropdown labels={labels} />
+        {/* members dropdown  */}
+        <MembersFilterDropdown members={members} />
+        {/* group by dropdown */}
+        {<GroupByFilterDropdown position={position} />}
       </Flex>
 
-      {position === 'list' && renderListSpecificFilters()}
+      {position === 'list' && (
+        <Flex gap={12} wrap={'wrap'}>
+          <Flex gap={4} align="center">
+            <Checkbox />
+            <Typography.Text>{t('showArchivedText')}</Typography.Text>
+          </Flex>
+          {/* show fields dropdown  */}
+          <ShowFieldsFilterDropdown />
+        </Flex>
+      )}
     </Flex>
   );
 };

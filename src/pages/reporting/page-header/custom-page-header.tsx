@@ -1,18 +1,25 @@
 import { PageHeader } from '@ant-design/pro-components';
 import React, { memo } from 'react';
 
-type CustomPageHeaderProps = {
+interface CustomPageHeaderProps {
   title: string;
-  children: React.ReactNode | null;
-};
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}
 
-const CustomPageHeader = ({ title, children }: CustomPageHeaderProps) => {
+const CustomPageHeader: React.FC<CustomPageHeaderProps> = ({
+  title,
+  children,
+  className = 'site-page-header',
+  style = { padding: '16px 0' }
+}) => {
   return (
     <PageHeader
-      className="site-page-header"
+      className={className}
       title={title}
-      style={{ padding: '16px 0' }}
-      extra={children || null}
+      style={style}
+      extra={children}
     />
   );
 };

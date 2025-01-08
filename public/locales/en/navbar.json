@@ -15,5 +15,8 @@
     "switchTeamTooltip": "Switch team",
     "help": "Help",
     "notificationTooltip": "View notifications",
-    "profileTooltip": "View profile"
+    "profileTooltip": "View profile",
+    "adminCenter": "Admin Center",
+    "settings": "Settings",
+    "logOut": "Log Out"
 }

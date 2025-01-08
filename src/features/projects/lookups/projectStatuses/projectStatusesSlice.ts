@@ -5,7 +5,7 @@ import { IProjectStatus } from '@/types/project/projectStatus.types';
 
 type ProjectStatusState = {
   initialized: boolean;
-  statuses: IProjectStatus[];
+  projectStatuses: IProjectStatus[];
   loading: boolean;
 };
 
@@ -27,7 +27,7 @@ export const fetchProjectStatuses = createAsyncThunk(
 );
 
 const initialState: ProjectStatusState = {
-  statuses: [],
+  projectStatuses: [],
   initialized: false,
   loading: false,
 };
@@ -42,7 +42,7 @@ const projectStatusesSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchProjectStatuses.fulfilled, (state, action) => {
-        state.statuses = action.payload;
+        state.projectStatuses = action.payload;
         state.loading = false;
         state.initialized = true;
       })

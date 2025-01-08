@@ -38,7 +38,7 @@ const MobileMenuButton = () => {
       icon: React.createElement(ProjectOutlined),
     },
     {
-      name: 'schedules',
+      name: 'schedule',
       icon: React.createElement(ClockCircleOutlined),
     },
     {

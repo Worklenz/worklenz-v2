@@ -5,14 +5,16 @@ type InsightCardProps = {
   icon: ReactNode;
   title: string;
   children: ReactNode;
+  loading?: boolean;
 };
 
-const OverviewStatCard = ({ icon, title, children }: InsightCardProps) => {
+const OverviewStatCard = ({ icon, title, children, loading = false }: InsightCardProps) => {
   return (
     <Card
       className="custom-insights-card"
       style={{ width: '100%' }}
       styles={{ body: { paddingInline: 16 } }}
+      loading={loading}
     >
       <Flex gap={16} align="flex-start">
         {icon}

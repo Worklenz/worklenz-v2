@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Flex } from 'antd';
 import TaskListFilters from './taskListFilters/TaskListFilters';
-import { TaskType } from '../../../../types/task.types';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
-import StatusGroupTables from './statusTables/StatusGroupTables';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 import { ITaskListConfigV2 } from '@/types/tasks/taskList.types';
-import TaskListTableWrapper from './taskListTable/TaskListTableWrapper';
+import TanStackTable from '../task-list/task-list-custom';
+import TaskListCustom from '../task-list/task-list-custom';
+import TaskListTableWrapper from '../task-list/task-list-table-wrapper/task-list-table-wrapper';
 
 const ProjectViewTaskList = () => {
   // sample data from task reducer
@@ -35,20 +35,18 @@ const ProjectViewTaskList = () => {
       dispatch(fetchStatusesCategories());
     }
   }, [dispatch, projectId]);
-  
+
   return (
-    <Flex vertical gap={16} style={{overflowX: 'hidden'}}>
+    <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />
 
-      {taskGroups.map((group) => (
+      {taskGroups.map(group => (
         <TaskListTableWrapper
           key={group.id}
-          taskList={group.tasks}
-          tableId={group.id || ''}
+          taskList={group}
           name={group.name || ''}
-          type="status"
-          statusCategory={group.id || ''}
           color={group.color_code || ''}
+          groupId={group.id || ''}
         />
       ))}
     </Flex>

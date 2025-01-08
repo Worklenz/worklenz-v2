@@ -2,10 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 
 interface billingState {
   isDrawerOpen: boolean;
+  isModalOpen: boolean;
 }
 
 const initialState: billingState = {
   isDrawerOpen: false,
+  isModalOpen: false,
 };
 
 const billingSlice = createSlice({
@@ -17,8 +19,13 @@ const billingSlice = createSlice({
         ? (state.isDrawerOpen = false)
         : (state.isDrawerOpen = true);
     },
+    toggleUpgradeModal: (state) => {
+      state.isModalOpen
+        ? (state.isModalOpen = false)
+        : (state.isModalOpen = true);
+    }
   },
 });
 
-export const { toggleDrawer } = billingSlice.actions;
+export const { toggleDrawer, toggleUpgradeModal } = billingSlice.actions;
 export default billingSlice.reducer;

@@ -1,6 +1,6 @@
 import { Avatar, Button, DatePicker, Input, InputRef } from 'antd';
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
-import AddMembersDropdown from '../../addMembersDropdown/AddMembersDropdown';
+import AddMembersDropdown from '../../add-members-dropdown/add-members-dropdown';
 import dayjs, { Dayjs } from 'dayjs';
 import './TaskCreateCard.css';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
@@ -95,7 +95,7 @@ const TaskCreateCard = forwardRef<InputRef, StatusProps>(
               createdDate: new Date(),
               lastUpdated: new Date(),
               reporter: '-',
-              phase: '-',
+              phase: '',
               subTasks: [],
             })
           );

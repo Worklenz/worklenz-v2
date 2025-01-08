@@ -65,8 +65,6 @@ const ProjectReportsTasksTab = ({
     }
   }, [activeGroup, statusTasks, priorityTasks, phaseTasks]);
 
-  console.log(activeGroup);
-
   return (
     <Flex vertical gap={24}>
       <Flex gap={24} align="center" justify="space-between">

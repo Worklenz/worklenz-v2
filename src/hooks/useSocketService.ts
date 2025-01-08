@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { SocketService } from '../services/socket/socket.service';
-import { useSocket } from '@/socket/SocketContext';
+import { SocketService } from '@services/socket/socket.service';
+import { useSocket } from '@/socket/socketContext';
 
 export const useSocketService = () => {
   const { socket } = useSocket();

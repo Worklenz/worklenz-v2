@@ -26,9 +26,9 @@ import UpdateTaskDrawer from '@features/tasks/taskCreationAndUpdate/updateTaskDr
 import { t } from 'i18next';
 import { IMyDashboardMyTask } from '@/types/home/tasks.types';
 import { IHomeTasksConfig } from '@/types/home/home-page.types';
+import { IProject } from '@/types/project/project.types';
 
 const TasksList = () => {
-  // const tasksList = useAppSelector(state => state.taskReducer.tasks);
   const [tasksList, setTasksList] = useState<IMyDashboardMyTask[]>([]);
   const [groups, setGroups] = useState<IMyDashboardMyTask[]>([]);
 
@@ -37,7 +37,9 @@ const TasksList = () => {
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const myTasksActiveFilterKey = 'my-dashboard-active-filter';
-  const options = [
+  const { projects } = useAppSelector(state => state.homePageReducer);
+
+  const taskModes = [
     {
       value: 0,
       label: t('home:tasks.assignedToMe'),
@@ -49,7 +51,7 @@ const TasksList = () => {
   ];
 
   const [config, setConfig] = useState<IHomeTasksConfig>({
-    tasks_group_by: options[0].value,
+    tasks_group_by: taskModes[0].value,
     current_view: 0,
     current_tab: 'my_tasks',
     selected_date: new Date(),
@@ -89,7 +91,7 @@ const TasksList = () => {
       key: 'task',
       title: 'Task',
       width: '400px',
-      render: values => (
+      render: (values) => (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Tooltip title={values.task}>
             <Typography.Text style={{ textTransform: 'capitalize' }}>{values.task}</Typography.Text>
@@ -119,11 +121,11 @@ const TasksList = () => {
       key: 'project',
       title: 'Project',
       width: '180px',
-      render: values => {
-        const project = projectList.data?.find(project => project.name === values.project);
+      render: (values) => {
+        const project = projects.find(project => project.name === values.project);
         return (
           project && (
-            <Tooltip title={project.projectName}>
+            <Tooltip title={project.name}>
               <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
                 <Badge color={project.color_code} style={{ marginInlineEnd: 4 }} />
                 {project.name}
@@ -137,7 +139,7 @@ const TasksList = () => {
       key: 'status',
       title: 'Status',
       width: '180px',
-      render: values => <StatusDropdown currentStatus={values.status} />,
+      render: (values) => <StatusDropdown currentStatus={values.status} />,
     },
     {
       key: 'dueDate',
@@ -156,7 +158,11 @@ const TasksList = () => {
           </Typography.Title>
           <Select
             defaultValue="0"
-            options={options}
+            options={taskModes}
+            onChange={(value) => {
+              setConfig({ ...config, tasks_group_by: +value });
+            }}
+            
           />
         </Flex>
       }
@@ -200,7 +206,7 @@ const TasksList = () => {
         <Table
           className="custom-two-colors-row-table"
           dataSource={tasksList}
-          rowKey={record => record.taskId}
+          rowKey={record => record.id}
           columns={columns}
           pagination={false}
           size="middle"

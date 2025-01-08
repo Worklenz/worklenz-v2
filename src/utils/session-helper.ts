@@ -8,7 +8,7 @@ export function setSession(user: ILocalSession): void {
   // storage.setItem(WORKLENZ_SESSION_ID, btoa(JSON.stringify(user)));
 }
 
-export function getSession(): ILocalSession | null {
+export function getUserSession(): ILocalSession | null {
   try {
     return JSON.parse(atob(<string>storage.getItem(WORKLENZ_SESSION_ID)));
   } catch (e) {
@@ -25,7 +25,7 @@ export function deleteSession() {
 }
 
 export function getRole() {
-  const session = getSession();
+  const session = getUserSession();
   if (!session) return 'Unknown';
   if (session.owner) return 'Owner';
   if (session.is_admin) return 'Admin';

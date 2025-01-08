@@ -45,7 +45,7 @@ export const homePageApiService = {
     return response.data;
   },
 
-  getProjectsByTeam: async (team_id: string): Promise<IServerResponse<IProject[]>> => {
+  getProjectsByTeam: async (): Promise<IServerResponse<IProject[]>> => {
     const response = await apiClient.get<IServerResponse<IProject[]>>(`${rootUrl}/team-projects`);
     return response.data;
   },

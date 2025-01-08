@@ -1,63 +1,37 @@
+import { COLUMN_KEYS } from '@/features/tasks/taskSlice';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+
+type ColumnKey = typeof COLUMN_KEYS[keyof typeof COLUMN_KEYS];
+
 export type projectViewTaskListColumnsState = {
-  columnsVisibility: {
-    selector: boolean;
-    taskId: boolean;
-    task: boolean;
-    description: boolean;
-    progress: boolean;
-    members: boolean;
-    labels: boolean;
-    status: boolean;
-    priority: boolean;
-    timeTracking: boolean;
-    estimation: boolean;
-    startDate: boolean;
-    dueDate: boolean;
-    completedDate: boolean;
-    createdDate: boolean;
-    lastUpdated: boolean;
-    reporter: boolean;
-    phases: boolean;
-  };
+  columnsVisibility: Record<ColumnKey, boolean>;
+  changedColumn: ColumnKey | null;
 };
 
+// Create initial state dynamically from column keys
 const initialState: projectViewTaskListColumnsState = {
-  columnsVisibility: {
-    selector: true,
-    taskId: true,
-    task: true,
-    description: true,
-    progress: true,
-    members: true,
-    labels: true,
-    status: true,
-    priority: true,
-    timeTracking: true,
-    estimation: true,
-    startDate: true,
-    dueDate: true,
-    completedDate: true,
-    createdDate: true,
-    lastUpdated: true,
-    reporter: true,
-    phases: true,
-  },
+  columnsVisibility: Object.values(COLUMN_KEYS).reduce((acc, key) => ({
+    ...acc,
+    [key]: true
+  }), {} as Record<ColumnKey, boolean>),
+  changedColumn: null
 };
 
 const projectViewTaskListColumnsSlice = createSlice({
-  name: 'projectViewTaskListColumnsReducer',
+  name: 'projectViewTaskListColumns',
   initialState,
   reducers: {
-    toggleColumnVisibility: (state, action: PayloadAction<string>) => {
-      const columnKey =
-        action.payload as keyof projectViewTaskListColumnsState['columnsVisibility'];
-      state.columnsVisibility[columnKey] = !state.columnsVisibility[columnKey];
+    toggleColumnVisibility: (state, action: PayloadAction<ColumnKey>) => {
+      state.columnsVisibility[action.payload] = !state.columnsVisibility[action.payload];
+      state.changedColumn = action.payload;
     },
+    clearChangedColumn: (state) => {
+      state.changedColumn = null;
+    }
   },
 });
 
-export const { toggleColumnVisibility } =
-  projectViewTaskListColumnsSlice.actions;
+export const { toggleColumnVisibility, clearChangedColumn } = projectViewTaskListColumnsSlice.actions;
+
 export default projectViewTaskListColumnsSlice.reducer;

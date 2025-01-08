@@ -1,0 +1,40 @@
+{
+  "searchButton": "Pesquisar",
+  "resetButton": "Redefinir",
+  "searchInputPlaceholder": "Pesquisar por nome",
+
+  "sortText": "Ordenar",
+  "statusText": "Status",
+  "phaseText": "Fase",
+  "priorityText": "Prioridade",
+  "labelsText": "Rótulos",
+  "membersText": "Membros",
+  "groupByText": "Agrupar por",
+  "showArchivedText": "Mostrar arquivados",
+  "showFieldsText": "Mostrar campos",
+  "keyText": "Chave",
+  "taskText": "Tarefa",
+  "descriptionText": "Descrição",
+  "phasesText": "Fases",
+  "progressText": "Progresso",
+  "timeTrackingText": "Rastreamento de Tempo",
+  "estimationText": "Estimativa",
+  "startDateText": "Data de Início",
+  "endDateText": "Data de Fim",
+  "dueDateText": "Data de Vencimento",
+  "completedDateText": "Data de Conclusão",
+  "createdDateText": "Data de Criação",
+  "lastUpdatedText": "Última Atualização",
+  "reporterText": "Relator",
+
+  "lowText": "Baixa",
+  "mediumText": "Média",
+  "highText": "Alta",
+
+  "createStatusButtonTooltip": "Configurações de Status",
+  "configPhaseButtonTooltip": "Configurações de Fase",
+  "noLabelsFound": "Nenhum rótulo encontrado",
+
+  "addStatusButton": "Adicionar Status",
+  "addPhaseButton": "Adicionar Fase"
+}

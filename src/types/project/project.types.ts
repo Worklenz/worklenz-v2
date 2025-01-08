@@ -8,6 +8,7 @@ export interface IProject {
   notes?: string;
   team_id?: string;
   client_id?: string;
+  client_name?: string | null;
   owner_id?: string;
   created_at?: string;
   updated_at?: string;

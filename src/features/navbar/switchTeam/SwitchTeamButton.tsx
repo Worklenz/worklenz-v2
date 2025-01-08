@@ -1,101 +1,113 @@
+// Ant Design Icons
 import { BankOutlined, CaretDownFilled, CheckCircleFilled } from '@ant-design/icons';
+
+// Ant Design Components
 import { Card, Divider, Dropdown, Flex, Tooltip, Typography } from 'antd';
-import { colors } from '@/styles/colors';
-import { useTranslation } from 'react-i18next';
-// custom css
-import './switchTeam.css';
+
+// Redux Hooks
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import CustomAvatar from '@/components/CustomAvatar';
-import { useAuth } from '@/hooks/useAuth';
-import { useEffect} from 'react';
+import { useAppSelector } from '@/hooks/useAppSelector';
+
+// Redux Actions
 import { fetchTeams, setActiveTeam } from '@/features/teams/teamSlice';
 import { verifyAuthentication } from '@/features/auth/authSlice';
 import { setUser } from '@/features/user/userSlice';
-import { createAuthService } from '@/services/auth/auth.service';
+
+// Hooks & Services
+import { useAuthService } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '@/hooks/useAppSelector';
+import { createAuthService } from '@/services/auth/auth.service';
+
+// Components
+import CustomAvatar from '@/components/CustomAvatar';
+
+// Styles
+import { colors } from '@/styles/colors';
+import './switchTeam.css';
+import { useEffect } from 'react';
 
 const SwitchTeamButton = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const authService = createAuthService(navigate);
-  const session = useAuth().getCurrentSession();
-
+  const { getCurrentSession } = useAuthService();
+  const session = getCurrentSession();
   const { t } = useTranslation('navbar');
 
+  // Selectors
   const teamsList = useAppSelector(state => state.teamReducer.teamsList);
-
-  // get the active team
-  const isActiveTeam = (teamId: string | undefined) => {
-    if (!teamId) return false;
-    return (teamId == session?.team_id);
-  };
-
-  const selectTeam = async (id: string | undefined) => {
-    if (!id) return;
-    await dispatch(setActiveTeam(id));
-    const verifyAuthStatus = async () => {
-      const result = await dispatch(verifyAuthentication()).unwrap();
-      if(result.authenticated) {
-        dispatch(setUser(result.user));
-        authService.setCurrentSession(result.user);
-      }
-    };
-    await verifyAuthStatus();
-    window.location.reload();
-  };
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   useEffect(() => {
     dispatch(fetchTeams());
   }, [dispatch]);
-  
-  // switch teams dropdown items
-  const items = [
-    ...teamsList?.map((team, index) => ({
-      key: team.id,
-      label: (
-        <Card
-          className="switch-team-card"
-          onClick={() => selectTeam(team.id)}
-          bordered={false}
-          style={{
-            width: 230,
-          }}
-        >
-          <Flex vertical>
-            <Flex gap={12} align="center" justify="space-between" style={{ paddingLeft: 12, paddingRight: 12, paddingTop: 4, paddingBottom: 4 }}>
-              <Flex gap={8} align="center">
-                <CustomAvatar avatarName={team.name} />
-                <Flex vertical>
-                  <Typography.Text
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 300,
-                    }}
-                  >
-                    Owned by {team.owns_by}
-                  </Typography.Text>
-                  <Typography.Text>{team.name}</Typography.Text>
-                </Flex>
-              </Flex>
-              <CheckCircleFilled
-                style={{
-                  fontSize: 16,
-                  color: isActiveTeam(team.id) ? colors.limeGreen : colors.lightGray,
-                }}
-              />
+
+  const isActiveTeam = (teamId: string): boolean => {
+    if (!teamId || !session?.team_id) return false;
+    return teamId === session.team_id;
+  };
+
+  const handleVerifyAuth = async () => {
+    const result = await dispatch(verifyAuthentication()).unwrap();
+    if (result.authenticated) {
+      dispatch(setUser(result.user));
+      authService.setCurrentSession(result.user);
+    }
+  };
+
+  const handleTeamSelect = async (id: string) => {
+    if (!id) return;
+    
+    await dispatch(setActiveTeam(id));
+    await handleVerifyAuth();
+    window.location.reload();
+  };
+
+  const renderTeamCard = (team: any, index: number) => (
+    <Card
+      className="switch-team-card"
+      onClick={() => handleTeamSelect(team.id)}
+      bordered={false}
+      style={{ width: 230 }}
+    >
+      <Flex vertical>
+        <Flex gap={12} align="center" justify="space-between" style={{ padding: '4px 12px' }}>
+          <Flex gap={8} align="center">
+            <CustomAvatar avatarName={team.name || ''} />
+            <Flex vertical>
+              <Typography.Text style={{ fontSize: 11, fontWeight: 300 }}>
+                Owned by {team.owns_by}
+              </Typography.Text>
+              <Typography.Text>{team.name}</Typography.Text>
             </Flex>
-            {index < teamsList.length - 1 && <Divider style={{ margin: 0 }} />}
           </Flex>
-        </Card>
-      ),
-    })),
-  ];
+          <CheckCircleFilled
+            style={{
+              fontSize: 16,
+              color: isActiveTeam(team.id) ? colors.limeGreen : colors.lightGray,
+            }}
+          />
+        </Flex>
+        {index < teamsList.length - 1 && <Divider style={{ margin: 0 }} />}
+      </Flex>
+    </Card>
+  );
+
+  const dropdownItems = teamsList?.map((team, index) => ({
+    key: team.id || '',
+    label: renderTeamCard(team, index),
+    type: 'item' as const
+  })) || [];
 
   return (
-    <Tooltip title={t('switchTeamTooltip')} trigger={'hover'}>
-      <Dropdown overlayClassName="switch-team-dropdown" menu={{ items }} trigger={['click']} placement="bottomRight" style={{ cursor: 'pointer' }}>
+    <Dropdown 
+      overlayClassName="switch-team-dropdown" 
+      menu={{ items: dropdownItems }} 
+      trigger={['click']} 
+      placement="bottomRight"
+    >
+      <Tooltip title={t('switchTeamTooltip')} trigger={'hover'}>
         <Flex
           gap={12}
           align="center"
@@ -107,6 +119,7 @@ const SwitchTeamButton = () => {
             borderRadius: '50rem',
             padding: '10px 16px',
             height: '39px',
+            cursor: 'pointer'
           }}
         >
           <BankOutlined />
@@ -115,8 +128,8 @@ const SwitchTeamButton = () => {
           </Typography.Text>
           <CaretDownFilled />
         </Flex>
-      </Dropdown>
-    </Tooltip>
+      </Tooltip>
+    </Dropdown>
   );
 };
 

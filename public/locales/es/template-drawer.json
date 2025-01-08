@@ -12,5 +12,8 @@
     "labels": "Etiquetas",
     "tasks": "Tareas",
     "noTemplateSelected": "No hay plantilla seleccionada",
-    "noDescription": "Sin descripción"
+    "noDescription": "Sin descripción",
+    "worklenzTemplates": "Plantillas de Worklenz",
+    "yourTemplatesLibrary": "Tu Biblioteca",
+    "searchTemplates": "Buscar Plantillas"
 }

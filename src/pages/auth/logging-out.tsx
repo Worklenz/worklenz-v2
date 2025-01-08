@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { Card, Flex, Spin, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuthService } from '../../hooks/useAuth';
 import { useMediaQuery } from 'react-responsive';
 import { authApiService } from '@/api/auth/auth.api.service';
 
 const LoggingOutPage = () => {
   const navigate = useNavigate();
-  const auth = useAuth();
-  const { t } = useTranslation('auth-common');
+  const auth = useAuthService();
+  const { t } = useTranslation('auth/auth-common');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
 
   useEffect(() => {

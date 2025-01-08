@@ -1,6 +1,6 @@
 import { ILocalSession } from '@/types/auth/local-session.types';
 import logger from '@/utils/errorLogger';
-import { deleteSession, getSession, hasSession, setSession } from '@/utils/session-helper';
+import { deleteSession, getUserSession, hasSession, setSession } from '@/utils/session-helper';
 import { NavigateFunction } from 'react-router-dom';
 
 class AuthService {
@@ -29,7 +29,7 @@ class AuthService {
   }
 
   public getCurrentSession(): ILocalSession | null {
-    return getSession();
+    return getUserSession();
   }
 
   public isOwnerOrAdmin(): boolean {

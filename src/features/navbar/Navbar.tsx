@@ -19,12 +19,12 @@ import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
 import { useResponsive } from '@/hooks/useResponsive';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
-import { getSession } from '@/utils/session-helper';
-import { useAuth } from '@/hooks/useAuth';
+import { getUserSession } from '@/utils/session-helper';
+import { useAuthService } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
-  const isOwnerOrAdmin = useAuth().isOwnerOrAdmin();
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   const location = useLocation();
   // media queries from useResponsive custom hook

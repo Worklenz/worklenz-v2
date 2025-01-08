@@ -6,9 +6,9 @@ import { ITaskStatus, ITaskStatusCategory } from '@/types/status.types';
 const rootUrl = `${API_BASE_URL}/statuses`;
 
 export const statusApiService = {
-  getStatuses: async (): Promise<IServerResponse<ITaskStatus[]>> => {
+  getStatuses: async (projectId: string): Promise<IServerResponse<ITaskStatus[]>> => {
     const response = await apiClient.get<IServerResponse<ITaskStatus[]>>(
-      `${rootUrl}`
+      `${rootUrl}?project=${projectId}`
     );
     return response.data;
   },

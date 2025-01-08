@@ -3,49 +3,45 @@ import { Link, useLocation } from 'react-router-dom';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { reportingsItems } from '@/lib/reporting/reporting-constants';
+import { useMemo } from 'react';
 
 const ReportingSider = () => {
   const location = useLocation();
-
-  // localization
   const { t } = useTranslation('reporting-sidebar');
 
-  // function to get the active menu key based on the current location
-  const getCurrentActiveKey = () => {
-    const afterWorklenzString = location.pathname?.split(
-      '/worklenz/reporting/'
-    )[1];
-    const pathKey = afterWorklenzString?.split('/')[0];
-    return pathKey;
-  };
-
-  // helper function to generate menu items with submenus
-  const generateMenuItems = (): MenuProps['items'] =>
+  // Memoize the menu items since they only depend on translations
+  const menuItems = useMemo(() => 
     reportingsItems.map((item) => {
       if (item.children) {
         return {
           key: item.key,
-          label: t(`${item.name}Text`),
+          label: t(`${item.name}`),
           children: item.children.map((child) => ({
             key: child.key,
             label: (
               <Link to={`/worklenz/reporting/${child.endpoint}`}>
-                {t(`${child.name}Text`)}
+                {t(`${child.name}`)}
               </Link>
             ),
           })),
         };
-      } else {
-        return {
-          key: item.key,
-          label: (
-            <Link to={`/worklenz/reporting/${item.endpoint}`}>
-              {t(`${item.name}Text`)}
-            </Link>
-          ),
-        };
       }
-    });
+      return {
+        key: item.key,
+        label: (
+          <Link to={`/worklenz/reporting/${item.endpoint}`}>
+            {t(`${item.name}`)}
+          </Link>
+        ),
+      };
+    }),
+  [t]); // Only recompute when translations change
+
+  // Memoize the active key calculation
+  const activeKey = useMemo(() => {
+    const afterWorklenzString = location.pathname?.split('/worklenz/reporting/')[1];
+    return afterWorklenzString?.split('/')[0];
+  }, [location.pathname]);
 
   return (
     <ConfigProvider
@@ -64,8 +60,8 @@ const ReportingSider = () => {
       <Flex gap={24} vertical>
         <Menu
           className="custom-reporting-sider"
-          items={generateMenuItems()}
-          selectedKeys={[getCurrentActiveKey()]}
+          items={menuItems}
+          selectedKeys={[activeKey]}
           mode="inline"
           style={{ width: '100%' }}
         />

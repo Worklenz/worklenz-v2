@@ -69,4 +69,40 @@ export const projectsApiService = {
     const response = await apiClient.get<IServerResponse<IProjectMembersViewModel>>(`${url}`);
     return response.data;
   },
+
+  createProject: async (
+    project: IProjectViewModel
+  ): Promise<IServerResponse<IProjectViewModel>> => {
+    const url = `${rootUrl}`;
+    const response = await apiClient.post<IServerResponse<IProjectViewModel>>(`${url}`, project);
+    return response.data;
+  },
+
+  updateProject: async (
+    id: string,
+    project: IProjectViewModel
+  ): Promise<IServerResponse<IProjectViewModel>> => {
+    const q = toQueryString({current_project_id: id})
+    const url = `${rootUrl}/${id}${q}`;
+    const response = await apiClient.put<IServerResponse<IProjectViewModel>>(`${url}`, project);
+    return response.data;
+  },
+
+  deleteProject: async (id: string): Promise<IServerResponse<IProjectViewModel>> => {
+    const url = `${rootUrl}/${id}`;
+    const response = await apiClient.delete<IServerResponse<IProjectViewModel>>(`${url}`);
+    return response.data;
+  },
+
+  toggleArchiveProject: async (id: string): Promise<IServerResponse<any>> => {
+    const url = `${rootUrl}/archive/${id}`;
+    const response = await apiClient.get<IServerResponse<IProjectViewModel>>(`${url}`);
+    return response.data;
+  },
+
+  toggleArchiveProjectForAll: async (id: string): Promise<IServerResponse<any>> => {
+    const url = `${rootUrl}/archive-all/${id}`;
+    const response = await apiClient.get<IServerResponse<IProjectViewModel>>(`${url}`);
+    return response.data;
+  },
 };

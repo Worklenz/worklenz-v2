@@ -12,8 +12,8 @@ import { projectsApiService } from '@/api/projects/projects.api.service';
 import { useParams } from 'react-router-dom';
 import { projectCommentsApiService } from '@/api/projects/comments/project-comments.api.service';
 import { IProjectUpdateCommentViewModel } from '@/types/project/project.types';
-import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
-import { getSession } from '@/utils/session-helper';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
+import { getUserSession } from '@/utils/session-helper';
 
 const MAX_COMMENT_LENGTH = 2000;
 
@@ -67,7 +67,7 @@ const ProjectViewUpdates = () => {
       
       const body = {  
         project_id: projectId,
-        team_id: getSession()?.team_id,
+        team_id: getUserSession()?.team_id,
         content: commentContent.trim(),
         mentions: selectedMembers.map(member => ({
           id: member.id,
@@ -142,7 +142,7 @@ const ProjectViewUpdates = () => {
                 </Typography.Text>
                 <Tooltip title={comment.created_at}>
                   <Typography.Text style={{ fontSize: 13, color: colors.deepLightGray }}>
-                    {calculateTimeAgo(comment.created_at || '')}
+                    {calculateTimeDifference(comment.created_at || '')}
                   </Typography.Text>
                 </Tooltip>
               </Space>

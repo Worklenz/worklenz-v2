@@ -15,13 +15,13 @@ import {
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthService } from '@/hooks/useAuth';
 import { colors } from '@/styles/colors';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
 import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
 import { toggleUpdateMemberDrawer } from './memberSlice';
-import { calculateTimeAgo } from '@/utils/calculateTimeAgo';
-import { formatDateTime } from '@/utils/format-time-strings';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { IJobTitle } from '@/types/job.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { ITeamMemberCreateRequest } from '@/types/teamMembers/team-member-create-request';
@@ -33,7 +33,7 @@ type UpdateMemberDrawerProps = {
 const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
   const { t } = useTranslation('settings-team-members');
   const dispatch = useAppDispatch();
-  const auth = useAuth();
+  const auth = useAuthService();
   const [form] = Form.useForm();
 
   const [loading, setLoading] = useState(true);
@@ -236,8 +236,8 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                 }}
               >
                 {t('addedText')} 
-                <Tooltip title={formatDateTime(teamMember?.created_at || '')}>
-                  &nbsp;{calculateTimeAgo(teamMember?.created_at || '')}
+                <Tooltip title={formatDateTimeWithLocale(teamMember?.created_at || '')}>
+                  &nbsp;{calculateTimeDifference(teamMember?.created_at || '')}
                 </Tooltip>
               </Typography.Text>
               <Typography.Text
@@ -247,8 +247,8 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                 }}
               >
                 {t('updatedText')}
-                <Tooltip title={formatDateTime(teamMember?.updated_at || '')}>
-                  &nbsp;{calculateTimeAgo(teamMember?.updated_at || '')}
+                <Tooltip title={formatDateTimeWithLocale(teamMember?.updated_at || '')}>
+                  &nbsp;{calculateTimeDifference(teamMember?.updated_at || '')}
                 </Tooltip>
               </Typography.Text>
             </Flex>

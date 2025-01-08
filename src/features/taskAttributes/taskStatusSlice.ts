@@ -17,15 +17,15 @@ const initialState: IStatusState = {
   statusCategories: [],
   loading: false,
   error: null,
-  initialized: false
+  initialized: false,
 };
 
 // Create async thunk for fetching statuses
 export const fetchStatuses = createAsyncThunk(
   'status/fetchStatuses',
-  async (_, { rejectWithValue }) => {
+  async (projectId: string, { rejectWithValue }) => {
     try {
-      const response = await statusApiService.getStatuses();
+      const response = await statusApiService.getStatuses(projectId);
       return response.body;
     } catch (error) {
       logger.error('Fetch Statuses', error);
@@ -82,11 +82,11 @@ const taskStatusSlice = createSlice({
     },
     setCategorizedStatuses: (state, action: PayloadAction<ITaskStatusCategory[]>) => {
       state.statusCategories = action.payload;
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchStatuses.pending, (state) => {
+      .addCase(fetchStatuses.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -100,21 +100,25 @@ const taskStatusSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(fetchStatusesCategories.pending, (state) => {
+      .addCase(fetchStatusesCategories.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchStatusesCategories.fulfilled, (state, action: PayloadAction<ITaskStatusCategory[]>) => {
-        state.loading = false;
-        state.statusCategories = action.payload;
-        state.error = null;
-      })
+      .addCase(
+        fetchStatusesCategories.fulfilled,
+        (state, action: PayloadAction<ITaskStatusCategory[]>) => {
+          state.loading = false;
+          state.statusCategories = action.payload;
+          state.error = null;
+        }
+      )
       .addCase(fetchStatusesCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
-  }
+  },
 });
 
-export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses } = taskStatusSlice.actions;
+export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses } =
+  taskStatusSlice.actions;
 export default taskStatusSlice.reducer;

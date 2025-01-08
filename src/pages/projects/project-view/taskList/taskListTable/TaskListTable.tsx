@@ -183,32 +183,25 @@ const TaskListTable = ({
       // description column
       case 'description':
         return (
-          <Typography.Paragraph
-            ellipsis={{ expandable: false }}
-            style={{ width: 260, marginBlockEnd: 0 }}
-          >
-            {task.description}
-          </Typography.Paragraph>
+          <div style={{ width: 260 }}>
+            {/* <Typography.Paragraph ellipsis={{ expandable: false }} style={{ marginBlockEnd: 0 }} >
+              {task.description || ''}
+            </Typography.Paragraph> */}
+          </div>
         );
 
       // progress column
       case 'progress': {
-        return (
-          <div></div>
-        );
+        return <div></div>;
       }
 
       // members column
       case 'members':
-        return (
-          <div></div>
-        );
+        return <div></div>;
 
       // labels column
       case 'labels':
-        return (
-          <div></div>
-        );
+        return <div></div>;
 
       // phase column
       case 'phases':

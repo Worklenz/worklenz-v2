@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Flex, Form, Input, Space, Typography, message } from 'antd';
 import googleIcon from '../../assets/images/google-icon.png';
@@ -13,14 +13,19 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { signUp } from '@/features/auth/authSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_signup_page_visit, evt_signup_with_email_click, evt_signup_with_google_click } from '@/shared/worklenz-analytics-events';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import logger from '@/utils/errorLogger';
+import alertService from '@/services/alerts/alertService';
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
 
-  const { t } = useTranslation('signup');
+  const { t } = useTranslation('auth/signup');
   const isMobile = useMediaQuery({ query: '(max-width: 576px)' });
+
+  useDocumentTitle('Signup');
 
   const [loading, setLoading] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -44,6 +49,18 @@ const SignupPage = () => {
     });
   }, [trackMixpanelEvent]);
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/api.js?render=${import.meta.env.VITE_RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const getInvitationQueryParams = () => {
     const { teamId, teamMemberId, projectId } = urlParams;
     return Object.entries({ team: teamId, teamMember: teamMemberId, project: projectId })
@@ -52,9 +69,35 @@ const SignupPage = () => {
       .join('&');
   };
 
+  const getRecaptchaToken = async () => {
+    return new Promise<string>((resolve) => {
+      window.grecaptcha.ready(() => {
+        window.grecaptcha.execute(import.meta.env.VITE_RECAPTCHA_SITE_KEY, { action: 'signup' })
+          .then((token: string) => {
+            resolve(token);
+          });
+      });
+    });
+  };
+
   const onFinish = async (values: IUserSignUpRequest) => {
     try {
       setValidating(true);
+      const token = await getRecaptchaToken(); 
+
+      if (!token) {
+        logger.error('Failed to get reCAPTCHA token');
+        alertService.error(t('reCAPTCHAVerificationError'), t('reCAPTCHAVerificationErrorMessage'));
+        return;
+      }
+
+      const veriftToken = await authApiService.verifyRecaptchaToken(token);
+
+      if (!veriftToken.done) {
+        logger.error('Failed to verify reCAPTCHA token');
+        return;
+      }      
+      
       const body = {
         name: values.name,
         email: values.email,
@@ -82,7 +125,9 @@ const SignupPage = () => {
       const result = await dispatch(signUp(body)).unwrap();
       if (result?.authenticated) {
         message.success('Successfully signed up!');
-        navigate('/worklenz/setup', { replace: true });
+        setTimeout(() => {
+          navigate('/auth/authenticating');
+        }, 1000);
       }
     } catch (error: any) {
       message.error(error?.response?.data?.message || 'Failed to sign up');

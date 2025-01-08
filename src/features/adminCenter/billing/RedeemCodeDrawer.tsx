@@ -21,7 +21,6 @@ const RedeemCodeDrawer: React.FC = () => {
   };
 
   const handleFormSubmit = (values: any) => {
-    console.log(values);
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);

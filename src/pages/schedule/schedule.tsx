@@ -47,7 +47,6 @@ const Schedule: React.FC = () => {
   const handleToday = () => {
     const today = new Date();
     setDate(today);
-    console.log('Today:', today);
   };
 
   return (

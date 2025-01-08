@@ -29,8 +29,6 @@ const MembersReportsActivityLogsTab = ({
     );
   }, []);
 
-  console.log(activityLogsData);
-
   return (
     <>
       {activityLogsData.length > 0 ? (

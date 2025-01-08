@@ -1,73 +1,140 @@
-import React from 'react';
-import { useAppSelector } from '@/hooks/useAppSelector';
-import { TaskType } from '@/types/task.types';
+import React, { useEffect } from 'react';
+import { DndContext, DragEndEvent, DragOverEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+
+import { useAppSelector } from '../../../../hooks/useAppSelector';
 import TaskListFilters from '../taskList/taskListFilters/TaskListFilters';
-import { Button } from 'antd';
+import { Button, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import CommonStatusSection from '../../../../components/board/commonStatusSection/CommonStatusSection';
 import { useMediaQuery } from 'react-responsive';
-import { toggleDrawer } from '@features/projects/status/StatusSlice';
+import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
+import KanbanGroup from '@/components/board/kanban-group/kanban-group';
+import { ITaskListConfigV2 } from '@/types/tasks/taskList.types';
+import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
+import { fetchTaskGroups } from '@/features/tasks/taskSlice';
 
 const ProjectViewBoard: React.FC = () => {
-  const dataSource: TaskType[] = useAppSelector(
-    (state) => state.taskReducer.tasks
-  );
-  const setOfStatus = useAppSelector((state) => state.statusReducer.status);
   const dispatch = useDispatch();
-  const isTablet = useMediaQuery({ query: '(max-width: 1275px)' });
+
+  const { taskGroups, loadingGroups } = useAppSelector(state => state.taskReducer);
+  const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
+  const groupBy = useAppSelector(state => state.groupByFilterDropdownReducer.groupBy);
+  const projectId = useAppSelector(state => state.projectReducer.projectId);
+
+  useEffect(() => {
+    console.log('projectId', projectId);
+    // if (projectId) {
+    //   const config: ITaskListConfigV2 = {
+    //     id: projectId,
+    //     field: 'id',
+    //     order: 'desc',
+    //     search: '',
+    //     statuses: '',
+    //     members: '',
+    //     projects: '',
+    //     isSubtasksInclude: false,
+    //   };
+    //   dispatch(fetchTaskGroups(config) as any);
+    // }
+    // if (!statusCategories.length) {
+    //   dispatch(fetchStatusesCategories() as any);
+    // }
+  }, [dispatch, projectId, groupBy]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeTask = active.data.current?.task;
+    const overId = over.id;
+
+    // Find which group the task is being dragged over
+    const targetGroup = taskGroups.find(group => 
+      group.id === overId || group.tasks.some(task => task.id === overId)
+    );
+
+    if (targetGroup && activeTask) {
+      // Here you would dispatch an action to update the task's status
+      // For example:
+      // dispatch(updateTaskStatus({ taskId: activeTask.id, newStatus: targetGroup.id }));
+      console.log('Moving task', activeTask.id, 'to group', targetGroup.id);
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeTask = active.data.current?.task;
+    const overId = over.id;
+
+    // Similar to handleDragOver, but this is where you'd make the final update
+    const targetGroup = taskGroups.find(group => 
+      group.id === overId || group.tasks.some(task => task.id === overId)
+    );
+
+    if (targetGroup && activeTask) {
+      // Make the final update to your backend/state
+      console.log('Final move of task', activeTask.id, 'to group', targetGroup.id);
+    }
+  };
 
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
       <TaskListFilters position={'board'} />
-      <div
-        style={{
-          width: '100%',
-          padding: '0 12px',
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          marginTop: '14px',
-        }}
-      >
+
+      <Skeleton active loading={loadingGroups}>
         <div
           style={{
-            paddingTop: '6px',
+            width: '100%',
+            padding: '0 12px',
             display: 'flex',
-            justifyContent:
-              setOfStatus.length > 3
-                ? 'flex-start'
-                : isTablet
-                  ? 'flex-start'
-                  : 'center',
-            gap: '10px',
-            overflowX: 'scroll',
-            paddingBottom: '10px',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            marginTop: '14px',
           }}
         >
-          {setOfStatus?.map((status) => {
-            // Filter tasks based on the current status
-            const filteredTasks = dataSource.filter(
-              (task) => task.status === status.name
-            );
-            return (
-              <CommonStatusSection
-                key={status.name}
-                status={status.name}
-                category={status.category}
-                id={status.id}
-                dataSource={filteredTasks}
-                statusId={''}
+          <DndContext 
+            sensors={sensors}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            <div
+              style={{
+                paddingTop: '6px',
+                display: 'flex',
+                gap: '10px',
+                overflowX: 'scroll',
+                paddingBottom: '10px',
+              }}
+            >
+              {taskGroups.map(group => (
+                <KanbanGroup
+                  key={group.id}
+                  title={group.name}
+                  tasks={group.tasks}
+                  id={group.id}
+                  color={group.color_code}
+                />
+              ))}
+
+              <Button
+                icon={<PlusOutlined />}
+                onClick={() => dispatch(toggleDrawer())}
+                style={{ flexShrink: 0 }}
               />
-            );
-          })}
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => dispatch(toggleDrawer())}
-            style={{ flexShrink: 0 }}
-          />
+            </div>
+          </DndContext>
         </div>
-      </div>
+      </Skeleton>
     </div>
   );
 };

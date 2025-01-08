@@ -4,11 +4,12 @@ import { TaskType } from '@/types/task.types';
 import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import './task-list-table-wrapper.css';
-import TaskListTable from '../task-list-table/task-list-table';
+import TaskListTable from '../task-list-table-old/task-list-table-old';
 import { MenuProps } from 'antd/lib';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
+import TaskListCustom from '../task-list-custom';
 
 type TaskListTableWrapperProps = {
   taskList: ITaskListGroup;
@@ -164,13 +165,13 @@ const TaskListTableWrapper = ({
           bordered={false}
           ghost={true}
           expandIcon={() => null}
-          activeKey={isExpanded ? '1' : undefined}
+          activeKey={isExpanded ? (groupId || '1') : undefined}
           onChange={handlToggleExpand}
           items={[
             {
-              key: '1',
+              key: groupId || '1',
               className: `custom-collapse-content-box relative after:content after:absolute after:h-full after:w-1 ${color} after:z-10 after:top-0 after:left-0`,
-              children: <TaskListTable taskList={taskList} tableId={groupId} key={groupId}/>,
+              children: <TaskListCustom key={groupId} groupId={groupId} tasks={taskList.tasks} color={color || ''} />,
             },
           ]}
         />

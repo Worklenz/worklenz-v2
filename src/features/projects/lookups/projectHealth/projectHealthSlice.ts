@@ -5,7 +5,7 @@ import { projectHealthApiService } from '@/api/projects/lookups/projectHealth.ap
 
 type ProjectHealthState = {
   initialized: boolean;
-  healths: IProjectHealth[];
+  projectHealths: IProjectHealth[];
   loading: boolean;
 };
 
@@ -27,7 +27,7 @@ export const fetchProjectHealth = createAsyncThunk(
 );
 
 const initialState: ProjectHealthState = {
-  healths: [],
+  projectHealths: [],
   initialized: false,
   loading: false,
 };
@@ -42,7 +42,7 @@ const projectHealthSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchProjectHealth.fulfilled, (state, action) => {
-        state.healths = action.payload;
+        state.projectHealths = action.payload;
         state.loading = false;
         state.initialized = true;
       })
