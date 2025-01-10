@@ -10,16 +10,11 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';
 import logger from '@/utils/errorLogger';
 import { IRPTTeam } from '@/types/reporting/reporting.types';
+import { IChatMessage } from '@/types/aiChat/ai-chat.types';
 import { Prompts } from '@ant-design/x';
+import apiAiChatClient from '@/api/chat-api-client';
 
-
-
-interface ChatMessage {
-    role: 'system' | 'user' | 'assistant';
-    content: string;
-}
-
-const initialMessages: ChatMessage[] = [
+const initialMessages: IChatMessage[] = [
     {
         role: "assistant",
         content: "How can I help you today?"
@@ -28,7 +23,7 @@ const initialMessages: ChatMessage[] = [
 
 const SmartChatReport = () => {
     const [messageInput, setMessageInput] = useState('');
-    const [chatMessages, setChatMessages] = useState<ChatMessage[]>(initialMessages);
+    const [chatMessages, setChatMessages] = useState<IChatMessage[]>(initialMessages);
     const [loading, setLoading] = useState(false);
     const [renderKey, setRenderKey] = useState(0);
     const [lastResponseLength, setLastResponseLength] = useState(0);
@@ -72,14 +67,9 @@ const SmartChatReport = () => {
     const handleSend = async () => {
         if (!messageInput.trim()) return;
 
-        const userMessage: ChatMessage = {
+        const userMessage: IChatMessage = {
             role: "user",
             content: messageInput
-        };
-        const systemMessage: ChatMessage = {
-            role: "system",
-            content: `You are a helpful assistant in worklenz. You can ask me anything about your projects, team members, or time reports. use markdown to format your text.
-            team in orgamization: ${JSON.stringify(teams)}`
         };
 
         setChatMessages(prev => [...prev, userMessage]);
@@ -87,24 +77,14 @@ const SmartChatReport = () => {
         setMessageInput('');
         try {
 
-            const updatedChatMessages = [systemMessage, ...chatMessages, userMessage];
+            const updatedChatMessages = [...chatMessages, userMessage];
+            
             const requestBody = {
-                input_text: updatedChatMessages
+                chat: updatedChatMessages,
+                teams: JSON.stringify(teams)
             };
-            console.log('requestBody', requestBody);
-            const config = {
-                method: 'post',
-                url: 'http://127.0.0.1:8000/chat',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                timeout: 600000,
-                data: {
-                    input_text: JSON.stringify(requestBody)
-                }
-            };
-
-            const response = await axios.request(config);
+            console.log(requestBody)
+            const response = await apiAiChatClient.post('/chat', requestBody);
             const responseText = `${response.data.response}`.trim();
             setLastResponseLength(responseText.length);
             setTypingText(responseText);
@@ -113,7 +93,7 @@ const SmartChatReport = () => {
             const typingDelay = Math.min(responseText.length * 100 + 2000, 10000);
 
             setTimeout(() => {
-                const aiMessage: ChatMessage = {
+                const aiMessage: IChatMessage = {
                     role: "assistant",
                     content: responseText
                 };
@@ -123,7 +103,7 @@ const SmartChatReport = () => {
 
         } catch (error) {
             logger.error('handleSend', error);
-            const errorMessage: ChatMessage = {
+            const errorMessage: IChatMessage = {
                 role: "assistant",
                 content: "Sorry, there was an error processing your request."
             };
@@ -147,7 +127,9 @@ const SmartChatReport = () => {
 
     return (
         <Flex vertical>
-            <Flex gap="middle" style={{ height: '50vh', overflowY: 'auto' }} vertical>
+            <Flex gap="middle" 
+            style={{ height: '70vh', overflowY: 'auto' }}
+            vertical>
                 {chatMessages.filter((message) => message.role !== "system").map((message, index) => (
                     <Bubble
                         key={`${message.role}-${index}-${renderKey}`}
