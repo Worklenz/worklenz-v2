@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fooAvatar, barAvatar } from './smart-chat-report-styles';
 import axios from 'axios';
-import { UserOutlined } from '@ant-design/icons';
+import { OpenAIFilled  } from '@ant-design/icons';
 import { Flex, Space, Spin, Typography } from 'antd';
 import { Bubble, BubbleProps, Sender } from '@ant-design/x';
 import Markdownit from 'markdown-it';
@@ -12,7 +12,7 @@ import logger from '@/utils/errorLogger';
 import { IRPTTeam } from '@/types/reporting/reporting.types';
 import { IChatMessage } from '@/types/aiChat/ai-chat.types';
 import { Prompts } from '@ant-design/x';
-import apiAiChatClient from '@/api/chat-api-client';
+import apiAiChatClient from '@/api/api-aichat-client';
 
 const initialMessages: IChatMessage[] = [
     {
@@ -30,6 +30,8 @@ const SmartChatReport = () => {
     const [typingText, setTypingText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [teams, setTeams] = useState<IRPTTeam[]>([]);
+    const [members, setMembers] = useState({});
+    const [organization, setOrganization] = useState({});
     const [showPrompts, setShowPrompts] = useState(true);
 
     const md = Markdownit({ html: true, breaks: true });
@@ -48,6 +50,32 @@ const SmartChatReport = () => {
             setLoading(false);
         }
     };
+
+    const getInfo = async () => {
+        setLoading(true);
+        try {
+            const { done, body } = await reportingApiService.getInfo();
+            if (done) {
+                setOrganization(body);
+            }
+        } catch (error) {
+            logger.error('getInfo', error);
+        } finally {
+            setLoading(false);
+    }};
+
+    const getMembers = async () => {
+        setLoading(true);
+        try {
+            const { done, body } = await reportingApiService.getMembers(includeArchivedProjects);
+            if (done) {
+                setMembers(body);
+            }
+        } catch (error) {
+            logger.error('getMembers', error);
+        } finally {
+            setLoading(false);
+    }};
 
     React.useEffect(() => {
         if (lastResponseLength > 0) {
@@ -81,7 +109,11 @@ const SmartChatReport = () => {
             
             const requestBody = {
                 chat: updatedChatMessages,
-                teams: JSON.stringify(teams)
+                data: {
+                    org: JSON.stringify(organization),
+                    teams: JSON.stringify(teams),
+                    selectedTeamMembers: JSON.stringify(members),
+                },
             };
             console.log(requestBody)
             const response = await apiAiChatClient.post('/chat', requestBody);
@@ -115,6 +147,8 @@ const SmartChatReport = () => {
 
     useEffect(() => {
         getTeams();
+        getInfo();
+        getMembers();
     }, [includeArchivedProjects]);
 
     const memoizedRenderMarkdown = React.useMemo(() => {
@@ -128,7 +162,7 @@ const SmartChatReport = () => {
     return (
         <Flex vertical>
             <Flex gap="middle" 
-            style={{ height: '70vh', overflowY: 'auto' }}
+            style={{ height: '70vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
             vertical>
                 {chatMessages.filter((message) => message.role !== "system").map((message, index) => (
                     <Bubble
@@ -136,7 +170,8 @@ const SmartChatReport = () => {
                         placement={message.role === "user" ? "end" : "start"}
                         content={message.content}
                         messageRender={memoizedRenderMarkdown}
-                        avatar={{ icon: <UserOutlined />, style: message.role === "user" ? fooAvatar : barAvatar }}
+                        {...(message.role === "assistant" && { avatar: { icon: <OpenAIFilled /> } })}
+
                     />
                 ))}
                 {isTyping && (
@@ -145,7 +180,7 @@ const SmartChatReport = () => {
                         placement="start"
                         content={typingText}
                         messageRender={memoizedRenderMarkdown}
-                        avatar={{ icon: <UserOutlined />, style: barAvatar }}
+                        avatar={ {icon: <OpenAIFilled />} }
                     />
                 )}
                 {loading && <Space>
