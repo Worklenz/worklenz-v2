@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { fooAvatar, barAvatar } from './smart-chat-report-styles';
-import axios from 'axios';
 import { OpenAIFilled  } from '@ant-design/icons';
-import { Flex, Space, Spin, Typography } from 'antd';
+import { Flex, PaginationProps, Space, Spin, Typography } from 'antd';
 import { Bubble, BubbleProps, Sender } from '@ant-design/x';
 import Markdownit from 'markdown-it';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';
 import logger from '@/utils/errorLogger';
