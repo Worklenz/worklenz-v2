@@ -1,10 +1,4 @@
-import {
-  Button,
-  DatePicker,
-  DatePickerProps,
-  Select,
-  Space,
-} from 'antd';
+import { Button, DatePicker, DatePickerProps, Flex, Select, Space } from 'antd';
 import React, { useState } from 'react';
 import Team from '../../components/schedule/team/Team';
 import { SettingOutlined } from '@ant-design/icons';
@@ -32,7 +26,7 @@ const PickerWithType = ({
 const Schedule: React.FC = () => {
   const [type, setType] = useState<PickerType>('week');
   const [date, setDate] = useState<Date | null>(null);
-  const {t} = useTranslation('schedule');
+  const { t } = useTranslation('schedule');
 
   const dispatch = useDispatch();
 
@@ -44,9 +38,13 @@ const Schedule: React.FC = () => {
 
     // If 'Month' is selected, default to the first day of the selected month
     if (type === 'month') {
-      selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+      selectedDate = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        1
+      );
     }
-    
+
     setDate(selectedDate);
   };
 
@@ -58,8 +56,15 @@ const Schedule: React.FC = () => {
 
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingTop: '25px', paddingBottom: '20px' }}>
+      <Flex align="center" justify="space-between">
+        <Flex
+          gap={16}
+          align="center"
+          style={{
+            paddingTop: '25px',
+            paddingBottom: '20px',
+          }}
+        >
           <Button onClick={handleToday}>{t('today')}</Button>
           <Space>
             <Select
@@ -69,20 +74,22 @@ const Schedule: React.FC = () => {
               <Option value="week">{t('week')}</Option>
               <Option value="month">{t('month')}</Option>
             </Select>
-            <PickerWithType
-              type={type}
-              onChange={handleDateChange}
-            />
+            <PickerWithType type={type} onChange={handleDateChange} />
           </Space>
-        </div>
-        <Button size='small' shape='circle' onClick={() => dispatch(toggleSettingsDrawer())}>
+        </Flex>
+        <Button
+          size="small"
+          shape="circle"
+          onClick={() => dispatch(toggleSettingsDrawer())}
+        >
           <SettingOutlined />
         </Button>
-      </div>
+      </Flex>
 
-      <div>
+      <Flex vertical gap={24}>
         <Team date={date} />
-      </div>
+      </Flex>
+
       <ScheduleSettingsDrawer />
     </div>
   );

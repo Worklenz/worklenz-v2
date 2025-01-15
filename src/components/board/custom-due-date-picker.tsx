@@ -56,7 +56,10 @@ const CustomDueDatePicker = ({
           width: 26,
           height: 26,
         }}
-        onClick={() => setIsDatePickerOpen(true)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsDatePickerOpen(true);
+        }}
         icon={<CalendarOutlined />}
       />
     </Flex>

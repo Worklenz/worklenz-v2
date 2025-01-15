@@ -22,7 +22,7 @@ const BoardCreateSectionCard = () => {
     dispatch(
       addBoardSectionCard({
         id: nanoid(),
-        name: 'New Section',
+        name: 'Untitled section',
         colorCode: '#d8d7d8',
         colorCodeDark: '#989898',
       })

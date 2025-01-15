@@ -18,5 +18,6 @@
   "assignToMe": "Assign to me",
   "archive": "Archive",
 
-  "newTaskNamePlaceholder": "Write a task Name"
+  "newTaskNamePlaceholder": "Write a task Name",
+  "newSubtaskNamePlaceholder": "Write a subtask Name"
 }

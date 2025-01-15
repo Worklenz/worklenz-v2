@@ -41,6 +41,7 @@ const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
           width: 26,
           height: 26,
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         <AddMembersDropdown />
       </Button>
@@ -56,6 +57,7 @@ const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
         width: 26,
         height: 26,
       }}
+      onClick={(e) => e.stopPropagation()}
     >
       <AddMembersDropdown />
     </Button>

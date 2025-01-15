@@ -1,5 +1,5 @@
-import { Flex, Input } from 'antd';
-import React, { useState } from 'react';
+import { Button, Flex, Input } from 'antd';
+import React, { useRef, useState } from 'react';
 import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import {
   addTaskCardToTheBottom,
@@ -8,9 +8,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
 import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import PriorityDropdown from '../../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
+// import PriorityDropdown from '../../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
 import CustomDueDatePicker from '../../../../../../components/board/custom-due-date-picker';
 import { Dayjs } from 'dayjs';
+import { nanoid } from '@reduxjs/toolkit';
+import AddMembersDropdown from '../../../../../../components/addMembersDropdown/AddMembersDropdown';
 
 type BoardViewCreateTaskCardProps = {
   position: 'top' | 'bottom';
@@ -26,6 +28,8 @@ const BoardViewCreateTaskCard = ({
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [dueDate, setDueDate] = useState<Dayjs | null>(null);
 
+  const cardRef = useRef<HTMLDivElement>(null);
+
   //   localization
   const { t } = useTranslation('kanbanBoard');
 
@@ -40,11 +44,15 @@ const BoardViewCreateTaskCard = ({
       dispatch(
         addTaskCardToTheTop({
           sectionId: sectionId,
-          task: { name: newTaskName.trim() },
+          task: {
+            name: newTaskName.trim(),
+            end_date: dueDate,
+          },
         })
       );
       setNewTaskName('');
       setShowNewCard(true);
+      setDueDate(null);
     }
   };
 
@@ -54,21 +62,30 @@ const BoardViewCreateTaskCard = ({
       dispatch(
         addTaskCardToTheBottom({
           sectionId: sectionId,
-          task: { name: newTaskName.trim() },
+          task: {
+            id: nanoid(),
+            name: newTaskName.trim(),
+            end_date: dueDate,
+          },
         })
       );
       setNewTaskName('');
       setShowNewCard(true);
+      setDueDate(null);
     }
   };
 
-  const handleCancelNewCard = () => {
-    setNewTaskName('');
-    setShowNewCard(false);
+  const handleCancelNewCard = (e: React.FocusEvent<HTMLDivElement>) => {
+    if (cardRef.current && !cardRef.current.contains(e.relatedTarget)) {
+      setNewTaskName('');
+      setShowNewCard(false);
+      setDueDate(null);
+    }
   };
 
   return (
     <Flex
+      ref={cardRef}
       vertical
       gap={12}
       style={{
@@ -104,7 +121,23 @@ const BoardViewCreateTaskCard = ({
         }}
       />
 
-      <CustomDueDatePicker dueDate={dueDate} onDateChange={setDueDate} />
+      <Flex gap={8} align="center">
+        <CustomDueDatePicker dueDate={dueDate} onDateChange={setDueDate} />
+
+        <Button
+          shape="circle"
+          type="dashed"
+          size="small"
+          style={{
+            background: 'transparent',
+            boxShadow: 'none',
+            width: 26,
+            height: 26,
+          }}
+        >
+          <AddMembersDropdown />
+        </Button>
+      </Flex>
     </Flex>
   );
 };

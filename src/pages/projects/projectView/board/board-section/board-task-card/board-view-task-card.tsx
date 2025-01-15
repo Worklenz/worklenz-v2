@@ -25,6 +25,7 @@ import {
   CaretRightFilled,
   CaretDownFilled,
   ExclamationCircleFilled,
+  PlusOutlined,
 } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +36,12 @@ import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
 import CustomAvatarGroup from '../../../../../../components/board/custom-avatar-group';
 import CustomDueDatePicker from '../../../../../../components/board/custom-due-date-picker';
 import { colors } from '../../../../../../styles/colors';
-import { deleteBoardTask } from '../../../../../../features/board/board-slice';
+import {
+  deleteBoardTask,
+  setSelectedTaskId,
+} from '../../../../../../features/board/board-slice';
+import { toggleUpdateTaskDrawer } from '../../../../../../features/tasks/taskSlice';
+import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
 
 const BoardViewTaskCard = ({
   task,
@@ -45,6 +51,7 @@ const BoardViewTaskCard = ({
   sectionId: string;
 }) => {
   const [isSubTaskShow, setIsSubTaskShow] = useState(false);
+  const [showNewSubtaskCard, setShowNewSubtaskCard] = useState(false);
   const [dueDate, setDueDate] = useState<Dayjs | null>(
     task?.end_date ? dayjs(task?.end_date) : null
   );
@@ -56,6 +63,12 @@ const BoardViewTaskCard = ({
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
+
+  // function to onClick card
+  const handleCardClick = (id: string) => {
+    dispatch(setSelectedTaskId(id));
+    dispatch(toggleUpdateTaskDrawer());
+  };
 
   const items: MenuProps['items'] = [
     {
@@ -111,7 +124,8 @@ const BoardViewTaskCard = ({
           cursor: 'pointer',
           overflow: 'hidden',
         }}
-        className={`outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline`}
+        className={`group outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline`}
+        onClick={() => handleCardClick(task.id)}
       >
         {/* Labels and Progress */}
         <Flex align="center" justify="space-between">
@@ -178,8 +192,6 @@ const BoardViewTaskCard = ({
           </Typography.Text>
         </Flex>
 
-        {/* Subtask Section */}
-
         <Flex vertical gap={8}>
           <Flex
             align="center"
@@ -197,34 +209,37 @@ const BoardViewTaskCard = ({
                 onDateChange={setDueDate}
               />
 
-              {task?.sub_tasks_count > 0 && (
-                <Button
-                  onClick={() => setIsSubTaskShow((prev) => !prev)}
-                  size="small"
+              {/* Subtask Section */}
+
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsSubTaskShow((prev) => !prev);
+                }}
+                size="small"
+                style={{
+                  padding: 0,
+                }}
+                type="text"
+              >
+                <Tag
+                  bordered={false}
                   style={{
-                    padding: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    margin: 0,
+                    backgroundColor: themeWiseColor(
+                      'white',
+                      '#1e1e1e',
+                      themeMode
+                    ),
                   }}
-                  type="text"
                 >
-                  <Tag
-                    bordered={false}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      margin: 0,
-                      backgroundColor: themeWiseColor(
-                        'white',
-                        '#1e1e1e',
-                        themeMode
-                      ),
-                    }}
-                  >
-                    <ForkOutlined rotate={90} />
-                    <span>{task.sub_tasks_count}</span>
-                    {isSubTaskShow ? <CaretDownFilled /> : <CaretRightFilled />}
-                  </Tag>
-                </Button>
-              )}
+                  <ForkOutlined rotate={90} />
+                  <span>{task.sub_tasks_count}</span>
+                  {isSubTaskShow ? <CaretDownFilled /> : <CaretRightFilled />}
+                </Tag>
+              </Button>
             </Flex>
           </Flex>
 
@@ -232,10 +247,34 @@ const BoardViewTaskCard = ({
             <Flex vertical>
               <Divider style={{ marginBlock: 0 }} />
               <List>
-                {task?.sub_tasks.map((subtask: any) => (
-                  <BoardSubTaskCard subtask={subtask} />
-                ))}
+                {task?.sub_tasks &&
+                  task?.sub_tasks.map((subtask: any) => (
+                    <BoardSubTaskCard subtask={subtask} />
+                  ))}
+
+                {showNewSubtaskCard && (
+                  <BoardCreateSubtaskCard
+                    sectionId={sectionId}
+                    taskId={task.id}
+                    setShowNewSubtaskCard={setShowNewSubtaskCard}
+                  />
+                )}
               </List>
+              <Button
+                type="text"
+                style={{
+                  width: 'fit-content',
+                  borderRadius: 6,
+                  boxShadow: 'none',
+                }}
+                icon={<PlusOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowNewSubtaskCard(true);
+                }}
+              >
+                Add Subtask
+              </Button>
             </Flex>
           )}
         </Flex>

@@ -5,6 +5,8 @@ type BoardState = {
   taskList: any[];
   isLoading: boolean;
   error: string | null;
+  editableSectionId: string | null;
+  selectedTaskId: string | null;
 };
 
 const initialState: BoardState = {
@@ -12,6 +14,8 @@ const initialState: BoardState = {
   group: 'status',
   isLoading: false,
   error: null,
+  editableSectionId: null,
+  selectedTaskId: null,
 };
 
 // async thunk for fetching members data
@@ -28,11 +32,15 @@ const boardSlice = createSlice({
   name: 'boardReducer',
   initialState,
   reducers: {
-    setGroup(state, action: PayloadAction<BoardState['group']>) {
+    setGroup: (state, action: PayloadAction<BoardState['group']>) => {
       state.group = action.payload;
     },
 
-    addBoardSectionCard(
+    setSelectedTaskId: (state, action: PayloadAction<string>) => {
+      state.selectedTaskId = action.payload;
+    },
+
+    addBoardSectionCard: (
       state,
       action: PayloadAction<{
         id: string;
@@ -40,7 +48,7 @@ const boardSlice = createSlice({
         colorCode: string;
         colorCodeDark: string;
       }>
-    ) {
+    ) => {
       const newSection = {
         id: action.payload.id,
         name: action.payload.name,
@@ -50,12 +58,18 @@ const boardSlice = createSlice({
         tasks: [],
       };
       state.taskList.push(newSection);
+
+      state.editableSectionId = newSection.id;
     },
 
-    addTaskCardToTheTop(
+    setEditableSection: (state, action) => {
+      state.editableSectionId = action.payload;
+    },
+
+    addTaskCardToTheTop: (
       state,
       action: PayloadAction<{ sectionId: string; task: any }>
-    ) {
+    ) => {
       const section = state.taskList.find(
         (sec) => sec.id === action.payload.sectionId
       );
@@ -64,10 +78,10 @@ const boardSlice = createSlice({
       }
     },
 
-    addTaskCardToTheBottom(
+    addTaskCardToTheBottom: (
       state,
       action: PayloadAction<{ sectionId: string; task: any }>
-    ) {
+    ) => {
       const section = state.taskList.find(
         (sec) => sec.id === action.payload.sectionId
       );
@@ -76,10 +90,29 @@ const boardSlice = createSlice({
       }
     },
 
-    deleteBoardTask(
+    addSubtask: (
+      state,
+      action: PayloadAction<{ sectionId: string; taskId: string; subtask: any }>
+    ) => {
+      const section = state.taskList.find(
+        (sec) => sec.id === action.payload.sectionId
+      );
+      if (section) {
+        const task = section.tasks.find(
+          (task: any) => task.id === action.payload.taskId
+        );
+
+        if (task) {
+          task.sub_tasks.push(action.payload.subtask);
+          task.sub_tasks_count++;
+        }
+      }
+    },
+
+    deleteBoardTask: (
       state,
       action: PayloadAction<{ sectionId: string; taskId: string }>
-    ) {
+    ) => {
       const section = state.taskList.find(
         (sec) => sec.id === action.payload.sectionId
       );
@@ -90,7 +123,7 @@ const boardSlice = createSlice({
       }
     },
 
-    deleteSection(state, action: PayloadAction<{ sectionId: string }>) {
+    deleteSection: (state, action: PayloadAction<{ sectionId: string }>) => {
       state.taskList = state.taskList.filter(
         (section) => section.id !== action.payload.sectionId
       );
@@ -116,9 +149,12 @@ const boardSlice = createSlice({
 export const {
   setGroup,
   addBoardSectionCard,
+  setEditableSection,
   addTaskCardToTheTop,
   addTaskCardToTheBottom,
+  addSubtask,
   deleteSection,
   deleteBoardTask,
+  setSelectedTaskId,
 } = boardSlice.actions;
 export default boardSlice.reducer;

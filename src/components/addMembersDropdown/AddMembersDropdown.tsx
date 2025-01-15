@@ -8,11 +8,7 @@ import {
   Menu,
   Typography,
 } from 'antd';
-import {
-  PlusOutlined,
-  UserAddOutlined,
-  UsergroupAddOutlined,
-} from '@ant-design/icons';
+import { UserAddOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import './AddMembersDropdown.css';
 import { avatarNamesMap } from '../../shared/constants';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -36,7 +32,7 @@ const AddMembersDropdown: React.FC = () => {
       label: (
         <Checkbox
           checked={checkedMembers.includes('Invite Member 1')}
-          onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
+          onClick={(e) => e.stopPropagation()}
           onChange={() => handleCheck('Invite Member 1')}
         >
           <div

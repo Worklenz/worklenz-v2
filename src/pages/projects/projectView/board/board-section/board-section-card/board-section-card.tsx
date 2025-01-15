@@ -52,7 +52,7 @@ const BoardSectionCard = ({ datasource }: { datasource: any }) => {
     >
       <BoardSectionCardHeader
         id={datasource.id}
-        name={datasource.name}
+        name={name}
         tasksCount={datasource?.total_tasks_count || datasource?.tasks.length}
         isLoading={isLoading}
         setName={setName}
@@ -76,7 +76,9 @@ const BoardSectionCard = ({ datasource }: { datasource: any }) => {
           overflowY: 'scroll',
           padding: datasource?.tasks.length <= 0 ? 8 : 1,
           background:
-            datasource?.tasks.length <= 0
+            datasource?.tasks.length <= 0 &&
+            !showNewCardTop &&
+            !showNewCardBottom
               ? themeWiseColor(
                   'linear-gradient( 180deg, #fafafa, rgba(245, 243, 243, 0))',
                   'linear-gradient( 180deg, #2a2b2d, rgba(42, 43, 45, 0))',

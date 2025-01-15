@@ -5,7 +5,6 @@ import Homepage from '../pages/home/Homepage';
 import ProjectList from '../pages/projects/ProjectList';
 import settingsRoutes from './settingsRoutes';
 import adminCenterRoutes from './adminCenterRoutes';
-import Schedule from '../pages/schedule/Schedule';
 import ProjectTemplateEditView from '../pages/settings/projectTemplates/projectTemplateEditView/ProjectTemplateEditView';
 import LicenseExpired from '../pages/licenseExpired/LicenseExpired';
 
@@ -16,7 +15,6 @@ const mainRoutes: RouteObject[] = [
     children: [
       { path: 'home', element: <Homepage /> },
       { path: 'projects', element: <ProjectList /> },
-      { path: 'schedule', element: <Schedule /> },
       {
         path: `settings/project-templates/edit/:templateId/:templateName`,
         element: <ProjectTemplateEditView />,

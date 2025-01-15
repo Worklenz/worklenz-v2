@@ -24,10 +24,13 @@ import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 import { colors } from '../../../../../../styles/colors';
 import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import {
+  addBoardSectionCard,
   addTaskCardToTheTop,
   deleteSection,
+  setEditableSection,
 } from '../../../../../../features/board/board-slice';
 import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
+import { nanoid } from '@reduxjs/toolkit';
 
 interface BoardSectionCardHeaderProps {
   id: string;
@@ -54,6 +57,11 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   const [isEllipsisActive, setIsEllipsisActive] = useState(false);
   const inputRef = useRef<InputRef>(null);
 
+  // editble id state
+  const editableSectionId = useAppSelector(
+    (state) => state.boardReducer.editableSectionId
+  );
+
   //   localization
   const { t } = useTranslation('kanbanBoard');
 
@@ -69,11 +77,29 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
     }
   }, [isEditable]);
 
+  // trigger immidetly editble or null
+  useEffect(() => {
+    if (editableSectionId === id) {
+      setIsEditable(true);
+      dispatch(setEditableSection(null));
+    }
+  }, [editableSectionId, id, dispatch]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
+  // this function use to delete when the section name is not edit and focus out
   const handleBlur = () => {
+    if (name === 'Untitled section') {
+      dispatch(deleteSection({ sectionId: id }));
+    }
+    setIsEditable(false);
+  };
+
+  // this function use to add when user hit Enter key the section name is not edit but it will be created
+  const handlePressEnter = () => {
+    setShowNewCard(true);
     setIsEditable(false);
   };
 
@@ -167,7 +193,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
             }}
             onChange={handleChange}
             onBlur={handleBlur}
-            onPressEnter={handleBlur}
+            onPressEnter={handlePressEnter}
           />
         ) : (
           <Tooltip title={isEllipsisActive ? name : null}>

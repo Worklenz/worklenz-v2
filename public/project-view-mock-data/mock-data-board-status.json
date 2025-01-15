@@ -213,7 +213,8 @@
             "complete_ratio": "0",
             "completed_count": 0,
             "total_tasks_count": 1,
-            "width": 35
+            "width": 35,
+            "sub_tasks": []
           },
           {
             "id": "eedc87d1-97d7-465a-80ad-81b8b7a6f1a0",
@@ -1187,7 +1188,8 @@
         "complete_ratio": "0",
         "completed_count": 0,
         "total_tasks_count": 1,
-        "width": 35
+        "width": 35,
+        "sub_tasks": []
       },
       {
         "id": "b340686a-b5af-4839-bc5a-1ccf437f53bf",
@@ -1311,7 +1313,8 @@
         "complete_ratio": "0",
         "completed_count": 0,
         "total_tasks_count": 1,
-        "width": 35
+        "width": 35,
+        "sub_tasks": []
       }
     ]
   },
@@ -1823,7 +1826,8 @@
         "complete_ratio": "100",
         "completed_count": 1,
         "total_tasks_count": 1,
-        "width": 35
+        "width": 35,
+        "sub_tasks": []
       },
       {
         "id": "58e4f1d1-f69b-4a3a-852b-3e6d3a08a174",
@@ -1935,7 +1939,8 @@
         "complete_ratio": "100",
         "completed_count": 1,
         "total_tasks_count": 1,
-        "width": 35
+        "width": 35,
+        "sub_tasks": []
       },
       {
         "id": "c1e6a6f5-4140-4714-983d-140062ab52b7",
@@ -2012,7 +2017,8 @@
         "complete_ratio": "100",
         "completed_count": 1,
         "total_tasks_count": 1,
-        "width": 35
+        "width": 35,
+        "sub_tasks": []
       }
     ]
   }
