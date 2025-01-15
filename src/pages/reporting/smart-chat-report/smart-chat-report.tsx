@@ -27,7 +27,7 @@ const SmartChatReport = () => {
     const [typingText, setTypingText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [teams, setTeams] = useState<IRPTTeam[]>([]);
-    const [members, setMembers] = useState({});
+    const [selectedTeam, setselectedTeam] = useState({});
     const [organization, setOrganization] = useState({});
     const [showPrompts, setShowPrompts] = useState(true);
 
@@ -66,7 +66,7 @@ const SmartChatReport = () => {
         try {
             const { done, body } = await reportingApiService.getMembers(includeArchivedProjects);
             if (done) {
-                setMembers(body);
+                setselectedTeam(body);
             }
         } catch (error) {
             logger.error('getMembers', error);
@@ -109,7 +109,7 @@ const SmartChatReport = () => {
                 data: {
                     org: JSON.stringify(organization),
                     teams: JSON.stringify(teams),
-                    selectedTeamMembers: JSON.stringify(members),
+                    selectedTeam: JSON.stringify(selectedTeam),
                 },
             };
             console.log(requestBody)
