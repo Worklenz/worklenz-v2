@@ -25,5 +25,8 @@
   "addAnother": "Agregar otro",
   "skipForNow": "Omitir por ahora",
   "formTitle": "Crea tu primera tarea.",
-  "step3Title": "Invita a tu equipo a trabajar"
+  "step3Title": "Invita a tu equipo a trabajar",
+  
+  "maxMembers": " (Puedes invitar hasta 5 miembros)",
+  "maxTasks": " (Puedes crear hasta 5 tareas)"
 }

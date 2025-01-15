@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd';
 
-// Components
-import AddMemberDrawer from '../settings/member/AddMemberDrawer';
+import InviteTeamMembers from '../../components/common/invite-team-members/invite-team-members';
 import HelpButton from './help/HelpButton';
 import InviteButton from './invite/InviteButton';
 import MobileMenuButton from './mobileMenu/MobileMenuButton';
@@ -15,7 +14,6 @@ import ProfileButton from './userProfile/ProfileButton';
 import SwitchTeamButton from './switchTeam/SwitchTeamButton';
 import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
 
-// Utils & Hooks
 import { useResponsive } from '@/hooks/useResponsive';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
@@ -27,39 +25,28 @@ const Navbar = () => {
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   const location = useLocation();
-  // media queries from useResponsive custom hook
   const { isDesktop, isMobile, isTablet } = useResponsive();
-  // localization
   const { t } = useTranslation('navbar');
 
-  // in here nav routes list get data locally from the navRoutes array
-  const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(
-    () => getFromLocalStorage('navRoutes') || navRoutes
-  );
+  const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(navRoutes);
 
-  //this useEffect re render the navRoutes list with localstorage change
   useEffect(() => {
     const storedNavRoutesList: NavRoutesType[] = getFromLocalStorage('navRoutes') || navRoutes;
     setNavRoutesList(storedNavRoutesList);
-  }, [navRoutesList]);
+  }, []);
 
-  // menu type
   type MenuItem = Required<MenuProps>['items'][number];
-  // nav links menu
-  const navlinkItems: MenuItem[] = navRoutesList.map((route, index) => ({
+  const navlinkItems = useMemo(() => navRoutesList.map((route, index) => ({
     key: route.path.split('/').pop() || index,
     label: (
       <Link to={route.path} style={{ fontWeight: 600 }}>
         {t(route.name)}
       </Link>
     ),
-  }));
+  })), [navRoutesList, t]);
 
   useEffect(() => {
-    // this one return the stirng after worklenz/
     const afterWorklenzString = location.pathname.split('/worklenz/')[1];
-
-    // this one return the stirng after worklenz/ **pathKey** /
     const pathKey = afterWorklenzString.split('/')[0];
 
     setCurrent(pathKey ?? 'home');
@@ -132,10 +119,7 @@ const Navbar = () => {
         </Flex>
       </Flex>
 
-      {/* drawers  */}
-      {/* add member drawer  */}
-      {isOwnerOrAdmin && <AddMemberDrawer />}
-      {/* notification drawer */}
+      {isOwnerOrAdmin && <InviteTeamMembers />}
       <NotficationDrawer />
     </Col>
   );

@@ -31,6 +31,8 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
   const [form] = Form.useForm();
 
   const addEmail = () => {
+    if (teamMembers.length == 5) return;
+
     const newId = teamMembers.length > 0 ? Math.max(...teamMembers.map(t => t.id)) + 1 : 0;
     dispatch(setTeamMembers([...teamMembers, { id: newId, value: '' }]));
     setTimeout(() => {
@@ -100,7 +102,7 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
     >
       <Form.Item>
         <Title level={2} style={{ marginBottom: '1rem' }}>
-          {t('step3Title')} "<mark>{organizationName}</mark>"
+          {t('step3Title')} "<mark>{organizationName}</mark>".
         </Title>
       </Form.Item>
       <Form.Item
@@ -108,7 +110,7 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
         rules={[{ required: true }]}
         label={
           <span className="font-medium">
-            {t('step3InputLabel')}&nbsp; <MailOutlined />
+            {t('step3InputLabel')}&nbsp; <MailOutlined />  {t('maxMembers')}
           </span>
         }
       >
@@ -118,7 +120,7 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
           itemLayout='vertical'
           renderItem={(teamMember, index) => (
             <List.Item key={teamMember.id}>
-              <div style={{ display: 'flex', width: '600px' }}>
+              <div className="invite-members-form" style={{ display: 'flex', width: '600px' }}>
                 <Form.Item
                   rules={formRules.email as Rule[]}
                   className="w-full"
@@ -152,6 +154,7 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
           icon={<PlusOutlined />}
           onClick={addEmail}
           style={{ marginTop: '16px' }}
+          disabled={teamMembers.length == 5}
         >
           {t('tasksStepAddAnother')}
         </Button>

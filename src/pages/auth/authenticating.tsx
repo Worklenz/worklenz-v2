@@ -7,6 +7,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSession } from '@/utils/session-helper';
 import { setUser } from '@/features/user/userSlice';
 import logger from '@/utils/errorLogger';
+import { WORKLENZ_REDIRECT_PROJ_KEY } from '@/shared/constants';
 
 const REDIRECT_DELAY = 500; // Delay in milliseconds before redirecting
 
@@ -14,6 +15,17 @@ const AuthenticatingPage: React.FC = () => {
   const { t } = useTranslation('auth/auth-common');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const handleSuccessRedirect = () => {
+    const project = localStorage.getItem(WORKLENZ_REDIRECT_PROJ_KEY);
+    if (project) {
+      localStorage.removeItem(WORKLENZ_REDIRECT_PROJ_KEY);
+      window.location.href = `/worklenz/projects/${project}`;
+      return;
+    }
+
+    navigate('/worklenz/home');
+  }
 
   useEffect(() => {
     const handleAuthentication = async () => {
@@ -30,10 +42,7 @@ const AuthenticatingPage: React.FC = () => {
 
         // Redirect based on setup status
         setTimeout(() => {
-          const redirectPath = session.user.setup_completed 
-            ? '/worklenz/home'
-            : '/worklenz/setup';
-          navigate(redirectPath);
+          handleSuccessRedirect();
         }, REDIRECT_DELAY);
 
       } catch (error) {

@@ -17,30 +17,22 @@ const LoggingOutPage = () => {
       await auth.signOut();
       await authApiService.logout();
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = '/';
       }, 1500);
     };
     void logout();
   }, [auth, navigate]);
 
+  const cardStyles = {
+    width: '100%',
+    boxShadow: 'none',
+  };
+
   return (
-    <Card
-      style={{
-        width: '100%',
-        boxShadow: 'none',
-      }}
-      styles={{
-        body: {
-          paddingInline: isMobile ? 24 : 48,
-        },
-      }}
-      bordered={false}
-    >
-      <Flex vertical align="center" justify="center" gap={24} style={{ minHeight: '60vh' }}>
+    <Card style={cardStyles}>
+      <Flex vertical align="center" justify="center" gap="middle">
         <Spin size="large" />
-        <Typography.Title level={3}>
-          {t('loggingOut')}
-        </Typography.Title>
+        <Typography.Title level={3}>{t('loggingOut')}</Typography.Title>
       </Flex>
     </Card>
   );

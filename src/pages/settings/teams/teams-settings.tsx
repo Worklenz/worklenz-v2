@@ -1,7 +1,7 @@
 import { Button, Card, Flex, Table, TableProps, Tooltip, Typography } from 'antd';
 import PinRouteToNavbarButton from '@components/PinRouteToNavbarButton';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { TeamsType } from '@/types/adminCenter/team.types';
+import { TeamsType } from '@/types/admin-center/team.types';
 import { durationDateFormat } from '@utils/durationDateFormat';
 import { EditOutlined } from '@ant-design/icons';
 import { useState } from 'react';

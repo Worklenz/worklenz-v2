@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Flex, Form, Input, message, Space, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,6 +18,8 @@ import { evt_login_page_visit, evt_login_with_email_click, evt_login_with_google
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import alertService from '@/services/alerts/alertService';
+import { useAuthService } from '@/hooks/useAuth';
+import { WORKLENZ_REDIRECT_PROJ_KEY } from '@/shared/constants';
 
 interface LoginFormValues {
   email: string;
@@ -33,6 +35,11 @@ const LoginPage: React.FC = () => {
   const { isLoading } = useAppSelector(state => state.auth);
   const { trackMixpanelEvent } = useMixpanelTracking();
   const [form] = Form.useForm<LoginFormValues>();
+  const currentSession = useAuthService().getCurrentSession();
+  const [urlParams, setUrlParams] = useState({
+    teamId: '',
+    projectId: '',
+  });
 
   useDocumentTitle('Login');
 
@@ -47,26 +54,37 @@ const LoginPage: React.FC = () => {
     ]
   };
 
+  const verifyAuthStatus = async () => {
+    try {
+      const session = await dispatch(verifyAuthentication()).unwrap();
+      
+      if (session?.authenticated) {
+        setSession(session.user);
+        dispatch(setUser(session.user));
+        navigate('/worklenz/home');
+      }
+    } catch (error) {
+      logger.error('Failed to verify authentication status', error);
+    }
+  };
+
   useEffect(() => {
     trackMixpanelEvent(evt_login_page_visit);
-    const verifyAuthStatus = async () => {
-      try {
-        const session = await dispatch(verifyAuthentication()).unwrap();
-        if (session?.authenticated) {
-          setSession(session.user);
-          dispatch(setUser(session.user));
-          navigate('/worklenz/home');
-        }
-      } catch (error) {
-        logger.error('Failed to verify authentication status', error);
-      }
-    };
+    if (currentSession && !currentSession?.setup_completed) {
+      navigate('/worklenz/setup');
+      return;
+    }
     void verifyAuthStatus();
   }, [dispatch, navigate, trackMixpanelEvent]);
 
   const onFinish = useCallback(async (values: LoginFormValues) => {
     try {
       trackMixpanelEvent(evt_login_with_email_click);
+
+      // if (teamId) {
+      //   localStorage.setItem(WORKLENZ_REDIRECT_PROJ_KEY, teamId);
+      // }
+
       const result = await dispatch(login(values)).unwrap();
       if (result.authenticated) {
         message.success(t('successMessage'));

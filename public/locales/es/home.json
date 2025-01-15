@@ -16,6 +16,18 @@
     },
     "tasks": {
         "assignedToMe": "Asignadas a mí",
-        "assignedByMe": "Asignadas por mí"
+        "assignedByMe": "Asignadas por mí",
+        "all": "Todas",
+        "today": "Hoy",
+        "upcoming": "Próximas",
+        "overdue": "Vencidas",
+        "noDueDate": "Sin fecha de vencimiento",
+        "noTasks": "No hay tareas para mostrar.",
+        "addTask": "+ Agregar tarea",
+        "name": "Nombre",
+        "project": "Proyecto",
+        "status": "Estado",
+        "dueDate": "Fecha de vencimiento",
+        "dueDatePlaceholder": "Establecer fecha de vencimiento"
     }
 }

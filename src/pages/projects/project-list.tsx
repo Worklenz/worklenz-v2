@@ -1,35 +1,29 @@
-// Core dependencies
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-// Ant Design components
 import { Button, Card, Empty, Flex, Input, Segmented, Table, TablePaginationConfig, Tooltip } from 'antd';
 import { PageHeader } from '@ant-design/pro-components';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 
-// Components
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import CreateProjectButton from '@/components/projects/project-create-button/project-create-button';
 import TableColumns from '@/components/project-list/TableColumns';
 
-// Redux
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   deleteProject,
   fetchProjects,
-  setFilteredCategories,
-  toggleArchiveProject,
   toggleDrawer,
+  setRequestParams,
 } from '@/features/projects/projectsSlice';
 import { getProject, setProjectId } from '@/features/project/project.slice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 
-// Constants and types
 import {
   DEFAULT_PAGE_SIZE,
   FILTER_INDEX_KEY,
@@ -40,13 +34,11 @@ import {
 import { IProjectFilter } from '@/types/project/project.types';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
-// Hooks and styles
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import './project-list.css';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { useAuthService } from '@/hooks/useAuth';
 
-// Interfaces
 interface PaginationState {
   current: number;
   pageSize: number;
@@ -58,7 +50,6 @@ interface SorterState {
 }
 
 const ProjectList: React.FC = () => {
-  // Hooks
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -66,31 +57,10 @@ const ProjectList: React.FC = () => {
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
   // Redux state
-  const { loading, projects, filteredCategories } = useAppSelector(state => state.projectsReducer);
+  const { loading, projects, filteredCategories, requestParams } = useAppSelector(state => state.projectsReducer);
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths: healths } = useAppSelector(state => state.projectHealthReducer);
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
-
-  // Local state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [pagination, setPagination] = useState<PaginationState>({
-    current: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
-  const [sorter, setSorter] = useState<SorterState>(() => ({
-    order: localStorage.getItem(PROJECT_SORT_ORDER) ?? 'ascend',
-    columnKey: localStorage.getItem(PROJECT_SORT_FIELD) ?? 'name',
-  }));
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-
-  // Debounced search term
-  const [debouncedSearchTerm] = useState(() => {
-    let timeoutId: NodeJS.Timeout;
-    return (value: string, callback: (value: string) => void) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => callback(value), 300);
-    };
-  });
 
   // Parallel data fetching on mount
   useEffect(() => {
@@ -116,40 +86,13 @@ const ProjectList: React.FC = () => {
     localStorage.setItem(FILTER_INDEX_KEY, index.toString());
   }, []);
 
-  const setSortingValues = useCallback((sorter: SorterState) => {
-    localStorage.setItem(PROJECT_SORT_FIELD, sorter.columnKey);
-    localStorage.setItem(PROJECT_SORT_ORDER, sorter.order);
+  const setSortingValues = useCallback((field: string, order: string) => {
+    localStorage.setItem(PROJECT_SORT_FIELD, field);
+    localStorage.setItem(PROJECT_SORT_ORDER, order);
   }, []);
 
   // Memoized values
   const filters = useMemo(() => Object.values(IProjectFilter), []);
-
-  const requestParams = useMemo(
-    () => ({
-      index: pagination.current,
-      size: pagination.pageSize,
-      field: sorter.columnKey,
-      order: sorter.order,
-      filter: getFilterIndex(),
-      search: searchTerm,
-      statuses: selectedStatus,
-      categories: filteredCategories,
-    }),
-    [pagination, sorter, getFilterIndex, searchTerm, selectedStatus, filteredCategories]
-  );
-
-  const paginationConfig = useMemo(
-    () => ({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      showSizeChanger: true,
-      defaultPageSize: DEFAULT_PAGE_SIZE,
-      pageSizeOptions: PAGE_SIZE_OPTIONS,
-      size: 'small' as const,
-      total: projects.total,
-    }),
-    [pagination, projects.total]
-  );
 
   const getProjects = useCallback(async () => {
     try {
@@ -165,28 +108,32 @@ const ProjectList: React.FC = () => {
       filters: Record<string, FilterValue | null>,
       sorter: SorterResult<IProjectViewModel> | SorterResult<IProjectViewModel>[]
     ) => {
+      const newParams: Partial<typeof requestParams> = {};
+
       if (filters?.status_id) {
-        setSelectedStatus(filters.status_id.join('+'));
+        newParams.statuses = filters.status_id.join('+');
       }
+      
       if (filters?.category_id) {
         console.log('filters.category_id', filters.category_id);
         // dispatch(setFilteredCategories(filters.category_id.join('+')));
       }
 
-      const newSorter = {
-        order: (Array.isArray(sorter) ? sorter[0].order : sorter.order) ?? 'ascend',
-        columnKey:
-          ((Array.isArray(sorter) ? sorter[0].columnKey : sorter.columnKey) as string) ?? 'name',
-      };
+      const newOrder = Array.isArray(sorter) ? sorter[0].order : sorter.order;
+      const newField = (Array.isArray(sorter) ? sorter[0].columnKey : sorter.columnKey) as string;
 
-      setPagination({
-        current: newPagination.current || 1,
-        pageSize: newPagination.pageSize || DEFAULT_PAGE_SIZE,
-      });
+      if (newOrder && newField) {
+        newParams.order = newOrder ?? 'ascend';
+        newParams.field = newField ?? 'name';
+        setSortingValues(newParams.field, newParams.order);
+      }
 
-      setSorter(newSorter);
+      newParams.index = newPagination.current || 1;
+      newParams.size = newPagination.pageSize || DEFAULT_PAGE_SIZE;
+
+      dispatch(setRequestParams(newParams));
     },
-    []
+    [dispatch, setSortingValues]
   );
 
   const handleRefresh = useCallback(() => {
@@ -195,24 +142,22 @@ const ProjectList: React.FC = () => {
 
   const handleSegmentChange = useCallback(
     (value: IProjectFilter) => {
-      setFilterIndex(filters.indexOf(value));
       const newFilterIndex = filters.indexOf(value);
-      dispatch(
-        fetchProjects({
-          ...requestParams,
-          filter: newFilterIndex,
-        })
-      );
+      setFilterIndex(newFilterIndex);
+      dispatch(setRequestParams({ filter: newFilterIndex }));
     },
-    [filters, setFilterIndex, dispatch, requestParams]
+    [filters, setFilterIndex, dispatch]
   );
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
-      debouncedSearchTerm(value, setSearchTerm);
+      dispatch(setRequestParams({ search: value }));
+      // debouncedSearchTerm(value, (debouncedValue) => {
+      //   dispatch(setRequestParams({ search: debouncedValue }));
+      // });
     },
-    [debouncedSearchTerm]
+    [dispatch]
   );
 
   const setSelectedProjectId = useCallback(
@@ -228,17 +173,8 @@ const ProjectList: React.FC = () => {
 
   // Effects
   useEffect(() => {
-    setSortingValues(sorter);
     getProjects();
-  }, [
-    searchTerm,
-    selectedStatus,
-    filteredCategories,
-    pagination,
-    sorter,
-    setSortingValues,
-    getProjects,
-  ]);
+  }, [getProjects]);
 
   const filterCategories = (category: string) => {
     console.log('clicked', category);
@@ -248,6 +184,19 @@ const ProjectList: React.FC = () => {
     await dispatch(deleteProject(id)).unwrap();
     handleRefresh();
   };
+
+  const paginationConfig = useMemo(
+    () => ({
+      current: requestParams.index,
+      pageSize: requestParams.size,
+      showSizeChanger: true,
+      defaultPageSize: DEFAULT_PAGE_SIZE,
+      pageSizeOptions: PAGE_SIZE_OPTIONS,
+      size: 'small' as const,
+      total: projects.total,
+    }),
+    [requestParams.index, requestParams.size, projects.total]
+  );
 
   return (
     <div style={{ marginBlock: 65, minHeight: '90vh' }}>
@@ -274,7 +223,7 @@ const ProjectList: React.FC = () => {
               placeholder={t('placeholder')}
               suffix={<SearchOutlined />}
               type="text"
-              value={searchTerm}
+              value={requestParams.search}
               onChange={handleSearchChange}
               aria-label="Search projects"
             />

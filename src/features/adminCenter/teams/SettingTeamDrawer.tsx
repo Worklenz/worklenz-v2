@@ -14,7 +14,7 @@ import { useAppSelector } from '../../../hooks/useAppSelector';
 import { RootState } from '../../../app/store';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleSettingDrawer, updateTeam } from '../../teams/teamSlice';
-import { TeamsType } from '../../../types/adminCenter/team.types';
+import { TeamsType } from '../../../types/admin-center/team.types';
 import './SettingTeamDrawer.css';
 import CustomAvatar from '../../../components/CustomAvatar';
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 import alertService from '@/services/alerts/alertService';
 
@@ -63,19 +63,22 @@ apiClient.interceptors.response.use(
     }
     return response;
   },
-  async error => {
-    const { status, data } = error.response || {};
-    const errorMessage = data?.message || 'An unexpected error occurred';
-    const errorTitle = data?.title || 'Error';
-  
-    // Show error notification
-    alertService.error(errorTitle, errorMessage);
+  async (error:AxiosError) => {
+    const { message, code, name} = error || {};
+
+    const errorMessage = message || 'An unexpected error occurred';
+    const errorTitle = 'Error';
+
+    if (error.code !== 'ERR_NETWORK') {
+      alertService.error(errorTitle, errorMessage);
+    }
   
     // Development logging
     if (import.meta.env.VITE_APP_ENV === 'development') {
       console.error('API Error:', {
-        status,
-        data,
+        code,
+        name,
+        message,
         headers: error.config?.headers,
         cookies: document.cookie,
       });

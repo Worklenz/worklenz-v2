@@ -2,7 +2,22 @@ import React, { useEffect } from 'react';
 import { Button, Space, Steps, Typography } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-
+import { useNavigate } from 'react-router-dom';
+import logger from '@/utils/errorLogger';
+import { setCurrentStep } from '@/features/account-setup/account-setup.slice';
+import { OrganizationStep } from '@/components/account-setup/organization-step';
+import { ProjectStep } from '@/components/account-setup/project-step';
+import { TasksStep } from '@/components/account-setup/tasks-step';
+import MembersStep from '@/components/account-setup/members-step';
+import {
+  evt_account_setup_complete,
+  evt_account_setup_skip_invite,
+  evt_account_setup_visit,
+} from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+import { verifyAuthentication } from '@/features/auth/authSlice';
+import { setUser } from '@/features/user/userSlice';
+import { IAuthorizeResponse } from '@/types/auth/login.types';
 import { RootState } from '@/app/store';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { getUserSession, setSession } from '@/utils/session-helper';
@@ -13,23 +28,6 @@ import logoDark from '@/assets/images/logo-dark-mode.png';
 import './account-setup.css';
 import { IAccountSetupRequest } from '@/types/project-templates/project-templates.types';
 import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
-import { useNavigate } from 'react-router-dom';
-import logger from '@/utils/errorLogger';
-import { setCurrentStep, setTemplateId } from '@/features/account-setup/account-setup.slice';
-import { OrganizationStep } from '@/components/account-setup/organization-step';
-import { ProjectStep } from '@/components/account-setup/project-step';
-import { TasksStep } from '@/components/account-setup/tasks-step';
-import MembersStep from '@/components/account-setup/members-step';
-import {
-  evt_account_setup_complete,
-  evt_account_setup_skip_invite,
-  evt_account_setup_visit,
-  evt_login_page_visit,
-} from '@/shared/worklenz-analytics-events';
-import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
-import { verifyAuthentication } from '@/features/auth/authSlice';
-import { setUser } from '@/features/user/userSlice';
-import { IAuthorizeResponse } from '@/types/auth/login.types';
 
 const { Title } = Typography;
 
@@ -67,9 +65,16 @@ const AccountSetup: React.FC = () => {
     void verifyAuthStatus();
   }, [dispatch, navigate, trackMixpanelEvent]);
 
-  useEffect(() => {
-    console.log(templateId);
-  }, [templateId]);
+  const calculateHeight = () => {
+    if (currentStep === 2) {
+      return tasks.length * 105;
+    }
+
+    if (currentStep === 3) {
+      return teamMembers.length * 105;
+    }
+    return 'min-content';
+  };
 
   const styles = {
     form: {
@@ -130,7 +135,7 @@ const AccountSetup: React.FC = () => {
     stepContent: {
       flexGrow: 1,
       width: '600px',
-      minHeight: 'fit-content',
+      minHeight: calculateHeight(),
       overflow: 'visible',
     },
     actionButtons: {
@@ -224,16 +229,6 @@ const AccountSetup: React.FC = () => {
     }
   };
 
-  const handleTabKey = (event: React.KeyboardEvent, currentId: string) => {
-    if (event.key === 'Tab') {
-      const nextInput = document.getElementById(`${currentId}-${parseInt(currentId.split('-')[1]) + 1}`);
-      if (nextInput) {
-        event.preventDefault();
-        nextInput.focus();
-      }
-    }
-  };
-
   return (
     <div style={styles.container}>
       <div>
@@ -243,17 +238,18 @@ const AccountSetup: React.FC = () => {
         {t('setupYourAccount')}
       </Title>
       <div style={styles.contentContainer}>
-        <div className={isDarkMode ? 'dark-mode' : ''} style={styles.space}>
+        <Space className={isDarkMode ? 'dark-mode' : ''} style={styles.space} direction="vertical">
           <Steps
             className={isContinueDisabled() ? 'step' : 'progress-steps'}
             current={currentStep}
             items={steps}
             style={styles.steps}
+
           />
           <div className="step-content" style={styles.stepContent}>
             {steps[currentStep].content}
           </div>
-          <div style={styles.actionButtons}>
+          <div style={styles.actionButtons} className="setup-action-buttons">
             <div
               style={{
                 display: 'flex',
@@ -293,7 +289,7 @@ const AccountSetup: React.FC = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </Space>
       </div>
     </div>
   );

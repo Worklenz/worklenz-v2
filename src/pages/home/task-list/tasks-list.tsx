@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Card,
+  DatePicker,
   Flex,
   Segmented,
   Select,
@@ -12,34 +13,33 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import ListView from './list-view';
 import CalendarView from './calendar-view';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
-import { TaskType } from '@/types/task.types';
 import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { colors } from '@/styles/colors';
 import UpdateTaskDrawer from '@features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
-import { t } from 'i18next';
-import { IMyDashboardMyTask } from '@/types/home/tasks.types';
-import { IHomeTasksConfig } from '@/types/home/home-page.types';
-import { IProject } from '@/types/project/project.types';
+import { fetchHomeTasks, setHomeTasksConfig } from '@/features/home-page/home-page.slice';
+import { IMyTask } from '@/types/home/my-tasks.types';
+import { ITaskStatus } from '@/types/tasks/taskStatus.types';
+import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
-const TasksList = () => {
-  const [tasksList, setTasksList] = useState<IMyDashboardMyTask[]>([]);
-  const [groups, setGroups] = useState<IMyDashboardMyTask[]>([]);
-
+const TasksList: React.FC = () => {
   const [viewOptions, setViewOptions] = useState<'List' | 'Calendar'>('List');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const myTasksActiveFilterKey = 'my-dashboard-active-filter';
-  const { projects } = useAppSelector(state => state.homePageReducer);
+  const { projects, homeTasksConfig, model, homeTasksLoading } = useAppSelector(
+    state => state.homePageReducer
+  );
+  const { t } = useTranslation();
 
-  const taskModes = [
+  const taskModes = useMemo(() => [
     {
       value: 0,
       label: t('home:tasks.assignedToMe'),
@@ -48,62 +48,34 @@ const TasksList = () => {
       value: 1,
       label: t('home:tasks.assignedByMe'),
     },
-  ];
+  ], [t]);
 
-  const [config, setConfig] = useState<IHomeTasksConfig>({
-    tasks_group_by: taskModes[0].value,
-    current_view: 0,
-    current_tab: 'my_tasks',
-    selected_date: new Date(),
-    is_calendar_view: false,
-    time_zone: '',
-  });
-
-
-  const getActiveProjectsFilter = () => {
-    return +(localStorage.getItem(myTasksActiveFilterKey) || 0);
-  };
-
-  const setActiveProjectsFilter = (value: number) => {
-    localStorage.setItem(myTasksActiveFilterKey, value.toString());
-  };
-
-  // function for handle refresh
   const handleRefresh = () => {
     setIsLoading(true);
     setTimeout(() => setIsLoading(false), 500);
   };
 
-  // function for handle segmaent change and render the calender
   const handleSegmentChange = (value: 'List' | 'Calendar') => {
-    if (value === 'Calendar') {
-      setViewOptions('Calendar');
-      handleRefresh();
-    } else {
-      setViewOptions('List');
-      handleRefresh();
-    }
+    setViewOptions(value);
+    handleRefresh();
   };
 
-  // table columns
-  const columns: TableProps<TaskType>['columns'] = [
+  const columns: TableProps<IMyTask>['columns'] = useMemo(() => [
     {
-      key: 'task',
-      title: 'Task',
+      key: 'name',
+      title: t('tasks.name'),
       width: '400px',
-      render: (values) => (
+      render: (_, record) => (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Tooltip title={values.task}>
-            <Typography.Text style={{ textTransform: 'capitalize' }}>{values.task}</Typography.Text>
+          <Tooltip title={record.name}>
+            <Typography.Text style={{ textTransform: 'capitalize' }}>{record.name}</Typography.Text>
           </Tooltip>
           <div className="row-button">
             <Tooltip title={'Click open task form'}>
               <Button
                 type="text"
                 icon={<ExpandAltOutlined />}
-                onClick={() => {
-                  dispatch(toggleUpdateTaskDrawer());
-                }}
+                onClick={() => dispatch(toggleUpdateTaskDrawer())}
                 style={{
                   backgroundColor: colors.transparent,
                   padding: 0,
@@ -119,10 +91,10 @@ const TasksList = () => {
     },
     {
       key: 'project',
-      title: 'Project',
+      title: t('tasks.project'),
       width: '180px',
-      render: (values) => {
-        const project = projects.find(project => project.name === values.project);
+      render: (_, record) => {
+        const project = projects.find(project => project.name === record.project_name);
         return (
           project && (
             <Tooltip title={project.name}>
@@ -137,17 +109,47 @@ const TasksList = () => {
     },
     {
       key: 'status',
-      title: 'Status',
+      title: t('tasks.status'),
       width: '180px',
-      render: (values) => <StatusDropdown currentStatus={values.status} />,
+      render: (_, record) => (
+        <StatusDropdown
+          statusList={record.project_statuses as ITaskStatus[]}
+          task={record}
+          teamId={record.team_id || ''}
+          onChange={() => {}}
+        />
+      ),
     },
     {
       key: 'dueDate',
-      title: 'Due Date',
+      title: t('tasks.dueDate'),
       width: '180px',
-      dataIndex: 'dueDate',
+      dataIndex: 'end_date',
+      render: (_, record) => <DatePicker defaultValue={dayjs(record.end_date || '')} format={'MMM DD, YYYY'} placeholder={t('tasks.dueDatePlaceholder')} />,
     },
-  ];
+  ], [projects, t]);
+
+  const handleTaskModeChange = (value: number) => {
+    dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: +value }));
+  };
+
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (homeTasksLoading) return;
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      dispatch(fetchHomeTasks(homeTasksConfig));
+      return;
+    }
+
+    const debounceTimer = setTimeout(() => {
+      dispatch(fetchHomeTasks(homeTasksConfig));
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [homeTasksConfig, dispatch]);
 
   return (
     <Card
@@ -157,12 +159,10 @@ const TasksList = () => {
             Tasks
           </Typography.Title>
           <Select
-            defaultValue="0"
+            defaultValue={taskModes[0].label}
             options={taskModes}
-            onChange={(value) => {
-              setConfig({ ...config, tasks_group_by: +value });
-            }}
-            
+            onChange={value => handleTaskModeChange(+value)}
+            fieldNames={{ label: 'label', value: 'value' }}
           />
         </Flex>
       }
@@ -172,13 +172,13 @@ const TasksList = () => {
             <Button
               shape="circle"
               icon={<SyncOutlined spin={isLoading} />}
-              onClick={() => handleRefresh()}
+              onClick={handleRefresh}
             />
           </Tooltip>
           <Segmented<'List' | 'Calendar'>
             options={['List', 'Calendar']}
             defaultValue="List"
-            onChange={(value: 'List' | 'Calendar') => handleSegmentChange(value)}
+            onChange={handleSegmentChange}
           />
         </Flex>
       }
@@ -197,7 +197,7 @@ const TasksList = () => {
       {/* task list table --> render with different filters and views  */}
       {isLoading ? (
         <Skeleton />
-      ) : tasksList.length === 0 ? (
+      ) : model.total === 0 ? (
         <EmptyListPlaceholder
           imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
           text=" No tasks to show."
@@ -205,9 +205,9 @@ const TasksList = () => {
       ) : (
         <Table
           className="custom-two-colors-row-table"
-          dataSource={tasksList}
+          dataSource={model.tasks}
           rowKey={record => record.id}
-          columns={columns}
+          columns={columns as TableProps<IMyTask>['columns']}
           pagination={false}
           size="middle"
           rowClassName={() => 'custom-row-height'}

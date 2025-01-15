@@ -1,5 +1,4 @@
 .ant-steps-item-finish .ant-steps-item-icon {
-  background-color: #fff !important;
   border-color: #1890ff !important;
 }
 
@@ -18,24 +17,16 @@
 }
 
 .ant-steps-item-wait .ant-steps-item-icon {
-  background-color: #fff !important;
-  border-color: #00000040 !important;
   cursor: not-allowed;
 }
 
 .dark-mode .ant-steps-item-wait .ant-steps-item-icon {
-  background-color: black !important;
-  border-color: #00000040 !important;
   cursor: not-allowed;
 }
 
 .progress-steps .ant-steps-item.ant-steps-item-process .ant-steps-item-title::after {
   background-color: #1677ff !important;
   width: 60px !important;
-}
-
-.ant-steps-item-finish .ant-steps-item-icon {
-  background-color: black !important;
 }
 
 @media (max-width: 1000px) {

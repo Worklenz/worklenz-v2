@@ -21,6 +21,8 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
   const inputRefs = useRef<(InputRef | null)[]>([]);
 
   const addTask = () => {
+    if (tasks.length == 5) return;
+
     const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 0;
     dispatch(setTasks([...tasks, { id: newId, value: '' }]));
     setTimeout(() => {
@@ -38,11 +40,9 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
     dispatch(setTasks(tasks.map(task => (task.id === id ? { ...task, value } : task))));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent, isLast: boolean) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     e.preventDefault();
-    if (isLast) {
-      addTask();
-    }
+    addTask();
   };
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
         rules={[{ required: true }]}
         label={
           <span className="font-medium">
-            {t('tasksStepLabel')} "<mark>{projectName}</mark>"
+            {t('tasksStepLabel')} "<mark>{projectName}</mark>". {t('maxTasks')}
           </span>
         }
       >
@@ -86,7 +86,7 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
                   placeholder="Your Task"
                   value={task.value}
                   onChange={e => updateTask(task.id, e.target.value)}
-                  onPressEnter={e => handleKeyPress(e, task.id === tasks.length - 1)}
+                  onPressEnter={e => handleKeyPress(e)}
                   ref={el => (inputRefs.current[index] = el)}
                 />
                 <Button
@@ -105,6 +105,7 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
           type="dashed"
           icon={<PlusOutlined />}
           onClick={addTask}
+          disabled={tasks.length == 5}
           style={{ marginTop: '16px' }}
         >
           {t('tasksStepAddAnother')}

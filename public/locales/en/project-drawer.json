@@ -32,5 +32,8 @@
   "no": "No",
   "createdAt": "Created",
   "updatedAt": "Updated",
-  "by": "by"
+  "by": "by",
+  "add": "Add",
+  "asClient": "as client",
+  "createClient": "Create client"
 }

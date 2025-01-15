@@ -2,59 +2,57 @@ import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Button, Card, Flex, Input, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import UsersTable from './users-table';
+import UsersTable from '@/components/admin-center/users/users-table/users-table';
 import { RootState } from '@/app/store';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { IOrganizationUser } from '@/types/admin-center/admin-center.types';
+import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
+import logger from '@/utils/errorLogger';
 
 const Users: React.FC = () => {
+  const { t } = useTranslation('admin-center/users');
+
   const [isLoading, setIsLoading] = useState(false);
+  const [users, setUsers] = useState<IOrganizationUser[]>([]);
+  const [requestParams, setRequestParams] = useState({
+    total: 0,
+    page: 1,
+    pageSize: DEFAULT_PAGE_SIZE,
+    sort: 'name',
+    order: 'desc',
+    searchTerm: '',
+  });
 
-  const themeMode = useAppSelector(
-    (state: RootState) => state.themeReducer.mode
-  );
+  const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
-
-  const { t } = useTranslation('users');
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedTerm(searchTerm);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm]);
-
-  useEffect(() => {
-    if (debouncedTerm) {
-      performSearch(debouncedTerm);
-    }
-  }, [debouncedTerm]);
-
-  const performSearch = (query: string) => {
-    console.log('Searching for:', query);
-  };
-
-  const handleRefresh = () => {
+  const fetchUsers = async () => {
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500);
+    try {
+      const res = await adminCenterApiService.getOrganizationUsers(requestParams);
+      if (res.done) {
+        setUsers(res.body.data ?? []);
+        setRequestParams(prev => ({ ...prev, total: res.body.total ?? 0 }));
+      }
+    } catch (error) {
+      logger.error('Error fetching users',  error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [requestParams.searchTerm]);
 
   return (
     <div style={{ width: '100%' }}>
-      <PageHeader
-        title={<span>{t('title')}</span>}
-        style={{ padding: '16px 0' }}
-      />
+      <PageHeader title={<span>{t('title')}</span>} style={{ padding: '16px 0' }} />
       <PageHeader
         style={{
           paddingLeft: 0,
           paddingTop: 0,
-          paddingRight: '24px',
           paddingBottom: '16px',
         }}
         subTitle={
@@ -65,30 +63,30 @@ const Users: React.FC = () => {
               fontSize: '16px',
             }}
           >
-            1 {t('subTitle')}
+           {requestParams.total} {t('subTitle')}
           </span>
         }
         extra={
           <Flex gap={8} align="center">
-            <Tooltip title="Refresh users">
+            <Tooltip title={t('refresh')}>
               <Button
                 shape="circle"
                 icon={<SyncOutlined spin={isLoading} />}
-                onClick={() => handleRefresh()}
+                onClick={() => fetchUsers()}
               />
             </Tooltip>
             <Input
               placeholder={t('placeholder')}
               suffix={<SearchOutlined />}
               type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={requestParams.searchTerm}
+              onChange={e => setRequestParams(prev => ({ ...prev, searchTerm: e.target.value }))}
             />
           </Flex>
         }
       />
       <Card>
-        <UsersTable />
+        <UsersTable users={users} t={t} loading={isLoading} />
       </Card>
     </div>
   );

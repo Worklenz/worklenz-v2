@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
-import { TeamsType } from '../../../types/adminCenter/team.types';
+import { TeamsType } from '../../../types/admin-center/team.types';
 import { nanoid } from '@reduxjs/toolkit';
 import { addTeam, toggleDrawer } from '../../teams/teamSlice';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';

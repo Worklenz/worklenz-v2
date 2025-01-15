@@ -3,6 +3,7 @@ import { projectsApiService } from '@/api/projects/projects.api.service';
 import logger from '@/utils/errorLogger';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
 
 interface ProjectState {
   projects: {
@@ -15,6 +16,16 @@ interface ProjectState {
   initialized: boolean;
   isProjectDrawerOpen: boolean;
   filteredCategories: string[];
+  requestParams: {
+    index: number;
+    size: number;
+    field: string;
+    order: string;
+    search: string;
+    filter: number;
+    statuses: string | null;
+    categories: string[];
+  };
 }
 
 const initialState: ProjectState = {
@@ -28,6 +39,16 @@ const initialState: ProjectState = {
   initialized: false,
   isProjectDrawerOpen: false,
   filteredCategories: [],
+  requestParams: {
+    index: 1,
+    size: DEFAULT_PAGE_SIZE,
+    field: 'name',
+    order: 'ascend',
+    search: '',
+    filter: 0,
+    statuses: null,
+    categories: [],
+  },
 };
 
 // Create async thunk for fetching teams
@@ -147,6 +168,12 @@ const projectSlice = createSlice({
     setFilteredCategories: (state, action: PayloadAction<string[]>) => {
       state.filteredCategories = action.payload;
     },
+    setRequestParams: (state, action: PayloadAction<Partial<ProjectState['requestParams']>>) => {
+      state.requestParams = {
+        ...state.requestParams,
+        ...action.payload,
+      };
+    },
   },
   extraReducers: builder => {
     builder
@@ -182,5 +209,5 @@ const projectSlice = createSlice({
   },
 });
 
-export const { toggleDrawer, setCategories, setFilteredCategories } = projectSlice.actions;
+export const { toggleDrawer, setCategories, setFilteredCategories, setRequestParams } = projectSlice.actions;
 export default projectSlice.reducer;

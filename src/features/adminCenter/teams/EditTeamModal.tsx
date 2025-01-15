@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { editTeamName, toggleUpdateTeamNameModal } from '../../teams/teamSlice';
-import { TeamsType } from '../../../types/adminCenter/team.types';
+import { TeamsType } from '../../../types/admin-center/team.types';
 
 type EditTeamProps = {
   selectedTeamId: string | null;

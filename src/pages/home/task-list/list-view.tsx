@@ -1,35 +1,37 @@
 import { Tabs } from 'antd';
-import React from 'react';
 import AddTaskInlineForm from './add-task-inline-form';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 
 const ListView = () => {
-  // tasks filter tab items
+  const { model } = useAppSelector(state => state.homePageReducer);
+  const {t} = useTranslation('home');
+
   const tabItems = [
     {
       key: 'all',
-      label: `All (0)`,
+      label: `${t('tasks.all')} (${model.total})`,
       children: <AddTaskInlineForm />,
     },
     {
       key: 'today',
-      label: `Today (0)`,
+      label: `${t('tasks.today')} (${model.today})`,
     },
     {
       key: 'upcoming',
-      label: `Upcoming (0)`,
+      label: `${t('tasks.upcoming')} (${model.upcoming})`,
     },
     {
       key: 'overdue',
-      label: `Overdue (0)`,
+      label: `${t('tasks.overdue')} (${model.overdue})`,
     },
     {
       key: 'no due date',
-      label: `No due date (0)`,
+      label: `${t('tasks.noDueDate')} (${model.no_due_date})`,
     },
   ];
 
   return (
-    //  tasks filtering tabs
     <Tabs type="card" items={tabItems} />
   );
 };

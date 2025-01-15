@@ -12,12 +12,18 @@ import { Rule } from 'antd/es/form';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { signUp } from '@/features/auth/authSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
-import { evt_signup_page_visit, evt_signup_with_email_click, evt_signup_with_google_click } from '@/shared/worklenz-analytics-events';
+import {
+  evt_signup_page_visit,
+  evt_signup_with_email_click,
+  evt_signup_with_google_click,
+} from '@/shared/worklenz-analytics-events';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import logger from '@/utils/errorLogger';
 import alertService from '@/services/alerts/alertService';
+import { WORKLENZ_REDIRECT_PROJ_KEY } from '@/shared/constants';
 
 const SignupPage = () => {
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
@@ -34,8 +40,20 @@ const SignupPage = () => {
     name: '',
     teamId: '',
     teamMemberId: '',
-    projectId: ''
+    projectId: '',
   });
+
+  const setProjectId = (projectId: string) => {
+    if (!projectId) {
+      localStorage.removeItem(WORKLENZ_REDIRECT_PROJ_KEY);
+      return;
+    }
+    localStorage.setItem(WORKLENZ_REDIRECT_PROJ_KEY, projectId);
+  };
+
+  const getProjectId = () => {
+    return localStorage.getItem(WORKLENZ_REDIRECT_PROJ_KEY);
+  };
 
   useEffect(() => {
     trackMixpanelEvent(evt_signup_page_visit);
@@ -45,7 +63,14 @@ const SignupPage = () => {
       name: searchParams.get('name') || '',
       teamId: searchParams.get('team') || '',
       teamMemberId: searchParams.get('user') || '',
-      projectId: searchParams.get('project') || ''
+      projectId: searchParams.get('project') || '',
+    });
+
+    setProjectId(searchParams.get('project') || '');
+
+    form.setFieldsValue({
+      email: searchParams.get('email') || '',
+      name: searchParams.get('name') || '',
     });
   }, [trackMixpanelEvent]);
 
@@ -62,17 +87,21 @@ const SignupPage = () => {
   }, []);
 
   const getInvitationQueryParams = () => {
-    const { teamId, teamMemberId, projectId } = urlParams;
-    return Object.entries({ team: teamId, teamMember: teamMemberId, project: projectId })
-      .filter(([, value]) => value)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&');
+    const params = [
+      `team=${urlParams.teamId}`,
+      `teamMember=${urlParams.teamMemberId}`,
+    ];
+    if (getProjectId()) {
+      params.push(`project=${getProjectId()}`);
+    }
+    return urlParams.teamId && urlParams.teamMemberId ? `?${params.join('&')}` : '';
   };
 
   const getRecaptchaToken = async () => {
-    return new Promise<string>((resolve) => {
-      window.grecaptcha.ready(() => {
-        window.grecaptcha.execute(import.meta.env.VITE_RECAPTCHA_SITE_KEY, { action: 'signup' })
+    return new Promise<string>(resolve => {
+      window.grecaptcha?.ready(() => {
+        window.grecaptcha
+          ?.execute(import.meta.env.VITE_RECAPTCHA_SITE_KEY, { action: 'signup' })
           .then((token: string) => {
             resolve(token);
           });
@@ -83,7 +112,7 @@ const SignupPage = () => {
   const onFinish = async (values: IUserSignUpRequest) => {
     try {
       setValidating(true);
-      const token = await getRecaptchaToken(); 
+      const token = await getRecaptchaToken();
 
       if (!token) {
         logger.error('Failed to get reCAPTCHA token');
@@ -96,8 +125,8 @@ const SignupPage = () => {
       if (!veriftToken.done) {
         logger.error('Failed to verify reCAPTCHA token');
         return;
-      }      
-      
+      }
+
       const body = {
         name: values.name,
         email: values.email,
@@ -120,8 +149,17 @@ const SignupPage = () => {
       setLoading(true);
       trackMixpanelEvent(evt_signup_with_email_click, {
         email: body.email,
-        name: body.name
+        name: body.name,
       });
+      if (urlParams.teamId) {
+        body.team_id = urlParams.teamId;
+      }
+      if (urlParams.teamMemberId) {
+        body.team_member_id = urlParams.teamMemberId;
+      }
+      if (urlParams.projectId) {
+        body.project_id = urlParams.projectId;
+      }
       const result = await dispatch(signUp(body)).unwrap();
       if (result?.authenticated) {
         message.success('Successfully signed up!');
@@ -197,6 +235,7 @@ const SignupPage = () => {
     >
       <PageHeader description={t('headerDescription')} />
       <Form
+        form={form}
         name="signup"
         layout="vertical"
         autoComplete="off"
@@ -205,7 +244,7 @@ const SignupPage = () => {
         style={{ width: '100%' }}
         initialValues={{
           email: urlParams.email,
-          name: urlParams.name
+          name: urlParams.name,
         }}
       >
         <Form.Item name="name" label={t('nameLabel')} rules={formRules.name}>

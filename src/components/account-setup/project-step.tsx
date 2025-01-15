@@ -74,6 +74,11 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
     }
   };
 
+  const onPressEnter = () => {
+    if (!projectName) return;
+    onEnter();
+  };
+
   return (
     <div>
       <Form className="step-form" style={styles.form}>
@@ -91,7 +96,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
             placeholder={t('projectStepPlaceholder')}
             value={projectName}
             onChange={e => dispatch(setProjectName(e.target.value))}
-            onPressEnter={onEnter}
+            onPressEnter={onPressEnter}
             ref={inputRef}
           />
         </Form.Item>

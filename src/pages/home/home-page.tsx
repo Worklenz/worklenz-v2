@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { Col, Flex } from 'antd';
 
@@ -8,29 +8,68 @@ import TodoList from '@/pages/home/todo-list/todo-list';
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import CreateProjectButton from '@/components/projects/project-create-button/project-create-button';
 import RecentAndFavouriteProjectList from '@/pages/home/recent-and-favourite-project-list/recent-and-favourite-project-list';
+
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAuthService } from '@/hooks/useAuth';
+
+import { homePageApiService } from '@/api/home-page/home-page.api.service';
+
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { fetchProjects } from '@/features/home-page/home-page.slice';
-import { useAuthService } from '@/hooks/useAuth';
+
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const DESKTOP_MIN_WIDTH = 1024;
 const TASK_LIST_MIN_WIDTH = 500;
 const SIDEBAR_MAX_WIDTH = 400;
+const MY_PROJECTS_FILTER_KEY = 'my-dashboard-active-projects-filter';
 
 const HomePage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [projectsList, setProjectsList] = useState<IProjectViewModel[]>([]);
+  const [projectSegment, setProjectSegment] = useState<'Recent' | 'Favourites'>('Recent');
+
   const isDesktop = useMediaQuery({ query: `(min-width: ${DESKTOP_MIN_WIDTH}px)` });
   const dispatch = useAppDispatch();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
-  
   useDocumentTitle('Home');
 
   const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
   const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
+
+  const getActiveProjectsFilter = useCallback(() => {
+    return +(localStorage.getItem(MY_PROJECTS_FILTER_KEY) || 0);
+  }, []);
+
+  const setActiveProjectsFilter = useCallback((value: number) => {
+    localStorage.setItem(MY_PROJECTS_FILTER_KEY, value.toString());
+  }, []);
+
+  const getProjectsList = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await homePageApiService.getProjects(getActiveProjectsFilter());
+      if (res.done) {
+        setProjectsList(res.body);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [getActiveProjectsFilter]);
+
+  const handleSegmentChange = useCallback(
+    (value: 'Recent' | 'Favourites') => {
+      setProjectSegment(value);
+      setActiveProjectsFilter(value === 'Recent' ? 0 : 1);
+      getProjectsList();
+    },
+    [getProjectsList, setActiveProjectsFilter]
+  );
 
   useEffect(() => {
     const fetchLookups = async () => {
@@ -38,14 +77,18 @@ const HomePage = () => {
         dispatch(fetchProjectHealth()),
         dispatch(fetchProjectCategories()),
         dispatch(fetchProjectStatuses()),
-        dispatch(fetchProjects())
+        dispatch(fetchProjects()),
       ].filter(Boolean);
 
       await Promise.all(fetchPromises);
     };
 
     fetchLookups();
-  }, [dispatch, projectHealths.length, projectCategories.length, projectStatuses.length]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    getProjectsList();
+  }, [getProjectsList]);
 
   const CreateProjectButtonComponent = () => (
     isDesktop ? (
@@ -65,14 +108,26 @@ const HomePage = () => {
         </Flex>
         <Flex vertical gap={24} style={{ width: '100%', maxWidth: SIDEBAR_MAX_WIDTH }}>
           <TodoList />
-          <RecentAndFavouriteProjectList />
+          <RecentAndFavouriteProjectList 
+            handleRefresh={getProjectsList}
+            projectsList={projectsList}
+            projectSegment={projectSegment}
+            handleSegmentChange={handleSegmentChange}
+            isLoading={isLoading}
+          />
         </Flex>
       </Flex>
     ) : (
       <Flex vertical gap={24} className="mt-6">
         <TasksList />
         <TodoList />
-        <RecentAndFavouriteProjectList />
+        <RecentAndFavouriteProjectList 
+          handleRefresh={getProjectsList}
+          projectsList={projectsList}
+          projectSegment={projectSegment}
+          handleSegmentChange={handleSegmentChange}
+          isLoading={isLoading}
+        />
       </Flex>
     )
   );
@@ -87,9 +142,10 @@ const HomePage = () => {
       <MainContent />
 
       <ProjectDrawer 
-        categories={projectCategories} 
-        statuses={projectStatuses} 
-        healths={projectHealths} 
+        categories={projectCategories}
+        statuses={projectStatuses}
+        healths={projectHealths}
+        onDelete={() => {}}
       />
     </div>
   );

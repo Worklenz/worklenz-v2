@@ -25,5 +25,7 @@
   "addAnother": "Add another",
   "skipForNow": "Skip for now",
   "formTitle": "Create your first task.",
-  "step3Title": "Invite your team to work with"
+  "step3Title": "Invite your team to work with",
+  "maxMembers": " (You can invite up to 5 members)",
+  "maxTasks": " (You can create up to 5 tasks)"
 }
