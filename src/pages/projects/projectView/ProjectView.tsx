@@ -142,7 +142,7 @@ const ProjectView = () => {
         activeKey={activeTab}
         onChange={handleTabChange}
         items={tabMenuItems}
-        tabBarStyle={{ paddingInline: isDesktop ? 240 : 0 }}
+        tabBarStyle={{ paddingInline: 0 }}
         tabBarExtraContent={
           <div>
             <CustomAvatar avatarName={'Raveesha dilanka'} size={26} />

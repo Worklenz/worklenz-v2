@@ -27,4 +27,4 @@ const CustomAvatar = ({
   );
 };
 
-export default CustomAvatar;
+export default React.memo(CustomAvatar);

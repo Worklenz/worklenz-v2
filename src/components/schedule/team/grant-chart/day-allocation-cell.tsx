@@ -102,4 +102,4 @@ const DayAllocationCell = ({
   );
 };
 
-export default DayAllocationCell;
+export default React.memo(DayAllocationCell);

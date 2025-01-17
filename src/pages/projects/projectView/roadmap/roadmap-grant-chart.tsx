@@ -70,7 +70,7 @@ const RoadmapGrantChart = ({ view }: RoadmapGrantChartProps) => {
   const flattenedTasksList = flattenTasks(tasks);
 
   return (
-    <div className="w-full max-w-[900px] overflow-x-auto">
+    <div className="w-full overflow-x-auto">
       <Gantt
         tasks={flattenedTasksList}
         viewMode={view}

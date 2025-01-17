@@ -127,7 +127,7 @@ const ProjectViewHeader = () => {
           )}
         </Flex>
       }
-      style={{ paddingInline: isDesktop ? 240 : 0, marginBlockEnd: 12 }}
+      style={{ paddingInline: 0, marginBlockEnd: 12 }}
       extra={
         <Flex gap={8} align="center">
           <Tooltip title={'Refresh project'} trigger={'hover'}>

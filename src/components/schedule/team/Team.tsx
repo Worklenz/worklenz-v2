@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import GranttChart from './grant-chart/grantt-chart';
 import { Member } from '../../../types/schedule/schedule.types';
 
@@ -9,10 +9,10 @@ interface teamProps {
 const Team: React.FC<teamProps> = ({ date }) => {
   const [members, setMembers] = useState<Member[]>([]);
 
-  useEffect(() => {
+  useMemo(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/TeamData.json');
+        const response = await fetch('/scheduler-data/TeamData.json');
         const data = await response.json();
         setMembers(data);
       } catch (error) {
