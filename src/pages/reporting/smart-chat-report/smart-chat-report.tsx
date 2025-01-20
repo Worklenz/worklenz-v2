@@ -10,15 +10,17 @@ import { IRPTTeam } from '@/types/reporting/reporting.types';
 import { IChatMessage } from '@/types/aiChat/ai-chat.types';
 import { Prompts } from '@ant-design/x';
 import apiAiChatClient from '@/api/api-aichat-client';
+import { authApiService } from '@/api/auth/auth.api.service';
+import { useChatScroll } from './smart-chat-report-styles';
 
-const initialMessages: IChatMessage[] = [
-    {
-        role: "assistant",
-        content: "How can I help you today?"
-    },
-];
 
 const SmartChatReport = () => {
+    const initialMessages: IChatMessage[] = [
+        {
+            role: "assistant",
+            content: "How can I help you today with worklenz ?"
+        },
+    ];
     const [messageInput, setMessageInput] = useState('');
     const [chatMessages, setChatMessages] = useState<IChatMessage[]>(initialMessages);
     const [loading, setLoading] = useState(false);
@@ -26,6 +28,7 @@ const SmartChatReport = () => {
     const [lastResponseLength, setLastResponseLength] = useState(0);
     const [typingText, setTypingText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [user, setUser] = useState({});
     const [teams, setTeams] = useState<IRPTTeam[]>([]);
     const [selectedTeam, setselectedTeam] = useState({});
     const [organization, setOrganization] = useState({});
@@ -34,46 +37,7 @@ const SmartChatReport = () => {
     const md = Markdownit({ html: true, breaks: true });
     const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
 
-    const getTeams = async () => {
-        setLoading(true);
-        try {
-            const { done, body } = await reportingApiService.getOverviewTeams(includeArchivedProjects);
-            if (done) {
-                setTeams(body);
-            }
-        } catch (error) {
-            logger.error('getTeams', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const getInfo = async () => {
-        setLoading(true);
-        try {
-            const { done, body } = await reportingApiService.getInfo();
-            if (done) {
-                setOrganization(body);
-            }
-        } catch (error) {
-            logger.error('getInfo', error);
-        } finally {
-            setLoading(false);
-    }};
-
-    const getMembers = async () => {
-        setLoading(true);
-        try {
-            const { done, body } = await reportingApiService.getMembers(includeArchivedProjects);
-            if (done) {
-                setselectedTeam(body);
-            }
-        } catch (error) {
-            logger.error('getMembers', error);
-        } finally {
-            setLoading(false);
-    }};
-
+    const ref = useChatScroll(chatMessages)
     React.useEffect(() => {
         if (lastResponseLength > 0) {
             const id = setTimeout(
@@ -107,7 +71,9 @@ const SmartChatReport = () => {
             const requestBody = {
                 chat: updatedChatMessages,
                 data: {
-                    org: JSON.stringify(organization),
+                    org: JSON.stringify({organization_name: organization,
+                        user_name: user,
+                    }),
                     teams: JSON.stringify(teams),
                     selectedTeam: JSON.stringify(selectedTeam),
                 },
@@ -143,9 +109,52 @@ const SmartChatReport = () => {
     };
 
     useEffect(() => {
-        getTeams();
-        getInfo();
-        getMembers();
+        const fetchDataAndSetChat = async () => {
+            setLoading(true);
+            try {
+                // Fetch teams, organization, and members data concurrently
+                const [user ,teamsResponse, infoResponse, membersResponse] = await Promise.all([
+                    authApiService.verify(),
+                    reportingApiService.getOverviewTeams(includeArchivedProjects),
+                    reportingApiService.getInfo(),
+                    reportingApiService.getMembers(includeArchivedProjects),
+                ]);
+    
+                // Extract and set data if the API calls succeed
+                if (teamsResponse.done) {
+                    setTeams(teamsResponse.body);
+                }
+                if (infoResponse.done) {
+                    setOrganization(infoResponse.body);
+                }
+                if (membersResponse.done) {
+                    setselectedTeam(membersResponse.body);
+                }
+                setUser(user.user);
+                console.log("members:", membersResponse.body);
+                // const storedSessionId = localStorage.getItem('worklenz.sid');
+                // console.log("Stored Session ID:", storedSessionId);
+                // Ensure all data is fetched before setting chat
+                // const requestBody = {
+                //     data: {
+                //         org: JSON.stringify(infoResponse.body || {}),
+                //         teams: JSON.stringify(teamsResponse.body || []),
+                //         selectedTeam: JSON.stringify(membersResponse.body || {}),
+                //     },
+                // };
+    
+                // console.log("SetChat Request Body:", requestBody);
+                // const response = await apiAiChatClient.post('/chat-init', requestBody);
+                // console.log("SetChat Response:", response.data);
+    
+            } catch (error) {
+                logger.error('fetchDataAndSetChat', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchDataAndSetChat();
     }, [includeArchivedProjects]);
 
     const memoizedRenderMarkdown = React.useMemo(() => {
@@ -158,22 +167,26 @@ const SmartChatReport = () => {
 
     return (
         <Flex vertical>
-            <Flex gap="middle" 
+            <Flex gap="middle" ref={ref}
             style={{ height: '70vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
             vertical>
                 {chatMessages.filter((message) => message.role !== "system").map((message, index) => (
                     <Bubble
+                        shape="round"
+                        variant='outlined'
                         key={`${message.role}-${index}-${renderKey}`}
                         placement={message.role === "user" ? "end" : "start"}
                         content={message.content}
                         messageRender={memoizedRenderMarkdown}
-                        {...(message.role === "assistant" && { avatar: { icon: <OpenAIFilled /> } })}
+                        {...(message.role === "assistant" && { avatar: { icon: <OpenAIFilled /> } 
+                            ,variant:"borderless"})}
 
                     />
-                ))}
+                ))}               
                 {isTyping && (
                     <Bubble
                         typing
+                        variant="borderless"
                         placement="start"
                         content={typingText}
                         messageRender={memoizedRenderMarkdown}
@@ -202,3 +215,4 @@ const SmartChatReport = () => {
 };
 
 export default SmartChatReport;
+
