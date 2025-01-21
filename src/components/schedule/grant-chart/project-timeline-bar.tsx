@@ -1,80 +1,66 @@
 import React, { useState } from 'react';
 import { Flex, Popover, Typography } from 'antd';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
-import { Project } from '../../../../types/schedule/schedule.types';
-import { toggleScheduleDrawer } from '../../../../features/schedule/scheduleSlice';
-import ProjectTimelineModal from '../../../../features/schedule/ProjectTimelineModal';
+import { useAppSelector } from '../../../hooks/useAppSelector';
+import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
+import ProjectTimelineModal from '../../../features/schedule/ProjectTimelineModal';
 import { Resizable } from 're-resizable';
-import { themeWiseColor } from '../../../../utils/themeWiseColor';
+import { themeWiseColor } from '../../../utils/themeWiseColor';
 import { MoreOutlined } from '@ant-design/icons';
-import { CELL_WIDTH } from './grantt-chart';
+import { CELL_WIDTH } from '../../../shared/constants';
 
 type ProjectTimelineBarProps = {
-  project: Project;
-  startOffset: number;
-  projectDuration: number;
+  project: any;
+  indicatorOffset: number;
+  indicatorWidth: number;
 };
 
 const ProjectTimelineBar = ({
   project,
-  startOffset,
-  projectDuration,
+  indicatorOffset,
+  indicatorWidth,
 }: ProjectTimelineBarProps) => {
-  const [width, setWidth] = useState(CELL_WIDTH * projectDuration);
-  const [currentDuration, setCurrentDuration] = useState(projectDuration);
-  const [totalHours, setTotalHours] = useState(project.totalHours);
-  const [leftOffset, setLeftOffset] = useState(startOffset);
+  const [width, setWidth] = useState(indicatorWidth);
+  const [currentDuration, setCurrentDuration] = useState(indicatorWidth);
+  const [totalHours, setTotalHours] = useState(project?.total_hours);
+  const [leftOffset, setLeftOffset] = useState(indicatorOffset);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { t } = useTranslation('schedule');
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const dispatch = useAppDispatch();
 
-  const handleResizeStop = (
+  const handleResize = (
     event: MouseEvent | TouchEvent,
     direction: string,
     ref: HTMLElement,
     delta: { width: number; height: number }
   ) => {
-    const newWidth = width + delta.width;
-
     if (direction === 'right') {
-      // Handle resizing from the right
-      if (delta.width > 0) {
-        // Dragging right handle to the right (increase width)
-        const newDuration = Math.round(newWidth / CELL_WIDTH);
+      // Resizing from the right
+      const newWidth = width + delta.width;
+
+      if (newWidth >= CELL_WIDTH && newWidth <= CELL_WIDTH * 30) {
         setWidth(newWidth);
-        setCurrentDuration(newDuration);
-        setTotalHours(newDuration * project.perDayHours);
-      } else if (delta.width < 0) {
-        // Dragging right handle to the left (decrease width)
         const newDuration = Math.round(newWidth / CELL_WIDTH);
-        setWidth(newWidth);
         setCurrentDuration(newDuration);
-        setTotalHours(newDuration * project.perDayHours);
+        setTotalHours(newDuration * project.hours_per_day);
       }
     } else if (direction === 'left') {
-      // Handle resizing from the left
-      if (delta.width < 0) {
-        // Dragging left handle to the left (increase width)
-        const newLeftOffset = leftOffset + delta.width;
-        const newDuration = Math.round(newWidth / CELL_WIDTH);
+      const newLeftOffset = leftOffset + delta.width;
+      const newWidth = width - delta.width;
 
+      if (
+        newLeftOffset >= 0 &&
+        newWidth >= CELL_WIDTH &&
+        newWidth <= CELL_WIDTH * 30
+      ) {
         setLeftOffset(newLeftOffset);
         setWidth(newWidth);
-        setCurrentDuration(newDuration);
-        setTotalHours(newDuration * project.perDayHours);
-      } else if (delta.width > 0) {
-        // Dragging left handle to the right (decrease width)
-        const newLeftOffset = leftOffset + delta.width;
         const newDuration = Math.round(newWidth / CELL_WIDTH);
-
-        setLeftOffset(newLeftOffset);
-        setWidth(newWidth);
         setCurrentDuration(newDuration);
-        setTotalHours(newDuration * project.perDayHours);
+        setTotalHours(newDuration * project.hours_per_day);
       }
     }
   };
@@ -87,7 +73,7 @@ const ProjectTimelineBar = ({
     >
       <Resizable
         size={{ width, height: 56 }}
-        onResizeStop={handleResizeStop}
+        onResize={handleResize}
         minWidth={CELL_WIDTH}
         maxWidth={CELL_WIDTH * 30}
         grid={[CELL_WIDTH, 1]}
@@ -112,17 +98,13 @@ const ProjectTimelineBar = ({
         }}
         className="group hover:shadow-md"
         style={{
-          position: 'absolute',
           marginInlineStart: leftOffset,
-          gridColumnStart: Math.floor(leftOffset / CELL_WIDTH) + 1,
-          gridColumnEnd:
-            Math.floor(leftOffset / CELL_WIDTH) + currentDuration + 1,
           backgroundColor: themeWiseColor(
             'rgba(240, 248, 255, 1)',
             'rgba(0, 142, 204, 0.5)',
             themeMode
           ),
-          borderRadius: '5px',
+          borderRadius: 6,
           border: `1px solid ${themeWiseColor(
             'rgba(149, 197, 248, 1)',
             'rgba(24, 144, 255, 1)',
@@ -158,7 +140,7 @@ const ProjectTimelineBar = ({
               style={{ fontSize: '10px' }}
               ellipsis={{ expanded: false }}
             >
-              {t('perDay')} {project.perDayHours}h
+              {t('perDay')} {project.hours_per_day}h
             </Typography.Text>
           )}
           <Typography.Text

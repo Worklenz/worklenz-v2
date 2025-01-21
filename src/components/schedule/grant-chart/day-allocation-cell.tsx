@@ -1,8 +1,7 @@
-// DayAllocationCell.jsx
 import React from 'react';
 import { Tooltip } from 'antd';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { toggleScheduleDrawer } from '../../../../features/schedule/scheduleSlice';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
 
 type DayAllocationCellProps = {
   totalPerDayHours: number;
@@ -19,18 +18,30 @@ const DayAllocationCell = ({
 }: DayAllocationCellProps) => {
   const dispatch = useAppDispatch();
 
-  const tooltipContent = (
+  // If it's a weekend, override values and disable interaction
+  const effectiveTotalPerDayHours = isWeekend ? 0 : totalPerDayHours;
+  const effectiveLoggedHours = isWeekend ? 0 : loggedHours;
+  const effectiveWorkingHours = isWeekend ? 1 : workingHours; // Avoid division by zero
+
+  const tooltipContent = isWeekend ? (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <span>Total Allocation: {totalPerDayHours + loggedHours}h</span>
-      <span>Time Logged: {loggedHours}h</span>
-      <span>Remaining Time: {totalPerDayHours}h</span>
+      <span>Weekend</span>
+    </div>
+  ) : (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <span>
+        Total Allocation: {effectiveTotalPerDayHours + effectiveLoggedHours}h
+      </span>
+      <span>Time Logged: {effectiveLoggedHours}h</span>
+      <span>Remaining Time: {effectiveTotalPerDayHours}h</span>
     </div>
   );
 
-  const gradientColor =
-    totalPerDayHours <= 0
+  const gradientColor = isWeekend
+    ? 'rgba(200, 200, 200, 0.35)' // Inactive color for weekends
+    : effectiveTotalPerDayHours <= 0
       ? 'rgba(200, 200, 200, 0.35)'
-      : totalPerDayHours <= workingHours
+      : effectiveTotalPerDayHours <= effectiveWorkingHours
         ? 'rgba(6, 126, 252, 0.4)'
         : 'rgba(255, 0, 0, 0.4)';
 
@@ -38,13 +49,13 @@ const DayAllocationCell = ({
     <div
       style={{
         fontSize: '14px',
-        backgroundColor: isWeekend ? 'rgba(217, 217, 217, 0.4)' : '',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         padding: '10px 7px',
         height: '92px',
         flexDirection: 'column',
+        pointerEvents: isWeekend ? 'none' : 'auto',
       }}
     >
       <Tooltip title={tooltipContent}>
@@ -52,34 +63,36 @@ const DayAllocationCell = ({
           style={{
             width: '63px',
             background: `linear-gradient(to top, ${gradientColor} ${
-              (totalPerDayHours * 100) / workingHours
+              (effectiveTotalPerDayHours * 100) / effectiveWorkingHours
             }%, rgba(190, 190, 190, 0.25) ${
-              (totalPerDayHours * 100) / workingHours
+              (effectiveTotalPerDayHours * 100) / effectiveWorkingHours
             }%)`,
-            justifyContent: loggedHours > 0 ? 'flex-end' : 'center',
+            justifyContent: effectiveLoggedHours > 0 ? 'flex-end' : 'center',
             display: 'flex',
             alignItems: 'center',
             height: '100%',
             borderRadius: '5px',
             flexDirection: 'column',
-            cursor: 'pointer',
+            cursor: isWeekend ? 'not-allowed' : 'pointer', // Change cursor for weekends
           }}
-          onClick={() => dispatch(toggleScheduleDrawer())}
+          onClick={
+            !isWeekend ? () => dispatch(toggleScheduleDrawer()) : undefined
+          }
         >
           <span
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: `${(totalPerDayHours * 100) / workingHours}%`,
+              height: `${(effectiveTotalPerDayHours * 100) / effectiveWorkingHours}%`,
             }}
           >
-            {totalPerDayHours}h
+            {effectiveTotalPerDayHours}h
           </span>
-          {loggedHours > 0 && (
+          {effectiveLoggedHours > 0 && (
             <span
               style={{
-                height: `${(loggedHours * 100) / workingHours}%`,
+                height: `${(effectiveLoggedHours * 100) / effectiveWorkingHours}%`,
                 backgroundColor: 'rgba(98, 210, 130, 1)',
                 width: '100%',
                 display: 'flex',
@@ -89,7 +102,7 @@ const DayAllocationCell = ({
                 borderBottomRightRadius: '5px',
               }}
             >
-              {loggedHours}h
+              {effectiveLoggedHours}h
             </span>
           )}
         </div>

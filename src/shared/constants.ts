@@ -89,3 +89,5 @@ export const TASK_DUE_COMPLETED_COLOR = '#75c997';
 export const TASK_DUE_UPCOMING_COLOR = '#70a6f3';
 export const TASK_DUE_OVERDUE_COLOR = '#f37070';
 export const TASK_DUE_NO_DUE_COLOR = '#a9a9a9';
+
+export const CELL_WIDTH = 75;

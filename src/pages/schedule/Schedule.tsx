@@ -1,6 +1,5 @@
 import { Button, DatePicker, DatePickerProps, Flex, Select, Space } from 'antd';
 import React, { useState } from 'react';
-import Team from '../../components/schedule/team/Team';
 import { SettingOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { toggleSettingsDrawer } from '../../features/schedule/scheduleSlice';
@@ -8,6 +7,8 @@ import ScheduleSettingsDrawer from '../../features/schedule/ScheduleSettingsDraw
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '../../hooks/useDoumentTItle';
+import ScheduleDrawer from '../../features/schedule/ScheduleDrawer';
+import GranttChart from '../../components/schedule/grant-chart/grantt-chart';
 
 const { Option } = Select;
 
@@ -87,10 +88,11 @@ const Schedule: React.FC = () => {
       </Flex>
 
       <Flex vertical gap={24}>
-        <Team date={date} />
+        <GranttChart />
       </Flex>
 
       <ScheduleSettingsDrawer />
+      <ScheduleDrawer />
     </div>
   );
 };

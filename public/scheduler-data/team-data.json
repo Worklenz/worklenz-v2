@@ -1,0 +1,794 @@
+[
+  {
+    "name": "Raveesha Dilanka",
+    "id": "1",
+    "projects": [
+      {
+        "name": "Project A",
+        "id": "1",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-01-01",
+          "end": "2025-01-05"
+        },
+        "indicator_offset": 0,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project B",
+        "id": "2",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-01-06",
+          "end": "2025-01-10"
+        },
+        "indicator_offset": 375,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project C",
+        "id": "3",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-01-11",
+          "end": "2025-01-15"
+        },
+        "indicator_offset": 750,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project D",
+        "id": "4",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-01-16",
+          "end": "2025-01-20"
+        },
+        "indicator_offset": 1125,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project E",
+        "id": "5",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-01-21",
+          "end": "2025-01-25"
+        },
+        "indicator_offset": 1500,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project F",
+        "id": "6",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-01-26",
+          "end": "2025-01-30"
+        },
+        "indicator_offset": 1875,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project G",
+        "id": "7",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-01-31",
+          "end": "2025-02-04"
+        },
+        "indicator_offset": 2250,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project H",
+        "id": "8",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-02-05",
+          "end": "2025-02-09"
+        },
+        "indicator_offset": 2625,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project I",
+        "id": "9",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-02-10",
+          "end": "2025-02-14"
+        },
+        "indicator_offset": 3000,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project J",
+        "id": "10",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-02-15",
+          "end": "2025-02-19"
+        },
+        "indicator_offset": 3375,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project K",
+        "id": "11",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-02-20",
+          "end": "2025-02-24"
+        },
+        "indicator_offset": 3750,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project L",
+        "id": "12",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-02-25",
+          "end": "2025-02-29"
+        },
+        "indicator_offset": 4125,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project M",
+        "id": "13",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-03-01",
+          "end": "2025-03-05"
+        },
+        "indicator_offset": 4500,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project N",
+        "id": "14",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-03-06",
+          "end": "2025-03-10"
+        },
+        "indicator_offset": 4875,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project O",
+        "id": "15",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-03-11",
+          "end": "2025-03-15"
+        },
+        "indicator_offset": 5250,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project P",
+        "id": "16",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-03-16",
+          "end": "2025-03-20"
+        },
+        "indicator_offset": 5625,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project Q",
+        "id": "17",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-03-21",
+          "end": "2025-03-25"
+        },
+        "indicator_offset": 6000,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project R",
+        "id": "18",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-03-26",
+          "end": "2025-03-30"
+        },
+        "indicator_offset": 6375,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project S",
+        "id": "19",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-03-31",
+          "end": "2025-04-04"
+        },
+        "indicator_offset": 6750,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project T",
+        "id": "20",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-04-05",
+          "end": "2025-04-09"
+        },
+        "indicator_offset": 7125,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project X",
+        "id": "5",
+        "hours_per_day": 6,
+        "total_hours": 36,
+        "date_union": {
+          "start": "2025-01-15",
+          "end": "2025-01-20"
+        },
+        "indicator_offset": 1050,
+        "indicator_width": 450,
+        "tasks": []
+      },
+      {
+        "name": "Project Y",
+        "id": "6",
+        "hours_per_day": 5,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-01-25",
+          "end": "2025-01-31"
+        },
+        "indicator_offset": 1800,
+        "indicator_width": 525,
+        "tasks": []
+      },
+      {
+        "name": "Project Z",
+        "id": "7",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-02-01",
+          "end": "2025-02-05"
+        },
+        "indicator_offset": 2325,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project AA",
+        "id": "8",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-02-06",
+          "end": "2025-02-10"
+        },
+        "indicator_offset": 2700,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project BB",
+        "id": "9",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-02-11",
+          "end": "2025-02-15"
+        },
+        "indicator_offset": 3075,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project CC",
+        "id": "10",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-02-16",
+          "end": "2025-02-20"
+        },
+        "indicator_offset": 3450,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project DD",
+        "id": "11",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-02-21",
+          "end": "2025-02-25"
+        },
+        "indicator_offset": 3825,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project EE",
+        "id": "12",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-02-26",
+          "end": "2025-03-02"
+        },
+        "indicator_offset": 4200,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project FF",
+        "id": "13",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-03-03",
+          "end": "2025-03-07"
+        },
+        "indicator_offset": 4575,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project GG",
+        "id": "14",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-03-08",
+          "end": "2025-03-12"
+        },
+        "indicator_offset": 4950,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project HH",
+        "id": "15",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-03-13",
+          "end": "2025-03-17"
+        },
+        "indicator_offset": 5325,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project II",
+        "id": "16",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-03-18",
+          "end": "2025-03-22"
+        },
+        "indicator_offset": 5700,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project JJ",
+        "id": "17",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-03-23",
+          "end": "2025-03-27"
+        },
+        "indicator_offset": 6075,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project KK",
+        "id": "18",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-03-28",
+          "end": "2025-04-01"
+        },
+        "indicator_offset": 6450,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project LL",
+        "id": "19",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-04-02",
+          "end": "2025-04-06"
+        },
+        "indicator_offset": 6825,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project MM",
+        "id": "20",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-04-07",
+          "end": "2025-04-11"
+        },
+        "indicator_offset": 7200,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project NN",
+        "id": "21",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-04-12",
+          "end": "2025-04-16"
+        },
+        "indicator_offset": 7575,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project OO",
+        "id": "22",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-04-17",
+          "end": "2025-04-21"
+        },
+        "indicator_offset": 7950,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project PP",
+        "id": "23",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-04-22",
+          "end": "2025-04-26"
+        },
+        "indicator_offset": 8325,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project QQ",
+        "id": "24",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-04-27",
+          "end": "2025-05-01"
+        },
+        "indicator_offset": 8700,
+        "indicator_width": 375,
+        "tasks": []
+      }
+    ]
+  },
+  {
+    "name": "Sarah Smith",
+    "id": "3",
+    "projects": [
+      {
+        "name": "Project X",
+        "id": "5",
+        "hours_per_day": 6,
+        "total_hours": 36,
+        "date_union": {
+          "start": "2025-01-15",
+          "end": "2025-01-20"
+        },
+        "indicator_offset": 1050,
+        "indicator_width": 450,
+        "tasks": []
+      },
+      {
+        "name": "Project Y",
+        "id": "6",
+        "hours_per_day": 5,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-01-25",
+          "end": "2025-01-31"
+        },
+        "indicator_offset": 1800,
+        "indicator_width": 525,
+        "tasks": []
+      },
+      {
+        "name": "Project Z",
+        "id": "7",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-02-01",
+          "end": "2025-02-05"
+        },
+        "indicator_offset": 2325,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project AA",
+        "id": "8",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-02-06",
+          "end": "2025-02-10"
+        },
+        "indicator_offset": 2700,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project BB",
+        "id": "9",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-02-11",
+          "end": "2025-02-15"
+        },
+        "indicator_offset": 3075,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project CC",
+        "id": "10",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-02-16",
+          "end": "2025-02-20"
+        },
+        "indicator_offset": 3450,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project DD",
+        "id": "11",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-02-21",
+          "end": "2025-02-25"
+        },
+        "indicator_offset": 3825,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project EE",
+        "id": "12",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-02-26",
+          "end": "2025-03-02"
+        },
+        "indicator_offset": 4200,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project FF",
+        "id": "13",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-03-03",
+          "end": "2025-03-07"
+        },
+        "indicator_offset": 4575,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project GG",
+        "id": "14",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-03-08",
+          "end": "2025-03-12"
+        },
+        "indicator_offset": 4950,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project HH",
+        "id": "15",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-03-13",
+          "end": "2025-03-17"
+        },
+        "indicator_offset": 5325,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project II",
+        "id": "16",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-03-18",
+          "end": "2025-03-22"
+        },
+        "indicator_offset": 5700,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project JJ",
+        "id": "17",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-03-23",
+          "end": "2025-03-27"
+        },
+        "indicator_offset": 6075,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project KK",
+        "id": "18",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-03-28",
+          "end": "2025-04-01"
+        },
+        "indicator_offset": 6450,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project LL",
+        "id": "19",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-04-02",
+          "end": "2025-04-06"
+        },
+        "indicator_offset": 6825,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project MM",
+        "id": "20",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-04-07",
+          "end": "2025-04-11"
+        },
+        "indicator_offset": 7200,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project NN",
+        "id": "21",
+        "hours_per_day": 8,
+        "total_hours": 40,
+        "date_union": {
+          "start": "2025-04-12",
+          "end": "2025-04-16"
+        },
+        "indicator_offset": 7575,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project OO",
+        "id": "22",
+        "hours_per_day": 6,
+        "total_hours": 30,
+        "date_union": {
+          "start": "2025-04-17",
+          "end": "2025-04-21"
+        },
+        "indicator_offset": 7950,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project PP",
+        "id": "23",
+        "hours_per_day": 7,
+        "total_hours": 35,
+        "date_union": {
+          "start": "2025-04-22",
+          "end": "2025-04-26"
+        },
+        "indicator_offset": 8325,
+        "indicator_width": 375,
+        "tasks": []
+      },
+      {
+        "name": "Project QQ",
+        "id": "24",
+        "hours_per_day": 5,
+        "total_hours": 25,
+        "date_union": {
+          "start": "2025-04-27",
+          "end": "2025-05-01"
+        },
+        "indicator_offset": 8700,
+        "indicator_width": 375,
+        "tasks": []
+      }
+    ]
+  }
+]
