@@ -22,7 +22,11 @@ const Team: React.FC<teamProps> = ({ date }) => {
     fetchData();
   }, []);
 
-  return <GranttChart members={members} date={date} />;
+  return (
+    <>
+      <GranttChart members={members} date={date} />
+    </>
+  );
 };
 
 export default Team;

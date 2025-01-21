@@ -300,7 +300,7 @@
         "perDayHours": 4,
         "totalHours": 16,
         "startDate": "2025-01-18",
-        "endDate": "2025-01-24",
+        "endDate": "2027-01-24",
         "tasks": []
       },
       {
@@ -394,9 +394,9 @@
         "projectName": "Project Omega",
         "projectId": "11",
         "perDayHours": 6,
-        "totalHours": 30,
-        "startDate": "2025-01-12",
-        "endDate": "2025-01-18",
+        "totalHours": 186,
+        "startDate": "2025-01-20",
+        "endDate": "2025-02-20",
         "tasks": []
       },
       {

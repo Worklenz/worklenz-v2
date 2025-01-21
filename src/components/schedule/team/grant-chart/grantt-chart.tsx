@@ -8,20 +8,36 @@ import React, {
 import { Member } from '../../../../types/schedule/schedule.types';
 import { Col, Flex, Row, Typography } from 'antd';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
-import './grantt-chart.css';
 import { useDispatch } from 'react-redux';
 import { toggleScheduleDrawer } from '../../../../features/schedule/scheduleSlice';
 import { useTranslation } from 'react-i18next';
 import DayAllocationCell from './day-allocation-cell';
 import ProjectTimelineBar from './project-timeline-bar';
-import dayjs from 'dayjs';
 import ScheduleDrawer from '../../../../features/schedule/ScheduleDrawer';
 import GranttMembersTable from './grantt-members-table';
 import { themeWiseColor } from '../../../../utils/themeWiseColor';
+import Timeline from './timeline';
+
+export const CELL_WIDTH = 77;
 
 type GanttChartProps = {
   members: Member[];
   date: Date | null;
+};
+
+type DatesType = {
+  date_data: {
+    month: string;
+    weeks: any[];
+    days: {
+      day: number;
+      name: string;
+      isWeekend: boolean;
+      isToday: boolean;
+    }[];
+  }[];
+  chart_start: Date | null;
+  chart_end: Date | null;
 };
 
 const getDaysBetween = (start: Date, end: Date): number => {
@@ -30,13 +46,13 @@ const getDaysBetween = (start: Date, end: Date): number => {
 };
 
 const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
-  const [weekends, setWeekends] = useState<boolean[]>([]);
   const [today, setToday] = useState(new Date());
   const [showProject, setShowProject] = useState<string | null>(null);
   const { workingDays } = useAppSelector((state) => state.scheduleReducer);
   const workingHours = useAppSelector(
     (state) => state.scheduleReducer.workingHours
   );
+  const [dates, setDates] = useState<DatesType | null>(null);
 
   const timelineScrollRef = useRef<HTMLDivElement>(null);
   const timelineHeaderScrollRef = useRef<HTMLDivElement>(null);
@@ -49,26 +65,40 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
   const dispatch = useDispatch();
 
-  const timelineStart = useMemo(() => (date ? date : new Date()), [date]);
-  const timelineEnd = useMemo(() => {
-    const endDate = new Date(timelineStart);
-    endDate.setDate(timelineStart.getDate() + 90);
-    return endDate;
-  }, [timelineStart]);
-
-  const totalDays = getDaysBetween(timelineStart, timelineEnd);
-
   useEffect(() => {
-    const weekendsArray = Array.from({ length: totalDays }, (_, i) => {
-      const date = new Date(timelineStart);
-      date.setDate(timelineStart.getDate() + i);
+    // Fetch dates from API or file
+    const fetchDates = async () => {
+      try {
+        const response = await fetch(
+          '/scheduler-data/scheduler-timeline-dates.json'
+        );
+        const data = await response.json();
+        setDates(data);
+      } catch (error) {
+        console.error('Error fetching dates:', error);
+      }
+    };
 
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-      return !workingDays.includes(dayName);
-    });
+    fetchDates();
+  }, []);
 
-    setWeekends(weekendsArray);
-  }, [timelineStart, totalDays, workingDays]);
+  const timelineStart = useMemo(() => {
+    return dates?.chart_start ? new Date(dates.chart_start) : new Date();
+  }, [dates]);
+
+  const timelineEnd = useMemo(() => {
+    return dates?.chart_end ? new Date(dates.chart_end) : new Date();
+  }, [dates]);
+
+  const totalDays = useMemo(() => {
+    if (timelineStart && timelineEnd) {
+      const msPerDay = 1000 * 60 * 60 * 24;
+      return Math.round(
+        (timelineEnd.getTime() - timelineStart.getTime()) / msPerDay
+      );
+    }
+    return 0;
+  }, [timelineStart, timelineEnd]);
 
   const handleShowProject = useCallback((memberId: string | null) => {
     setShowProject((prevMemberId: string | null) =>
@@ -76,7 +106,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
     );
   }, []);
 
-  // function to sync scroll
+  // Syncing scroll vertically between timeline and members
   const syncVerticalScroll = (source: 'timeline' | 'members') => {
     if (source === 'timeline') {
       if (membersScrollRef.current && timelineScrollRef.current) {
@@ -91,7 +121,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
     }
   };
 
-  // function to sync scroll
+  // Syncing scroll horizontally between timeline and header
   const syncHorizontalScroll = (source: 'timeline' | 'header') => {
     if (source === 'timeline') {
       if (timelineHeaderScrollRef.current && timelineScrollRef.current) {
@@ -119,8 +149,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
         backgroundColor: themeMode === 'dark' ? '#141414' : '',
       }}
     >
-      {/* ============================================================================================================================== */}
-      {/* table */}
+      {/* Table Section */}
       <div
         style={{
           background: themeWiseColor('#fff', '#141414', themeMode),
@@ -138,8 +167,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
         />
       </div>
 
-      {/* ============================================================================================================================== */}
-      {/* left side of the table */}
+      {/* Timeline Section */}
       <div style={{ overflow: 'auto' }}>
         <div
           ref={timelineHeaderScrollRef}
@@ -157,68 +185,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
           }}
           onScroll={() => syncHorizontalScroll('header')}
         >
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${totalDays}, 75px)`,
-              gap: 2,
-              height: 60,
-            }}
-          >
-            {Array.from({ length: totalDays }, (_, i) => {
-              const date = new Date(timelineStart);
-              date.setDate(timelineStart.getDate() + i);
-              const formattedDateDay = dayjs(date).format(`ddd,`);
-              const formattedDateMonth = dayjs(date).format(`MMM DD`);
-              return (
-                <Flex
-                  vertical
-                  align="center"
-                  justify="center"
-                  key={i}
-                  style={{
-                    textAlign: 'center',
-                    fontSize: '12px',
-                    width: '77px',
-                    padding: '8px',
-                    borderBottom:
-                      themeMode === 'dark'
-                        ? '1px solid #303030'
-                        : '1px solid #e5e7eb',
-                    color:
-                      today &&
-                      date &&
-                      today.toDateString() === date.toDateString()
-                        ? 'white'
-                        : weekends[i]
-                          ? themeMode === 'dark'
-                            ? 'rgba(200, 200, 200, 0.6)'
-                            : 'rgba(0, 0, 0, 0.27)'
-                          : '',
-                    backgroundColor:
-                      today &&
-                      date &&
-                      today.toDateString() === date.toDateString()
-                        ? 'rgba(24, 144, 255, 1)'
-                        : weekends[i]
-                          ? themeMode === 'dark'
-                            ? 'rgba(200, 200, 200, 0.6)'
-                            : 'rgba(217, 217, 217, 0.4)'
-                          : '',
-                    borderRadius:
-                      today &&
-                      date &&
-                      today.toDateString() === date.toDateString()
-                        ? 0
-                        : 0,
-                  }}
-                >
-                  <Typography.Text>{formattedDateDay}</Typography.Text>
-                  <Typography.Text>{formattedDateMonth}</Typography.Text>
-                </Flex>
-              );
-            })}
-          </div>
+          <Timeline />
         </div>
 
         <Flex
@@ -241,110 +208,79 @@ const GanttChart: React.FC<GanttChartProps> = ({ members, date }) => {
                 width: '100%',
               }}
             >
+              {/* member row  ================================================================= */}
               <Row>
                 <Col span={24} style={{ display: 'flex', width: '100%' }}>
-                  {Array.from({ length: totalDays }, (_, i) => {
-                    const currentDay = new Date(timelineStart);
-                    currentDay.setDate(timelineStart.getDate() + i);
-                    const formattedCurrentDay = currentDay
-                      .toISOString()
-                      .split('T')[0];
-                    const loggedHours =
-                      member.timeLogged?.find(
-                        (log) => log.date === formattedCurrentDay
-                      )?.hours || 0;
-                    const totalPerDayHours =
-                      member.projects.reduce((total, project) => {
-                        const projectStart = new Date(project.startDate);
-                        const projectEnd = new Date(project.endDate);
-                        if (
-                          currentDay >= projectStart &&
-                          currentDay <= projectEnd
-                        ) {
-                          return total + project.perDayHours;
-                        }
-                        return total;
-                      }, 0) - loggedHours;
-                    return (
-                      <DayAllocationCell
-                        key={i}
-                        currentDay={currentDay}
-                        weekends={weekends}
-                        totalPerDayHours={totalPerDayHours}
-                        loggedHours={loggedHours}
-                        workingHours={workingHours}
-                        onClick={() => dispatch(toggleScheduleDrawer())}
-                        isWeekend={weekends[i]}
-                      />
-                    );
-                  })}
+                  {dates?.date_data?.map((month, monthIndex) =>
+                    month.days.map((day, dayIndex) => (
+                      <div
+                        key={`${monthIndex}-${dayIndex}`}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: 90,
+                          background: day.isWeekend
+                            ? 'rgba(217, 217, 217, 0.4)'
+                            : '',
+                        }}
+                      >
+                        <DayAllocationCell
+                          totalPerDayHours={8}
+                          loggedHours={0}
+                          workingHours={8}
+                          isWeekend={day.isWeekend}
+                        />
+                      </div>
+                    ))
+                  )}
                 </Col>
               </Row>
-              {/* Row for Each Project Timeline */}
+
+              {/* row for Each Project Timeline ======================================================*/}
               {showProject === member.memberId &&
                 member.projects.map((project) => {
                   const projectStart = new Date(project.startDate);
                   const projectEnd = new Date(project.endDate);
-                  let startOffset = getDaysBetween(timelineStart, projectStart);
-                  let projectDuration =
-                    getDaysBetween(projectStart, projectEnd) + 1;
-                  if (projectEnd > timelineEnd) {
-                    projectDuration = getDaysBetween(projectStart, timelineEnd);
-                  }
-                  if (startOffset < 0) {
-                    projectDuration += startOffset;
-                    startOffset = 0;
-                  }
+
+                  // Calculate grid-column-start and grid-column-end
+                  const startOffset = Math.max(
+                    0, // Ensure the startOffset is not negative
+                    Math.floor(
+                      (projectStart.getTime() - timelineStart.getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    ) - 4
+                  );
+
+                  const projectDuration =
+                    Math.floor(
+                      (projectEnd.getTime() - projectStart.getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    ) + 2;
+
                   return (
-                    <Row key={project.projectId}>
-                      <Col
-                        span={24}
+                    <Row
+                      key={project.projectId}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(${totalDays}, ${CELL_WIDTH}px)`,
+                        position: 'relative',
+                        height: 65,
+                      }}
+                    >
+                      <div
                         style={{
-                          display: 'flex',
-                          position: 'relative',
+                          gridColumnStart: startOffset,
+                          gridColumnEnd: startOffset + projectDuration,
                         }}
                       >
-                        {Array.from({ length: totalDays }, (_, i) => (
-                          <Flex
-                            align="center"
-                            justify="center"
-                            className={
-                              i >= startOffset &&
-                              i < startOffset + projectDuration
-                                ? 'empty-cell-hide'
-                                : `empty-cell rounded-sm outline-1 hover:outline ${themeMode === 'dark' ? 'outline-white/10' : 'outline-black/10'}`
-                            }
-                            key={i}
-                            style={{
-                              fontSize: '14px',
-                              backgroundColor: weekends[i]
-                                ? 'rgba(217, 217, 217, 0.4)'
-                                : '',
-                              padding: '10px 7px',
-                              height: '65px',
-                              flexDirection: 'column',
-                              position: 'relative',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            <div
-                              style={{
-                                width: '63px',
-                                height: '100%',
-                                zIndex: 1,
-                              }}
-                            ></div>
-                            {/* Project Timeline Bar */}
-                            {i === startOffset && (
-                              <ProjectTimelineBar
-                                project={project}
-                                startOffset={startOffset}
-                                projectDuration={3}
-                              />
-                            )}
-                          </Flex>
-                        ))}
-                      </Col>
+                        <ProjectTimelineBar
+                          project={project}
+                          startOffset={startOffset}
+                          projectDuration={projectDuration}
+                        />
+                      </div>
                     </Row>
                   );
                 })}

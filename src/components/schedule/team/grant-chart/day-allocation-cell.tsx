@@ -1,27 +1,23 @@
 // DayAllocationCell.jsx
 import React from 'react';
 import { Tooltip } from 'antd';
+import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import { toggleScheduleDrawer } from '../../../../features/schedule/scheduleSlice';
 
 type DayAllocationCellProps = {
-  currentDay: Date;
-  weekends: boolean[];
   totalPerDayHours: number;
   loggedHours: number;
   workingHours: number;
-  onClick: () => void;
   isWeekend: boolean;
 };
 
 const DayAllocationCell = ({
-  currentDay,
-  weekends,
   totalPerDayHours,
   loggedHours,
   workingHours,
-  onClick,
   isWeekend,
 }: DayAllocationCellProps) => {
-  const isToday = currentDay.toDateString() === new Date().toDateString();
+  const dispatch = useAppDispatch();
 
   const tooltipContent = (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -68,7 +64,7 @@ const DayAllocationCell = ({
             flexDirection: 'column',
             cursor: 'pointer',
           }}
-          onClick={onClick}
+          onClick={() => dispatch(toggleScheduleDrawer())}
         >
           <span
             style={{

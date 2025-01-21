@@ -80,7 +80,7 @@ const GranttMembersTable = ({
               justify="space-between"
               style={{
                 paddingInline: 12,
-                height: 92,
+                height: 90,
               }}
             >
               <Flex gap={8} align="center">
@@ -133,7 +133,7 @@ const GranttMembersTable = ({
                     style={{
                       paddingInline: 12,
                       position: 'sticky',
-                      height: '65px',
+                      height: 65,
                     }}
                   >
                     <Badge color="red" />
