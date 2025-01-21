@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { OpenAIFilled  } from '@ant-design/icons';
-import { Flex, PaginationProps, Space, Spin, Typography } from 'antd';
+import { FireOutlined, OpenAIFilled, ReadOutlined } from '@ant-design/icons';
+import { Card, ConfigProvider, Flex, GetProp, PaginationProps, Space, Spin, theme, Typography } from 'antd';
 import { Bubble, BubbleProps, Sender } from '@ant-design/x';
 import Markdownit from 'markdown-it';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -12,15 +12,17 @@ import { Prompts } from '@ant-design/x';
 import apiAiChatClient from '@/api/api-aichat-client';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { useChatScroll } from './smart-chat-report-styles';
+import { firstScreenPrompts, senderPromptsItems } from './prompt';
 
 const md = Markdownit({ html: true, breaks: true });
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
     <Typography>
-      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: used in demo */}
-      <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: used in demo */}
+        <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
     </Typography>
-  );
-  
+);
+
+
 const SmartChatReport = () => {
     const initialMessages: IChatMessage[] = [
         {
@@ -29,7 +31,7 @@ const SmartChatReport = () => {
         },
     ];
     const [messageInput, setMessageInput] = useState('');
-    const [chatMessages, setChatMessages] = useState<IChatMessage[]>(initialMessages);
+    const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
     const [loading, setLoading] = useState(false);
     const [renderKey, setRenderKey] = useState(0);
     const [lastResponseLength, setLastResponseLength] = useState(0);
@@ -39,7 +41,7 @@ const SmartChatReport = () => {
     const [teams, setTeams] = useState<IRPTTeam[]>([]);
     const [selectedTeam, setselectedTeam] = useState({});
     const [organization, setOrganization] = useState({});
-    const [showPrompts, setShowPrompts] = useState(true);
+    const [showPrompts, setShowPrompts] = useState(Boolean);
     const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
 
     const ref = useChatScroll(chatMessages)
@@ -58,6 +60,13 @@ const SmartChatReport = () => {
         }
     }, [lastResponseLength]);
 
+    const onPromptsItemClick: GetProp<typeof Prompts, 'onItemClick'> = (info) => {
+        // onRequest(info.data.description as string);
+        setMessageInput(info.data.description as string);
+        handleSend();
+        setShowPrompts(false);
+    };
+
     const handleSend = async () => {
         if (!messageInput.trim()) return;
 
@@ -72,11 +81,12 @@ const SmartChatReport = () => {
         try {
 
             const updatedChatMessages = [...chatMessages, userMessage];
-            
+
             const requestBody = {
                 chat: updatedChatMessages,
                 data: {
-                    org: JSON.stringify({organization_name: organization,
+                    org: JSON.stringify({
+                        organization_name: organization,
                         user_name: user,
                     }),
                     teams: JSON.stringify(teams),
@@ -118,13 +128,13 @@ const SmartChatReport = () => {
             setLoading(true);
             try {
                 // Fetch teams, organization, and members data concurrently
-                const [user ,teamsResponse, infoResponse, membersResponse] = await Promise.all([
+                const [user, teamsResponse, infoResponse, membersResponse] = await Promise.all([
                     authApiService.verify(),
                     reportingApiService.getOverviewTeams(includeArchivedProjects),
                     reportingApiService.getInfo(),
                     reportingApiService.getMembers(includeArchivedProjects),
                 ]);
-    
+
                 // Extract and set data if the API calls succeed
                 if (teamsResponse.done) {
                     setTeams(teamsResponse.body);
@@ -136,7 +146,6 @@ const SmartChatReport = () => {
                     setselectedTeam(membersResponse.body);
                 }
                 setUser(user.user);
-                console.log("members:", membersResponse.body);
                 // const storedSessionId = localStorage.getItem('worklenz.sid');
                 // console.log("Stored Session ID:", storedSessionId);
                 // Ensure all data is fetched before setting chat
@@ -147,26 +156,26 @@ const SmartChatReport = () => {
                 //         selectedTeam: JSON.stringify(membersResponse.body || {}),
                 //     },
                 // };
-    
+
                 // console.log("SetChat Request Body:", requestBody);
                 // const response = await apiAiChatClient.post('/chat-init', requestBody);
                 // console.log("SetChat Response:", response.data);
-    
+
             } catch (error) {
                 logger.error('fetchDataAndSetChat', error);
             } finally {
                 setLoading(false);
             }
         };
-    
+
         fetchDataAndSetChat();
     }, [includeArchivedProjects]);
 
     return (
         <Flex vertical>
             <Flex gap="middle" ref={ref}
-            style={{ height: '70vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
-            vertical>
+                style={{ height: '70vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
+                vertical>
                 {chatMessages.filter((message) => message.role !== "system").map((message, index) => (
                     <Bubble
                         shape="round"
@@ -175,10 +184,12 @@ const SmartChatReport = () => {
                         placement={message.role === "user" ? "end" : "start"}
                         content={message.content}
                         messageRender={renderMarkdown}
-                        {...(message.role === "assistant" && { avatar: { icon: <OpenAIFilled /> } 
-                            ,variant:"borderless"})}
+                        {...(message.role === "assistant" && {
+                            avatar: { icon: <OpenAIFilled /> }
+                            , variant: "borderless"
+                        })}
                     />
-                ))}               
+                ))}
                 {isTyping && (
                     <Bubble
                         typing={true}
@@ -186,12 +197,16 @@ const SmartChatReport = () => {
                         placement="start"
                         content={typingText}
                         messageRender={renderMarkdown}
-                        avatar={ {icon: <OpenAIFilled />} }
+                        avatar={{ icon: <OpenAIFilled /> }}
                     />
                 )}
+                {
+                (chatMessages.length < 3) &&
+                <Prompts
+                    style={{ alignSelf: "center" }}
+                    items={senderPromptsItems} onItemClick={onPromptsItemClick} />
+            }
             </Flex>
-
-
             <Flex justify='center' align='flex-end' style={{ paddingTop: '1rem' }} vertical >
                 <Sender
                     loading={loading}
