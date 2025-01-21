@@ -13,7 +13,14 @@ import apiAiChatClient from '@/api/api-aichat-client';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { useChatScroll } from './smart-chat-report-styles';
 
-
+const md = Markdownit({ html: true, breaks: true });
+const renderMarkdown: BubbleProps['messageRender'] = (content) => (
+    <Typography>
+      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: used in demo */}
+      <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
+    </Typography>
+  );
+  
 const SmartChatReport = () => {
     const initialMessages: IChatMessage[] = [
         {
@@ -33,8 +40,6 @@ const SmartChatReport = () => {
     const [selectedTeam, setselectedTeam] = useState({});
     const [organization, setOrganization] = useState({});
     const [showPrompts, setShowPrompts] = useState(true);
-
-    const md = Markdownit({ html: true, breaks: true });
     const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
 
     const ref = useChatScroll(chatMessages)
@@ -157,14 +162,6 @@ const SmartChatReport = () => {
         fetchDataAndSetChat();
     }, [includeArchivedProjects]);
 
-    const memoizedRenderMarkdown = React.useMemo(() => {
-        return (content: string) => (
-            <Typography>
-                <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
-            </Typography>
-        );
-    }, [md]);
-
     return (
         <Flex vertical>
             <Flex gap="middle" ref={ref}
@@ -177,30 +174,27 @@ const SmartChatReport = () => {
                         key={`${message.role}-${index}-${renderKey}`}
                         placement={message.role === "user" ? "end" : "start"}
                         content={message.content}
-                        messageRender={memoizedRenderMarkdown}
+                        messageRender={renderMarkdown}
                         {...(message.role === "assistant" && { avatar: { icon: <OpenAIFilled /> } 
                             ,variant:"borderless"})}
-
                     />
                 ))}               
                 {isTyping && (
                     <Bubble
-                        typing
+                        typing={true}
                         variant="borderless"
                         placement="start"
                         content={typingText}
-                        messageRender={memoizedRenderMarkdown}
+                        messageRender={renderMarkdown}
                         avatar={ {icon: <OpenAIFilled />} }
                     />
                 )}
-                {loading && <Space>
-                    <Spin size="small" />
-                </Space>}
             </Flex>
 
 
             <Flex justify='center' align='flex-end' style={{ paddingTop: '1rem' }} vertical >
                 <Sender
+                    loading={loading}
                     placeholder='Type your message here...'
                     value={messageInput}
                     onChange={setMessageInput}
