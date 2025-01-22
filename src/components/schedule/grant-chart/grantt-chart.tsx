@@ -12,7 +12,7 @@ import { Flex } from 'antd';
 import DayAllocationCell from './day-allocation-cell';
 import ProjectTimelineBar from './project-timeline-bar';
 
-const GranttChart = () => {
+const GranttChart = React.forwardRef((props, ref) => {
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
   const { teamData } = useAppSelector((state) => state.scheduleReducer);
@@ -67,6 +67,34 @@ const GranttChart = () => {
       }
     }
   };
+
+  const scrollToToday = () => {
+    if (!timelineScrollRef.current || !dateList?.date_data) return;
+
+    // Find the index of the "Today" date
+    let todayIndex = 0;
+    dateList.date_data.some((date: any) => {
+      const dayIndex = date.days.findIndex((day: any) => day.isToday);
+      if (dayIndex !== -1) {
+        todayIndex += dayIndex; // Add the index of today within the current month's days
+        return true;
+      }
+      todayIndex += date.days.length; // Increment by the number of days in the current month
+      return false;
+    });
+
+    // Calculate the scroll position
+    const scrollPosition = todayIndex * CELL_WIDTH;
+
+    // Scroll the timeline
+    timelineScrollRef.current.scrollTo({
+      left: scrollPosition,
+    });
+  };
+
+  React.useImperativeHandle(ref, () => ({
+    scrollToToday,
+  }));
 
   return (
     <div
@@ -247,6 +275,6 @@ const GranttChart = () => {
       </div>
     </div>
   );
-};
+});
 
 export default GranttChart;

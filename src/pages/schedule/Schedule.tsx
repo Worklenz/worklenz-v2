@@ -1,5 +1,5 @@
 import { Button, DatePicker, DatePickerProps, Flex, Select, Space } from 'antd';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { SettingOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { toggleSettingsDrawer } from '../../features/schedule/scheduleSlice';
@@ -31,6 +31,8 @@ const Schedule: React.FC = () => {
 
   const dispatch = useDispatch();
 
+  const granttChartRef = useRef<any>(null);
+
   useDocumentTitle('Schedule');
 
   const handleDateChange = (value: dayjs.Dayjs | null) => {
@@ -52,6 +54,7 @@ const Schedule: React.FC = () => {
   const handleToday = () => {
     const today = new Date();
     setDate(today);
+    granttChartRef.current?.scrollToToday();
     console.log('Today:', today);
   };
 
@@ -88,7 +91,7 @@ const Schedule: React.FC = () => {
       </Flex>
 
       <Flex vertical gap={24}>
-        <GranttChart />
+        <GranttChart ref={granttChartRef} />
       </Flex>
 
       <ScheduleSettingsDrawer />

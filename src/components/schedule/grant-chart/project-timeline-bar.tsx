@@ -37,19 +37,21 @@ const ProjectTimelineBar = ({
     ref: HTMLElement,
     delta: { width: number; height: number }
   ) => {
-    if (direction === 'right') {
-      // Resizing from the right
-      const newWidth = width + delta.width;
+    let newWidth = width;
+    let newLeftOffset = leftOffset;
 
-      if (newWidth >= CELL_WIDTH && newWidth <= CELL_WIDTH * 30) {
+    if (direction === 'right') {
+      newWidth = Math.max(CELL_WIDTH, width + delta.width);
+      if (newWidth <= CELL_WIDTH * 30) {
         setWidth(newWidth);
         const newDuration = Math.round(newWidth / CELL_WIDTH);
         setCurrentDuration(newDuration);
         setTotalHours(newDuration * project.hours_per_day);
       }
     } else if (direction === 'left') {
-      const newLeftOffset = leftOffset + delta.width;
-      const newWidth = width - delta.width;
+      const deltaWidth = Math.min(leftOffset, delta.width);
+      newLeftOffset = leftOffset - deltaWidth;
+      newWidth = width + deltaWidth;
 
       if (
         newLeftOffset >= 0 &&
@@ -73,7 +75,9 @@ const ProjectTimelineBar = ({
     >
       <Resizable
         size={{ width, height: 56 }}
-        onResize={handleResize}
+        onResizeStop={(e, direction, ref, delta) =>
+          handleResize(e, direction as 'left' | 'right', ref, delta)
+        }
         minWidth={CELL_WIDTH}
         maxWidth={CELL_WIDTH * 30}
         grid={[CELL_WIDTH, 1]}
