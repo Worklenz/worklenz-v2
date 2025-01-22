@@ -13,6 +13,8 @@ import apiAiChatClient from '@/api/api-aichat-client';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { useChatScroll } from './smart-chat-report-styles';
 import { firstScreenPrompts, senderPromptsItems } from './prompt';
+import { se } from 'date-fns/locale';
+import { current } from '@reduxjs/toolkit';
 
 const md = Markdownit({ html: true, breaks: true });
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
@@ -21,17 +23,16 @@ const renderMarkdown: BubbleProps['messageRender'] = (content) => (
         <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
     </Typography>
 );
-
+const initialMessages: IChatMessage[] = [
+    {
+        role: "assistant",
+        content: "How can I help you today with worklenz ?"
+    },
+];
 
 const SmartChatReport = () => {
-    const initialMessages: IChatMessage[] = [
-        {
-            role: "assistant",
-            content: "How can I help you today with worklenz ?"
-        },
-    ];
     const [messageInput, setMessageInput] = useState('');
-    const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
+    const [chatMessages, setChatMessages] = useState<IChatMessage[]>(initialMessages);
     const [loading, setLoading] = useState(false);
     const [renderKey, setRenderKey] = useState(0);
     const [lastResponseLength, setLastResponseLength] = useState(0);
@@ -42,8 +43,9 @@ const SmartChatReport = () => {
     const [selectedTeam, setselectedTeam] = useState({});
     const [organization, setOrganization] = useState({});
     const [showPrompts, setShowPrompts] = useState(Boolean);
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const now_date = new Date();
     const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
-
     const ref = useChatScroll(chatMessages)
     React.useEffect(() => {
         if (lastResponseLength > 0) {
@@ -86,6 +88,7 @@ const SmartChatReport = () => {
                 chat: updatedChatMessages,
                 data: {
                     org: JSON.stringify({
+                        current_date: currentDate,
                         organization_name: organization,
                         user_name: user,
                     }),
@@ -146,6 +149,8 @@ const SmartChatReport = () => {
                     setselectedTeam(membersResponse.body);
                 }
                 setUser(user.user);
+                setCurrentDate(now_date);
+                console.log("Current Date:", now_date.toDateString());
                 // const storedSessionId = localStorage.getItem('worklenz.sid');
                 // console.log("Stored Session ID:", storedSessionId);
                 // Ensure all data is fetched before setting chat
@@ -174,7 +179,7 @@ const SmartChatReport = () => {
     return (
         <Flex vertical>
             <Flex gap="middle" ref={ref}
-                style={{ height: '70vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
+                style={{ height: '60vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
                 vertical>
                 {chatMessages.filter((message) => message.role !== "system").map((message, index) => (
                     <Bubble
@@ -200,13 +205,15 @@ const SmartChatReport = () => {
                         avatar={{ icon: <OpenAIFilled /> }}
                     />
                 )}
-                {
+
+            </Flex>
+            
+            {
                 (chatMessages.length < 3) &&
                 <Prompts
-                    style={{ alignSelf: "center" }}
+                    style={{ alignSelf: "flex-end"}}
                     items={senderPromptsItems} onItemClick={onPromptsItemClick} />
             }
-            </Flex>
             <Flex justify='center' align='flex-end' style={{ paddingTop: '1rem' }} vertical >
                 <Sender
                     loading={loading}
