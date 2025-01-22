@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FireOutlined, OpenAIFilled, ReadOutlined } from '@ant-design/icons';
-import { Card, ConfigProvider, Flex, GetProp, PaginationProps, Space, Spin, theme, Typography } from 'antd';
+import { OpenAIFilled } from '@ant-design/icons';
+import { Flex, GetProp, Typography } from 'antd';
 import { Bubble, BubbleProps, Sender } from '@ant-design/x';
 import Markdownit from 'markdown-it';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -13,8 +13,6 @@ import apiAiChatClient from '@/api/api-aichat-client';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { useChatScroll } from './smart-chat-report-styles';
 import { firstScreenPrompts, senderPromptsItems } from './prompt';
-import { se } from 'date-fns/locale';
-import { current } from '@reduxjs/toolkit';
 
 const md = Markdownit({ html: true, breaks: true });
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
@@ -29,6 +27,29 @@ const initialMessages: IChatMessage[] = [
         content: "How can I help you today with worklenz ?"
     },
 ];
+const roles: GetProp<typeof Bubble.List, 'roles'> = {
+    assistant: {
+      placement: 'start',
+      typing: { step: 2, interval: 100 },
+      variant: 'outlined',
+      avatar: { icon: <OpenAIFilled /> },
+      messageRender: renderMarkdown,
+      styles: {
+        content: {
+          borderRadius: 16,
+        },
+      },
+    },
+    user: {
+      placement: 'end',
+      variant: 'outlined',
+      styles: {
+        content: {
+          borderRadius: 16,
+        },
+      },
+    },
+  };
 
 const SmartChatReport = () => {
     const [messageInput, setMessageInput] = useState('');
@@ -43,33 +64,19 @@ const SmartChatReport = () => {
     const [selectedTeam, setselectedTeam] = useState({});
     const [organization, setOrganization] = useState({});
     const [showPrompts, setShowPrompts] = useState(Boolean);
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const now_date = new Date();
+    const [currentDate, setCurrentDate] = useState('');
+    const now_date = new Date().toDateString();
     const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
     const ref = useChatScroll(chatMessages)
-    React.useEffect(() => {
-        if (lastResponseLength > 0) {
-            const id = setTimeout(
-                () => {
-                    setRenderKey((prev) => prev + 1);
-                },
-                lastResponseLength * 100 + 2000,
-            );
-
-            return () => {
-                clearTimeout(id);
-            };
-        }
-    }, [lastResponseLength]);
 
     const onPromptsItemClick: GetProp<typeof Prompts, 'onItemClick'> = (info) => {
         // onRequest(info.data.description as string);
         setMessageInput(info.data.description as string);
-        handleSend();
+        handleSend(info.data.description as string);
         setShowPrompts(false);
     };
 
-    const handleSend = async () => {
+    const handleSend = async (messageInput:string) => {
         if (!messageInput.trim()) return;
 
         const userMessage: IChatMessage = {
@@ -83,7 +90,7 @@ const SmartChatReport = () => {
         try {
 
             const updatedChatMessages = [...chatMessages, userMessage];
-
+            console.log("Updated Chat Messages:", updatedChatMessages.slice(-5));
             const requestBody = {
                 chat: updatedChatMessages,
                 data: {
@@ -96,29 +103,21 @@ const SmartChatReport = () => {
                     selectedTeam: JSON.stringify(selectedTeam),
                 },
             };
-            console.log(requestBody)
             const response = await apiAiChatClient.post('/chat', requestBody);
             const responseText = `${response.data.response}`.trim();
-            setLastResponseLength(responseText.length);
-            setTypingText(responseText);
             setIsTyping(true);
-
-            const typingDelay = Math.min(responseText.length * 100 + 2000, 10000);
-
-            setTimeout(() => {
-                const aiMessage: IChatMessage = {
-                    role: "assistant",
-                    content: responseText
-                };
-                setChatMessages(prev => [...prev, aiMessage]);
-                setIsTyping(false);
-            }, typingDelay);
+            const aiMessage: IChatMessage = {
+                role: "assistant",
+                content: responseText
+            };
+            setChatMessages(prev => [...prev, aiMessage]);
+            setIsTyping(false);
 
         } catch (error) {
             logger.error('handleSend', error);
             const errorMessage: IChatMessage = {
                 role: "assistant",
-                content: "Sorry, there was an error processing your request."
+                content: "Something went wrong. Please try again later."
             };
             setChatMessages(prev => [...prev, errorMessage]);
         } finally {
@@ -150,7 +149,7 @@ const SmartChatReport = () => {
                 }
                 setUser(user.user);
                 setCurrentDate(now_date);
-                console.log("Current Date:", now_date.toDateString());
+                console.log("Current Date:", now_date);
                 // const storedSessionId = localStorage.getItem('worklenz.sid');
                 // console.log("Stored Session ID:", storedSessionId);
                 // Ensure all data is fetched before setting chat
@@ -181,39 +180,20 @@ const SmartChatReport = () => {
             <Flex gap="middle" ref={ref}
                 style={{ height: '60vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
                 vertical>
-                {chatMessages.filter((message) => message.role !== "system").map((message, index) => (
-                    <Bubble
-                        shape="round"
-                        variant='outlined'
-                        key={`${message.role}-${index}-${renderKey}`}
-                        placement={message.role === "user" ? "end" : "start"}
-                        content={message.content}
-                        messageRender={renderMarkdown}
-                        {...(message.role === "assistant" && {
-                            avatar: { icon: <OpenAIFilled /> }
-                            , variant: "borderless"
-                        })}
-                    />
-                ))}
-                {isTyping && (
-                    <Bubble
-                        typing={true}
-                        variant="borderless"
-                        placement="start"
-                        content={typingText}
-                        messageRender={renderMarkdown}
-                        avatar={{ icon: <OpenAIFilled /> }}
-                    />
-                )}
-
+                <Bubble.List 
+                    items={chatMessages.length > 0 ? chatMessages : [{ variant: 'borderless'}]}
+                    roles={roles}
+                />
             </Flex>
-            
+            <Flex justify='center' align='flex-end' style={{ paddingBottom: '1rem' }} vertical >
             {
-                (chatMessages.length < 3) &&
+                (chatMessages.length < 4) &&
                 <Prompts
-                    style={{ alignSelf: "flex-end"}}
+                    // style={{ alignItems: "center"}}
                     items={senderPromptsItems} onItemClick={onPromptsItemClick} />
             }
+            </Flex>
+            
             <Flex justify='center' align='flex-end' style={{ paddingTop: '1rem' }} vertical >
                 <Sender
                     loading={loading}
@@ -221,8 +201,12 @@ const SmartChatReport = () => {
                     value={messageInput}
                     onChange={setMessageInput}
                     onSubmit={() => {
-                        handleSend();
-                        setShowPrompts(true);
+                        if (chatMessages.length > 100)
+                            { 
+                                alert("You have reached the maximum number of messages.");
+                                return;
+                             }
+                        handleSend(messageInput);
                     }}
                 />
             </Flex>
