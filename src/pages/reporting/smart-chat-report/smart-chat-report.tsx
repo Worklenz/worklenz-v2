@@ -53,11 +53,8 @@ const roles: GetProp<typeof Bubble.List, 'roles'> = {
 
 const SmartChatReport = () => {
     const [messageInput, setMessageInput] = useState('');
-    const [chatMessages, setChatMessages] = useState<IChatMessage[]>(initialMessages);
-    const [loading, setLoading] = useState(false);
-    const [renderKey, setRenderKey] = useState(0);
-    const [lastResponseLength, setLastResponseLength] = useState(0);
-    const [typingText, setTypingText] = useState('');
+    const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isTyping, setIsTyping] = useState(false);
     const [user, setUser] = useState({});
     const [teams, setTeams] = useState<IRPTTeam[]>([]);
@@ -67,7 +64,6 @@ const SmartChatReport = () => {
     const [currentDate, setCurrentDate] = useState('');
     const now_date = new Date().toDateString();
     const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
-    const ref = useChatScroll(chatMessages)
 
     const onPromptsItemClick: GetProp<typeof Prompts, 'onItemClick'> = (info) => {
         // onRequest(info.data.description as string);
@@ -77,7 +73,7 @@ const SmartChatReport = () => {
     };
 
     const handleSend = async (messageInput:string) => {
-        if (!messageInput.trim()) return;
+        if (!messageInput.trim() || loading) return;
 
         const userMessage: IChatMessage = {
             role: "user",
@@ -90,7 +86,6 @@ const SmartChatReport = () => {
         try {
 
             const updatedChatMessages = [...chatMessages, userMessage];
-            console.log("Updated Chat Messages:", updatedChatMessages.slice(-5));
             const requestBody = {
                 chat: updatedChatMessages,
                 data: {
@@ -103,6 +98,7 @@ const SmartChatReport = () => {
                     selectedTeam: JSON.stringify(selectedTeam),
                 },
             };
+            console.log(requestBody)
             const response = await apiAiChatClient.post('/chat', requestBody);
             const responseText = `${response.data.response}`.trim();
             setIsTyping(true);
@@ -176,20 +172,35 @@ const SmartChatReport = () => {
     }, [includeArchivedProjects]);
 
     return (
-        <Flex vertical>
-            <Flex gap="middle" ref={ref}
+        <Flex vertical 
+        className="ant-col ant-col-xxl-10 ant-col-xxl-offset-6"
+        >
+            <Flex gap="middle"
                 style={{ height: '60vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
                 vertical>
                 <Bubble.List 
                     items={chatMessages.length > 0 ? chatMessages : [{ variant: 'borderless'}]}
                     roles={roles}
                 />
+                <Flex justify='center' align='center'>
+                {
+                (chatMessages.length < 1) &&
+                <Prompts
+                    style={{ alignItems: "center"}}
+                    items={firstScreenPrompts} onItemClick={onPromptsItemClick} />
+            }
+                </Flex>
+                
             </Flex>
             <Flex justify='center' align='flex-end' style={{ paddingBottom: '1rem' }} vertical >
+            
             {
                 (chatMessages.length < 4) &&
                 <Prompts
-                    // style={{ alignItems: "center"}}
+                styles={{
+                    list: {},
+                    item: {borderRadius:50},
+                  }}
                     items={senderPromptsItems} onItemClick={onPromptsItemClick} />
             }
             </Flex>

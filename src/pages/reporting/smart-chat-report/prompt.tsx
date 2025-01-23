@@ -9,16 +9,17 @@ const renderTitle = (icon: React.ReactElement, title: string) => (
     </Space>
   );
 export const senderPromptsItems: GetProp<typeof Prompts, 'items'> = [
-{
+    {
+        key: '2',
+        description: 'I want List of Projects',
+        icon: <ReadOutlined style={{ color: '#1890FF' }} />,
+    },
+    {
     key: '1',
     description: 'I want Current Team projects Summary',
     icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
 },
-{
-    key: '2',
-    description: 'I want List of Projects',
-    icon: <ReadOutlined style={{ color: '#1890FF' }} />,
-},
+
 ];
 
 export const firstScreenPrompts: PromptsProps['items'] = [
