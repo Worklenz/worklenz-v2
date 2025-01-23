@@ -1,17 +1,32 @@
-import { Button, Card, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
-import React from 'react';
+import {
+  Button,
+  Card,
+  Popconfirm,
+  Table,
+  TableProps,
+  Tooltip,
+  Typography,
+} from 'antd';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import jsonData from './ProjectTemplates.json';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { fetchData } from '../../../utils/fetchData';
 
 const ProjectTemplatesSettings = () => {
   // localization
   const { t } = useTranslation('projectTemplatesSettings');
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [myTemplates, setMyTemplates] = useState<any[]>([]);
+
+  useMemo(() => {
+    fetchData('/ProjectTemplates.json', setMyTemplates);
+  }, []);
+
+  console.log(myTemplates);
 
   useDocumentTitle('Project Templates');
 
@@ -30,7 +45,14 @@ const ProjectTemplatesSettings = () => {
           className="button-visibilty"
         >
           <Tooltip title={t('editToolTip')}>
-            <Button size="small" onClick={() => navigate(`/worklenz/settings/project-templates/edit/${record.id}/${record.name}`)}>
+            <Button
+              size="small"
+              onClick={() =>
+                navigate(
+                  `/worklenz/settings/project-templates/edit/${record.id}/${record.name}`
+                )
+              }
+            >
               <EditOutlined />
             </Button>
           </Tooltip>
@@ -56,9 +78,16 @@ const ProjectTemplatesSettings = () => {
 
   return (
     <Card style={{ width: '100%' }}>
-      <Table columns={columns} dataSource={jsonData} size="small" pagination={{ size: 'small' }}  rowClassName={(_, index) =>
+      <Table
+        columns={columns}
+        dataSource={myTemplates}
+        size="small"
+        pagination={{ size: 'small' }}
+        rowClassName={(_, index) =>
           `no-border-row ${index % 2 === 0 ? '' : themeMode === 'dark' ? 'dark-alternate-row-color' : 'alternate-row-color'}`
-        } rowKey="id"/>
+        }
+        rowKey="id"
+      />
     </Card>
   );
 };

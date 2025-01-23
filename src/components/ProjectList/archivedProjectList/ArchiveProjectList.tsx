@@ -39,6 +39,9 @@ const ArchiveProjectList: React.FC = () => {
       dataSource={data}
       className="custom-two-colors-row-table"
       rowClassName={() => 'custom-row'}
+      scroll={{
+        y: 'calc(100vh - 300px)',
+      }}
       pagination={{
         showSizeChanger: true,
         defaultPageSize: 20,

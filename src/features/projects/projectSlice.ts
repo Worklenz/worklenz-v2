@@ -68,7 +68,10 @@ const projectSlice = createSlice({
     },
     updateProject: (
       state,
-      action: PayloadAction<{ projectId: string; updatedData: Partial<ProjectType> }>
+      action: PayloadAction<{
+        projectId: string;
+        updatedData: Partial<ProjectType>;
+      }>
     ) => {
       const { projectId, updatedData } = action.payload;
       const projectIndex = state.projectsList.findIndex(

@@ -1,6 +1,16 @@
 // TableColumns.tsx
 import { ColumnsType } from 'antd/es/table';
-import { Avatar, Badge, Button, Progress, Rate, Tag, Tooltip } from 'antd';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Flex,
+  Progress,
+  Rate,
+  Tag,
+  Tooltip,
+  Typography,
+} from 'antd';
 import {
   CalendarOutlined,
   InboxOutlined,
@@ -9,7 +19,10 @@ import {
 import { useTranslation } from 'react-i18next'; // Assuming you're using i18next for translations
 import './TableColumns.css';
 import { useNavigate } from 'react-router-dom';
-import { toggleDrawer, toggleUpdatedrawer } from '../../features/projects/projectSlice';
+import {
+  toggleDrawer,
+  toggleUpdatedrawer,
+} from '../../features/projects/projectSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 interface DataType {
@@ -26,28 +39,27 @@ interface DataType {
   members: string[];
 }
 
-
 const avatarColors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#87d068'];
 
 const TableColumns = (): ColumnsType<DataType> => {
   const { t } = useTranslation('allProjectList'); // Use translation hook if you're using i18next
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   return [
     {
       title: t('name'),
-      dataIndex: 'name',
+      // dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.length - b.name.length,
       onCell: (record) => {
         return {
-          
           style: {
             cursor: 'pointer',
           },
         };
       },
+      width: 240,
       showSorterTooltip: false,
       render: (text, record) => {
         // Format the start and end dates
@@ -71,13 +83,19 @@ const TableColumns = (): ColumnsType<DataType> => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Rate
               count={1}
-              style={{ marginRight: '0.5rem', zIndex: 99}}
+              style={{ marginRight: '0.5rem', zIndex: 99 }}
               tooltips={['Add to favourites']}
             />
-            <div onClick={ () => navigate(`/worklenz/projects/${record.key}`)}>
+            <Flex
+              gap={2}
+              align="center"
+              onClick={() => navigate(`/worklenz/projects/${record.key}`)}
+            >
               <Badge color="geekblue" style={{ marginRight: '0.5rem' }} />
               <>
-                {text}
+                <Typography.Text ellipsis={{ expanded: false }}>
+                  {record.name}
+                </Typography.Text>
                 {(record.startDate || record.endDate) && (
                   <Tooltip
                     title={`Start date: ${formattedStartDate}\nEnd date: ${formattedEndDate}`}
@@ -87,7 +105,7 @@ const TableColumns = (): ColumnsType<DataType> => {
                   </Tooltip>
                 )}
               </>
-            </div>
+            </Flex>
           </div>
         );
       },
@@ -192,6 +210,7 @@ const TableColumns = (): ColumnsType<DataType> => {
       title: t('lastUpdated'),
       key: 'lastUpdated',
       dataIndex: 'lastUpdated',
+      width: 160,
       sorter: (a, b) =>
         new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime(),
       showSorterTooltip: false,
@@ -225,15 +244,17 @@ const TableColumns = (): ColumnsType<DataType> => {
 
         return (
           <>
-            <Tooltip title={updatedDate.toLocaleString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-              hour: 'numeric',
-              minute: 'numeric',
-              second: 'numeric',
-              hour12: true,
-            })}>
+            <Tooltip
+              title={updatedDate.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: true,
+              })}
+            >
               {displayText}
             </Tooltip>
           </>
@@ -268,9 +289,13 @@ const TableColumns = (): ColumnsType<DataType> => {
       key: 'button',
       dataIndex: '',
       render: (render) => (
-        <div className='hover-button'>
+        <div className="hover-button">
           <Tooltip title={t('setting')}>
-            <Button onClick={() => dispatch(toggleUpdatedrawer(render.id))} style={{ marginRight: '8px' }} size="small">
+            <Button
+              onClick={() => dispatch(toggleUpdatedrawer(render.id))}
+              style={{ marginRight: '8px' }}
+              size="small"
+            >
               <SettingOutlined />
             </Button>
           </Tooltip>

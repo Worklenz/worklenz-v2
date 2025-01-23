@@ -12,12 +12,13 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useDocumentTitle } from '../../hooks/useDoumentTItle';
 import UpdateProjectDrawer from '../../features/projects/update-project/update-project-drawer';
+import CreateProjectModal from '../../features/projects/createProject/project-modal/create-project-modal';
 
 const ProjectList: React.FC = () => {
   // localization
   const { t } = useTranslation('ProjectList');
 
-  useDocumentTitle('Projects')
+  useDocumentTitle('Projects');
 
   // get project list from project slice
   const projectList = useAppSelector(
@@ -71,7 +72,13 @@ const ProjectList: React.FC = () => {
   };
 
   return (
-    <div style={{ marginBlock: 65, minHeight: '90vh' }}>
+    <div
+      style={{
+        marginBlockStart: 65,
+        height: 'calc( 100vh - 100px)',
+        overflow: 'hidden',
+      }}
+    >
       <PageHeader
         className="site-page-header"
         title={`${projectList.length} ${t('projects')}`}
