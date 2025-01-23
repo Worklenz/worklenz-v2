@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { OpenAIFilled } from '@ant-design/icons';
-import { Flex, GetProp, Typography } from 'antd';
-import { Bubble, BubbleProps, Sender } from '@ant-design/x';
+import { EllipsisOutlined, OpenAIFilled, ShareAltOutlined } from '@ant-design/icons';
+import { Button, Flex, GetProp, Space, Typography } from 'antd';
+import { Bubble, BubbleProps, Sender, Welcome } from '@ant-design/x';
 import Markdownit from 'markdown-it';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { reportingApiService } from '@/api/reporting/reporting.api.service';
@@ -29,27 +29,29 @@ const initialMessages: IChatMessage[] = [
 ];
 const roles: GetProp<typeof Bubble.List, 'roles'> = {
     assistant: {
-      placement: 'start',
-      typing: { step: 2, interval: 100 },
-      variant: 'outlined',
-      avatar: { icon: <OpenAIFilled /> },
-      messageRender: renderMarkdown,
-      styles: {
-        content: {
-          borderRadius: 16,
+        placement: 'start',
+        typing: { step: 2, interval: 100 },
+        variant: 'outlined',
+        avatar: { icon: <OpenAIFilled /> },
+        messageRender: renderMarkdown,
+        styles: {
+            content: {
+                borderRadius: 16,
+                marginRight: '1rem'
+            },
         },
-      },
     },
     user: {
-      placement: 'end',
-      variant: 'outlined',
-      styles: {
-        content: {
-          borderRadius: 16,
+        placement: 'end',
+        variant: 'outlined',
+        styles: {
+            content: {
+                borderRadius: 16,
+                marginRight: '1rem'
+            },
         },
-      },
     },
-  };
+};
 
 const SmartChatReport = () => {
     const [messageInput, setMessageInput] = useState('');
@@ -60,7 +62,7 @@ const SmartChatReport = () => {
     const [teams, setTeams] = useState<IRPTTeam[]>([]);
     const [selectedTeam, setselectedTeam] = useState({});
     const [organization, setOrganization] = useState({});
-    const [showPrompts, setShowPrompts] = useState(Boolean);
+    const [showPrompts, setShowPrompts] = useState(chatMessages.length ===0);
     const [currentDate, setCurrentDate] = useState('');
     const now_date = new Date().toDateString();
     const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
@@ -72,7 +74,7 @@ const SmartChatReport = () => {
         setShowPrompts(false);
     };
 
-    const handleSend = async (messageInput:string) => {
+    const handleSend = async (messageInput: string) => {
         if (!messageInput.trim() || loading) return;
 
         const userMessage: IChatMessage = {
@@ -172,39 +174,46 @@ const SmartChatReport = () => {
     }, [includeArchivedProjects]);
 
     return (
-        <Flex vertical 
-        className="ant-col ant-col-xxl-10 ant-col-xxl-offset-6"
+        <Flex vertical
+            className="ant-col ant-col-xxl-10 ant-col-xxl-offset-6"
         >
             <Flex gap="middle"
-                style={{ height: '60vh', overflowY: 'auto', paddingRight: '2rem', paddingLeft: '2rem' }}
+                style={{ height: '60vh', overflowY: 'auto' }}
                 vertical>
-                <Bubble.List 
-                    items={chatMessages.length > 0 ? chatMessages : [{ variant: 'borderless'}]}
+                <Bubble.List
+                    items={chatMessages.length > 0 ? chatMessages : [{ variant: 'borderless' }]}
                     roles={roles}
                 />
+                { showPrompts && <Welcome
+        variant="borderless"
+        icon="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp"
+        title="Hello, I'm Worklenz AI Assistant"
+        description="Base on your Oraganization, Summary reports, Create a better intelligent vision~"
+      />
+
+                }
                 <Flex justify='center' align='center'>
-                {
-                (chatMessages.length < 1) &&
-                <Prompts
-                    style={{ alignItems: "center"}}
-                    items={firstScreenPrompts} onItemClick={onPromptsItemClick} />
-            }
+                    {
+                        showPrompts &&
+                        <Prompts
+                            style={{ alignItems: "center" }}
+                            items={firstScreenPrompts} onItemClick={onPromptsItemClick} />
+                    }
                 </Flex>
-                
+
             </Flex>
-            <Flex justify='center' align='flex-end' style={{ paddingBottom: '1rem' }} vertical >
-            
-            {
-                (chatMessages.length < 4) &&
-                <Prompts
-                styles={{
-                    list: {},
-                    item: {borderRadius:50},
-                  }}
-                    items={senderPromptsItems} onItemClick={onPromptsItemClick} />
-            }
+            <Flex justify='center' align='flex-end' style={{ fontSize: '5em' }} vertical >
+                {
+                    (chatMessages.length < 3) &&
+                    <Prompts
+                        styles={{
+                            list: {},
+                            item: { borderRadius: 50 },
+                        }}
+                        items={senderPromptsItems} onItemClick={onPromptsItemClick} />
+                }
             </Flex>
-            
+
             <Flex justify='center' align='flex-end' style={{ paddingTop: '1rem' }} vertical >
                 <Sender
                     loading={loading}
@@ -212,11 +221,10 @@ const SmartChatReport = () => {
                     value={messageInput}
                     onChange={setMessageInput}
                     onSubmit={() => {
-                        if (chatMessages.length > 100)
-                            { 
-                                alert("You have reached the maximum number of messages.");
-                                return;
-                             }
+                        if (chatMessages.length > 100) {
+                            alert("You have reached the maximum number of messages.");
+                            return;
+                        }
                         handleSend(messageInput);
                     }}
                 />

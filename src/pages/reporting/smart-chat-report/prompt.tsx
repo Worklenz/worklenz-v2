@@ -11,12 +11,12 @@ const renderTitle = (icon: React.ReactElement, title: string) => (
 export const senderPromptsItems: GetProp<typeof Prompts, 'items'> = [
     {
         key: '2',
-        description: 'I want List of Projects',
+        description: 'I want to list down all Projects',
         icon: <ReadOutlined style={{ color: '#1890FF' }} />,
     },
     {
     key: '1',
-    description: 'I want Current Team projects Summary',
+    description: 'I want to summarize of projects',
     icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
 },
 
