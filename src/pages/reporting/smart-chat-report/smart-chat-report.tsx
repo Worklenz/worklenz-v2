@@ -11,7 +11,6 @@ import { IChatMessage } from '@/types/aiChat/ai-chat.types';
 import { Prompts } from '@ant-design/x';
 import apiAiChatClient from '@/api/api-aichat-client';
 import { authApiService } from '@/api/auth/auth.api.service';
-import { useChatScroll } from './smart-chat-report-styles';
 import { firstScreenPrompts, senderPromptsItems } from './prompt';
 
 const md = Markdownit({ html: true, breaks: true });
