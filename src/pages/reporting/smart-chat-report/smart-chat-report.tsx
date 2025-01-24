@@ -74,7 +74,7 @@ const SmartChatReport = () => {
             role: "user",
             content: messageInput
         };
-
+        setShowPrompts(false)
         setChatMessages(prev => [...prev, userMessage]);
         setLoading(true);
         setMessageInput('');
