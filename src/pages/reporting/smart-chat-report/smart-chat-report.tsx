@@ -21,16 +21,10 @@ const renderMarkdown: BubbleProps['messageRender'] = (content) => (
         <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
     </Typography>
 );
-const initialMessages: IChatMessage[] = [
-    {
-        role: "assistant",
-        content: "How can I help you today with worklenz ?"
-    },
-];
 const roles: GetProp<typeof Bubble.List, 'roles'> = {
     assistant: {
         placement: 'start',
-        typing: { step: 2, interval: 100 },
+        typing: { step: 1, interval: 50 },
         variant: 'outlined',
         avatar: { icon: <OpenAIFilled /> },
         messageRender: renderMarkdown,
@@ -178,7 +172,7 @@ const SmartChatReport = () => {
             className="ant-col ant-col-xxl-10 ant-col-xxl-offset-6"
         >
             <Flex gap="middle"
-                style={{ height: '60vh', overflowY: 'auto' }}
+                style={{ height: '70vh', overflowY: 'auto' }}
                 vertical>
                 <Bubble.List
                     items={chatMessages.length > 0 ? chatMessages : [{ variant: 'borderless' }]}
@@ -235,3 +229,93 @@ const SmartChatReport = () => {
 
 export default SmartChatReport;
 
+// import { LoadingOutlined, TagsOutlined } from '@ant-design/icons';
+// import { ThoughtChain, useXAgent } from '@ant-design/x';
+// import { Button, Descriptions,Splitter } from 'antd/lib';
+// import React from 'react';
+
+// import type { ThoughtChainItem } from '@ant-design/x';
+
+// /**
+//  * 🔔 Please replace the BASE_URL, PATH, MODEL, API_KEY with your own values.
+//  */
+// const BASE_URL = 'https://worklenz--ai.openai.azure.com/';
+// const PATH = '/chat';
+// const MODEL = 'gpt-3.5-turbo';
+// /** 🔥🔥 Its dangerously! */
+// const API_KEY = 'BQxdXI21Htd7RGMwmTlH8iWk2IlEpVY5rIaBbf5Hg6wXVdcnxiruJQQJ99ALACYeBjFXJ3w3AAABACOGZ21R';
+
+// interface YourMessageType {
+//   role: string;
+//   content: string;
+// }
+
+// const SmartChatReport = () => {
+//   const [status, setStatus] = React.useState<ThoughtChainItem['status']>();
+//   const [lines, setLines] = React.useState<any[]>([]);
+
+//   const [agent] = useXAgent<YourMessageType>({
+//     baseURL: BASE_URL + PATH,
+//     model: MODEL,
+//     dangerouslyApiKey: API_KEY
+//   });
+
+//   async function request() {
+//     setStatus('pending');
+
+//     agent.request(
+//       {
+//         messages: [{ role: 'user', content: 'hello, who are u?' }],
+//         stream: true,
+//       },
+//       {
+//         onSuccess: (messages) => {
+//           setStatus('success');
+//           console.log('onSuccess', messages);
+//         },
+//         onError: (error) => {
+//           setStatus('error');
+//           console.error('onError', error);
+//         },
+//         onUpdate: (msg) => {
+//           setLines((pre) => [...pre, msg]);
+//           console.log('onUpdate', msg);
+//         },
+//       },
+//     );
+//   }
+
+//   return (
+//     <Splitter>
+//       <Splitter.Panel>
+//         <Button type="primary" disabled={status === 'pending'} onClick={request}>
+//           Agent Request
+//         </Button>
+//       </Splitter.Panel>
+//       <Splitter.Panel>
+//         <ThoughtChain
+//           style={{ marginLeft: 16 }}
+//           items={[
+//             {
+//               title: 'Agent Request Log',
+//               status: status,
+//               icon: status === 'pending' ? <LoadingOutlined /> : <TagsOutlined />,
+//               description:
+//                 status === 'error' &&
+//                 agent.config.baseURL === BASE_URL + PATH &&
+//                 'Please replace the BASE_URL, PATH, MODEL, API_KEY with your own values.',
+//               content: (
+//                 <Descriptions column={1}>
+//                   <Descriptions.Item label="Status">{status || '-'}</Descriptions.Item>
+//                   <Descriptions.Item label="Update Times">{lines.length}</Descriptions.Item>
+//                 </Descriptions>
+//               ),
+//             },
+//           ]}
+//         />
+//       </Splitter.Panel>
+//     </Splitter>
+//   );
+// };
+
+// export default SmartChatReport;

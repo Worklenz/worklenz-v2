@@ -16,7 +16,7 @@ export const senderPromptsItems: GetProp<typeof Prompts, 'items'> = [
     },
     {
     key: '1',
-    description: 'I want to summarize of projects',
+    description: 'I want to summarization of projects',
     icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
 },
 
