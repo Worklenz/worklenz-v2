@@ -215,7 +215,7 @@ const SmartChatReport = () => {
                     onChange={setMessageInput}
                     onSubmit={() => {
                         if (chatMessages.length > 100) {
-                            alert("You have reached the maximum number of messages.");
+                            alert("Message rate limit exceeded");
                             return;
                         }
                         handleSend(messageInput);
