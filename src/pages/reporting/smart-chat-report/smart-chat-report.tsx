@@ -181,7 +181,7 @@ const SmartChatReport = () => {
         variant="borderless"
         icon="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp"
         title="Hello, I'm Worklenz AI Assistant"
-        description="Base on your Oraganization, Summary reports, Create a better intelligent vision~"
+        description="Base on your Oraganization, Create Summary reports, a better intelligent vision~"
       />
 
                 }
