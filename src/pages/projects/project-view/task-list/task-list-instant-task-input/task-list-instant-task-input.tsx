@@ -11,8 +11,7 @@ import {
   GROUP_BY_PHASE_VALUE,
   GROUP_BY_PRIORITY_VALUE,
   GROUP_BY_STATUS_VALUE,
-  setCurrentGroup,
-} from '@/features/tasks/taskSlice';
+} from '@/features/tasks/tasks.slice';
 import { useSocket } from '@/socket/socketContext';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { SocketEvents } from '@/shared/socket-events';

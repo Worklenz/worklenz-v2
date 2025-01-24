@@ -1,9 +1,9 @@
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { Tooltip, Tag } from 'antd';
 import { TFunction } from 'i18next';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setFilteredCategories } from '@/features/projects/projectsSlice';
+import '../../TableColumns.css';
 
 export const CategoryCell: React.FC<{
   record: IProjectViewModel;
@@ -21,7 +21,7 @@ export const CategoryCell: React.FC<{
   return (
     <Tooltip title={`${t('clickToFilter')} "${record.category_name}"`}>
       <Tag
-        color="#ff9c3c"
+        color={record.category_color}
         className="rounded-full table-tag"
         onClick={e => {
           e.stopPropagation();

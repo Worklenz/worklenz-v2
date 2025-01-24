@@ -7,14 +7,41 @@ import GroupByFilterDropdown from './GroupByFilterDropdown';
 import ShowFieldsFilterDropdown from './ShowFieldsFilterDropdown';
 import PriorityFilterDropdown from './PriorityFilterDropdown';
 import { useTranslation } from 'react-i18next';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
+import { useEffect } from 'react';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { getTeamMembers } from '@/features/team-members/team-members.slice';
 
 interface TaskListFiltersProps {
   position: 'board' | 'list';
 }
 
 const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
-  // localization
-  const { t } = useTranslation('taskListFilters');
+  const { t } = useTranslation('task-list-filters');
+  const dispatch = useAppDispatch();
+  // Selectors
+  const priorities = useAppSelector(state => state.priorityReducer.priorities);
+  const labels = useAppSelector(state => state.taskLabelsReducer.labels);
+  const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
+
+  // Fetch initial data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (!priorities.length) {
+        await dispatch(fetchPriorities());
+      }
+      if (!labels.length) {
+        await dispatch(fetchLabels());
+      }
+      if (!members?.data?.length) {
+        await dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
+      }
+    };
+
+    fetchInitialData();
+  }, [dispatch, priorities.length, labels.length]);
 
   return (
     <Flex gap={8} align="center" justify="space-between">
@@ -24,13 +51,13 @@ const TaskListFilters: React.FC<TaskListFiltersProps> = ({ position }) => {
         {/* sort dropdown  */}
         <SortFilterDropdown />
         {/* prioriy dropdown  */}
-        <PriorityFilterDropdown />
+        <PriorityFilterDropdown priorities={priorities} />
         {/* labels dropdown  */}
-        <LabelsFilterDropdown />
+        <LabelsFilterDropdown labels={labels} />
         {/* members dropdown  */}
-        <MembersFilterDropdown />
+        <MembersFilterDropdown members={members?.data || []} />
         {/* group by dropdown */}
-        {<GroupByFilterDropdown />}
+        <GroupByFilterDropdown />
       </Flex>
 
       {position === 'list' && (

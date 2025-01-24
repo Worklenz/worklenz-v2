@@ -1,5 +1,5 @@
 // Core dependencies
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import i18next from 'i18next';
 
@@ -18,34 +18,34 @@ import { initMixpanel } from './utils/mixpanelInit';
 // Types & Constants
 import { Language } from './features/i18n/localesSlice';
 import logger from './utils/errorLogger';
+import { SuspenseFallback } from './components/suspense-fallback/suspense-fallback';
+import { Spin } from 'antd';
 
 const App: React.FC = () => {
-  // Redux selectors
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const language = useAppSelector((state) => state.localesReducer.lng);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const language = useAppSelector(state => state.localesReducer.lng);
 
-  // Initialize analytics
   initMixpanel(import.meta.env.VITE_MIXPANEL_TOKEN as string);
 
-  // Theme effect
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', themeMode);
   }, [themeMode]);
 
-  // Language effect
   useEffect(() => {
-    i18next.changeLanguage(language || Language.EN, (err) => {
+    i18next.changeLanguage(language || Language.EN, err => {
       if (err) return logger.error('Error changing language', err);
     });
   }, [language]);
-  
+
   return (
-    <SocketProvider>
-      <ThemeWrapper>
-        <RouterProvider router={router} />
-        <PreferenceSelector />
-      </ThemeWrapper>
-    </SocketProvider>
+    <Suspense fallback={<SuspenseFallback />}>
+      <SocketProvider>
+        <ThemeWrapper>
+          <RouterProvider router={router} future={{ v7_startTransition: true }} />
+          <PreferenceSelector />
+        </ThemeWrapper>
+      </SocketProvider>
+    </Suspense>
   );
 };
 

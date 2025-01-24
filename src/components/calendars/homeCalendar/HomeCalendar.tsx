@@ -6,17 +6,18 @@ import { selectedDate } from '../../../features/date/dateSlice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 /* homepage calendar style override  */
 import './homeCalendar.css';
+import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 
 const HomeCalendar = () => {
   const dispatch = useAppDispatch();
-  const date = useAppSelector((state) => state.dateReducer.date);
+  const {homeTasksConfig} = useAppSelector((state) => state.homePageReducer);
 
   const onSelect = (newValue: Dayjs) => {
-    dispatch(selectedDate(newValue));
+    dispatch(setHomeTasksConfig({...homeTasksConfig, selected_date: newValue}));
   };
 
   return (
-    <Calendar className="home-calendar" value={date} onSelect={onSelect} />
+    <Calendar className="home-calendar" value={homeTasksConfig.selected_date || undefined} onSelect={onSelect} />
   );
 };
 

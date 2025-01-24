@@ -10,7 +10,7 @@ import {
   toggleTaskExpansion,
 } from '@features/roadmap/roadmap-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
+import { toggleTaskDrawer } from '@features/tasks/taskSlice';
 import { colors } from '@/styles/colors';
 
 type RoadmapTaskCellProps = {
@@ -113,7 +113,7 @@ const RoadmapTaskCell = ({ task, isSubtask = false }: RoadmapTaskCellProps) => {
         type="text"
         icon={<ExpandAltOutlined />}
         onClick={() => {
-          dispatch(toggleUpdateTaskDrawer());
+          dispatch(toggleTaskDrawer());
         }}
         style={{
           backgroundColor: colors.transparent,

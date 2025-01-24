@@ -1,13 +1,11 @@
 import { SettingOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
-import React from 'react';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { toggleDrawer } from './StatusSlice';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 
 const CreateStatusButton = () => {
-  // localization
   const { t } = useTranslation('task-list-filters');
 
   const dispatch = useAppDispatch();

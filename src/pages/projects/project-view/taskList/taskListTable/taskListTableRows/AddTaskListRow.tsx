@@ -1,7 +1,7 @@
 import { Input } from 'antd';
 import React, { useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../../styles/colors';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 
 const AddTaskListRow = () => {

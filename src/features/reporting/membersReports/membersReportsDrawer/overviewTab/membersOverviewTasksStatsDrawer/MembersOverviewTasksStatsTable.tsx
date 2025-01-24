@@ -7,14 +7,13 @@ import {
   Tag,
   Typography,
 } from 'antd';
-import React from 'react';
-import CustomTableTitle from '../../../../../../components/CustomTableTitle';
-import { colors } from '../../../../../../styles/colors';
+import CustomTableTitle from '@components/CustomTableTitle';
+import { colors } from '@/styles/colors';
 import dayjs from 'dayjs';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '../../../../../tasks/taskSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
 
 type MembersOverviewTasksStatsTableProps = {
   tasksData: any[];
@@ -37,7 +36,7 @@ const MembersOverviewTasksStatsTable = ({
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
     setSeletedTaskId(id);
-    dispatch(toggleUpdateTaskDrawer());
+    dispatch(toggleTaskDrawer());
   };
 
   const columns: TableColumnsType = [

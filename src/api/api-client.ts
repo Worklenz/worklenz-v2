@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 
 import alertService from '@/services/alerts/alertService';
 
-const getCsrfToken = (): string | null => {
+export const getCsrfToken = (): string | null => {
   const match = document.cookie
     .split('; ')
     .find((cookie) => cookie.startsWith('XSRF-TOKEN='));

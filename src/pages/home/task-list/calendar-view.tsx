@@ -1,12 +1,25 @@
-import React from 'react';
 import HomeCalendar from '../../../components/calendars/homeCalendar/HomeCalendar';
 import { Tag, Typography } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import AddTaskInlineForm from './add-task-inline-form';
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
+import dayjs from 'dayjs';
 
 const CalendarView = () => {
-  const date = useAppSelector((state) => state.dateReducer.date);
+  const {homeTasksConfig} = useAppSelector((state) => state.homePageReducer);
+  const {t} = useTranslation('home');
+
+  useEffect(() => {
+    if (!homeTasksConfig.selected_date) {
+      setHomeTasksConfig({
+        ...homeTasksConfig,
+        selected_date: dayjs(),
+      });
+    }
+  }, [homeTasksConfig.selected_date]);
 
   return (
     <div>
@@ -23,11 +36,11 @@ const CalendarView = () => {
         }}
       >
         <Typography.Text>
-          Tasks due on: {date.format('MMM DD, YYYY')}
+          {t('home:tasks.dueOn')} {homeTasksConfig.selected_date?.format('MMM DD, YYYY')}
         </Typography.Text>
       </Tag>
 
-      <AddTaskInlineForm />
+      <AddTaskInlineForm t={t} calendarView={true} />
     </div>
   );
 };

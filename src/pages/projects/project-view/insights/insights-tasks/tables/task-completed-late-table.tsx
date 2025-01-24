@@ -1,8 +1,8 @@
 import { Flex, Table, Typography } from 'antd';
 import { useEffect, useState } from 'react';
-import { colors } from '../../../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { TableProps } from 'antd/lib';
-import { simpleDateFormat } from '../../../../../../utils/simpleDateFormat';
+import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { IInsightTasks } from '@/types/project/projectInsights.types';
 import logger from '@/utils/errorLogger';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';

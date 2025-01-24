@@ -6,11 +6,17 @@ import LoggingOutPage from '@/pages/auth/logging-out';
 import AuthenticatingPage from '@/pages/auth/authenticating';
 import { Navigate } from 'react-router-dom';
 import VerifyResetEmailPage from '@/pages/auth/verify-reset-email';
+import { Suspense } from 'react';
+import { SuspenseFallback } from '@/components/suspense-fallback/suspense-fallback';
 
 const authRoutes = [
   {
     path: '/auth',
-    element: <AuthLayout />,
+    element: (
+      <Suspense fallback={<SuspenseFallback />}>
+        <AuthLayout />
+      </Suspense>
+    ),
     children: [
       {
         path: '',
@@ -21,7 +27,7 @@ const authRoutes = [
         element: <LoginPage />,
       },
       {
-        path: 'signup', 
+        path: 'signup',
         element: <SignupPage />,
       },
       {

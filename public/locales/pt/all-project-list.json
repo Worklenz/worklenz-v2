@@ -18,5 +18,6 @@
   "unarchive": "Desarquivar",
   "unarchiveConfirm": "Tem certeza de que deseja desarquivar este projeto?",
   "clickToFilter": "Clique para filtrar por",
-  "noProjects": "Nenhum projeto encontrado"
+  "noProjects": "Nenhum projeto encontrado",
+  "addToFavourites": "Adicionar aos favoritos"
 }

@@ -28,6 +28,12 @@
         "project": "Projeto",
         "status": "Status",
         "dueDate": "Data de vencimento",
-        "dueDatePlaceholder": "Definir data de vencimento"
+        "dueDatePlaceholder": "Definir data de vencimento",
+        "tomorrow": "Amanhã",
+        "nextWeek": "Semana que vem",
+        "nextMonth": "Próximo mês",
+        "projectRequired": "Por favor selecione um projeto",
+        "dueOn": "Tarefas vencidas em",
+        "taskRequired": "Por favor adicione uma tarefa"
     }
 }

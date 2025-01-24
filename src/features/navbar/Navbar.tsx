@@ -10,14 +10,13 @@ import MobileMenuButton from './mobileMenu/MobileMenuButton';
 import NavbarLogo from './NavbarLogo';
 import NotficationDrawer from './notification/NotficationDrawer';
 import NotificationButton from './notification/NotificationButton';
-import ProfileButton from './userProfile/ProfileButton';
+import ProfileButton from './user-profile/profile-button';
 import SwitchTeamButton from './switchTeam/SwitchTeamButton';
 import UpgradePlanButton from './upgradePlan/UpgradePlanButton';
 
 import { useResponsive } from '@/hooks/useResponsive';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
-import { getUserSession } from '@/utils/session-helper';
 import { useAuthService } from '@/hooks/useAuth';
 
 const Navbar = () => {

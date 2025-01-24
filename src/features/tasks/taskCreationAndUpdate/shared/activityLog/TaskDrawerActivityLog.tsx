@@ -1,13 +1,4 @@
-import {
-  Timeline,
-  Typography,
-  Tag,
-  Avatar,
-  Button,
-  Flex,
-  ConfigProvider,
-} from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Timeline, Typography, Flex, ConfigProvider } from 'antd';
 import React from 'react';
 import CustomAvatar from '../../../../../components/CustomAvatar';
 

@@ -25,6 +25,8 @@ import updatesReducer from '../features/projects/singleProject/updates/updatesSl
 import statusReducer from '@features/projects/status/StatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
 import projectInsightsReducer from '@features/projects/insights/project-insights.slice';
+import taskListCustomColumnsReducer from '@features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
+import boardReducer from '@features/board/board-slice';
 
 // Project Lookups
 import projectCategoriesReducer from '@features/projects/lookups/projectCategories/projectCategoriesSlice';
@@ -32,11 +34,12 @@ import projectStatusesReducer from '@features/projects/lookups/projectStatuses/p
 import projectHealthReducer from '@features/projects/lookups/projectHealth/projectHealthSlice';
 
 // Tasks
-import taskReducer from '@features/tasks/taskSlice';
+import taskReducer from '@features/tasks/tasks.slice';
 import createCardReducer from '@features/board/createCardSlice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
 import taskStatusReducer from '@features/taskAttributes/taskStatusSlice';
+import tasksReducer from '@features/tasks/taskSlice';
 
 // Settings & Management
 import memberReducer from '@features/settings/member/memberSlice';
@@ -63,12 +66,14 @@ import membersReportsReducer from '../features/reporting/membersReports/membersR
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import teamMembersReducer from '@features/team-members/team-members.slice';
 import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
+import homePageApiService from '@/api/home-page/home-page.api.service';
+import { projectsApi } from '@/api/projects/projects.v1.api.service';
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat(homePageApiService.middleware, projectsApi.middleware),
   reducer: {
     // Auth & User
     auth: authReducer,
@@ -79,7 +84,8 @@ export const store = configureStore({
 
     // Home Page
     homePageReducer: homePageReducer,
-
+    [homePageApiService.reducerPath]: homePageApiService.reducer,
+    [projectsApi.reducerPath]: projectsApi.reducer,
     // Core UI
     themeReducer: themeReducer,
     localesReducer: localesReducer,
@@ -96,7 +102,9 @@ export const store = configureStore({
     statusReducer: statusReducer,
     bulkActionReducer: bulkActionReducer,
     projectInsightsReducer: projectInsightsReducer,
-
+    taskListCustomColumnsReducer: taskListCustomColumnsReducer,
+    boardReducer: boardReducer,
+    
     // Project Lookups
     projectCategoriesReducer: projectCategoriesReducer,
     projectStatusesReducer: projectStatusesReducer,
@@ -104,6 +112,7 @@ export const store = configureStore({
 
     // Tasks
     taskReducer: taskReducer,
+    tasksReducer: tasksReducer,
     createCardReducer: createCardReducer,
     priorityReducer: priorityReducer,
     taskLabelsReducer: taskLabelsReducer,

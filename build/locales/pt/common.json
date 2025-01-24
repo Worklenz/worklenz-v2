@@ -1,0 +1,6 @@
+{
+    "login-success": "Login realizado com sucesso!",
+    "login-failed": "Falha no login. Por favor, verifique suas credenciais e tente novamente.",
+    "signup-success": "Cadastro realizado com sucesso! Bem-vindo a bordo.",
+    "signup-failed": "Falha no cadastro. Por favor, certifique-se de que todos os campos obrigatórios estão preenchidos e tente novamente."
+}

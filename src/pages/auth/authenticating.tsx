@@ -40,6 +40,10 @@ const AuthenticatingPage: React.FC = () => {
         setSession(session.user);
         dispatch(setUser(session.user));
 
+        if (!session.user.setup_completed) {
+          return navigate('/worklenz/setup');
+        }
+
         // Redirect based on setup status
         setTimeout(() => {
           handleSuccessRedirect();

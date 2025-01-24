@@ -17,19 +17,22 @@ import ProjectMemberInviteButton from '@features/projects/singleProject/members/
 import { useNavigate } from 'react-router-dom';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleCreateTaskDrawer } from '@features/tasks/taskSlice';
+import { toggleTaskDrawer } from '@features/tasks/tasks.slice';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { getStatusIcon } from '@/utils/projectUtils';
+import { useAuthService } from '@/hooks/useAuth';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
-
-  const [isSubcribe, setIsSubcribe] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const selectedProject = useAppSelector(state => state.projectReducer.project);
+  const currentSession = useAuthService().getCurrentSession();
+  const { socket, connected } = useSocket();
 
   // function for handle refresh
   const handleRefresh = () => {
@@ -41,12 +44,29 @@ const ProjectViewHeader = () => {
     navigate('/worklenz/projects');
   };
 
+  const handleSubscribe = () => {
+    console.log(selectedProject?.id);
+    if (!selectedProject?.id) return;
+
+    selectedProject.subscribed = !selectedProject.subscribed;
+    const body = {
+      project_id: selectedProject.id,
+      user_id: currentSession?.id,
+      team_member_id: currentSession?.team_member_id,
+      mode: selectedProject.subscribed ? 0 : 1,
+    };
+
+    socket?.emit(SocketEvents.PROJECT_SUBSCRIBERS_CHANGE.toString(), body);
+  };
+
   // create task button items
   const items = [
     {
       key: '1',
       label: (
-        <div style={{ width: '100%', margin: 0, padding: 0 }}><ImportOutlined/> Import task</div>
+        <div style={{ width: '100%', margin: 0, padding: 0 }}>
+          <ImportOutlined /> Import task
+        </div>
       ),
     },
   ];
@@ -56,14 +76,8 @@ const ProjectViewHeader = () => {
       className="site-page-header"
       title={
         <Flex gap={8} align="center">
-          <ArrowLeftOutlined
-            style={{ fontSize: 16 }}
-            onClick={() => navigateBack()}
-          />
-          <Typography.Title
-            level={4}
-            style={{ marginBlockEnd: 0, marginInlineStart: 12 }}
-          >
+          <ArrowLeftOutlined style={{ fontSize: 16 }} onClick={() => navigateBack()} />
+          <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
             {selectedProject?.name}
           </Typography.Title>
 
@@ -83,7 +97,9 @@ const ProjectViewHeader = () => {
 
           {selectedProject?.status && (
             <Tooltip title={selectedProject?.status}>
-              {selectedProject.status_icon && selectedProject.status_color && getStatusIcon(selectedProject.status_icon, selectedProject.status_color)}
+              {selectedProject.status_icon &&
+                selectedProject.status_color &&
+                getStatusIcon(selectedProject.status_icon, selectedProject.status_color)}
             </Tooltip>
           )}
 
@@ -131,12 +147,13 @@ const ProjectViewHeader = () => {
             <Button shape="circle" icon={<SettingOutlined />} />
           </Tooltip>
 
-          <Tooltip
-            title={'Receive a project summary every evening.'}
-            trigger={'hover'}
-          >
-            <Button shape="round" icon={isSubcribe ? <BellFilled /> : <BellOutlined />} onClick={() => setIsSubcribe(!isSubcribe)}>
-              {isSubcribe ? 'Unsubscribe' : 'Subscribe'}
+          <Tooltip title={'Receive a project summary every evening.'} trigger={'hover'}>
+            <Button
+              shape="round"
+              icon={selectedProject?.subscribed ? <BellFilled /> : <BellOutlined />}
+              onClick={handleSubscribe}
+            >
+              {selectedProject?.subscribed ? 'Unsubscribe' : 'Subscribe'}
             </Button>
           </Tooltip>
 
@@ -146,7 +163,7 @@ const ProjectViewHeader = () => {
             type="primary"
             icon={<DownOutlined />}
             menu={{ items }}
-            onClick={() => dispatch(toggleCreateTaskDrawer())}
+            onClick={() => dispatch(toggleTaskDrawer())}
           >
             <EditOutlined /> Create Task
           </Dropdown.Button>

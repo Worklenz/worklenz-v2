@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import { ConfigProvider, Table, TableColumnsType } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import CustomTableTitle from '../../../../CustomTableTitle';
 
 type OverviewReportsMembersReportsTableProps = {

@@ -1,11 +1,11 @@
 import { Flex } from 'antd';
 import React, { useMemo, useState } from 'react';
 import BillableFilter from './BillableFilter';
-import { fetchData } from '../../../../../utils/fetchData';
+import { fetchData } from '@/utils/fetchData';
 import TimeLogCard from './TimeLogCard';
 import EmptyListPlaceholder from '../../../../../components/EmptyListPlaceholder';
-import UpdateTaskDrawer from '../../../../tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import { useTranslation } from 'react-i18next';
+import TaskDrawer from '@/components/task-drawer/task-drawer';
 
 type MembersReportsTimeLogsTabProps = {
   memberId: string | null;
@@ -49,7 +49,7 @@ const MembersReportsTimeLogsTab = ({
       )}
 
       {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={selectedTaskId || ''} />
+      <TaskDrawer />
     </Flex>
   );
 };

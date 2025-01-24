@@ -1,44 +1,65 @@
-import Avatars from '@/components/avatars/avatars';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { getTeamMembers } from '@/features/team-members/team-members.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Divider, Dropdown, Flex, Input, InputRef, Space, theme } from 'antd';
-import { useToken } from 'antd/es/theme/internal';
-import React from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import { CloseCircleFilled, PlusCircleOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Flex, Input, InputRef, theme, Typography } from 'antd';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import './project-manager-dropdown.css';
 
-const ProjectManagerDropdown: React.FC = () => {
+const ProjectManagerDropdown: React.FC<{
+  selectedProjectManager: ITeamMemberViewModel | null;
+  setSelectedProjectManager: (member: ITeamMemberViewModel | null) => void;
+}> = ({ selectedProjectManager, setSelectedProjectManager }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('project-drawer');
-  const { teamMembers } = useAppSelector(state => state.teamMembersReducer);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const labelInputRef = useRef<InputRef>(null);
   const { token } = theme.useToken();
+  const { teamMembers } = useAppSelector(state => state.teamMembersReducer);
 
   useEffect(() => {
-    if (!teamMembers?.data) {
-      dispatch(getTeamMembers({ index: 1, size: 5, field: null, order: null, search: searchQuery }));
-    }
+    dispatch(getTeamMembers({ index: 1, size: 5, field: null, order: null, search: searchQuery }));
   }, [dispatch, searchQuery]);
 
-  const projectManagerOptions = [
-    ...(teamMembers?.data?.map((member, index) => ({
-      key: index,
-      value: member.id,
-      label: member.name,
-    })) || []),
-  ];
+  const projectManagerOptions = useMemo(() => {
+    return (
+      teamMembers?.data?.map((member, index) => ({
+        key: index,
+        value: member.id,
+        label: (
+          <Flex
+            align="center"
+            gap="0px"
+            onClick={() => setSelectedProjectManager(member)}
+            key={member.id}
+          >
+            <SingleAvatar avatarUrl={member.avatar_url} name={member.name} email={member.email} />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography.Text style={{ fontSize: '14px' }}>{member.name}</Typography.Text>
+              <Typography.Text
+                type="secondary"
+                style={{ fontSize: '11.2px', maxWidth: '212px' }}
+                ellipsis={{ tooltip: true }}
+              >
+                {member.email}
+              </Typography.Text>
+            </div>
+          </Flex>
+        ),
+      })) || []
+    );
+  }, [teamMembers]);
 
   const contentStyle: React.CSSProperties = {
     backgroundColor: token.colorBgElevated,
     borderRadius: token.borderRadiusLG,
     boxShadow: token.boxShadowSecondary,
-  };
-
-  const menuStyle: React.CSSProperties = {
-    boxShadow: 'none',
+    margin: '12px',
+    maxHeight: '255px',
+    overflow: 'auto',
   };
 
   const projectManagerOptionsDropdownRender = (menu: any) => {
@@ -49,20 +70,11 @@ const ProjectManagerDropdown: React.FC = () => {
           value={searchQuery}
           onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchInputPlaceholder')}
+          style={{ width: 'auto', margin: '5px' }}
+          autoComplete="off"
         />
-        <Divider style={{ margin: '8px 0' }} />
-        <Avatars members={menu}/>
+        {menu}
       </div>
-      //   <Card>
-      //     <Input
-      //       ref={labelInputRef}
-      //       value={searchQuery}
-      //       onChange={e => setSearchQuery(e.currentTarget.value)}
-      //       placeholder={t('searchInputPlaceholder')}
-      //     />
-      //     <Divider style={{ margin: '8px 0' }} />
-      //     {menu}
-      //   </Card>
     );
   };
 
@@ -72,7 +84,24 @@ const ProjectManagerDropdown: React.FC = () => {
       trigger={['click']}
       dropdownRender={projectManagerOptionsDropdownRender}
     >
-      <Button type="dashed" shape="circle" icon={<PlusCircleOutlined />} />
+      <div className={`project-manager-container ${selectedProjectManager ? 'selected' : ''}`}>
+        {selectedProjectManager ? (
+          <>
+            <SingleAvatar
+              avatarUrl={selectedProjectManager.avatar_url}
+              name={selectedProjectManager.name}
+              email={selectedProjectManager.email}
+            />
+            <Typography.Text>{selectedProjectManager.name}</Typography.Text>
+            <CloseCircleFilled
+              className="project-manager-icon"
+              onClick={() => setSelectedProjectManager(null)}
+            />
+          </>
+        ) : (
+          <Button type="dashed" shape="circle" icon={<PlusCircleOutlined />} />
+        )}
+      </div>
     </Dropdown>
   );
 };

@@ -20,7 +20,7 @@ import { colors } from '../../../../../styles/colors';
 import './taskListTableWrapper.css';
 import TaskListTable from './TaskListTable';
 import { MenuProps } from 'antd/lib';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 

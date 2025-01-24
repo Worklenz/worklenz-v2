@@ -1,11 +1,10 @@
 import { Badge, Flex, Table, TableColumnsType, Tag, Typography } from 'antd';
-import React from 'react';
 import dayjs from 'dayjs';
 import { DoubleRightOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '../../../../../tasks/taskSlice';
-import CustomTableTitle from '../../../../../../components/CustomTableTitle';
-import { colors } from '../../../../../../styles/colors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleTaskDrawer } from '@features/tasks/tasks.slice';
+import CustomTableTitle from '@components/CustomTableTitle';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 
 type ProjectReportsMembersTasksTableProps = {
@@ -25,7 +24,7 @@ const ProjectReportsMembersTasksTable = ({
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
     setSeletedTaskId(id);
-    dispatch(toggleUpdateTaskDrawer());
+    dispatch(toggleTaskDrawer());
   };
 
   const columns: TableColumnsType = [

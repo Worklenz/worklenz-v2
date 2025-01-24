@@ -16,6 +16,7 @@ interface ProjectState {
   initialized: boolean;
   isProjectDrawerOpen: boolean;
   filteredCategories: string[];
+  filteredStatuses: string[];
   requestParams: {
     index: number;
     size: number;
@@ -24,7 +25,7 @@ interface ProjectState {
     search: string;
     filter: number;
     statuses: string | null;
-    categories: string[];
+    categories: string | null;
   };
 }
 
@@ -39,6 +40,7 @@ const initialState: ProjectState = {
   initialized: false,
   isProjectDrawerOpen: false,
   filteredCategories: [],
+  filteredStatuses: [],
   requestParams: {
     index: 1,
     size: DEFAULT_PAGE_SIZE,
@@ -47,7 +49,7 @@ const initialState: ProjectState = {
     search: '',
     filter: 0,
     statuses: null,
-    categories: [],
+    categories: null,
   },
 };
 
@@ -63,7 +65,7 @@ export const fetchProjects = createAsyncThunk(
       search: string;
       filter: number;
       statuses: string | null;
-      categories: string[];
+      categories: string | null;
     },
     { rejectWithValue }
   ) => {
@@ -76,7 +78,7 @@ export const fetchProjects = createAsyncThunk(
         params.search,
         params.filter,
         params.statuses,
-        params.categories.join(',')
+        params.categories
       );
       return projectsResponse.body;
     } catch (error) {
@@ -168,6 +170,9 @@ const projectSlice = createSlice({
     setFilteredCategories: (state, action: PayloadAction<string[]>) => {
       state.filteredCategories = action.payload;
     },
+    setFilteredStatuses: (state, action: PayloadAction<string[]>) => {
+      state.filteredStatuses = action.payload;
+    },
     setRequestParams: (state, action: PayloadAction<Partial<ProjectState['requestParams']>>) => {
       state.requestParams = {
         ...state.requestParams,
@@ -209,5 +214,5 @@ const projectSlice = createSlice({
   },
 });
 
-export const { toggleDrawer, setCategories, setFilteredCategories, setRequestParams } = projectSlice.actions;
+export const { toggleDrawer, setCategories, setFilteredCategories, setFilteredStatuses, setRequestParams } = projectSlice.actions;
 export default projectSlice.reducer;

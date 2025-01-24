@@ -1,8 +1,9 @@
 import { IMyTask } from "./my-tasks.types";
+import type { Dayjs } from 'dayjs';
 
 export interface IHomeTasksConfig {
   current_tab: string | null; // active tab in list view
-  selected_date: Date | null; // selected date in calendar view
+  selected_date: Dayjs | null; // selected date in calendar view
   tasks_group_by: number; // tasks assigned to me / assigned by me
   current_view: number; // list view or calendar view
   is_calendar_view: boolean;

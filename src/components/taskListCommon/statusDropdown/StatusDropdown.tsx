@@ -1,10 +1,12 @@
 import { Badge, Card, Dropdown, Flex, Menu, MenuProps, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
+import './statusDropdown.css';
 import { colors } from '../../../styles/colors';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { getStatusColor } from '../../../utils/getStatusColor';
+import { themeWiseColor } from '../../../utils/themeWiseColor';
 
 type StatusDropdownProps = {
   currentStatus: string;

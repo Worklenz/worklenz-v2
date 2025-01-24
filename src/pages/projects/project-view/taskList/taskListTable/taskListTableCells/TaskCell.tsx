@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '@features/tasks/taskSlice';
+import { toggleTaskDrawer } from '@features/tasks/tasks.slice';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
@@ -126,7 +126,7 @@ const TaskCell = ({
           icon={<ExpandAltOutlined />}
           onClick={() => {
             setSelectedTaskId(task.id || '');
-            dispatch(toggleUpdateTaskDrawer());
+            dispatch(toggleTaskDrawer());
           }}
           style={{
             backgroundColor: colors.transparent,

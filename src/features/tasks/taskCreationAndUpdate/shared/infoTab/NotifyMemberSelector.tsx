@@ -22,7 +22,7 @@ const NotifyMemberSelector = () => {
   const membersInputRef = useRef<InputRef>(null);
 
   // localization
-  const { t } = useTranslation('task-list-filters');
+  const { t } = useTranslation('taskListFilters');
 
   // get members list from members reducer
   const membersList = [

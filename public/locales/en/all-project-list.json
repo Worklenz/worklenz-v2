@@ -18,5 +18,6 @@
   "archiveConfirm": "Are you sure you want to archive this project?",
   "unarchiveConfirm": "Are you sure you want to unarchive this project?",
   "clickToFilter": "Click to filter by",
-  "noProjects": "No projects found"
+  "noProjects": "No projects found",
+  "addToFavourites": "Add to favourites"
 }

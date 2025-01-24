@@ -2,12 +2,12 @@ import { RouteObject } from 'react-router-dom';
 import MainLayout from '@/layouts/MainLayout';
 import HomePage from '@/pages/home/home-page';
 import ProjectList from '@/pages/projects/project-list';
-import ProjectView from '@/pages/projects/project-view/project-view';
 import settingsRoutes from './settings-routes';
 import adminCenterRoutes from './admin-center-routes';
 import Schedule from '@/pages/schedule/schedule';
 import ProjectTemplateEditView from '@/pages/settings/project-templates/projectTemplateEditView/ProjectTemplateEditView';
 import LicenseExpired from '@/pages/license-expired/license-expired';
+import ProjectView from '@/pages/projects/projectView/project-view';
 
 const mainRoutes: RouteObject[] = [
   {

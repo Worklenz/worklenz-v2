@@ -7,7 +7,7 @@ import { Badge, Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React, { useState } from 'react';
 import { colors } from '../../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const SortFilterDropdown = () => {
   const [selectedCount, setSelectedCount] = useState<number>(0);

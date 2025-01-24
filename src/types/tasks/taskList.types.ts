@@ -31,6 +31,7 @@ export interface ITaskListGroup {
   start_date?: string;
   end_date?: string;
   color_code: string;
+  color_code_dark: string;
   category_id?: string;
   old_category_id?: string;
   todo_progress?: number;

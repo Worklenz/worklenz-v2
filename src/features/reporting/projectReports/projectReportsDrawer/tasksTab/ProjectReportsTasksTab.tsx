@@ -1,11 +1,11 @@
 import { Flex } from 'antd';
 import React, { useMemo, useState } from 'react';
-import CustomSearchbar from '../../../../../components/CustomSearchbar';
+import CustomSearchbar from '@components/CustomSearchbar';
 import GroupByFilter from './GroupByFilter';
 import ProjectReportsTasksTable from './ProjectReportsTaskTable';
-import UpdateTaskDrawer from '../../../../tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
-import { fetchData } from '../../../../../utils/fetchData';
+import { fetchData } from '@/utils/fetchData';
 import { useTranslation } from 'react-i18next';
+import TaskDrawer from '@/components/task-drawer/task-drawer';
 
 type ProjectReportsTasksTabProps = {
   projectId?: string | null;
@@ -89,8 +89,7 @@ const ProjectReportsTasksTab = ({
           ))}
       </Flex>
 
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={selectedTaskId || ''} />
+      <TaskDrawer />
     </Flex>
   );
 };

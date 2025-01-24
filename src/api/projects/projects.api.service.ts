@@ -4,7 +4,6 @@ import { API_BASE_URL } from '@/shared/constants';
 import { IProjectOverviewStats, IProjectsViewModel } from '@/types/project/projectsViewModel.types';
 import { toQueryString } from '@/utils/toQueryString';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
-import { IProject } from '@/types/project/project.types';
 import { ITeamMemberOverviewGetResponse } from '@/types/project/project-insights.types';
 import { IProjectMembersViewModel } from '@/types/projectMember.types';
 

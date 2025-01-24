@@ -1,9 +1,9 @@
 import React from 'react';
-import { statusData } from '../../../../../../lib/project/projectConstants';
+import { statusData } from '@/lib/project/projectConstants';
 import { ConfigProvider, Select, Typography } from 'antd';
-import { colors } from '../../../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-import { toCamelCase } from '../../../../../../utils/toCamelCase';
+import { toCamelCase } from '@/utils/toCamelCase';
 
 const ProjectStatusCell = ({ status }: { status: string }) => {
   // localization

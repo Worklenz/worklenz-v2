@@ -1,0 +1,41 @@
+{
+  "keyColumn": "Chave",
+  "taskColumn": "Tarefa",
+  "descriptionColumn": "Descrição",
+  "progressColumn": "Progresso",
+  "membersColumn": "Membros",
+  "labelsColumn": "Rótulos",
+  "phasesColumn": "Fases",
+  "statusColumn": "Status",
+  "priorityColumn": "Prioridade",
+  "timeTrackingColumn": "Rastreamento de Tempo",
+  "estimationColumn": "Estimativa",
+  "startDateColumn": "Data de Início",
+  "dueDateColumn": "Data de Vencimento",
+  "completedDateColumn": "Data de Conclusão",
+  "createdDateColumn": "Data de Criação",
+  "lastUpdatedColumn": "Última Atualização",
+  "reporterColumn": "Relator",
+
+  "todoSelectorText": "A Fazer",
+  "doingSelectorText": "Fazendo",
+  "doneSelectorText": "Concluído",
+
+  "lowSelectorText": "Baixa",
+  "mediumSelectorText": "Média",
+  "highSelectorText": "Alta",
+
+  "selectText": "Selecionar",
+  "labelsSelectorInputTip": "Pressione enter para criar!",
+
+  "addTaskText": "+ Adicionar Tarefa",
+  "addSubTaskText": "+ Adicionar Subtarefa",
+  "addTaskInputPlaceholder": "Digite sua tarefa e pressione enter",
+
+  "openButton": "Abrir",
+  "okButton": "Ok",
+
+  "noLabelsFound": "Nenhum rótulo encontrado",
+  "searchInputPlaceholder": "Pesquisar ou criar",
+  "assigneeSelectorInviteButton": "Convidar um novo membro por email"
+}

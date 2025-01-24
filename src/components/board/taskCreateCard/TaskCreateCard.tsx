@@ -4,7 +4,7 @@ import AddMembersDropdown from '../../add-members-dropdown/add-members-dropdown'
 import dayjs, { Dayjs } from 'dayjs';
 import './TaskCreateCard.css';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { addTask, addTaskToTop } from '../../../features/tasks/taskSlice';
+import { addTask, addTaskToTop } from '../../../features/tasks/tasks.slice';
 import { setTaskCardDisabled } from '../../../features/board/createCardSlice';
 import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';

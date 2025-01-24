@@ -1,8 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
-
+import { useEffect, useState } from 'react';
 import {
-  AutoComplete,
-  Badge,
+  toggleDrawer,
+} from '@features/projects/projectsSlice';
+import { fetchClients } from '@/features/settings/client/clientSlice';
+import {
+  useCreateProjectMutation,
+  useDeleteProjectMutation,
+  useGetProjectsQuery,
+  useUpdateProjectMutation,
+} from '@/api/projects/projects.v1.api.service';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import logger from '@/utils/errorLogger';
+import {
   Button,
   DatePicker,
   Divider,
@@ -10,60 +20,41 @@ import {
   Flex,
   Form,
   Input,
-  InputRef,
   Popconfirm,
-  Select,
   Skeleton,
   Space,
-  Spin,
   Tooltip,
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
-
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import {
-  createProject,
-  deleteProject,
-  toggleDrawer,
-  updateProject,
-} from '@features/projects/projectsSlice';
-import { addCategory } from '@features/settings/categories/categoriesSlice';
-
-import { projectColors } from '@/lib/project/projectConstants';
-import { colors } from '@/styles/colors';
-import { IProjectViewModel } from '@/types/project/projectViewModel.types';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
-
-import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { fetchClients } from '@/features/settings/client/clientSlice';
-import { getStatusIcon } from '@/utils/projectUtils';
-import { IProjectHealth } from '@/types/project/projectHealth.types';
-import { IProjectStatus } from '@/types/project/projectStatus.types';
-import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import ProjectManagerDropdown from '../project-manager-dropdown/project-manager-dropdown';
-import { setProject, setProjectId } from '@/features/project/project.slice';
-import { useNavigate } from 'react-router-dom';
-import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
-import { calculateTimeDifference } from '@/utils/calculate-time-difference';
-import logger from '@/utils/errorLogger';
 import ProjectBasicInfo from './project-basic-info/project-basic-info';
 import ProjectHealthSection from './project-health-section/project-health-section';
 import ProjectStatusSection from './project-status-section/project-status-section';
 import ProjectCategorySection from './project-category-section/project-category-section';
 import ProjectClientSection from './project-client-section/project-client-section';
 
+import { projectColors } from '@/lib/project/projectConstants';
+import { setProject, setProjectId } from '@/features/project/project.slice';
+
+import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { IProjectHealth } from '@/types/project/projectHealth.types';
+import { IProjectStatus } from '@/types/project/projectStatus.types';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import { calculateTimeDifference } from '@/utils/calculate-time-difference';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+
 const ProjectDrawer = ({
   categories = [],
   statuses = [],
   healths = [],
-  onDelete,
 }: {
   categories: IProjectCategory[];
   statuses: IProjectStatus[];
   healths: IProjectHealth[];
-  onDelete: (id: string) => void;
 }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('project-drawer');
@@ -71,9 +62,14 @@ const ProjectDrawer = ({
 
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
   const { project, projectId, projectLoading } = useAppSelector(state => state.projectReducer);
-  const [selectedClient, setSelectedClient] = useState<string | null>(null);
-  const [creatingProject, setCreatingProject] = useState<boolean>(false);
-  const [deletingProject, setDeletingProject] = useState<boolean>(false);
+  const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
+    null
+  );
+  const { requestParams } = useAppSelector(state => state.projectsReducer);
+  const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
+  const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
+  const [updateProject, { isLoading: isUpdatingProject }] = useUpdateProjectMutation();
+  const [createProject, { isLoading: isCreatingProject }] = useCreateProjectMutation();
 
   useEffect(() => {
     if (!clients.data?.length)
@@ -88,7 +84,6 @@ const ProjectDrawer = ({
 
   // function for handle form submit
   const handleFormSubmit = async (values: any) => {
-    setCreatingProject(true);
     try {
       const projectModel: IProjectViewModel = {
         name: values.name,
@@ -100,63 +95,80 @@ const ProjectDrawer = ({
         key: values.key,
         client_id: values.client_id,
         client_name: values.client_name,
-        project_manager: values.projectManager,
         start_date: values.start_date,
         end_date: values.end_date,
         working_days: parseInt(values.working_days),
         man_days: parseInt(values.man_days),
         hours_per_day: parseInt(values.hours_per_day),
+        project_manager: selectedProjectManager,
       };
       if (editMode && projectId) {
-        const response = await dispatch(
-          updateProject({ id: projectId, project: projectModel })
-        ).unwrap();
-        if (response?.id) {
+        const response = await updateProject({ id: projectId, project: projectModel });
+        if (response?.data?.body?.id) {
           form.resetFields();
           dispatch(toggleDrawer());
+          refetchProjects();
         }
       } else {
-        const response = await dispatch(createProject(projectModel)).unwrap();
-        if (response?.id) {
+        const response = await createProject(projectModel);
+        if (response?.data?.body?.id) {
           form.resetFields();
           dispatch(toggleDrawer());
-          navigate(`/worklenz/projects/${response.id}`);
+          navigate(`/worklenz/projects/${response.data.body.id}`);
         }
       }
     } catch (error) {
       logger.error('Error creating project', error);
-    } finally {
-      setCreatingProject(false);
     }
   };
 
   const visibleChanged = (visible: boolean) => {
-    if (visible && project?.id) {
+    console.log('visible', visible, projectId);
+    console.log('projectId', project);
+    if (visible && projectId) {
       setEditMode(true);
-      form.setFieldsValue({
-        ...project,
-        start_date: project.start_date ? dayjs(project.start_date) : null,
-        end_date: project.end_date ? dayjs(project.end_date) : null,
-      });
+      if (project) {
+        form.setFieldsValue({
+          ...project,
+          start_date: project.start_date ? dayjs(project.start_date) : null,
+          end_date: project.end_date ? dayjs(project.end_date) : null,
+        });
+        setSelectedProjectManager(project.project_manager || null);
+      }
+    }
+    if (!projectId) {
+      setEditMode(false);
+      form.resetFields();
+      setSelectedProjectManager(null);
+      dispatch(setProject({} as IProjectViewModel));
     }
   };
 
   const handleDrawerClose = () => {
     form.resetFields();
-    dispatch(toggleDrawer());
     setEditMode(false);
     dispatch(setProject({} as IProjectViewModel));
     dispatch(setProjectId(null));
+    setSelectedProjectManager(null);
+    setTimeout(() => {
+      dispatch(toggleDrawer());
+    }, 300);
   };
 
   const handleDeleteProject = async () => {
-    setDeletingProject(true);
-    if (projectId) {
-      await dispatch(deleteProject(projectId)).unwrap();
-      dispatch(toggleDrawer());
-      navigate('/worklenz/projects');
+    if (!projectId) return;
+    try {
+      const res = await deleteProject(projectId);
+      if (res?.data?.done) {
+        dispatch(setProject({} as IProjectViewModel));
+        dispatch(setProjectId(null));
+        dispatch(toggleDrawer());
+        navigate('/worklenz/projects');
+        refetchProjects();
+      }
+    } catch (error) {
+      logger.error('Error deleting project', error);
     }
-    setDeletingProject(false);
   };
 
   return (
@@ -181,14 +193,18 @@ const ProjectDrawer = ({
                 okText={t('yes')}
                 cancelText={t('no')}
               >
-                <Button danger type="dashed" loading={deletingProject}>
+                <Button danger type="dashed" loading={isDeletingProject}>
                   {t('delete')}
                 </Button>
               </Popconfirm>
             )}
           </Space>
           <Space>
-            <Button type="primary" onClick={() => form.submit()} loading={creatingProject}>
+            <Button
+              type="primary"
+              onClick={() => form.submit()}
+              loading={isCreatingProject || isUpdatingProject}
+            >
               {editMode ? t('update') : t('create')}
             </Button>
           </Space>
@@ -231,7 +247,10 @@ const ProjectDrawer = ({
             />
 
             <Form.Item name="project_manager" label={t('projectManager')} layout="horizontal">
-              <ProjectManagerDropdown />
+              <ProjectManagerDropdown
+                selectedProjectManager={selectedProjectManager}
+                setSelectedProjectManager={setSelectedProjectManager}
+              />
             </Form.Item>
             <Form.Item name="date" layout="horizontal">
               <Flex gap={8}>

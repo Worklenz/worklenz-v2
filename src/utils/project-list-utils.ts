@@ -1,8 +1,5 @@
 import { DATE_FORMAT_OPTIONS } from '@/shared/constants';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
-import { toggleArchiveProject } from '@/features/projects/projectsSlice';
-import { AppDispatch } from '@/app/store';
-import { toggleArchiveProjectForAll } from '@/features/projects/projectsSlice';
 
 interface DateRange {
   startDate: string | null;

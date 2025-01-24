@@ -1,15 +1,15 @@
 import { Drawer, Typography, Flex, Button } from 'antd';
 import React, { useMemo, useState } from 'react';
 import { FileOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { toggleProjectReportsMembersTaskDrawer } from '../../../projectReportsSlice';
-import { colors } from '../../../../../../styles/colors';
+import { colors } from '@/styles/colors';
 import ProjectReportsMembersTasksTable from './ProjectReportsMembersTaskTable';
-import CustomSearchbar from '../../../../../../components/CustomSearchbar';
-import UpdateTaskDrawer from '../../../../../tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
-import { fetchData } from '../../../../../../utils/fetchData';
+import CustomSearchbar from '@/components/CustomSearchbar';
+import { fetchData } from '@/utils/fetchData';
 import { useTranslation } from 'react-i18next';
+import TaskDrawer from '@/components/task-drawer/task-drawer';
 
 const ProjectReportsMembersTaskDrawer = () => {
   const [taskData, setTaskData] = useState<any[]>([]);
@@ -79,7 +79,7 @@ const ProjectReportsMembersTaskDrawer = () => {
       </Flex>
 
       {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={selectedTaskId || ''} />
+      <TaskDrawer />
     </Drawer>
   );
 };

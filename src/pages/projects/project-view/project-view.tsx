@@ -8,8 +8,7 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 
 // Redux
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { getProject, setProjectId } from '@/features/project/project.slice';
-
+import { getProject, setProject, setProjectId } from '@/features/project/project.slice';
 
 // Components
 import ProjectViewHeader from './project-view-header';
@@ -17,7 +16,6 @@ import ProjectViewExtra from './project-view-extra';
 import ProjectMemberDrawer from '@features/projects/singleProject/members/ProjectMemberDrawer';
 import PhaseDrawer from '@features/projects/singleProject/phase/PhaseDrawer';
 import StatusDrawer from '@features/projects/status/StatusDrawer';
-import CreateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/createTaskDrawer/CreateTaskDrawer';
 
 // Hooks
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
@@ -30,6 +28,8 @@ import { getFromLocalStorage, saveToLocalStorage } from '@utils/localStorageFunc
 // Styles
 import './project-view.css';
 import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
+import TaskDrawer from '@/components/task-drawer/task-drawer';
+import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 
 const ProjectView = () => {
   const location = useLocation();
@@ -116,6 +116,13 @@ const ProjectView = () => {
     })),
   ];
 
+  useEffect(() => {
+    return () => {
+      dispatch(setProjectId(null));
+      dispatch(setProject({} as IProjectViewModel));
+    };
+  }, [projectId]);
+
   return (
     <div style={{ marginBlock: 80, minHeight: '80vh' }}>
       {/* page header for the project view  */}
@@ -146,7 +153,7 @@ const ProjectView = () => {
       {/* add project members drawer */}
       <ProjectMemberDrawer />
       {/* create task drawer  */}
-      <CreateTaskDrawer />
+      <TaskDrawer />
       {/* phase drawer  */}
       <PhaseDrawer />
       {/* status drawer  */}

@@ -1,12 +1,13 @@
-import { homePageApiService } from '@/api/home-page/home-page.api.service';
+import { useCreatePersonalTaskMutation, useGetMyTasksQuery, useGetPersonalTasksQuery, useGetProjectsByTeamQuery } from '@/api/home-page/home-page.api.service';
 import { MY_DASHBOARD_ACTIVE_FILTER, MY_DASHBOARD_DEFAULT_VIEW } from '@/shared/constants';
 import { IHomeTasksConfig, IHomeTasksModel } from '@/types/home/home-page.types';
 import { IMyTask } from '@/types/home/my-tasks.types';
-import { IMyDashboardAllTasksViewModel, IMyDashboardMyTask } from '@/types/home/tasks.types';
+import { IMyDashboardMyTask } from '@/types/home/tasks.types';
 import { IProject } from '@/types/project/project.types';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 
 const getActiveProjectsFilter = () => +(localStorage.getItem(MY_DASHBOARD_ACTIVE_FILTER) || 0);
 
@@ -23,7 +24,7 @@ interface IHomePageState {
     homeTasksConfig: IHomeTasksConfig;
     homeTasksUpdating: boolean;
     model: IHomeTasksModel;
-    selectedDate: string;
+    selectedDate: Dayjs;
 }
 
 const initialState: IHomePageState = {
@@ -42,7 +43,7 @@ const initialState: IHomePageState = {
         current_view: getActiveProjectsFilter(),
         current_tab: MY_DASHBOARD_DEFAULT_VIEW,
         is_calendar_view: getActiveProjectsFilter() !== 0,
-        selected_date: getActiveProjectsFilter() === 0 ? new Date() : null,
+        selected_date: getActiveProjectsFilter() === 0 ? dayjs(): null,
         time_zone: '',
     },
     model: {
@@ -53,22 +54,26 @@ const initialState: IHomePageState = {
         overdue: 0,
         no_due_date: 0,
     },
-    selectedDate: dayjs().format('YYYY-MM-DD'),
+    selectedDate: dayjs(),
 };
 
 export const fetchProjects = createAsyncThunk('homePage/fetchProjects', async () => {
-    const response = await homePageApiService.getProjectsByTeam();
-    return response.body;
+    const response = useGetProjectsByTeamQuery();
+    return response.data?.body;
 });
 
 export const fetchPersonalTasks = createAsyncThunk('homePage/fetchPersonalTasks', async () => {
-    const response = await homePageApiService.getPersonalTasks();
-    return response.body;
+    const response = useGetPersonalTasksQuery();
+    return response.data?.body;
+});
+export const createPersonalTask = createAsyncThunk('homePage/createPersonalTask', async (newTodo: IMyTask) => {
+    const response= useCreatePersonalTaskMutation();
+    return response;
 });
 
 export const fetchHomeTasks = createAsyncThunk('homePage/fetchHomeTasks', async (homeTasksConfig: IHomeTasksConfig) => {
-    const response = await homePageApiService.getMyTasks(homeTasksConfig);
-    return response.body;
+    const response = useGetMyTasksQuery(homeTasksConfig);
+    return response.data?.body;
 });
 
 export const homePageSlice = createSlice({
@@ -93,7 +98,7 @@ export const homePageSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(fetchProjects.fulfilled, (state, action) => {
-            state.projects = action.payload;
+            state.projects = action.payload || [];
             state.loadingProjects = false;
         });
         builder.addCase(fetchProjects.pending, (state) => {
@@ -109,7 +114,7 @@ export const homePageSlice = createSlice({
             state.loadingPersonalTasks = true;
         });
         builder.addCase(fetchPersonalTasks.fulfilled, (state, action) => {
-            state.personalTasks = action.payload;
+            state.personalTasks = action.payload || [];
             state.loadingPersonalTasks = false;
         });
         builder.addCase(fetchPersonalTasks.rejected, (state) => {
@@ -117,7 +122,14 @@ export const homePageSlice = createSlice({
         });
 
         builder.addCase(fetchHomeTasks.fulfilled, (state, action) => {
-            state.model = action.payload;
+            state.model = action.payload || {
+                total: 0,
+                tasks: [],
+                today: 0,
+                upcoming: 0,
+                overdue: 0,
+                no_due_date: 0,
+            };
             state.homeTasksLoading = false;
         }); 
         builder.addCase(fetchHomeTasks.pending, (state) => {

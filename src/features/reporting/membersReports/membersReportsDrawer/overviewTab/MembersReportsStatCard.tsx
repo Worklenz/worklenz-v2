@@ -6,13 +6,13 @@ import {
 import { Button, Card, Flex } from 'antd';
 import React, { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   setMemberReportingDrawerActiveTab,
   toggleMembersOverviewTasksStatsDrawer,
   toggleMembersOverviewProjectsStatsDrawer,
 } from '../../membersReportsSlice';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const MembersReportsStatCard = () => {
   // localization

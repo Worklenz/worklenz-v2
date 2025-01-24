@@ -9,20 +9,19 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.component';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { getCurrentGroup, GROUP_BY_STATUS_VALUE } from '@/features/tasks/taskSlice';
+import { getCurrentGroup, GROUP_BY_STATUS_VALUE } from '@/features/tasks/tasks.slice';
 
 type StatusDropdownProps = {
-  statusList: ITaskStatus[];
   task: IProjectTask;
   teamId: string;
-  onChange: (value: string) => void;
 };
 
-const StatusDropdown = ({ statusList, task, teamId, onChange }: StatusDropdownProps) => {
+const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
   const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
 
   const [selectedStatus, setSelectedStatus] = useState<ITaskStatus | undefined>(undefined);
+  const statusList = useAppSelector(state => state.taskStatusReducer.status);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 

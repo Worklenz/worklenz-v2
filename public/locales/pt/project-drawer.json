@@ -35,5 +35,6 @@
   "by": "por",
   "add": "Adicionar",
   "asClient": "como cliente",
-  "createClient": "Criar cliente"
+  "createClient": "Criar cliente",
+  "searchInputPlaceholder": "Pesquise por nome ou email"
 }

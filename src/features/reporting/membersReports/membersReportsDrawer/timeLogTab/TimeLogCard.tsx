@@ -1,8 +1,8 @@
 import { Card, ConfigProvider, Tag, Timeline, Typography } from 'antd';
 import React from 'react';
-import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
-import { toggleUpdateTaskDrawer } from '../../../../tasks/taskSlice';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import { simpleDateFormat } from '@/utils/simpleDateFormat';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
 import { useTranslation } from 'react-i18next';
 
 type LogEntry = {
@@ -35,7 +35,7 @@ const TimeLogCard = ({ data, setSelectedTaskId }: TimeLogCardProps) => {
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
     setSelectedTaskId(id);
-    dispatch(toggleUpdateTaskDrawer());
+    dispatch(toggleTaskDrawer());
   };
 
   return (

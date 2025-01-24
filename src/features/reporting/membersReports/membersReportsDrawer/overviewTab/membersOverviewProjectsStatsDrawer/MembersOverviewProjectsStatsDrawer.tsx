@@ -1,10 +1,10 @@
 import { Drawer, Typography } from 'antd';
 import React, { useMemo, useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 import { toggleMembersOverviewProjectsStatsDrawer } from '../../../membersReportsSlice';
-import { fetchData } from '../../../../../../utils/fetchData';
+import { fetchData } from '@/utils/fetchData';
 import MembersOverviewProjectsStatsTable from './MembersOverviewProjectsStatsTable';
 
 type MembersOverviewProjectsStatsDrawerProps = {

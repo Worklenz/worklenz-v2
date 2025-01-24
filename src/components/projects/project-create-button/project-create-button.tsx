@@ -1,5 +1,5 @@
 import { Button, Drawer, Dropdown } from 'antd';
-import { startTransition, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleDrawer } from '@/features/projects/projectsSlice';
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons';
@@ -34,7 +34,6 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    console.log('Selected template:', templateId);
     handleTemplateDrawerClose();
   };
 
@@ -53,7 +52,9 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
   const handleCreateProject = () => {
     dispatch(setProjectId(null));
     dispatch(setProject({} as IProjectViewModel));
-    dispatch(toggleDrawer());
+    setTimeout(() => {
+      dispatch(toggleDrawer());
+    }, 300);
   };
 
   return (

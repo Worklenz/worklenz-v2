@@ -2,8 +2,8 @@ import { Badge, Flex, Table, TableColumnsType, Tag, Typography } from 'antd';
 import React from 'react';
 import dayjs from 'dayjs';
 import { DoubleRightOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '../../../../tasks/taskSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { toggleTaskDrawer } from '../../../../tasks/tasks.slice';
 import CustomTableTitle from '../../../../../components/CustomTableTitle';
 import { colors } from '../../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ const MembersReportsTasksTable = ({
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
     setSelectedTaskId(id);
-    dispatch(toggleUpdateTaskDrawer());
+    dispatch(toggleTaskDrawer());
   };
 
   const columns: TableColumnsType = [

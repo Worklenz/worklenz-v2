@@ -1,10 +1,10 @@
 import { Card, ConfigProvider, Tag, Timeline, Typography } from 'antd';
 import React from 'react';
-import { simpleDateFormat } from '../../../../../utils/simpleDateFormat';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
-import { toggleUpdateTaskDrawer } from '../../../../tasks/taskSlice';
+import { simpleDateFormat } from '@/utils/simpleDateFormat';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { colors } from '../../../../../styles/colors';
 import { useTranslation } from 'react-i18next';
+import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
 
 type TaskStatus = {
   name: string;
@@ -46,7 +46,7 @@ const ActivityLogCard = ({ data, setSelectedTaskId }: ActivityLogCardProps) => {
 
   const handleUpdateTaskDrawer = (id: string) => {
     setSelectedTaskId(id);
-    dispatch(toggleUpdateTaskDrawer());
+    dispatch(toggleTaskDrawer());
   };
 
   // this function format the attribute type

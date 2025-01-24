@@ -30,7 +30,7 @@ const TaskDrawerTimeLog = () => {
     },
     {
       logId: ' 4',
-      username: 'Raveesha Dilanka',
+      username: 'Chamika J',
       duration: '1m 4s',
       date: 'Sep 12, 2023, 8:32:49 AM - Sep 12, 2023, 8:33:53 AM',
       via: 'Timer',

@@ -2,8 +2,8 @@ import { Flex, Skeleton } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import CustomSearchbar from '../../../../CustomSearchbar';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import OverviewReportsMembersTable from './reporting-overview-members-table';
 import { IRPTMember } from '@/types/reporting/reporting.types';
 

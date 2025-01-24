@@ -1,12 +1,12 @@
 import { Drawer, Typography } from 'antd';
 import React, { useMemo, useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 import { toggleMembersOverviewTasksStatsDrawer } from '../../../membersReportsSlice';
-import { fetchData } from '../../../../../../utils/fetchData';
+import { fetchData } from '@/utils/fetchData';
 import MembersOverviewTasksStatsTable from './MembersOverviewTasksStatsTable';
-import UpdateTaskDrawer from '../../../../../tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
+import TaskDrawer from '@/components/task-drawer/task-drawer';
 
 type MembersOverviewTasksStatsDrawerProps = {
   memberId: string | null;
@@ -71,8 +71,7 @@ const MembersOverviewTasksStatsDrawer = ({
           />
         ))}
 
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={selectedTaskId || ''} />
+      <TaskDrawer />
     </Drawer>
   );
 };

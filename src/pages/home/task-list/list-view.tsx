@@ -2,37 +2,52 @@ import { Tabs } from 'antd';
 import AddTaskInlineForm from './add-task-inline-form';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import { IHomeTasksModel } from '@/types/home/home-page.types';
+import { useState } from 'react';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 
-const ListView = () => {
-  const { model } = useAppSelector(state => state.homePageReducer);
-  const {t} = useTranslation('home');
+interface ListViewProps {
+  model: IHomeTasksModel;
+  refetch: () => void;
+}
+
+const ListView = ({ model, refetch }: ListViewProps) => {
+  const { t } = useTranslation('home');
+  const dispatch = useAppDispatch();
+
+  const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
 
   const tabItems = [
     {
-      key: 'all',
+      key: 'All',
       label: `${t('tasks.all')} (${model.total})`,
-      children: <AddTaskInlineForm />,
+      children: <AddTaskInlineForm t={t} calendarView={false} />,
     },
     {
-      key: 'today',
+      key: 'Today',
       label: `${t('tasks.today')} (${model.today})`,
     },
     {
-      key: 'upcoming',
+      key: 'Upcoming',
       label: `${t('tasks.upcoming')} (${model.upcoming})`,
     },
     {
-      key: 'overdue',
+      key: 'Overdue',
       label: `${t('tasks.overdue')} (${model.overdue})`,
     },
     {
-      key: 'no due date',
+      key: 'NoDueDate',
       label: `${t('tasks.noDueDate')} (${model.no_due_date})`,
     },
   ];
 
   return (
-    <Tabs type="card" items={tabItems} />
+    <Tabs
+      type="card"
+      items={tabItems}
+      onChange={key => dispatch(setHomeTasksConfig({ ...homeTasksConfig, current_tab: key }))}
+    />
   );
 };
 
