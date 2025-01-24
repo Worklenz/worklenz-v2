@@ -30,37 +30,37 @@ export const firstScreenPrompts: PromptsProps['items'] = [
       children: [
         {
           key: '1-1',
-          description: `What's new in X?`,
+          description: `What’s the project status?`,
         },
         {
           key: '1-2',
-          description: `What's AGI?`,
+          description: `Where are the bottlenecks?`,
         },
         {
           key: '1-3',
-          description: `Where is the doc?`,
+          description: `Who’s performing best?`,
         },
       ],
     },
     {
       key: '2',
-      label: renderTitle(<ReadOutlined style={{ color: '#1890FF' }} />, 'Design Guide'),
-      description: 'How to design a good product?',
+      label: renderTitle(<ReadOutlined style={{ color: '#1890FF' }} />, 'Reporting Guide'),
+      description: 'How to ask insightful questions:',
       children: [
         {
           key: '2-1',
           icon: <HeartOutlined />,
-          description: `Know the well`,
+          description: `What tasks are high-risk?`,
         },
         {
           key: '2-2',
           icon: <SmileOutlined />,
-          description: `Set the AI role`,
+          description: `Summarize the status of [Project].`,
         },
         {
           key: '2-3',
           icon: <CommentOutlined />,
-          description: `Express the feeling`,
+          description: `Who has the most pending tasks?`,
         },
       ],
     },

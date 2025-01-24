@@ -239,11 +239,11 @@ export default SmartChatReport;
 // /**
 //  * 🔔 Please replace the BASE_URL, PATH, MODEL, API_KEY with your own values.
 //  */
-// const BASE_URL = 'https://worklenz--ai.openai.azure.com/';
+// const BASE_URL = '';
 // const PATH = '/chat';
-// const MODEL = 'gpt-3.5-turbo';
+// const MODEL = '';
 // /** 🔥🔥 Its dangerously! */
-// const API_KEY = 'BQxdXI21Htd7RGMwmTlH8iWk2IlEpVY5rIaBbf5Hg6wXVdcnxiruJQQJ99ALACYeBjFXJ3w3AAABACOGZ21R';
+// const API_KEY = '';
 
 // interface YourMessageType {
 //   role: string;
