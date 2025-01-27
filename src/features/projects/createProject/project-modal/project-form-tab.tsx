@@ -2,6 +2,7 @@ import { PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Badge,
   Button,
+  ColorPicker,
   DatePicker,
   Divider,
   Flex,
@@ -9,6 +10,7 @@ import {
   Input,
   InputNumber,
   InputRef,
+  message,
   Select,
   Typography,
 } from 'antd';
@@ -17,7 +19,7 @@ import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
 import { ProjectType } from '../../../../types/project.types';
 import { nanoid } from '@reduxjs/toolkit';
-import { createProject } from '../../projectSlice';
+import { createProject, toggleProjectModal } from '../../projectSlice';
 import {
   healthStatusData,
   projectColors,
@@ -61,6 +63,11 @@ const ProjectFormTab = ({
 
   // function for handle form submit
   const handleFormSubmit = (values: any) => {
+    if (projectName === '') {
+      message.error(t('projectNameRequiredMessage'));
+      return;
+    }
+
     const newProject: ProjectType = {
       projectId: nanoid(),
       projectName: projectName,
@@ -85,6 +92,7 @@ const ProjectFormTab = ({
     form.resetFields();
     setProjectName('');
     console.log('newProject', newProject);
+    dispatch(toggleProjectModal());
   };
 
   // status selection options
@@ -302,15 +310,7 @@ const ProjectFormTab = ({
                 label={t('projectColorLabel')}
                 layout="horizontal"
               >
-                <Select
-                  variant="borderless"
-                  suffixIcon={null}
-                  options={projectColorOptions}
-                  style={{
-                    width: 120,
-                    height: 24,
-                  }}
-                />
+                <ColorPicker defaultValue="#1677ff" />
               </Form.Item>
 
               <Form.Item
