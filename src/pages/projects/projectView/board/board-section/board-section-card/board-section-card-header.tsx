@@ -24,13 +24,10 @@ import { useAppSelector } from '../../../../../../hooks/useAppSelector';
 import { colors } from '../../../../../../styles/colors';
 import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
 import {
-  addBoardSectionCard,
-  addTaskCardToTheTop,
   deleteSection,
   setEditableSection,
 } from '../../../../../../features/board/board-slice';
 import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
-import { nanoid } from '@reduxjs/toolkit';
 
 interface BoardSectionCardHeaderProps {
   id: string;

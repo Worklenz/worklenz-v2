@@ -1,8 +1,9 @@
 {
   "createProject": "Create Project",
+  "projectNameRequiredMessage": "Please enter a project name",
   "projectName": "Project Name",
   "defaultView": "Default View",
-  "tasklist": "Task List",
+  "taskList": "Task List",
   "kanbanBoard": "Kanban Board",
   "fromScratch": "From scratch",
   "defaultTemplates": "From default template",

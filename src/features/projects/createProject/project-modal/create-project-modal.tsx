@@ -1,25 +1,40 @@
-import { Divider, Flex, Input, Modal, Radio, Tabs, Typography } from 'antd';
+import {
+  Divider,
+  Flex,
+  Input,
+  Modal,
+  Radio,
+  RadioChangeEvent,
+  Tabs,
+  Typography,
+} from 'antd';
 import { TabsProps } from 'antd/lib';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import DefaultTemplateTab from './default-template-tab';
 import MyTemplateTab from './my-template-tab';
 import ProjectFormTab from './project-form-tab';
 import { CloseOutlined } from '@ant-design/icons';
+import { useAppSelector } from '../../../../hooks/useAppSelector';
+import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import { toggleProjectModal } from '../../projectSlice';
+import { saveToLocalStorage } from '../../../../utils/localStorageFunctions';
 
-type CreateProjectModalProps = {
-  isModalOpen: boolean;
-  setIsModalOpen: (isOpen: boolean) => void;
-};
-
-const CreateProjectModal = ({
-  isModalOpen,
-  setIsModalOpen,
-}: CreateProjectModalProps) => {
+const CreateProjectModal = () => {
   const [projectName, setProjectName] = useState<string>('');
+  const [defaultView, setDefaultView] = useState<'taskList' | 'board'>(
+    'taskList'
+  );
 
   // localization
   const { t } = useTranslation('create-project-modal');
+
+  // get the project modal open state from project slice
+  const isModalOpen = useAppSelector(
+    (state) => state.projectReducer.isProjectModalOpen
+  );
+
+  const dispatch = useAppDispatch();
 
   const items: TabsProps['items'] = [
     {
@@ -44,11 +59,30 @@ const CreateProjectModal = ({
     },
   ];
 
+  // function to handle view change
+  const onViewChange = (e: RadioChangeEvent) => {
+    setDefaultView(e.target.value);
+  };
+
+  // if view changed, update the state
+  useEffect(() => {
+    if (defaultView === 'taskList') {
+      saveToLocalStorage('pinnedTab', 'taskList');
+    } else {
+      saveToLocalStorage('pinnedTab', 'board');
+    }
+  }, [defaultView]);
+
+  // function to close modal
+  const handleCloseModal = () => {
+    dispatch(toggleProjectModal());
+  };
+
   return (
     <>
       <Modal
         open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={handleCloseModal}
         title={
           <Flex
             align="center"
@@ -59,7 +93,7 @@ const CreateProjectModal = ({
               {t('createProject')}{' '}
             </Typography.Title>
 
-            <CloseOutlined onClick={() => setIsModalOpen(false)} />
+            <CloseOutlined onClick={handleCloseModal} />
           </Flex>
         }
         style={{ top: 48 }}
@@ -81,10 +115,11 @@ const CreateProjectModal = ({
               <Typography.Text>{t('defaultView')}</Typography.Text>
               <Radio.Group
                 name="radiogroup"
-                defaultValue={'tasklist'}
+                defaultValue={'taskList'}
+                onChange={onViewChange}
                 options={[
-                  { value: 'tasklist', label: t('tasklist') },
-                  { value: 'kanbanBoard', label: t('kanbanBoard') },
+                  { value: 'taskList', label: t('taskList') },
+                  { value: 'board', label: t('kanbanBoard') },
                 ]}
               />
             </Flex>

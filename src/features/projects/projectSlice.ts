@@ -3,6 +3,7 @@ import { ProjectType } from '../../types/project.types';
 
 type ProjectState = {
   projectsList: ProjectType[];
+  isProjectModalOpen: boolean;
   isDrawerOpen: boolean;
   isUpdateDrawerOpen: boolean;
   drawerProjectId: string | null; // To store the project ID associated with the drawer
@@ -32,6 +33,7 @@ const getProjectListFromLocalStorage = (): ProjectType[] => {
 
 const initialState: ProjectState = {
   projectsList: getProjectListFromLocalStorage(),
+  isProjectModalOpen: false,
   isDrawerOpen: false,
   isUpdateDrawerOpen: false,
   drawerProjectId: null, // Initially, no project ID is selected
@@ -41,6 +43,9 @@ const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,
   reducers: {
+    toggleProjectModal: (state) => {
+      state.isProjectModalOpen = !state.isProjectModalOpen;
+    },
     toggleDrawer: (state) => {
       state.isDrawerOpen = !state.isDrawerOpen;
     },
@@ -89,6 +94,7 @@ const projectSlice = createSlice({
 });
 
 export const {
+  toggleProjectModal,
   toggleDrawer,
   toggleUpdatedrawer,
   createProject,

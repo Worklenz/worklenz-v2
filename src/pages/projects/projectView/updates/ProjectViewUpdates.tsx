@@ -1,26 +1,24 @@
-import {
-  Button,
-  ConfigProvider,
-  Flex,
-  Form,
-  Mentions,
-  Space,
-  Tooltip,
-  Typography,
-} from 'antd';
-import React, { useState } from 'react';
+import { Button, Flex, Form, Mentions, Space } from 'antd';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
-import CustomAvatar from '../../../../components/CustomAvatar';
 import { colors } from '../../../../styles/colors';
-import { relative } from 'path';
+import { PaperClipOutlined } from '@ant-design/icons';
+import OthersChatBox from './others-chat-box';
+import MyChatBox from './my-chat-box';
+import { fetchData } from '../../../../utils/fetchData';
 
 const ProjectViewUpdates = () => {
   const [characterLength, setCharacterLength] = useState<number>(0);
-  const [isCommentBoxExpand, setIsCommentBoxExpand] = useState<boolean>(false);
+  const [updatesData, setUpdatesData] = useState<any[]>([]);
 
   // localization
   const { t } = useTranslation('projectViewUpdatesTab');
+
+  // fetch updates data
+  useMemo(() => {
+    fetchData('/project-view-mock-data/mock-data-updates.json', setUpdatesData);
+  }, []);
 
   const [form] = Form.useForm();
 
@@ -33,7 +31,6 @@ const ProjectViewUpdates = () => {
   const handleCancel = () => {
     form.resetFields(['comment']);
     setCharacterLength(0);
-    setIsCommentBoxExpand(false);
   };
 
   // mentions options
@@ -45,69 +42,34 @@ const ProjectViewUpdates = () => {
     : [];
 
   return (
-    <Flex gap={24} vertical>
-      <Flex vertical>
-        <Flex gap={8}>
-          <CustomAvatar avatarName="Sachintha Prasd" />
-          <Flex vertical>
-            <Space>
-              <Typography.Text
-                style={{ fontSize: 13, color: colors.lightGray }}
-              >
-                Sachintha Prasad
-              </Typography.Text>
-              <Tooltip title="Nov 25,2024,10.45.54 AM">
-                <Typography.Text
-                  style={{ fontSize: 13, color: colors.deepLightGray }}
-                >
-                  7 hours ago
-                </Typography.Text>
-              </Tooltip>
-            </Space>
-            <Typography.Paragraph>
-              Hello this is a test message
-            </Typography.Paragraph>
-            <ConfigProvider
-              wave={{ disabled: true }}
-              theme={{
-                components: {
-                  Button: {
-                    defaultColor: colors.lightGray,
-                    defaultHoverColor: colors.darkGray,
-                  },
-                },
-              }}
-            >
-              <Button
-                type="text"
-                style={{
-                  width: 'fit-content',
-                  border: 'none',
-                  backgroundColor: 'transparent',
-                  padding: 0,
-                  fontSize: 13,
-                  height: 24,
-                }}
-              >
-                {t('deleteButton')}
-              </Button>
-            </ConfigProvider>
-          </Flex>
-        </Flex>
+    <Flex
+      gap={8}
+      vertical
+      justify="space-between"
+      style={{
+        height: 'calc(100vh - 260px)',
+      }}
+    >
+      <Flex vertical gap={12} style={{ height: '100%', overflowY: 'auto' }}>
+        {updatesData.map((update, index) =>
+          update.type === 'others' ? (
+            <OthersChatBox key={index} update={update} />
+          ) : (
+            <MyChatBox key={index} update={update} />
+          )
+        )}
       </Flex>
 
       <Form form={form}>
-        <Form.Item name={'comment'}>
+        <Form.Item name={'comment'} style={{ marginBlock: 8 }}>
           <Mentions
             placeholder={t('inputPlaceholder')}
             options={mentionsOptions}
             autoSize
             maxLength={2000}
-            onClick={() => setIsCommentBoxExpand(true)}
             onChange={(e) => setCharacterLength(e.length)}
             style={{
-              minHeight: isCommentBoxExpand ? 180 : 60,
-              paddingBlockEnd: 24,
+              minHeight: 80,
             }}
           />
 
@@ -121,16 +83,18 @@ const ProjectViewUpdates = () => {
           >{`${characterLength}/2000`}</span>
         </Form.Item>
 
-        {isCommentBoxExpand && (
-          <Form.Item>
-            <Flex gap={8} justify="flex-end">
+        <Form.Item style={{ marginBlock: 0 }}>
+          <Flex gap={8} justify="space-between">
+            <Button icon={<PaperClipOutlined />} />
+
+            <Space>
               <Button onClick={handleCancel}>{t('cancelButton')}</Button>
               <Button type="primary" disabled={characterLength === 0}>
-                {t('addButton')}
+                {t('commentButton')}
               </Button>
-            </Flex>
-          </Form.Item>
-        )}
+            </Space>
+          </Flex>
+        </Form.Item>
       </Form>
     </Flex>
   );

@@ -1,6 +1,7 @@
 {
   "inputPlaceholder": "Add a comment..",
-  "addButton": "Add",
+  "commentButton": "Comment",
   "cancelButton": "Cancel",
-  "deleteButton": "Delete"
+  "deleteButton": "Delete",
+  "youText": "You"
 }
