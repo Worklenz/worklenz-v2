@@ -5,6 +5,8 @@ import { colors } from '../../../../styles/colors';
 import { LikeOutlined } from '@ant-design/icons';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { themeWiseColor } from '../../../../utils/themeWiseColor';
+import { simpleDateFormat } from '../../../../utils/simpleDateFormat';
+import { durationDateFormat } from '../../../../utils/durationDateFormat';
 
 const OthersChatBox = ({ update }: { update: any }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,7 +24,7 @@ const OthersChatBox = ({ update }: { update: any }) => {
           style={{
             background: themeWiseColor('#D9D9D9', '#141414', themeMode),
             width: '100%',
-            maxWidth: 600,
+            maxWidth: 560,
             padding: '12px 16px',
             borderRadius: '0 24px 24px 24px',
           }}
@@ -32,11 +34,11 @@ const OthersChatBox = ({ update }: { update: any }) => {
               {update.created_by}
             </Typography.Text>
 
-            <Tooltip title={update.created_at}>
+            <Tooltip title={simpleDateFormat(update.created_at)}>
               <Typography.Text
                 style={{ fontSize: 13, color: colors.lightGray }}
               >
-                {update.created_at}
+                {durationDateFormat(update.created_at)}
               </Typography.Text>
             </Tooltip>
           </Flex>

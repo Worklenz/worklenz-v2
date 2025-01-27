@@ -6,7 +6,10 @@ export const durationDateFormat = (date: Date | null): string => {
 
   const diffInMilliseconds = currentDate.getTime() - givenDate.getTime();
 
-  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+  const diffInSeconds = Math.floor(diffInMilliseconds / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
   const diffInMonths =
     currentDate.getMonth() -
     givenDate.getMonth() +
@@ -19,7 +22,15 @@ export const durationDateFormat = (date: Date | null): string => {
     return diffInMonths === 1 ? '1 month ago' : `${diffInMonths} months ago`;
   } else if (diffInDays > 0) {
     return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+  } else if (diffInHours > 0) {
+    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+  } else if (diffInMinutes > 0) {
+    return diffInMinutes === 1
+      ? '1 minute ago'
+      : `${diffInMinutes} minutes ago`;
   } else {
-    return 'Today';
+    return diffInSeconds === 1
+      ? '1 second ago'
+      : `${diffInSeconds} seconds ago`;
   }
 };

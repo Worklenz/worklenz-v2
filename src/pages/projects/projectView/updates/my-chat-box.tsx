@@ -10,6 +10,8 @@ import {
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { themeWiseColor } from '../../../../utils/themeWiseColor';
 import { useTranslation } from 'react-i18next';
+import { simpleDateFormat } from '../../../../utils/simpleDateFormat';
+import { durationDateFormat } from '../../../../utils/durationDateFormat';
 
 const MyChatBox = ({ update }: { update: any }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -19,11 +21,10 @@ const MyChatBox = ({ update }: { update: any }) => {
   // localization
   const { t } = useTranslation('projectViewUpdatesTab');
 
-  // Theme details from theme slice
+  // theme details from theme slice
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const handleSaveEdit = () => {
-    // Add save logic here, e.g., API call or state update
     console.log('Saved content:', editedContent);
     setIsEditing(false);
   };
@@ -36,7 +37,7 @@ const MyChatBox = ({ update }: { update: any }) => {
         style={{
           background: themeWiseColor('#98ccfc', '#153450', themeMode),
           width: '100%',
-          maxWidth: 600,
+          maxWidth: 560,
           padding: '12px 16px',
           borderRadius: '24px 0 24px 24px',
         }}
@@ -54,18 +55,9 @@ const MyChatBox = ({ update }: { update: any }) => {
             {t('youText')}
           </Typography.Text>
 
-          <Tooltip title={update.created_at}>
-            <Typography.Text
-              style={{
-                fontSize: 13,
-                color: themeWiseColor(
-                  colors.lightGray,
-                  colors.deepLightGray,
-                  themeMode
-                ),
-              }}
-            >
-              {update.created_at}
+          <Tooltip title={simpleDateFormat(update.created_at)}>
+            <Typography.Text style={{ fontSize: 13, color: colors.lightGray }}>
+              {durationDateFormat(update.created_at)}
             </Typography.Text>
           </Tooltip>
         </Flex>

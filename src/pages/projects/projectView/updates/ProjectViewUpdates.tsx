@@ -42,60 +42,60 @@ const ProjectViewUpdates = () => {
     : [];
 
   return (
-    <Flex
-      gap={8}
-      vertical
-      justify="space-between"
-      style={{
-        height: 'calc(100vh - 260px)',
-      }}
-    >
-      <Flex vertical gap={12} style={{ height: '100%', overflowY: 'auto' }}>
-        {updatesData.map((update, index) =>
-          update.type === 'others' ? (
-            <OthersChatBox key={index} update={update} />
-          ) : (
-            <MyChatBox key={index} update={update} />
-          )
-        )}
+    <Flex justify="center" style={{ width: '100%' }}>
+      <Flex
+        gap={8}
+        vertical
+        justify="space-between"
+        style={{
+          height: 'calc(100vh - 260px)',
+          width: '100%',
+          maxWidth: 1240,
+        }}
+      >
+        <Flex vertical gap={24} style={{ height: '100%', overflowY: 'auto' }}>
+          {updatesData.map((update, index) =>
+            update.type === 'others' ? (
+              <OthersChatBox key={index} update={update} />
+            ) : (
+              <MyChatBox key={index} update={update} />
+            )
+          )}
+        </Flex>
+        <Form form={form}>
+          <Form.Item name={'comment'} style={{ marginBlock: 8 }}>
+            <Mentions
+              placeholder={t('inputPlaceholder')}
+              options={mentionsOptions}
+              autoSize
+              maxLength={2000}
+              onChange={(e) => setCharacterLength(e.length)}
+              style={{
+                minHeight: 80,
+              }}
+            />
+            <span
+              style={{
+                position: 'absolute',
+                bottom: 4,
+                right: 12,
+                color: colors.lightGray,
+              }}
+            >{`${characterLength}/2000`}</span>
+          </Form.Item>
+          <Form.Item style={{ marginBlock: 0 }}>
+            <Flex gap={8} justify="space-between">
+              <Button icon={<PaperClipOutlined />} />
+              <Space>
+                <Button onClick={handleCancel}>{t('cancelButton')}</Button>
+                <Button type="primary" disabled={characterLength === 0}>
+                  {t('commentButton')}
+                </Button>
+              </Space>
+            </Flex>
+          </Form.Item>
+        </Form>
       </Flex>
-
-      <Form form={form}>
-        <Form.Item name={'comment'} style={{ marginBlock: 8 }}>
-          <Mentions
-            placeholder={t('inputPlaceholder')}
-            options={mentionsOptions}
-            autoSize
-            maxLength={2000}
-            onChange={(e) => setCharacterLength(e.length)}
-            style={{
-              minHeight: 80,
-            }}
-          />
-
-          <span
-            style={{
-              position: 'absolute',
-              bottom: 4,
-              right: 12,
-              color: colors.lightGray,
-            }}
-          >{`${characterLength}/2000`}</span>
-        </Form.Item>
-
-        <Form.Item style={{ marginBlock: 0 }}>
-          <Flex gap={8} justify="space-between">
-            <Button icon={<PaperClipOutlined />} />
-
-            <Space>
-              <Button onClick={handleCancel}>{t('cancelButton')}</Button>
-              <Button type="primary" disabled={characterLength === 0}>
-                {t('commentButton')}
-              </Button>
-            </Space>
-          </Flex>
-        </Form.Item>
-      </Form>
     </Flex>
   );
 };
