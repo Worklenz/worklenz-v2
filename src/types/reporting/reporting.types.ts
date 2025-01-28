@@ -19,6 +19,11 @@ export interface IReportingInfo {
   organization_name: string;
 }
 
+export interface IAiChatInfo {
+  content: string;
+  role: string;
+}
+
 export interface IRPTTeamStatistics {
   count: number;
   projects: number;

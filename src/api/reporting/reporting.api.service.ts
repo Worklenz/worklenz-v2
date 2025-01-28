@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@/shared/constants';
 import { toQueryString } from '@/utils/toQueryString';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import {
+  IAiChatInfo,
   IProjectLogsBreakdown,
   IRPTMember,
   IRPTOverviewMemberInfo,
@@ -296,6 +297,13 @@ export const reportingApiService = {
     const q = toQueryString(body);
     const url = `${rootUrl}/members/single-member-projects${q}`;
     const response = await apiClient.get<IServerResponse<IMemberProjectsResonse>>(url);
+    return response.data;
+  },
+  getChat: async (
+    body: any | null = null): Promise<IServerResponse<IAiChatInfo>> => {
+    const url = `${API_BASE_URL}/smart-chat/chat`;
+    console.log(body)
+    const response = await apiClient.post<IServerResponse<IAiChatInfo>>(url,{chat: body});
     return response.data;
   },
 };
