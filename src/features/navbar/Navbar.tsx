@@ -42,7 +42,14 @@ const Navbar = () => {
   const navlinkItems: MenuItem[] = navRoutesList.map((route, index) => ({
     key: route.path.split('/').pop() || index,
     label: (
-      <Link to={route.path} style={{ fontWeight: 600 }}>
+      <Link
+        to={
+          route.initialChild
+            ? `${route.path}/${route.initialChild}`
+            : route.path
+        }
+        style={{ fontWeight: 600 }}
+      >
         {t(route.name)}
       </Link>
     ),

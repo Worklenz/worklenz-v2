@@ -6,6 +6,7 @@ import notFoundRoute from './notFoundRoute';
 import accountSetupRoute from './accountSetupRoutes';
 import reportingRoutes from './reportingRoutes';
 import projectViewRoutes from './project-view-routes';
+import clientPortalRoutes from './client-portal-routes';
 
 const router = createBrowserRouter([
   ...rootRoutes,
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   ...mainRoutes,
   ...reportingRoutes,
   ...projectViewRoutes,
+  ...clientPortalRoutes,
   notFoundRoute,
   accountSetupRoute,
 ]);

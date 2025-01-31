@@ -1,0 +1,13 @@
+{
+  "clientPortalTitle": "Client Portal",
+  "clients": "Clients",
+  "requests": "Requests",
+  "services": "Services",
+  "chats": "Chats",
+  "invoices": "Invoices",
+  "settings": "Settings",
+
+  "pendingStatus": "Pending",
+  "acceptedStatus": "Accepted",
+  "inProgressStatus": "In Progress"
+}

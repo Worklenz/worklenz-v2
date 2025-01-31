@@ -34,6 +34,7 @@ import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/g
 import priorityReducer from '../features/projects/priority/prioritySlice';
 import taskListCustomColumnsReducer from '../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import financeReducer from '../features/finance/finance-slice';
+import clientsPortalReducer from '../features/clients-portal';
 
 export const store = configureStore({
   // there is error  occured with day js package when use with redux it shows a non-serializable value was detected
@@ -77,6 +78,7 @@ export const store = configureStore({
     taskListCustomColumnsReducer: taskListCustomColumnsReducer,
     financeReducer: financeReducer,
     boardReducer: boardReducer,
+    clientsPortalReducer: clientsPortalReducer,
   },
 });
 

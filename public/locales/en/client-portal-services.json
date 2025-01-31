@@ -1,0 +1,42 @@
+{
+  "title": "Services",
+  "addServiceButton": "Add Service",
+
+  "nameColumn": "Name",
+  "createdByColumn": "Created By",
+  "statusColumn": "Status",
+  "noOfRequestsColumn": "No of requests",
+
+  "addServiceDrawerTitle": "Add Services",
+
+  "serviceDetailsStep": "Service Details",
+  "requestFormStep": "Request Form",
+  "previewAndSubmitStep": "Preview & Submit",
+
+  "nextButton": "Next",
+  "previousButton": "Previous",
+  "submitButton": "Submit",
+
+  "uploadImageLabel": "Upload sample images",
+  "uploadImagePlaceholder": "Upload",
+  "serviceTitleLabel": "Service Title",
+  "serviceTitlePlaceholder": "Add your services title here",
+  "serviceDescriptionLabel": "Service Description",
+  "editButton": "Edit",
+  "deleteButton": "Delete",
+  "addQuestionButton": "Add Question",
+
+  "multipleChoiceOption": "Multiple Choice",
+  "textOption": "Text",
+  "attachmentOption": "Attachment",
+
+  "questionLabel": "Add a Question",
+  "questionPlaceholder": "Add your question here",
+  "questionTypeLabel": "Get in a form of",
+
+  "addOptionButton": "Add Option",
+  "saveButton": "Save",
+  "cancelButton": "Cancel",
+
+  "requestFormText": "Request Form"
+}

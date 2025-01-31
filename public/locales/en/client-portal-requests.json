@@ -1,0 +1,22 @@
+{
+  "title": "Requests",
+  "reqNoColumn": "Req No.",
+  "serviceColumn": "Service",
+  "clientColumn": "Client",
+  "statusColumn": "Status",
+  "timeColumn": "Time",
+
+  "reqNoText": "Req No",
+  "submissionTab": "Submission",
+  "chatTab": "Chat",
+
+  "projectTitle": "Project Title/Name:",
+  "desiredLength": "Desired Length of the Video (minutes):",
+  "preferredVideoStyle": "Preferred Video Style:",
+  "script": "Script:",
+  "voiceOver": "Voice Over:",
+  "samples": "Samples:",
+
+  "iWillProvide": "I will provide",
+  "needThatOneToo": "Need that one too"
+}
