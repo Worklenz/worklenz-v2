@@ -3,7 +3,6 @@ import React, { ReactNode } from 'react';
 import { durationDateFormat } from '../../../../../utils/durationDateFormat';
 import { useTranslation } from 'react-i18next';
 import { UserOutlined } from '@ant-design/icons';
-import { cp } from 'fs';
 import { colors } from '../../../../../styles/colors';
 
 type SendChatItemProps = {
