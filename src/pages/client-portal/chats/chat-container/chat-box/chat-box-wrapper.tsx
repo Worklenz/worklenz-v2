@@ -29,7 +29,7 @@ const ChatBoxWrapper = () => {
 
   return (
     <Card
-      style={{ height: 'calc(100vh - 300px)', overflow: 'hidden' }}
+      style={{ height: 'calc(100vh - 280px)', overflow: 'hidden' }}
       styles={{ body: { padding: 0 } }}
     >
       <Flex>

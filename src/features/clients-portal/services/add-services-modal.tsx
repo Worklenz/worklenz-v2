@@ -23,6 +23,7 @@ const AddServicesModal = () => {
       request_form: [],
     },
     no_of_requests: 0,
+    created_by: 'sachintha prasad',
   });
 
   console.log('service', service);

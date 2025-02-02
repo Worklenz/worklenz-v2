@@ -49,18 +49,6 @@ const PreviewAndSubmitStep = ({
           />
 
           <div>{service?.service_data?.description ?? ''}</div>
-
-          <Flex vertical gap={8}>
-            <Typography.Text style={{ fontSize: 14, fontWeight: 500 }}>
-              {t('requestFormText')}:
-            </Typography.Text>
-
-            {service?.service_data?.request_form?.map((item, index) => (
-              <Flex key={index} vertical gap={8}>
-                <Typography.Text>{item.question}</Typography.Text>
-              </Flex>
-            ))}
-          </Flex>
         </Flex>
       </Flex>
 

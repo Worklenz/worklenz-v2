@@ -106,7 +106,7 @@ const ClientsTable = () => {
   ];
 
   return (
-    <Card>
+    <Card style={{ height: 'calc(100vh - 280px)' }}>
       <Table
         columns={columns}
         dataSource={clientsList}
