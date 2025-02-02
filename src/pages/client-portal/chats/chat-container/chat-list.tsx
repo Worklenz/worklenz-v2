@@ -32,7 +32,11 @@ const ChatList = ({ chatList, setOpenedChatId }: ChatListProps) => {
             </Flex>
           ),
           render: (record: TempChatsType) => (
-            <Flex vertical gap={8}>
+            <Flex
+              vertical
+              gap={8}
+              style={{ maxWidth: 200, overflow: 'hidden' }}
+            >
               <Flex align="center" justify="space-between">
                 <Flex align="center" justify="space-between" gap={8}>
                   <Typography.Text
@@ -51,7 +55,7 @@ const ChatList = ({ chatList, setOpenedChatId }: ChatListProps) => {
                 </Flex>
               </Flex>
               <Flex vertical gap={8}>
-                <Typography.Text>
+                <Typography.Text ellipsis={{ expanded: false }}>
                   {record.chats_data[record.chats_data.length - 1].is_me
                     ? `You: ${record.chats_data[record.chats_data.length - 1].content}`
                     : record.chats_data[record.chats_data.length - 1].content}
