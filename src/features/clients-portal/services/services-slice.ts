@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { TempServicesType } from '../../../types/client-portal/temp-client-portal.types';
-import { add } from 'date-fns';
 
 const TempServices: TempServicesType[] = [
   {
@@ -9,6 +8,11 @@ const TempServices: TempServicesType[] = [
     created_by: 'john doe',
     status: 'pending',
     no_of_requests: 20,
+    service_data: {
+      description: 'A promotional marketing video service.',
+      images: [],
+      request_form: [],
+    },
   },
   {
     id: '2',
@@ -16,6 +20,11 @@ const TempServices: TempServicesType[] = [
     created_by: 'alexander turner',
     status: 'inProgress',
     no_of_requests: 10,
+    service_data: {
+      description: 'A product showcase video service.',
+      images: [],
+      request_form: [],
+    },
   },
   {
     id: '3',
@@ -23,6 +32,11 @@ const TempServices: TempServicesType[] = [
     created_by: 'john smith',
     status: 'accepted',
     no_of_requests: 30,
+    service_data: {
+      description: 'An animated explainer video service.',
+      images: [],
+      request_form: [],
+    },
   },
 ];
 
