@@ -7,6 +7,7 @@ import { themeWiseColor } from '../../../../utils/themeWiseColor';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { colors } from '../../../../styles/colors';
 import { TempServicesType } from '../../../../types/client-portal/temp-client-portal.types';
+import tinymce from 'tinymce';
 
 type ServiceDetailsStepProps = {
   setCurrent: (index: number) => void;
@@ -20,9 +21,7 @@ const ServiceDetailsStep = ({
   setService,
 }: ServiceDetailsStepProps) => {
   const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<ReactNode | string>(
-    'This is description'
-  );
+  const [description, setDescription] = useState<ReactNode | string>('');
   const [images, setImages] = useState<string[] | null>([
     'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTNHXGJR2Nbpk5ntKmK7AXUjQXHNmPD2r1BZVj9ClQvMBpmzipx',
   ]);
@@ -47,7 +46,7 @@ const ServiceDetailsStep = ({
       name: title,
       service_data: {
         ...service.service_data,
-        description: description,
+        description: tinymce.get('tiny-editor')?.getContent() || '',
         images: images,
       },
     });
@@ -73,6 +72,10 @@ const ServiceDetailsStep = ({
       </Flex>
     </button>
   );
+
+  const handleEditorChange = (content: ReactNode | string) => {
+    setDescription(content);
+  };
 
   return (
     <Flex vertical gap={12}>
@@ -105,6 +108,7 @@ const ServiceDetailsStep = ({
           <Typography.Text>{t('serviceDescriptionLabel')}:</Typography.Text>
           <TinyEditor
             key={editorKey}
+            value={description}
             init={{
               height: 300,
               menubar: false,
@@ -131,6 +135,7 @@ const ServiceDetailsStep = ({
               content_style: `body { font-size:14px;  font-family: 'Inter', sans-serif; background: ${themeWiseColor('#fff', '#141414', themeMode)}; 
             color: ${themeWiseColor('#141414', '#fff', themeMode)}; }`,
             }}
+            onEditorChange={handleEditorChange}
           />
         </Flex>
       </Flex>
