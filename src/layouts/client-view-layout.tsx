@@ -73,7 +73,7 @@ const ClientViewLayout = () => {
                   width: '100%',
                   maxWidth: isCollapsed ? 56 : 240,
                   minHeight: 'calc(100vh - 24px)',
-                  paddingBlockStart: 96,
+                  paddingBlockStart: 84,
                   borderInlineEnd: `1px solid ${themeWiseColor('#f5f5f5', '#303030', themeMode)}`,
                   transition: 'all 0.3s',
                 }}

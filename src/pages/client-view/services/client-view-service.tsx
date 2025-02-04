@@ -23,7 +23,7 @@ const ClientViewServices = () => {
         </Typography.Title>
       </Flex>
 
-      <Card style={{ height: 'calc(100vh - 220px)', overflowY: 'auto' }}>
+      <Card style={{ height: 'calc(100vh - 248px)', overflowY: 'auto' }}>
         <Flex gap={24} wrap={'wrap'}>
           {services.map((service) => (
             <Card
