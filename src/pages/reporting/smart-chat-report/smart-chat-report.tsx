@@ -12,7 +12,7 @@ import { Prompts } from '@ant-design/x';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { firstScreenPrompts, senderPromptsItems } from './prompt';
 import AssistantIcon from '../../../assets/icons/worklenz_ai_light.png';
-import AssistantIcon_d from '../../../assets/icons/worklenz_ai.png';
+import welcomeScreenIcon from '../../../assets/icons/worklenz_ai.png';
 const md = Markdownit({ html: true, breaks: true });
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
     <Typography>
@@ -115,24 +115,7 @@ const SmartChatReport = () => {
         const fetchDataAndSetChat = async () => {
             setLoading(true);
             try {
-                // Fetch teams, organization, and members data concurrently
-                const [user, teamsResponse, infoResponse, membersResponse] = await Promise.all([
-                    authApiService.verify(),
-                    reportingApiService.getOverviewTeams(includeArchivedProjects),
-                    reportingApiService.getInfo(),
-                    reportingApiService.getMembers(includeArchivedProjects),
-                ]);
-                // Extract and set data if the API calls succeed
-                if (teamsResponse.done) {
-                    setTeams(teamsResponse.body);
-                }
-                if (infoResponse.done) {
-                    setOrganization(infoResponse.body);
-                }
-                if (membersResponse.done) {
-                    setselectedTeam(membersResponse.body);
-                }
-                setUser(user.user);
+                
                 setCurrentDate(now_date);
                 console.log("Current Date:", now_date);
                 // const storedSessionId = localStorage.getItem('worklenz.sid');
@@ -173,9 +156,9 @@ const SmartChatReport = () => {
                 />
                 { showPrompts && <Welcome
         variant="borderless"
-        icon= {<img src={AssistantIcon_d} alt="Assistant" style={{ width: 55, height: 55}} />}
+        icon= {<img src={welcomeScreenIcon} alt="Assistant" style={{ width: 55, height: 55}} />}
         title="Hello, I'm Worklenz AI Assistant"
-        description="Base on your Oraganization, Create Summary reports, a better intelligent vision~"
+        description="Base on your Oraganization, Create Summary reports, a better intelligent vision."
       />
 
                 }
