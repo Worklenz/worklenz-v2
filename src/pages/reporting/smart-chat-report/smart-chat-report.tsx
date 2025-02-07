@@ -9,10 +9,9 @@ import logger from '@/utils/errorLogger';
 import { IRPTTeam } from '@/types/reporting/reporting.types';
 import { IChatMessage } from '@/types/aiChat/ai-chat.types';
 import { Prompts } from '@ant-design/x';
-import apiAiChatClient from '@/api/api-aichat-client';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { firstScreenPrompts, senderPromptsItems } from './prompt';
-
+import AssistantIcon from '../../../assets/icons/worklenz_ai_light.png';
 const md = Markdownit({ html: true, breaks: true });
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
     <Typography>
@@ -25,7 +24,8 @@ const roles: GetProp<typeof Bubble.List, 'roles'> = {
         placement: 'start',
         typing: { step: 1, interval: 50 },
         variant: 'outlined',
-        avatar: { icon: <OpenAIFilled /> },
+        avatar: { icon: <img src={AssistantIcon} alt="Assistant" style={{ width: 30, height: 30}} />
+    },
         messageRender: renderMarkdown,
         styles: {
             content: {
@@ -93,9 +93,6 @@ const SmartChatReport = () => {
                     selectedTeam: JSON.stringify(selectedTeam),
                 },
             };
-            // const response = await apiAiChatClient.post('/chat', requestBody);
-            // console.log(response.body.content)
-            // const responseText = "`${response.data.response}`".trim();
             const response = await reportingApiService.getChat(updatedChatMessages);
             const responseText = `${response.body.content}`.trim();
             setIsTyping(true);
@@ -108,11 +105,6 @@ const SmartChatReport = () => {
 
         } catch (error) {
             logger.error('handleSend', error);
-            const errorMessage: IChatMessage = {
-                role: "assistant",
-                content: "Something went wrong. Please try again later."
-            };
-            setChatMessages(prev => [...prev, errorMessage]);
         } finally {
             setLoading(false);
         }
