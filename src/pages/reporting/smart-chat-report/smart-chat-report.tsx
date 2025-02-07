@@ -12,6 +12,7 @@ import { Prompts } from '@ant-design/x';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { firstScreenPrompts, senderPromptsItems } from './prompt';
 import AssistantIcon from '../../../assets/icons/worklenz_ai_light.png';
+import AssistantIcon_d from '../../../assets/icons/worklenz_ai.png';
 const md = Markdownit({ html: true, breaks: true });
 const renderMarkdown: BubbleProps['messageRender'] = (content) => (
     <Typography>
@@ -172,7 +173,7 @@ const SmartChatReport = () => {
                 />
                 { showPrompts && <Welcome
         variant="borderless"
-        icon="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp"
+        icon= {<img src={AssistantIcon_d} alt="Assistant" style={{ width: 55, height: 55}} />}
         title="Hello, I'm Worklenz AI Assistant"
         description="Base on your Oraganization, Create Summary reports, a better intelligent vision~"
       />
