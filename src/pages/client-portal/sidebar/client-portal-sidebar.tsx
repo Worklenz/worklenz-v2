@@ -1,15 +1,21 @@
 import { RightOutlined } from '@ant-design/icons';
-import { ConfigProvider, Flex, Menu, MenuProps } from 'antd';
+import { Badge, ConfigProvider, Flex, Menu, MenuProps } from 'antd';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 import { clientPortalItems } from '../../../lib/client-portal/client-portal-constants';
+import { useAppSelector } from '../../../hooks/useAppSelector';
 
 const ClientPortalSidebar = () => {
   const location = useLocation();
   // localization
   const { t } = useTranslation('client-portal-common');
+
+  // get the unread message count
+  const unreadChatsCount = useAppSelector(
+    (state) => state.clientsPortalReducer.chatsReducer.chatList
+  ).filter((chat) => chat.status === 'unread').length;
 
   type MenuItem = Required<MenuProps>['items'][number];
   // import menu items from client portal sidebar constants
@@ -40,7 +46,11 @@ const ClientPortalSidebar = () => {
               {t(item.name)}
             </Link>
           </Flex>
-          <RightOutlined style={{ fontSize: 12 }} />
+
+          <Flex gap={4} align="center">
+            {item.key === 'chats' && <Badge count={unreadChatsCount} />}
+            <RightOutlined style={{ fontSize: 12 }} />
+          </Flex>
         </Flex>
       ),
     })),
