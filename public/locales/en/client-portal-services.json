@@ -7,7 +7,7 @@
   "statusColumn": "Status",
   "noOfRequestsColumn": "No of requests",
 
-  "addServiceDrawerTitle": "Add Services",
+  "addServiceTitle": "Add Services",
 
   "serviceDetailsStep": "Service Details",
   "requestFormStep": "Request Form",

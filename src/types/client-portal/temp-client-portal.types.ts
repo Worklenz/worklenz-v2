@@ -11,6 +11,7 @@ export type TempClientPortalClientType = {
 
 // temp type for requests object this shold be replaced with actual type ========================
 export type TempRequestsType = {
+  id: string;
   req_no: string;
   service: string;
   client: string;

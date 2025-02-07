@@ -42,26 +42,21 @@ const TempServices: TempServicesType[] = [
 
 type ServicesState = {
   services: TempServicesType[];
-  isAddServicesModalOpen: boolean;
 };
 
 const initialState: ServicesState = {
   services: TempServices,
-  isAddServicesModalOpen: false,
 };
 
 const servicesSlice = createSlice({
   name: 'servicesReducer',
   initialState,
   reducers: {
-    toggleAddServicesModal: (state) => {
-      state.isAddServicesModalOpen = !state.isAddServicesModalOpen;
-    },
     addService: (state, action) => {
       state.services.push(action.payload);
     },
   },
 });
 
-export const { toggleAddServicesModal, addService } = servicesSlice.actions;
+export const { addService } = servicesSlice.actions;
 export default servicesSlice.reducer;

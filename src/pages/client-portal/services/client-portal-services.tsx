@@ -1,15 +1,13 @@
 import { Button, Flex, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ServicesTable from './services-table';
-import AddServicesModal from '../../../features/clients-portal/services/add-services-modal';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleAddServicesModal } from '../../../features/clients-portal/services/services-slice';
+import { useNavigate } from 'react-router-dom';
 
 const ClientPortalServices = () => {
   // localization
   const { t } = useTranslation('client-portal-services');
 
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   return (
     <Flex vertical gap={24} style={{ width: '100%' }}>
@@ -18,16 +16,13 @@ const ClientPortalServices = () => {
 
         <Button
           type="primary"
-          onClick={() => dispatch(toggleAddServicesModal())}
+          onClick={() => navigate('/worklenz/client-portal/add-service')}
         >
-          {t('addServiceButton')}{' '}
+          {t('addServiceButton')}
         </Button>
       </Flex>
 
       <ServicesTable />
-
-      {/* <services modal /> */}
-      <AddServicesModal />
     </Flex>
   );
 };

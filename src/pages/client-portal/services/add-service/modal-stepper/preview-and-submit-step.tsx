@@ -1,9 +1,9 @@
 import { Button, Flex, Space, Typography } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { TempServicesType } from '../../../../types/client-portal/temp-client-portal.types';
-import { useAppDispatch } from '../../../../hooks/useAppDispatch';
-import { addService, toggleAddServicesModal } from '../services-slice';
+import { TempServicesType } from '../../../../../types/client-portal/temp-client-portal.types';
+import { useAppDispatch } from '../../../../../hooks/useAppDispatch';
+import { addService } from '../../../../../features/clients-portal/services/services-slice';
 
 type PreviewAndSubmitStepProps = {
   setCurrent: (index: number) => void;
@@ -22,7 +22,6 @@ const PreviewAndSubmitStep = ({
   // function to handle save
   const handleSave = () => {
     dispatch(addService(service));
-    dispatch(toggleAddServicesModal());
   };
 
   return (

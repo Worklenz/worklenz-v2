@@ -2,11 +2,11 @@ import { AppstoreOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Flex, Form, Input, Select, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../../../styles/colors';
 import {
   TempRequestFromItemType,
   TempServicesType,
-} from '../../../../types/client-portal/temp-client-portal.types';
+} from '../../../../../types/client-portal/temp-client-portal.types';
+import { colors } from '../../../../../styles/colors';
 
 type RequestFormStepProps = {
   setCurrent: (index: number) => void;
@@ -107,7 +107,7 @@ const RequestFormStep = ({
                   {item.type === 'multipleChoice' && (
                     <div>
                       {Array.isArray(item.answer) &&
-                        item.answer.map((answer, index) => (
+                        item.answer.map((answer: any, index: any) => (
                           <Typography.Text key={index}>
                             {answer}
                             {item.answer &&

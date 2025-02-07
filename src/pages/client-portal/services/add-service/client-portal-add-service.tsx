@@ -1,17 +1,16 @@
-import { Card, Flex, Modal, Steps, Typography } from 'antd';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { Button, Card, Flex, Steps, Typography } from 'antd';
+import React, { useState } from 'react';
+import { nanoid } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleAddServicesModal } from './services-slice';
-import { useState } from 'react';
-import './services-modal.css';
+import { TempServicesType } from '../../../../types/client-portal/temp-client-portal.types';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import ServiceDetailsStep from './modal-stepper/service-details-step';
 import RequestFormStep from './modal-stepper/request-form-step';
 import PreviewAndSubmitStep from './modal-stepper/preview-and-submit-step';
-import { TempServicesType } from '../../../types/client-portal/temp-client-portal.types';
-import { nanoid } from '@reduxjs/toolkit';
+import './add-service-stepper.css';
 
-const AddServicesModal = () => {
+const ClientPortalAddServices = () => {
   const [current, setCurrent] = useState(0);
   const [service, setService] = useState<TempServicesType>({
     id: nanoid(),
@@ -26,20 +25,14 @@ const AddServicesModal = () => {
     created_by: 'sachintha prasad',
   });
 
-  console.log('service', service);
+  const navigate = useNavigate();
 
   // localization
   const { t } = useTranslation('client-portal-services');
 
-  const { isAddServicesModalOpen } = useAppSelector(
-    (state) => state.clientsPortalReducer.servicesReducer
-  );
-
-  const dispatch = useAppDispatch();
-
   // function to handle model close
-  const handleClose = () => {
-    dispatch(toggleAddServicesModal());
+  const handleBack = () => {
+    navigate(-1);
 
     setService({
       id: nanoid(),
@@ -56,22 +49,25 @@ const AddServicesModal = () => {
   };
 
   return (
-    <Modal
-      open={isAddServicesModalOpen}
-      title={
-        <Typography.Title level={5}>
-          {t('addServiceDrawerTitle')}
+    <Flex vertical gap={24} style={{ width: '100%' }}>
+      <Flex gap={12} align="center">
+        <Button
+          icon={<ArrowLeftOutlined style={{ fontSize: 22 }} />}
+          className="borderless-icon-btn"
+          style={{ boxShadow: 'none' }}
+          onClick={handleBack}
+        />
+
+        <Typography.Title level={5} style={{ marginBlock: 0 }}>
+          {t('addServiceTitle')}
         </Typography.Title>
-      }
-      width={1200}
-      onCancel={handleClose}
-      footer={null}
-    >
-      <Card>
+      </Flex>
+
+      <Card style={{ width: '100%' }}>
         <Flex
           vertical
           gap={32}
-          style={{ height: 'calc(100vh - 320px)', overflow: 'hidden' }}
+          style={{ height: 'calc(100vh - 330px)', overflow: 'hidden' }}
         >
           <Steps
             type="navigation"
@@ -111,8 +107,8 @@ const AddServicesModal = () => {
           </div>
         </Flex>
       </Card>
-    </Modal>
+    </Flex>
   );
 };
 
-export default AddServicesModal;
+export default ClientPortalAddServices;

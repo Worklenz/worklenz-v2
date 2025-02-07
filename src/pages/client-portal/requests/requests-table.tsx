@@ -2,11 +2,12 @@ import { Card, Table, Typography } from 'antd';
 import { TableProps } from 'antd/lib';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { toggleRequestModal } from '../../../features/clients-portal/requests/requests-slice';
 import { durationDateFormat } from '../../../utils/durationDateFormat';
 import ClientPortalStatusTags from '../../../components/client-portal/client-portal-status-tags';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { TempRequestsType } from '../../../types/client-portal/temp-client-portal.types';
+import { useNavigate } from 'react-router-dom';
+import { setSelectedRequestNo } from '../../../features/clients-portal/requests/requests-slice';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
 
 const RequestsTable = () => {
   // localization
@@ -18,6 +19,8 @@ const RequestsTable = () => {
   );
 
   const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
 
   // table columns
   const columns: TableProps['columns'] = [
@@ -68,7 +71,8 @@ const RequestsTable = () => {
         onRow={(record) => {
           return {
             onClick: () => {
-              dispatch(toggleRequestModal(record.req_no));
+              dispatch(setSelectedRequestNo(record.req_no));
+              navigate(`/worklenz/client-portal/requests/${record.id}`);
             },
             style: { cursor: 'pointer' },
           };

@@ -1,7 +1,6 @@
 import { Flex, Typography } from 'antd';
 import RequestsTable from './requests-table';
 import { useTranslation } from 'react-i18next';
-import RequestsModal from '../../../features/clients-portal/requests/requests-modal';
 
 const ClientPortalRequests = () => {
   // localization
@@ -14,9 +13,6 @@ const ClientPortalRequests = () => {
       </Flex>
 
       <RequestsTable />
-
-      {/* <requests modal /> */}
-      <RequestsModal />
     </Flex>
   );
 };

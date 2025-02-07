@@ -2,7 +2,7 @@ import { Card, Table, Typography } from 'antd';
 import { TableProps } from 'antd/lib';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../hooks/useAppSelector';
-import { toggleRequestModal } from '../../../features/clients-portal/requests/requests-slice';
+// import { toggleRequestModal } from '../../../features/clients-portal/requests/requests-slice';
 import { durationDateFormat } from '../../../utils/durationDateFormat';
 import ClientPortalStatusTags from '../../../components/client-portal/client-portal-status-tags';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
@@ -63,7 +63,7 @@ const RequestsTable = () => {
         onRow={(record) => {
           return {
             onClick: () => {
-              dispatch(toggleRequestModal(record.req_no));
+              // dispatch(toggleRequestModal(record.req_no));
             },
             style: { cursor: 'pointer' },
           };

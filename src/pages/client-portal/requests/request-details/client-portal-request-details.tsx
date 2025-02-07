@@ -1,31 +1,30 @@
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../../hooks/useAppSelector';
 import {
+  Button,
   Card,
   Flex,
-  Modal,
   Radio,
   Select,
   Tabs,
   TabsProps,
   Typography,
 } from 'antd';
-import React, { useMemo } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { toggleRequestModal } from './requests-slice';
-import { colors } from '../../../styles/colors';
-import { DownOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, DownOutlined } from '@ant-design/icons';
+import { colors } from '../../../../styles/colors';
+import { useNavigate } from 'react-router-dom';
 
-const RequestsModal = () => {
+const ClientPortalRequestDetails = () => {
   // localization
   const { t: t1 } = useTranslation('client-portal-requests');
   const { t: t2 } = useTranslation('client-portal-common');
 
-  const { isRequestModalOpen, selectedRequestNo, requests } = useAppSelector(
+  const { selectedRequestNo, requests } = useAppSelector(
     (state) => state.clientsPortalReducer.requestsReducer
   );
 
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   // filter the seleted request
   const selectedRequest = useMemo(() => {
@@ -102,49 +101,50 @@ const RequestsModal = () => {
   ];
 
   return (
-    <Modal
-      open={isRequestModalOpen}
-      title={
-        <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-          <Typography.Title level={5}>
+    <Flex vertical gap={24} style={{ width: '100%' }}>
+      <Flex align="center" justify="space-between" style={{ width: '100%' }}>
+        <Flex gap={12} align="center">
+          <Button
+            icon={<ArrowLeftOutlined style={{ fontSize: 22 }} />}
+            className="borderless-icon-btn"
+            style={{ boxShadow: 'none' }}
+            onClick={() => navigate('/worklenz/client-portal/requests')}
+          />
+
+          <Typography.Title level={5} style={{ marginBlock: 0 }}>
             {t1('reqNoText')}: {selectedRequest?.req_no}
           </Typography.Title>
-
-          <Select
-            value={selectedRequest?.status}
-            options={[
-              { label: t2('pendingStatus'), value: 'pending' },
-              { label: t2('inProgressStatus'), value: 'inProgress' },
-              { label: t2('acceptedStatus'), value: 'accepted' },
-            ]}
-            onChange={(value) => console.log(value)}
-            variant="borderless"
-            labelRender={(value) => (
-              <Typography.Text style={{ color: colors.skyBlue }}>
-                {value.label}
-              </Typography.Text>
-            )}
-            suffixIcon={<DownOutlined style={{ color: colors.skyBlue }} />}
-          />
         </Flex>
-      }
-      width={1200}
-      onCancel={() => dispatch(toggleRequestModal(null))}
-      closeIcon={null}
-      footer={null}
-    >
-      <Card>
+
+        <Select
+          value={selectedRequest?.status}
+          options={[
+            { label: t2('pendingStatus'), value: 'pending' },
+            { label: t2('inProgressStatus'), value: 'inProgress' },
+            { label: t2('acceptedStatus'), value: 'accepted' },
+          ]}
+          onChange={(value) => console.log(value)}
+          variant="borderless"
+          labelRender={(value) => (
+            <Typography.Text style={{ color: colors.skyBlue }}>
+              {value.label}
+            </Typography.Text>
+          )}
+          suffixIcon={<DownOutlined style={{ color: colors.skyBlue }} />}
+        />
+      </Flex>
+      <Card style={{ height: 'cal(100vh - 330px)' }}>
         <Tabs
           defaultActiveKey="submission"
           items={items}
           style={{
-            height: 'calc(100vh - 320px)',
+            height: 'calc(100vh - 330px)',
             overflow: 'hidden',
           }}
         />
       </Card>
-    </Modal>
+    </Flex>
   );
 };
 
-export default RequestsModal;
+export default ClientPortalRequestDetails;

@@ -2,12 +2,12 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, Typography } from 'antd';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import TinyEditor from '../../../tasks/taskCreationAndUpdate/shared/infoTab/text-editor/tiny-editor';
-import { themeWiseColor } from '../../../../utils/themeWiseColor';
-import { useAppSelector } from '../../../../hooks/useAppSelector';
-import { colors } from '../../../../styles/colors';
-import { TempServicesType } from '../../../../types/client-portal/temp-client-portal.types';
 import tinymce from 'tinymce';
+import { TempServicesType } from '../../../../../types/client-portal/temp-client-portal.types';
+import { useAppSelector } from '../../../../../hooks/useAppSelector';
+import { themeWiseColor } from '../../../../../utils/themeWiseColor';
+import { colors } from '../../../../../styles/colors';
+import TinyEditor from '../../../../../features/tasks/taskCreationAndUpdate/shared/infoTab/text-editor/tiny-editor';
 
 type ServiceDetailsStepProps = {
   setCurrent: (index: number) => void;

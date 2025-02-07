@@ -1,8 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { TempRequestsType } from '../../../types/client-portal/temp-client-portal.types';
 
 const TempRequests: TempRequestsType[] = [
   {
+    id: '1',
     req_no: '#123',
     service: 'Marketing video',
     client: 'john doe',
@@ -10,6 +11,7 @@ const TempRequests: TempRequestsType[] = [
     time: new Date('2025-01-27T09:00:00'),
   },
   {
+    id: '2',
     req_no: '#232',
     service: 'Product portfolio video',
     client: 'alexander turner',
@@ -17,6 +19,7 @@ const TempRequests: TempRequestsType[] = [
     time: new Date('2025-01-28T10:00:00'),
   },
   {
+    id: '3',
     req_no: '#454',
     service: 'Animated video',
     client: 'john smith',
@@ -28,27 +31,22 @@ const TempRequests: TempRequestsType[] = [
 export type RequestsState = {
   requests: TempRequestsType[];
   selectedRequestNo: string | null;
-  isRequestModalOpen: boolean;
 };
 
 const initialState: RequestsState = {
   requests: TempRequests,
   selectedRequestNo: null,
-  isRequestModalOpen: false,
 };
 
 const requestsSlice = createSlice({
   name: 'requestsReducer',
   initialState,
   reducers: {
-    toggleRequestModal: (state, actions: PayloadAction<string | null>) => {
-      state.isRequestModalOpen = !state.isRequestModalOpen;
-      state.isRequestModalOpen
-        ? (state.selectedRequestNo = actions.payload)
-        : (state.selectedRequestNo = null);
+    setSelectedRequestNo: (state, action) => {
+      state.selectedRequestNo = action.payload;
     },
   },
 });
 
-export const { toggleRequestModal } = requestsSlice.actions;
+export const { setSelectedRequestNo } = requestsSlice.actions;
 export default requestsSlice.reducer;
