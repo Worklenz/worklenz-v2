@@ -11,7 +11,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { colors } from '../../../styles/colors';
 import { useTranslation } from 'react-i18next';
 import { clientViewItems } from '../../../lib/client-view/client-view-constants';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import {
+  LeftCircleOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  RightCircleOutlined,
+} from '@ant-design/icons';
+import { themeWiseColor } from '../../../utils/themeWiseColor';
+import { useAppSelector } from '../../../hooks/useAppSelector';
 
 type ClientViewSiderMenuProps = {
   isCollapsed: boolean;
@@ -25,6 +32,9 @@ const ClientViewSiderMenu = ({
   const location = useLocation();
   // localization
   const { t } = useTranslation('client-view-common');
+
+  // theme details from theme slice
+  const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   type MenuItem = Required<MenuProps>['items'][number];
   // import menu items from client view sidebar constants
@@ -59,8 +69,14 @@ const ClientViewSiderMenu = ({
     })),
   ];
 
+  // function to handle collapse
+  const handleCollapsedToggler = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
     <ConfigProvider
+      wave={{ disabled: true }}
       theme={{
         components: {
           Menu: {
@@ -76,18 +92,47 @@ const ClientViewSiderMenu = ({
         },
       }}
     >
-      <Flex vertical gap={12} style={{ width: '100%' }}>
+      <Flex vertical gap={12} style={{ width: '100%', position: 'relative' }}>
+        {/* collapse button  */}
         <Button
-          type="text"
-          style={{ justifyContent: 'flex-start' }}
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          {isCollapsed ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
-          {!isCollapsed && <Typography.Text>{t('dashboard')}</Typography.Text>}
-        </Button>
+          className="borderless-icon-btn"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: -36,
+            background: themeWiseColor(
+              colors.white,
+              colors.darkGray,
+              themeMode
+            ),
+            boxShadow: 'none',
+            padding: 0,
+            zIndex: 120,
+            transform: 'translateX(50%)',
+          }}
+          onClick={() => handleCollapsedToggler()}
+          icon={
+            isCollapsed ? (
+              <RightCircleOutlined
+                style={{
+                  fontSize: 22,
+                  color: themeWiseColor('#c5c5c5', colors.lightGray, themeMode),
+                }}
+              />
+            ) : (
+              <LeftCircleOutlined
+                style={{
+                  fontSize: 22,
+                  color: themeWiseColor('#c5c5c5', colors.lightGray, themeMode),
+                }}
+              />
+            )
+          }
+        />
 
         <Menu
           defaultValue={'services'}
+          className="custom-reporting-sider"
           items={items}
           selectedKeys={[getCurrentActiveKey()]}
           mode="vertical"
