@@ -7,6 +7,7 @@ import ClientPortalServices from '../pages/client-portal/services/client-portal-
 import ClientPortalSettings from '../pages/client-portal/settings/client-portal-settings';
 import ClientPortalAddServices from '../pages/client-portal/services/add-service/client-portal-add-service';
 import ClientPortalRequestDetails from '../pages/client-portal/requests/request-details/client-portal-request-details';
+import ClientPortalChats from '../pages/client-portal/chats/client-portal-chats';
 
 const clientPortalRoutes: RouteObject[] = [
   {
@@ -35,7 +36,7 @@ const clientPortalRoutes: RouteObject[] = [
       },
       {
         path: 'chats',
-        element: <ClientPortalClients />,
+        element: <ClientPortalChats />,
       },
       {
         path: 'settings',

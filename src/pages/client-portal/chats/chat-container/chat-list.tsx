@@ -18,7 +18,7 @@ const ChatList = ({ chatList, setOpenedChatId }: ChatListProps) => {
       scroll={{
         y: chatList.length >= 7 ? 'calc(100vh - 300px)' : undefined,
       }}
-      style={{ width: 300 }}
+      style={{ minWidth: 300 }}
       onRow={(record) => ({
         style: { cursor: 'pointer' },
         onClick: () => setOpenedChatId(record.id),
