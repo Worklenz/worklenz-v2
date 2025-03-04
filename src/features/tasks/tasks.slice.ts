@@ -170,6 +170,67 @@ export const fetchTaskGroups = createAsyncThunk(
   }
 );
 
+export const fetchSubTasks = createAsyncThunk(
+  'tasks/fetchSubTasks',
+  async (
+    { taskId, projectId }: { taskId: string; projectId: string },
+    { rejectWithValue, getState, dispatch }
+  ) => {
+    const state = getState() as { taskReducer: ITaskState };
+    const { taskReducer } = state;
+
+    // Check if the task is already expanded
+    const task = taskReducer.taskGroups
+      .flatMap(group => group.tasks)
+      .find(t => t.id === taskId);
+
+    if (task?.show_sub_tasks) {
+      // If already expanded, just return without fetching
+      return [];
+    }
+
+    const selectedMembers = taskReducer.taskAssignees
+      .filter(member => member.selected)
+      .map(member => member.id)
+      .join(' ');
+
+    const selectedLabels = taskReducer.labels
+      .filter(label => label.selected)
+      .map(label => label.id)
+      .join(' ');
+
+    const config: ITaskListConfigV2 = {
+      id: projectId,
+      archived: taskReducer.archived,
+      group: taskReducer.groupBy,
+      field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+      order: '',
+      search: taskReducer.search || '',
+      statuses: '',
+      members: selectedMembers,
+      projects: '',
+      isSubtasksInclude: false,
+      labels: selectedLabels,
+      priorities: taskReducer.priorities.join(' '),
+      parent_task: taskId,
+    };
+    try {
+      const response = await tasksApiService.getTaskList(config);
+      // Only expand if we actually fetched subtasks
+      if (response.body.length > 0) {
+        dispatch(toggleTaskRowExpansion(taskId));
+      }
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Sub Tasks', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch sub tasks');
+    }
+  }
+);
+
 export const fetTaskListColumns = createAsyncThunk(
   'tasks/fetTaskListColumns',
   async (projectId: string) => {
@@ -395,9 +456,9 @@ const taskSlice = createSlice({
       } else {
         // Handle main task addition
         if (insert) {
-          group.tasks.push({ ...task });
+          group.tasks.push(task);
         } else {
-          group.tasks.unshift({ ...task });
+          group.tasks.unshift(task);
         }
       }
     },
@@ -437,7 +498,7 @@ const taskSlice = createSlice({
       action: PayloadAction<{ id: string; parent_task: string; name: string }>
     ) => {
       const { id, name } = action.payload;
-      
+
       for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === id);
         if (task) {
@@ -457,7 +518,7 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, progress, totalTasksCount, completedCount } = action.payload;
-      
+
       for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === taskId);
         if (task) {
@@ -533,7 +594,7 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      
+
       for (const group of state.taskGroups) {
         const existingTask = group.tasks.find(t => t.id === task.id);
         if (existingTask) {
@@ -550,7 +611,7 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      
+
       for (const group of state.taskGroups) {
         const existingTask = group.tasks.find(t => t.id === task.id);
         if (existingTask) {
@@ -581,7 +642,7 @@ const taskSlice = createSlice({
 
     updateTaskGroupColor: (
       state,
-      action: PayloadAction<{groupId: string, colorCode: string}>
+      action: PayloadAction<{ groupId: string; colorCode: string }>
     ) => {
       const { colorCode, groupId } = action.payload;
 
@@ -590,7 +651,7 @@ const taskSlice = createSlice({
 
         if (group) {
           group.color_code = colorCode;
-        }   
+        }
       }
     },
 
@@ -635,7 +696,11 @@ const taskSlice = createSlice({
       task.priority_color_dark = color_code_dark;
 
       // If grouped by priority and not a subtask, move the task to the new priority group
-      if (state.groupBy === GROUP_BY_PRIORITY_VALUE && !task.is_sub_task && groupId !== priority_id) {
+      if (
+        state.groupBy === GROUP_BY_PRIORITY_VALUE &&
+        !task.is_sub_task &&
+        groupId !== priority_id
+      ) {
         // Remove from current group
         deleteTaskFromGroup(state.taskGroups, task, groupId);
 
@@ -646,8 +711,6 @@ const taskSlice = createSlice({
 
     toggleTaskRowExpansion: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
-
-      // Find the task in any group and toggle its show_sub_tasks property
       for (const group of state.taskGroups) {
         const task = group.tasks.find(t => t.id === taskId);
         if (task) {
@@ -656,11 +719,11 @@ const taskSlice = createSlice({
         }
       }
     },
-    
+
     resetTaskListData: state => {
       return {
         ...initialState,
-        group: state.groupBy // Preserve the current grouping
+        group: state.groupBy, // Preserve the current grouping
       };
     },
 
@@ -676,15 +739,15 @@ const taskSlice = createSlice({
     ) => {
       return produce(state, draft => {
         const { activeGroupId, overGroupId, fromIndex, toIndex, task } = action.payload;
-        
+
         const sourceGroup = draft.taskGroups.find(g => g.id === activeGroupId);
         const targetGroup = draft.taskGroups.find(g => g.id === overGroupId);
-        
+
         if (!sourceGroup || !targetGroup) return;
 
         // Remove from source group
         const [movedTask] = sourceGroup.tasks.splice(fromIndex, 1);
-        
+
         // If moving between groups, update the task properties based on the group type
         if (activeGroupId !== overGroupId) {
           // Update task properties based on the grouping type
@@ -703,7 +766,7 @@ const taskSlice = createSlice({
               break;
           }
         }
-        
+
         // Add to target group
         if (activeGroupId === overGroupId) {
           sourceGroup.tasks.splice(toIndex, 0, movedTask);
@@ -727,6 +790,27 @@ const taskSlice = createSlice({
       .addCase(fetchTaskGroups.rejected, (state, action) => {
         state.loadingGroups = false;
         state.error = action.error.message || 'Failed to fetch task groups';
+      })
+      .addCase(fetchSubTasks.pending, state => {
+        state.error = null;
+      })
+      .addCase(fetchSubTasks.fulfilled, (state, action: PayloadAction<IProjectTask[]>) => {
+        if (action.payload.length > 0) {
+          const taskId = action.payload[0].parent_task_id;
+          if (taskId) {
+            for (const group of state.taskGroups) {
+              const task = group.tasks.find(t => t.id === taskId);
+              if (task) {
+                task.sub_tasks = action.payload;
+                task.show_sub_tasks = true;
+                break;
+              }
+            }
+          }
+        }
+      })
+      .addCase(fetchSubTasks.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to fetch sub tasks';
       })
       .addCase(fetchTaskAssignees.pending, state => {
         state.loadingAssignees = true;

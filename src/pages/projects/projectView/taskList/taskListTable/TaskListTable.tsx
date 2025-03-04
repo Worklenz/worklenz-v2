@@ -51,7 +51,7 @@ import { selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulk
 import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
-import { toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
+import { fetchSubTasks, toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
 import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
@@ -124,7 +124,16 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   const toggleTaskExpansion = (taskId: string) => {
-    dispatch(toggleTaskRowExpansion(taskId));
+    const task = displayTasks.find(t => t.id === taskId);
+    if (task) {
+      if (task.show_sub_tasks) {
+        // If already expanded, just collapse it
+        dispatch(toggleTaskRowExpansion(taskId));
+      } else {
+        // If collapsed, fetch subtasks and expand
+        dispatch(fetchSubTasks({ taskId, projectId: project?.id || '' }));
+      }
+    }
   };
 
   const toggleSelectAll = () => {
@@ -255,6 +264,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         <TaskListTaskCell
           task={task}
           isSubTask={isSubtask}
+          projectId={project?.id || ''}
           toggleTaskExpansion={toggleTaskExpansion}
         />
       ),

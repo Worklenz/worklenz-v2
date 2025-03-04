@@ -15,17 +15,20 @@ import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/tas
 import { useState, useRef, useEffect } from 'react';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
+import { fetchSubTasks } from '@/features/tasks/tasks.slice';
 
 type TaskListTaskCellProps = {
   task: IProjectTask;
   isSubTask?: boolean;
   toggleTaskExpansion: (taskId: string) => void;
+  projectId: string;
 };
 
 const TaskListTaskCell = ({
   task,
   isSubTask = false,
   toggleTaskExpansion,
+  projectId,
 }: TaskListTaskCellProps) => {
   const { t } = useTranslation('task-list-table');
   const { socket, connected } = useSocket();
@@ -54,11 +57,18 @@ const TaskListTaskCell = ({
     };
   }, [editTaskName]);
 
+  const handleToggleExpansion = (taskId: string) => {
+    if (task.sub_tasks_count && task.sub_tasks_count > 0 && !task.sub_tasks) {
+      dispatch(fetchSubTasks({ taskId, projectId }));
+    }
+    toggleTaskExpansion(taskId);
+  };
+
   const renderToggleButtonForHasSubTasks = (taskId: string | null, hasSubtasks: boolean) => {
     if (!hasSubtasks || !taskId) return null;
     return (
       <button
-        onClick={() => toggleTaskExpansion(taskId)}
+        onClick={() => handleToggleExpansion(taskId)}
         className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
       >
         {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
@@ -66,7 +76,6 @@ const TaskListTaskCell = ({
     );
   };
 
-  // show expand button on hover for tasks without subtasks
   const renderToggleButtonForNonSubtasks = (
     taskId: string,
     isSubTask: boolean,
@@ -75,7 +84,7 @@ const TaskListTaskCell = ({
     if (subTasksCount > 0) {
       return (
         <button
-          onClick={() => toggleTaskExpansion(taskId)}
+          onClick={() => handleToggleExpansion(taskId)}
           className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54]"
         >
           {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
@@ -85,7 +94,7 @@ const TaskListTaskCell = ({
 
     return !isSubTask ? (
       <button
-        onClick={() => toggleTaskExpansion(taskId)}
+        onClick={() => handleToggleExpansion(taskId)}
         className="hover flex h-4 w-4 items-center justify-center rounded text-[12px] hover:border hover:border-[#5587f5] hover:bg-[#d0eefa54] open-task-button"
       >
         {task.show_sub_tasks ? <DownOutlined /> : <RightOutlined />}
@@ -95,13 +104,12 @@ const TaskListTaskCell = ({
     );
   };
 
-  // render the double arrow icon and count label for tasks with subtasks
   const renderSubtasksCountLabel = (taskId: string, isSubTask: boolean, subTasksCount: number) => {
     if (!taskId) return null;
     return (
       !isSubTask && (
         <Button
-          onClick={() => toggleTaskExpansion(taskId)}
+          onClick={() => handleToggleExpansion(taskId)}
           size="small"
           style={{
             display: 'flex',
