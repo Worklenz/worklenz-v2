@@ -26,33 +26,20 @@
     "@tanstack/react-table": "^8.20.6",
     "@tanstack/react-virtual": "^3.11.2",
     "@tinymce/tinymce-react": "^5.1.1",
-<<<<<<< HEAD
-    "antd": "^5.20.5",
-    "antd-style": "^3.7.1",
-    "axios": "^1.7.7",
-    "chart.js": "^4.4.6",
-=======
     "antd": "^5.24.1",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
->>>>>>> ffb0b3d86ceab8f74621a28cabc53eb52560e740
     "chartjs-plugin-datalabels": "^2.2.0",
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.4",
     "gantt-task-react": "^0.3.9",
     "html2canvas": "^1.4.1",
     "i": "^0.3.7",
-<<<<<<< HEAD
-    "i18next": "^23.15.1",
-    "i18next-browser-languagedetector": "^8.0.0",
-    "i18next-http-backend": "^2.6.2",
-    "markdown-it": "^14.1.0",
-=======
     "i18next": "^23.16.8",
     "i18next-browser-languagedetector": "^8.0.3",
     "i18next-http-backend": "^2.7.3",
     "jspdf": "^3.0.0",
->>>>>>> ffb0b3d86ceab8f74621a28cabc53eb52560e740
+    "markdown-it": "^14.1.0",
     "mixpanel-browser": "^2.56.0",
     "npm": "^11.0.0",
     "primereact": "^10.8.4",
@@ -78,17 +65,15 @@
     "@types/chart.js": "^2.9.41",
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^27.5.2",
-<<<<<<< HEAD
-    "@types/markdown-it": "^14.1.2",
-=======
     "@types/lodash": "^4.17.15",
->>>>>>> ffb0b3d86ceab8f74621a28cabc53eb52560e740
+    "@types/markdown-it": "^14.1.2",
     "@types/mixpanel-browser": "^2.50.2",
     "@types/node": "^20.8.4",
     "@types/react": "19.0.0",
     "@types/react-dom": "19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "json2mq": "^0.2.0",
     "postcss": "^8.5.2",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.17",
