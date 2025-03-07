@@ -17,12 +17,12 @@ const jobSlice = createSlice({
   name: 'jobReducer',
   initialState,
   reducers: {
-    toggleCreateJobTitleDrawer: (state) => {
+    toggleCreateJobTitleDrawer: state => {
       state.isCreateJobTitleDrawerOpen
         ? (state.isCreateJobTitleDrawerOpen = false)
         : (state.isCreateJobTitleDrawerOpen = true);
     },
-    toggleUpdateJobTitleDrawer: (state) => {
+    toggleUpdateJobTitleDrawer: state => {
       state.isUpdateJobTitleDrawerOpen
         ? (state.isUpdateJobTitleDrawerOpen = false)
         : (state.isUpdateJobTitleDrawerOpen = true);
@@ -33,18 +33,14 @@ const jobSlice = createSlice({
     },
     // action for update job title
     updateJobTitle: (state, action: PayloadAction<JobType>) => {
-      const index = state.jobsList.findIndex(
-        (job) => job.jobId === action.payload.jobId
-      );
+      const index = state.jobsList.findIndex(job => job.jobId === action.payload.jobId);
       if (index >= 0) {
         state.jobsList[index] = action.payload;
       }
     },
     // action for delete job title
     deleteJobTitle: (state, action: PayloadAction<string>) => {
-      state.jobsList = state.jobsList.filter(
-        (job) => job.jobId !== action.payload
-      );
+      state.jobsList = state.jobsList.filter(job => job.jobId !== action.payload);
     },
   },
 });

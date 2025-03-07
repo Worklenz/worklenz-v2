@@ -9,15 +9,21 @@ import { ITeamMember } from '@/types/teamMembers/teamMember.types';
 const rootUrl = `${API_BASE_URL}/team-members`;
 
 export const teamMembersApiService = {
-  createTeamMember: async (body: ITeamMemberCreateRequest): Promise<IServerResponse<ITeamMember>> => {
-    const response = await apiClient.post<IServerResponse<ITeamMember>>(
-      `${rootUrl}`,
-      body
-    );
+  createTeamMember: async (
+    body: ITeamMemberCreateRequest
+  ): Promise<IServerResponse<ITeamMember>> => {
+    const response = await apiClient.post<IServerResponse<ITeamMember>>(`${rootUrl}`, body);
     return response.data;
   },
 
-  get: async (index: number, size: number, field: string | null, order: string | null, search: string | null, all = false): Promise<IServerResponse<ITeamMembersViewModel>> => {
+  get: async (
+    index: number,
+    size: number,
+    field: string | null,
+    order: string | null,
+    search: string | null,
+    all = false
+  ): Promise<IServerResponse<ITeamMembersViewModel>> => {
     const s = encodeURIComponent(search || '');
     const params = new URLSearchParams({
       index: index.toString(),
@@ -25,7 +31,7 @@ export const teamMembersApiService = {
       ...(field && { field }),
       ...(order && { order }),
       ...(s && { search: s }),
-      ...(all && { all: all.toString() })
+      ...(all && { all: all.toString() }),
     });
     const response = await apiClient.get<IServerResponse<ITeamMembersViewModel>>(
       `${rootUrl}?${params}`
@@ -34,16 +40,12 @@ export const teamMembersApiService = {
   },
 
   getById: async (id: string): Promise<IServerResponse<ITeamMemberViewModel>> => {
-    const response = await apiClient.get<IServerResponse<ITeamMemberViewModel>>(
-      `${rootUrl}/${id}`
-    );
+    const response = await apiClient.get<IServerResponse<ITeamMemberViewModel>>(`${rootUrl}/${id}`);
     return response.data;
   },
 
   getAll: async (projectId: string | null = null): Promise<IServerResponse<any[]>> => {
-    const params = new URLSearchParams(
-      projectId ? { project: projectId } : {}
-    );
+    const params = new URLSearchParams(projectId ? { project: projectId } : {});
     const response = await apiClient.get<IServerResponse<any[]>>(
       `${rootUrl}/all${params.toString() ? '?' + params.toString() : ''}`
     );
@@ -51,40 +53,35 @@ export const teamMembersApiService = {
   },
 
   update: async (id: string, body: ITeamMemberCreateRequest): Promise<IServerResponse<any>> => {
-    const response = await apiClient.put<IServerResponse<any>>(
-      `${rootUrl}/${id}`,
-      body
-    );
+    const response = await apiClient.put<IServerResponse<any>>(`${rootUrl}/${id}`, body);
     return response.data;
   },
 
-  delete: async (id: string, email: string): Promise<IServerResponse<any>> => {
-    const params = new URLSearchParams({ email });
-    const response = await apiClient.delete<IServerResponse<any>>(
-      `${rootUrl}/${id}?${params}`
-    );
+  delete: async (id: string): Promise<IServerResponse<any>> => {
+    const response = await apiClient.delete<IServerResponse<any>>(`${rootUrl}/${id}`);
     return response.data;
   },
 
   getTeamMembersByProjectId: async (projectId: string): Promise<IServerResponse<any[]>> => {
-    const response = await apiClient.get<IServerResponse<any[]>>(
-      `${rootUrl}/project/${projectId}`
-    );
+    const response = await apiClient.get<IServerResponse<any[]>>(`${rootUrl}/project/${projectId}`);
     return response.data;
   },
 
   resendInvitation: async (id: string): Promise<IServerResponse<any>> => {
-    const response = await apiClient.put<IServerResponse<any>>(
-      `${rootUrl}/resend-invitation`,
-      { id }
-    );
+    const response = await apiClient.put<IServerResponse<any>>(`${rootUrl}/resend-invitation`, {
+      id,
+    });
     return response.data;
   },
 
-  toggleMemberActiveStatus: async (id: string, active: boolean, email: string): Promise<IServerResponse<any>> => {
+  toggleMemberActiveStatus: async (
+    id: string,
+    active: boolean,
+    email: string
+  ): Promise<IServerResponse<any>> => {
     const params = new URLSearchParams({
       active: active.toString(),
-      email
+      email,
     });
     const response = await apiClient.get<IServerResponse<any>>(
       `${rootUrl}/deactivate/${id}?${params}`
@@ -92,11 +89,11 @@ export const teamMembersApiService = {
     return response.data;
   },
 
-  addTeamMember: async (id: string, body: ITeamMemberCreateRequest): Promise<IServerResponse<any>> => {
-    const response = await apiClient.put<IServerResponse<any>>(
-      `${rootUrl}/add-member/${id}`,
-      body
-    );
+  addTeamMember: async (
+    id: string,
+    body: ITeamMemberCreateRequest
+  ): Promise<IServerResponse<any>> => {
+    const response = await apiClient.put<IServerResponse<any>>(`${rootUrl}/add-member/${id}`, body);
     return response.data;
-  }
+  },
 };

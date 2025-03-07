@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import './statusDropdown.css';
 import { colors } from '../../../styles/colors';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { getStatusColor } from '../../../utils/getStatusColor';
 import { themeWiseColor } from '../../../utils/themeWiseColor';
@@ -19,27 +19,25 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
   // localization
   const { t } = useTranslation('task-list-table');
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const statusList = useAppSelector((state) => state.statusReducer.status);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const statusList = useAppSelector(state => state.statusReducer.status);
 
   // this is trigger only on status list update
   useEffect(() => {
-    const selectedStatus = statusList.find((el) => el.category === status);
+    const selectedStatus = statusList.find(el => el.category === status);
     setStatusName(selectedStatus?.name || '');
   }, [statusList]);
 
   type MenuItem = Required<MenuProps>['items'][number];
 
   const statusMenuItems: MenuItem[] = statusList
-    ? statusList.map((status) => ({
+    ? statusList.map(status => ({
         key: status.id,
         label: (
           <Flex gap={8} align="center">
             <Badge color={getStatusColor(status.category, themeMode)} />
             <Typography.Text>
-              {status.name === 'To do' ||
-              status.name === 'Doing' ||
-              status.name === 'Done'
+              {status.name === 'To do' || status.name === 'Doing' || status.name === 'Done'
                 ? t(status.category + 'SelectorText')
                 : status.name}
             </Typography.Text>
@@ -48,8 +46,8 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
       }))
     : [];
 
-  const handleStatusOptionSelect: MenuProps['onClick'] = (e) => {
-    const selectedOption = statusList.find((el) => el.id === e.key);
+  const handleStatusOptionSelect: MenuProps['onClick'] = e => {
+    const selectedOption = statusList.find(el => el.id === e.key);
     if (selectedOption) {
       setStatusName(
         selectedOption.name === 'To do' ||
@@ -102,7 +100,7 @@ const StatusDropdown = ({ currentStatus }: StatusDropdownProps) => {
           style={{
             fontSize: 13,
             color: colors.darkGray,
-            fontWeight: 400
+            fontWeight: 400,
           }}
         >
           {statusName}

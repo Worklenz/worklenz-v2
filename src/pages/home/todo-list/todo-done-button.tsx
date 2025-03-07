@@ -1,8 +1,10 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { Button, ConfigProvider, Tooltip } from 'antd';
-import React, { useState } from 'react';
+import ConfigProvider from 'antd/es/config-provider';
+import Button from 'antd/es/button';
+import Tooltip from 'antd/es/tooltip';
+import { useState } from 'react';
+
 import { colors } from '@/styles/colors';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IMyTask } from '@/types/home/my-tasks.types';
 
 type TodoDoneButtonProps = {
@@ -10,9 +12,7 @@ type TodoDoneButtonProps = {
 };
 
 const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
-  const [checkIconColor, setCheckIconColor] = useState<string>(
-    colors.lightGray
-  );
+  const [checkIconColor, setCheckIconColor] = useState<string>(colors.lightGray);
 
   const handleCompleteTodo = () => {
     setCheckIconColor(colors.limeGreen);
@@ -26,7 +26,7 @@ const TodoDoneButton = ({ record }: TodoDoneButtonProps) => {
     <ConfigProvider wave={{ disabled: true }}>
       <Tooltip title={'Mark as done'}>
         <Button
-          type='text'
+          type="text"
           className="borderless-icon-btn"
           style={{ backgroundColor: colors.transparent }}
           shape="circle"

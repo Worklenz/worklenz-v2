@@ -1,71 +1,56 @@
-import React from 'react';
-import { Divider, Empty, Flex, Popover, Typography } from 'antd';
-import { PlayCircleFilled } from '@ant-design/icons';
-import { colors } from '@/styles/colors';
-import CustomAvatar from '@/components/CustomAvatar';
-import { mockTimeLogs } from './mockTimeLogs';
+import React, { useState } from 'react';
+import { Divider, Flex, Typography } from 'antd';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
+import { formatDate } from '@/utils/timeUtils';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import TaskTimer from '@/components/taskListCommon/task-timer/task-timer';
+import { useTaskTimer } from '@/hooks/useTaskTimer';
 
 type TaskListTimeTrackerCellProps = {
-  taskId: string | null;
-  initialTime?: number;
+  task: IProjectTask;
 };
 
-const TaskListTimeTrackerCell = ({
-  taskId,
-  initialTime = 0,
-}: TaskListTimeTrackerCellProps) => {
-  if (!taskId) return null;
-  const minutes = Math.floor(initialTime / 60);
-  const seconds = initialTime % 60;
-  const formattedTime = `${minutes}m ${seconds}s`;
+const TaskListTimeTrackerCell = ({ task }: TaskListTimeTrackerCellProps) => {
+  const [timeLogs, setTimeLogs] = useState<ITaskLogViewModel[]>([]);
+  
+  const { started, timeString, handleStartTimer, handleStopTimer } = useTaskTimer(
+    task.id || '',
+    task.timer_start_time || null
+  );
 
-  const timeTrackingLogCard =
-    initialTime > 0 ? (
-      <Flex vertical style={{ width: 400, height: 300, overflowY: 'scroll' }}>
-        {mockTimeLogs.map((log) => (
-          <React.Fragment key={log.logId}>
-            <Flex gap={8} align="center">
-              <CustomAvatar avatarName={log.username} />
-
-              <Flex vertical>
-                <Typography>
-                  <Typography.Text strong>{log.username}</Typography.Text>
-                  <Typography.Text>{` logged ${log.duration} ${
-                    log.via ? `via ${log.via}` : ''
-                  }`}</Typography.Text>
-                </Typography>
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                  {log.date}
-                </Typography.Text>
-              </Flex>
+  const timeTrackingLogCard = (
+    <Flex vertical style={{ width: 400, height: 300, overflowY: 'scroll' }}>
+      {timeLogs.map(log => (
+        <React.Fragment key={log.id}>
+          <Flex gap={8} align="center">
+            <SingleAvatar avatarUrl={log.avatar_url} name={log.user_name} />
+            <Flex vertical>
+              <Typography>
+                <Typography.Text strong>{log.user_name}</Typography.Text>
+                <Typography.Text>{` logged ${log.time_spent_text} ${
+                  log.logged_by_timer ? `via ${log.logged_by_timer}` : ''
+                }`}</Typography.Text>
+              </Typography>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {formatDate(new Date(log.created_at || ''))}
+              </Typography.Text>
             </Flex>
-            <Divider style={{ marginBlock: 12 }} />
-          </React.Fragment>
-        ))}
-      </Flex>
-    ) : (
-      <Empty style={{ width: 400 }} />
-    );
+          </Flex>
+          <Divider style={{ marginBlock: 12 }} />
+        </React.Fragment>
+      ))}
+    </Flex>
+  );
 
   return (
-    <Flex gap={4} align="center">
-      <PlayCircleFilled style={{ color: colors.skyBlue, fontSize: 16 }} />
-      <Popover
-        title={
-          <Typography.Text style={{ fontWeight: 500 }}>
-            Time Tracking Log
-            <Divider style={{ marginBlockStart: 8, marginBlockEnd: 12 }} />
-          </Typography.Text>
-        }
-        content={timeTrackingLogCard}
-        trigger="click"
-        placement="bottomRight"
-      >
-        <Typography.Text style={{ cursor: 'pointer' }}>
-          {formattedTime}
-        </Typography.Text>
-      </Popover>
-    </Flex>
+    <TaskTimer
+      started={started}
+      handleStartTimer={handleStartTimer}
+      handleStopTimer={handleStopTimer}
+      timeString={timeString}
+      timeTrackingLogCard={timeTrackingLogCard}
+    />
   );
 };
 

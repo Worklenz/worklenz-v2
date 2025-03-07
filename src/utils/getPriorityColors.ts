@@ -15,10 +15,7 @@ const priorityColors = {
   },
 };
 
-export const getPriorityColor = (
-  priority: string,
-  themeMode: ThemeMode
-): string => {
+export const getPriorityColor = (priority: string, themeMode: ThemeMode): string => {
   const colors = priorityColors[themeMode];
   return colors[priority as TaskPriorityType];
 };

@@ -5,13 +5,21 @@ import { IServerResponse } from '@/types/common.types';
 import { toQueryString } from '@/utils/toQueryString';
 
 const rootUrl = `${API_BASE_URL}/clients`;
-    
+
 export const clientsApiService = {
   // Get all clients
-  async getClients(index: number, size: number, field: string | null, order: string | null, search?: string | null): Promise<IServerResponse<IClientsViewModel>> {
+  async getClients(
+    index: number,
+    size: number,
+    field: string | null,
+    order: string | null,
+    search?: string | null
+  ): Promise<IServerResponse<IClientsViewModel>> {
     const s = encodeURIComponent(search || '');
     const queryString = toQueryString({ index, size, field, order, search: s });
-    const response = await apiClient.get<IServerResponse<IClientsViewModel>>(`${rootUrl}${queryString}`);
+    const response = await apiClient.get<IServerResponse<IClientsViewModel>>(
+      `${rootUrl}${queryString}`
+    );
     return response.data;
   },
 
@@ -37,5 +45,5 @@ export const clientsApiService = {
   async deleteClient(id: string): Promise<IServerResponse<void>> {
     const response = await apiClient.delete<IServerResponse<void>>(`${rootUrl}/${id}`);
     return response.data;
-  }
+  },
 };

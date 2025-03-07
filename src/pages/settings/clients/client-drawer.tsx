@@ -2,7 +2,11 @@ import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import { useEffect } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { createClient, toggleClientDrawer, updateClient } from '@/features/settings/client/clientSlice';
+import {
+  createClient,
+  toggleClientDrawer,
+  updateClient,
+} from '@/features/settings/client/clientSlice';
 import { IClient } from '@/types/client.types';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +16,7 @@ type ClientDrawerProps = {
 };
 
 const ClientDrawer = ({ client, drawerClosed }: ClientDrawerProps) => {
-  const { t } = useTranslation('settings-clients');
+  const { t } = useTranslation('settings/clients');
   const { isClientDrawerOpen } = useAppSelector(state => state.clientReducer);
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();

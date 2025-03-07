@@ -1,8 +1,11 @@
 {
-    "title": "Editar Plantilla de Tarea",
-    "cancelText": "Cancelar",
-    "saveText": "Guardar",
-    "templateNameText": "Nombre de la Plantilla",
-    "selectedTasks": "Tareas Seleccionadas",
-    "removeTask": "Eliminar"
+  "createTaskTemplate": "Crear Plantilla de Tarea",
+  "editTaskTemplate": "Editar Plantilla de Tarea",
+  "cancelText": "Cancelar",
+  "saveText": "Guardar",
+  "templateNameText": "Nombre de la Plantilla",
+  "selectedTasks": "Tareas Seleccionadas",
+  "removeTask": "Eliminar",
+  "cancelButton": "Cancelar",
+  "saveButton": "Guardar"
 }

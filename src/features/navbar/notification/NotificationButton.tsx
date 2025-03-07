@@ -2,7 +2,7 @@ import { BellOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React from 'react';
 import { toggleDrawer } from './notificationSlice';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 
 const NotificationButton = () => {

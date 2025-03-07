@@ -9,8 +9,8 @@ import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 import dayjs from 'dayjs';
 
 const CalendarView = () => {
-  const {homeTasksConfig} = useAppSelector((state) => state.homePageReducer);
-  const {t} = useTranslation('home');
+  const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
+  const { t } = useTranslation('home');
 
   useEffect(() => {
     if (!homeTasksConfig.selected_date) {

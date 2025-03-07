@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import OverviewReports from '@/pages/reporting/overview-reports/overview-reports';
-import ProjectsReports from '@/pages/reporting/projectsReports/projects-reports';
+import ProjectsReports from '@/pages/reporting/projects-reports/projects-reports';
 import MembersReports from '@/pages/reporting/members-reports/members-reports';
 import OverviewTimeReports from '@/pages/reporting/timeReports/overview-time-reports';
 import ProjectsTimeReports from '@/pages/reporting/timeReports/projects-time-reports';

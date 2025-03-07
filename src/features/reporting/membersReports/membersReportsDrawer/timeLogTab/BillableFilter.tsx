@@ -25,7 +25,7 @@ const BillableFilter = () => {
   const billableDropdownContent = (
     <Card className="custom-card" styles={{ body: { padding: 0 } }}>
       <List style={{ padding: 0 }}>
-        {billableFieldsList.map((item) => (
+        {billableFieldsList.map(item => (
           <List.Item
             className="custom-list-item"
             key={item.key}
@@ -51,7 +51,7 @@ const BillableFilter = () => {
       overlayClassName="custom-dropdown"
       trigger={['click']}
       dropdownRender={() => billableDropdownContent}
-      onOpenChange={(open) => setIsDropdownOpen(open)}
+      onOpenChange={open => setIsDropdownOpen(open)}
     >
       <Button
         icon={<CaretDownFilled />}

@@ -4,7 +4,7 @@
   "setupYourAccount": "Configure sua conta.",
   "organizationStepTitle": "Nomeie sua organização",
   "organizationStepLabel": "Escolha um nome para sua conta Worklenz.",
-  
+
   "projectStepTitle": "Crie seu primeiro projeto",
   "projectStepLabel": "Em qual projeto você está trabalhando agora?",
   "projectStepPlaceholder": "ex. Plano de Marketing",
@@ -18,7 +18,7 @@
   "or": "ou",
   "templateButton": "Importar do modelo",
   "goBack": "Voltar",
-  "cancel": "Cancelar", 
+  "cancel": "Cancelar",
   "create": "Criar",
   "templateDrawerTitle": "Selecionar dos modelos",
   "step3InputLabel": "Convidar por email",

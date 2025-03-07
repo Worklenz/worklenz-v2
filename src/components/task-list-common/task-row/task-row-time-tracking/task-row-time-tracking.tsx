@@ -3,17 +3,14 @@ import { Divider, Empty, Flex, Popover, Typography } from 'antd';
 import { PlayCircleFilled } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import CustomAvatar from '@components/CustomAvatar';
-import { mockTimeLogs } from '@/pages/projects/project-view/taskList/taskListTable/taskListTableCells/mockTimeLogs';
+import { mockTimeLogs } from '@/pages/projects/project-view-1/taskList/taskListTable/taskListTableCells/mockTimeLogs';
 
 type TaskListTimeTrackerCellProps = {
   taskId: string | null;
   initialTime?: number;
 };
 
-const TaskListTimeTrackerCell = ({
-  taskId,
-  initialTime = 0,
-}: TaskListTimeTrackerCellProps) => {
+const TaskListTimeTrackerCell = ({ taskId, initialTime = 0 }: TaskListTimeTrackerCellProps) => {
   const minutes = Math.floor(initialTime / 60);
   const seconds = initialTime % 60;
   const formattedTime = `${minutes}m ${seconds}s`;
@@ -22,7 +19,7 @@ const TaskListTimeTrackerCell = ({
     if (initialTime > 0) {
       return (
         <Flex vertical style={{ width: 400, height: 300, overflowY: 'scroll' }}>
-          {mockTimeLogs.map((log) => (
+          {mockTimeLogs.map(log => (
             <React.Fragment key={log.logId}>
               <Flex gap={8} align="center">
                 <CustomAvatar avatarName={log.username} />
@@ -63,9 +60,7 @@ const TaskListTimeTrackerCell = ({
         trigger="click"
         placement="bottomRight"
       >
-        <Typography.Text style={{ cursor: 'pointer' }}>
-          {formattedTime}
-        </Typography.Text>
+        <Typography.Text style={{ cursor: 'pointer' }}>{formattedTime}</Typography.Text>
       </Popover>
     </Flex>
   );

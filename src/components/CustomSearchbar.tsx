@@ -18,7 +18,7 @@ const CustomSearchbar = ({
       <Input
         placeholder={placeholderText}
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.currentTarget.value)}
+        onChange={e => setSearchQuery(e.currentTarget.value)}
         style={{ padding: '4px 24px 4px 11px' }}
       />
       <span

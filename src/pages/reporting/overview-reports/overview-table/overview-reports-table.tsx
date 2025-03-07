@@ -15,7 +15,9 @@ const OverviewReportsTable = () => {
   const { t } = useTranslation('reporting-overview');
   const dispatch = useAppDispatch();
 
-  const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
+  const includeArchivedProjects = useAppSelector(
+    state => state.reportingReducer.includeArchivedProjects
+  );
   const [selectedTeam, setSelectedTeam] = useState<IRPTTeam | null>(null);
   const [teams, setTeams] = useState<IRPTTeam[]>([]);
   const [loading, setLoading] = useState(false);
@@ -59,9 +61,7 @@ const OverviewReportsTable = () => {
     {
       key: 'members',
       title: <CustomTableTitle title={t('membersColumn')} />,
-      render: (record) => (
-        <Avatars members={record.members} maxCount={3} />
-      ),
+      render: record => <Avatars members={record.members} maxCount={3} />,
     },
   ];
 
@@ -80,9 +80,9 @@ const OverviewReportsTable = () => {
         columns={columns}
         dataSource={teams}
         scroll={{ x: 'max-content' }}
-        rowKey={(record) => record.id}
+        rowKey={record => record.id}
         loading={loading}
-        onRow={(record) => {
+        onRow={record => {
           return {
             onClick: () => handleDrawerOpen(record as IRPTTeam),
             style: { height: 48, cursor: 'pointer' },

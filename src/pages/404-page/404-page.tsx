@@ -19,16 +19,10 @@ const NotFoundPage = () => {
         paddingInline: 24,
       }}
     >
-      <img
-        src={notFoundImg}
-        alt="not found page"
-        style={{ width: '100%', maxWidth: 800 }}
-      />
+      <img src={notFoundImg} alt="not found page" style={{ width: '100%', maxWidth: 800 }} />
       <Flex vertical gap={8} align="center">
         <Typography.Title style={{ marginBlockEnd: 0 }}>404</Typography.Title>
-        <Typography.Text style={{ textAlign: 'center' }}>
-          {t('doesNotExistText')}
-        </Typography.Text>
+        <Typography.Text style={{ textAlign: 'center' }}>{t('doesNotExistText')}</Typography.Text>
         <Button type="primary" href="/worklenz/home">
           {t('backHomeButton')}
         </Button>

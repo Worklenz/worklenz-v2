@@ -9,7 +9,7 @@ export default defineConfig(async ({ command }: { command: 'build' | 'serve' }) 
   return {
     // **Plugins**
     plugins: [
-      react(), 
+      react(),
       tsconfigPaths({
         // Optionally, you can specify a custom tsconfig file
         // loose: true, // If you're using a non-standard tsconfig setup

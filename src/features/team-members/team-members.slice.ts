@@ -93,10 +93,12 @@ const teamMembersSlice = createSlice({
     resetTeamMember: state => {
       state.teamMember = null;
     },
+    setTeamMembers: (state, action: PayloadAction<ITeamMembersViewModel>) => {
+      state.teamMembers = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
-      // Specific success handlers
       .addCase(
         getTeamMembers.fulfilled,
         (
@@ -136,5 +138,5 @@ const teamMembersSlice = createSlice({
   },
 });
 
-export const { resetTeamMember } = teamMembersSlice.actions;
+export const { resetTeamMember, setTeamMembers } = teamMembersSlice.actions;
 export default teamMembersSlice.reducer;

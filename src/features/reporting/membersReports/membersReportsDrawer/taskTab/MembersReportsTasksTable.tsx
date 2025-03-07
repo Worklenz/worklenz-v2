@@ -3,9 +3,9 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleTaskDrawer } from '../../../../tasks/tasks.slice';
-import CustomTableTitle from '../../../../../components/CustomTableTitle';
-import { colors } from '../../../../../styles/colors';
+import { setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import CustomTableTitle from '@/components/CustomTableTitle';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 
 type MembersReportsTasksTableProps = {
@@ -25,24 +25,22 @@ const MembersReportsTasksTable = ({
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
     setSelectedTaskId(id);
-    dispatch(toggleTaskDrawer());
+    dispatch(setShowTaskDrawer(true));
   };
 
   const columns: TableColumnsType = [
     {
       key: 'task',
       title: <CustomTableTitle title={t('taskColumn')} />,
-      onCell: (record) => {
+      onCell: record => {
         return {
           onClick: () => handleUpdateTaskDrawer(record.id),
         };
       },
-      render: (record) => (
+      render: record => (
         <Flex>
           {Number(record.sub_tasks_count) > 0 && <DoubleRightOutlined />}
-          <Typography.Text className="group-hover:text-[#1890ff]">
-            {record.name}
-          </Typography.Text>
+          <Typography.Text className="group-hover:text-[#1890ff]">{record.name}</Typography.Text>
         </Flex>
       ),
       width: 260,
@@ -51,12 +49,10 @@ const MembersReportsTasksTable = ({
     {
       key: 'project',
       title: <CustomTableTitle title={t('projectColumn')} />,
-      render: (record) => (
+      render: record => (
         <Flex gap={8} align="center">
           <Badge color={record.project_color} />
-          <Typography.Text ellipsis={{ expanded: false }}>
-            {record.project_name}
-          </Typography.Text>
+          <Typography.Text ellipsis={{ expanded: false }}>{record.project_name}</Typography.Text>
         </Flex>
       ),
       width: 120,
@@ -64,7 +60,7 @@ const MembersReportsTasksTable = ({
     {
       key: 'status',
       title: <CustomTableTitle title={t('statusColumn')} />,
-      render: (record) => (
+      render: record => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
           color={record.status_color}
@@ -76,7 +72,7 @@ const MembersReportsTasksTable = ({
     {
       key: 'priority',
       title: <CustomTableTitle title={t('priorityColumn')} />,
-      render: (record) => (
+      render: record => (
         <Tag
           style={{ color: colors.darkGray, borderRadius: 48 }}
           color={record.priority_color}
@@ -88,11 +84,9 @@ const MembersReportsTasksTable = ({
     {
       key: 'dueDate',
       title: <CustomTableTitle title={t('dueDateColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.end_date
-            ? `${dayjs(record.end_date).format('MMM DD, YYYY')}`
-            : '-'}
+          {record.end_date ? `${dayjs(record.end_date).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,
@@ -100,11 +94,9 @@ const MembersReportsTasksTable = ({
     {
       key: 'completedDate',
       title: <CustomTableTitle title={t('completedDateColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.completed_at
-            ? `${dayjs(record.completed_at).format('MMM DD, YYYY')}`
-            : '-'}
+          {record.completed_at ? `${dayjs(record.completed_at).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,
@@ -137,7 +129,7 @@ const MembersReportsTasksTable = ({
       columns={columns}
       dataSource={tasksData}
       scroll={{ x: 'max-content' }}
-      onRow={(record) => {
+      onRow={record => {
         return {
           style: { height: 38, cursor: 'pointer' },
           className: 'group even:bg-[#4e4e4e10]',

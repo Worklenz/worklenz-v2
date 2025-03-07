@@ -36,7 +36,7 @@ const Users: React.FC = () => {
         setRequestParams(prev => ({ ...prev, total: res.body.total ?? 0 }));
       }
     } catch (error) {
-      logger.error('Error fetching users',  error);
+      logger.error('Error fetching users', error);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +63,7 @@ const Users: React.FC = () => {
               fontSize: '16px',
             }}
           >
-           {requestParams.total} {t('subTitle')}
+            {requestParams.total} {t('subTitle')}
           </span>
         }
         extra={

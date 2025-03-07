@@ -139,12 +139,12 @@
 
 @media (max-width: 1000px) {
   .create-first-task-form {
-      width: 400px !important;
+    width: 400px !important;
   }
 }
 
 @media (max-width: 500px) {
   .create-first-task-form {
-      width: 200px !important;
+    width: 200px !important;
   }
 }

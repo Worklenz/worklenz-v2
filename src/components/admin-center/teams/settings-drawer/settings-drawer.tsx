@@ -134,7 +134,7 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({
         }, 100);
       }}
       destroyOnClose
-      afterOpenChange={(open) => {
+      afterOpenChange={open => {
         if (open) {
           form.resetFields();
           setTeamData(null);
@@ -171,7 +171,14 @@ const SettingTeamDrawer: React.FC<SettingTeamDrawerProps> = ({
           <Input placeholder={t('teamNamePlaceholder')} />
         </Form.Item>
 
-        <Form.Item name="users" label={<span>{t('members')} ({teamData?.team_members?.length})</span>}>
+        <Form.Item
+          name="users"
+          label={
+            <span>
+              {t('members')} ({teamData?.team_members?.length})
+            </span>
+          }
+        >
           <Table
             className="setting-team-table"
             style={{ marginBottom: '24px' }}

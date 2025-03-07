@@ -1,7 +1,7 @@
 import { ConfigProvider, theme } from 'antd';
 import React, { useEffect, useRef } from 'react';
-import { useAppSelector } from '../../hooks/useAppSelector';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { initializeTheme } from './themeSlice';
 import { colors } from '../../styles/colors';
 
@@ -11,8 +11,8 @@ type ChildrenProp = {
 
 const ThemeWrapper = ({ children }: ChildrenProp) => {
   const dispatch = useAppDispatch();
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-  const isInitialized = useAppSelector((state) => state.themeReducer.isInitialized);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const isInitialized = useAppSelector(state => state.themeReducer.isInitialized);
   const configRef = useRef<HTMLDivElement>(null);
 
   // Initialize theme after mount
@@ -47,12 +47,10 @@ const ThemeWrapper = ({ children }: ChildrenProp) => {
     <div ref={configRef} className={`theme-${themeMode}`}>
       <ConfigProvider
         theme={{
-          algorithm:
-            themeMode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+          algorithm: themeMode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
           components: {
             Layout: {
-              colorBgLayout:
-                themeMode === 'dark' ? colors.darkGray : colors.white,
+              colorBgLayout: themeMode === 'dark' ? colors.darkGray : colors.white,
               headerBg: themeMode === 'dark' ? colors.darkGray : colors.white,
             },
             Menu: {

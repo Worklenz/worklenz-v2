@@ -13,6 +13,7 @@ interface ProjectClientSectionProps {
   t: TFunction;
   project: IProjectViewModel | null;
   loadingClients: boolean;
+  disabled: boolean;
 }
 
 const ProjectClientSection = ({
@@ -21,6 +22,7 @@ const ProjectClientSection = ({
   t,
   project = null,
   loadingClients = false,
+  disabled = false,
 }: ProjectClientSectionProps) => {
   const dispatch = useAppDispatch();
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -49,12 +51,19 @@ const ProjectClientSection = ({
 
   const handleClientSelect = async (value: string, option: any) => {
     if (option.key === 'create') {
-      const newClient = await dispatch(createClient({ name: searchTerm }));
-      setSearchTerm('');
+      const res = await dispatch(createClient({ name: searchTerm })).unwrap();
+      if (res.done) {
+        setSearchTerm('');
+        form.setFieldsValue({
+          client_name: res.body.name,
+          client_id: res.body.id,
+        });
+      }
+      return;
     }
     form.setFieldsValue({
       client_name: option.label,
-      client_id: option.value
+      client_id: option.value,
     });
   };
 
@@ -105,6 +114,7 @@ const ProjectClientSection = ({
               {menu}
             </>
           )}
+          disabled={disabled}
         />
       </Form.Item>
     </>

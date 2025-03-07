@@ -13,11 +13,7 @@ export type CustomFieldsTypes =
   | 'key'
   | 'formula';
 
-export type CustomFieldNumberTypes =
-  | 'formatted'
-  | 'unformatted'
-  | 'percentage'
-  | 'withLabel';
+export type CustomFieldNumberTypes = 'formatted' | 'unformatted' | 'percentage' | 'withLabel';
 
 export type ExpressionType = 'add' | 'substract' | 'divide' | 'multiply';
 
@@ -55,16 +51,13 @@ const taskListCustomColumnsSlice = createSlice({
   name: 'taskListCustomColumnsReducer',
   initialState,
   reducers: {
-    toggleCustomColumnModalOpen: (state) => {
+    toggleCustomColumnModalOpen: state => {
       state.isCustomColumnModalOpen = !state.isCustomColumnModalOpen;
     },
     setCustomFieldType: (state, action: PayloadAction<CustomFieldsTypes>) => {
       state.customFieldType = action.payload;
     },
-    setCustomFieldNumberType: (
-      state,
-      action: PayloadAction<CustomFieldNumberTypes>
-    ) => {
+    setCustomFieldNumberType: (state, action: PayloadAction<CustomFieldNumberTypes>) => {
       state.customFieldNumberType = action.payload;
     },
     setDecimals: (state, action: PayloadAction<number>) => {
@@ -79,16 +72,10 @@ const taskListCustomColumnsSlice = createSlice({
     setExpression: (state, action: PayloadAction<ExpressionType>) => {
       state.expression = action.payload;
     },
-    setFirstNumericColumn: (
-      state,
-      action: PayloadAction<CustomTableColumnsType>
-    ) => {
+    setFirstNumericColumn: (state, action: PayloadAction<CustomTableColumnsType>) => {
       state.firstNumericColumn = action.payload;
     },
-    setSecondNumericColumn: (
-      state,
-      action: PayloadAction<CustomTableColumnsType>
-    ) => {
+    setSecondNumericColumn: (state, action: PayloadAction<CustomTableColumnsType>) => {
       state.secondNumericColumn = action.payload;
     },
     setLabelsList: (state, action: PayloadAction<LabelType[]>) => {
@@ -97,7 +84,7 @@ const taskListCustomColumnsSlice = createSlice({
     setSelectionsList: (state, action: PayloadAction<SelectionType[]>) => {
       state.selectionsList = action.payload;
     },
-    resetCustomFieldValues: (state) => {
+    resetCustomFieldValues: state => {
       state = initialState;
     },
   },

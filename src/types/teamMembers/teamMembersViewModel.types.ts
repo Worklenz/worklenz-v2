@@ -1,4 +1,4 @@
-import { ITeamMemberViewModel } from "./teamMembersGetResponse.types";
+import { ITeamMemberViewModel } from './teamMembersGetResponse.types';
 
 export interface ITeamMembersViewModel {
   data?: ITeamMemberViewModel[];

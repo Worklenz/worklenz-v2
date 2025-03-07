@@ -15,10 +15,7 @@ const statusColors = {
   },
 };
 
-export const getStatusColor = (
-  status: string,
-  themeMode: ThemeMode
-): string => {
+export const getStatusColor = (status: string, themeMode: ThemeMode): string => {
   const colors = statusColors[themeMode];
   return colors[status as TaskStatusType];
 };

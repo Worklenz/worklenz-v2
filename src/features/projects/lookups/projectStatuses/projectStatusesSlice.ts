@@ -36,9 +36,9 @@ const projectStatusesSlice = createSlice({
   name: 'projectStatuses',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchProjectStatuses.pending, (state) => {
+      .addCase(fetchProjectStatuses.pending, state => {
         state.loading = true;
       })
       .addCase(fetchProjectStatuses.fulfilled, (state, action) => {
@@ -46,7 +46,7 @@ const projectStatusesSlice = createSlice({
         state.loading = false;
         state.initialized = true;
       })
-      .addCase(fetchProjectStatuses.rejected, (state) => {
+      .addCase(fetchProjectStatuses.rejected, state => {
         state.loading = false;
       });
   },

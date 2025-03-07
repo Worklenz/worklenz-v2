@@ -1,4 +1,14 @@
-import { Button, Card, Flex, Input, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
+import {
+  Button,
+  Card,
+  Flex,
+  Input,
+  Popconfirm,
+  Table,
+  TableProps,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
 import PinRouteToNavbarButton from '../../../components/PinRouteToNavbarButton';
@@ -8,27 +18,32 @@ import { ITaskLabel } from '@/types/label.type';
 import { labelsApiService } from '@/api/taskAttributes/labels/labels.api.service';
 import CustomColorLabel from '@components/task-list-common/labelsSelector/custom-color-label';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import logger from '@/utils/errorLogger';
 
 const LabelsSettings = () => {
-  const { t } = useTranslation('settings-labels');
+  const { t } = useTranslation('settings/labels');
   useDocumentTitle('Manage Labels');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [labels, setLabels] = useState<ITaskLabel[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const filteredData = useMemo(() => labels.filter(record =>
-    Object.values(record).some(value =>
-      value?.toString().toLowerCase().includes(searchQuery.toLowerCase()),
-    ),
-  ), [labels, searchQuery]);
+  const filteredData = useMemo(
+    () =>
+      labels.filter(record =>
+        Object.values(record).some(value =>
+          value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      ),
+    [labels, searchQuery]
+  );
 
   const getLabels = useMemo(() => {
     setLoading(true);
     return async () => {
       const response = await labelsApiService.getLabels();
       if (response.done) {
-        setLabels(response.body);
+        setLabels(response.body as ITaskLabel[]);
       }
       setLoading(false);
     };
@@ -39,9 +54,13 @@ const LabelsSettings = () => {
   }, [getLabels]);
 
   const deleteLabel = async (id: string) => {
-    const response = await labelsApiService.deleteById(id);
-    if (response.done) {
-      getLabels();
+    try {
+      const response = await labelsApiService.deleteById(id);
+      if (response.done) {
+        getLabels();
+      }
+    } catch (error) {
+      logger.error('Failed to delete label:', error);
     }
   };
 
@@ -69,11 +88,7 @@ const LabelsSettings = () => {
             cancelText="Cancel"
             onConfirm={() => deleteLabel(record.id!)}
           >
-            <Button
-              shape="default"
-              icon={<DeleteOutlined />}
-              size="small"
-            />
+            <Button shape="default" icon={<DeleteOutlined />} size="small" />
           </Popconfirm>
         </div>
       ),

@@ -1,4 +1,4 @@
-import { ITaskStatusCategory } from "./taskStatusCategory.types";
+import { ITaskStatusCategory } from './taskStatusCategory.types';
 
 export interface ITaskStatus {
   id?: string;
@@ -6,6 +6,7 @@ export interface ITaskStatus {
   description?: string;
   order_index?: number;
   color_code?: string;
+  color_code_dark?: string;
   team_id?: string;
   default_status?: boolean;
   date_created?: string;
@@ -19,5 +20,5 @@ export interface IKanbanTaskStatus extends ITaskStatus {
 export interface ICategorizedStatus {
   category_id: string;
   category_color: string;
-  statuses: ITaskStatusCategory[]
+  statuses: ITaskStatusCategory[];
 }

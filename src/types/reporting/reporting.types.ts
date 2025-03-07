@@ -1,18 +1,18 @@
-import { IProjectTask } from "../project/projectTasksViewModel.types";
-import { IActivityLogsLabel } from "../tasks/task-activity-logs-get-request";
-import { InlineMember } from "../teamMembers/inlineMember.types";
-import { ITeamMemberViewModel } from "../teamMembers/teamMembersGetResponse.types";
+import { IProjectTask } from '../project/projectTasksViewModel.types';
+import { IActivityLogsLabel } from '../tasks/task-activity-logs-get-request';
+import { InlineMember } from '../teamMembers/inlineMember.types';
+import { ITeamMemberViewModel } from '../teamMembers/teamMembersGetResponse.types';
 
 export interface IChartObject {
-  name: string,
-  color: string,
-  y: number
+  name: string;
+  color: string;
+  y: number;
 }
 
 export interface IRPTDuration {
   label: string;
   key: string;
-  dates?: string
+  dates?: string;
 }
 
 export interface IReportingInfo {
@@ -43,10 +43,10 @@ export interface IRPTMemberStatistics {
 }
 
 export interface ITimeLogBreakdownReq {
-  id: string,
-  date_range: string[],
-  duration: string,
-  time_zone: string
+  id: string;
+  date_range: string[];
+  duration: string;
+  time_zone: string;
 }
 
 export interface IRPTOverviewStatistics {
@@ -82,7 +82,7 @@ export interface IRPTOverviewTeamByStatus {
   on_hold: number;
   blocked: number;
   cancelled: number;
-  chart: {name: string, color: string, y: number}[];
+  chart: { name: string; color: string; y: number }[];
 }
 
 export interface IRPTOverviewTeamByHealth {
@@ -116,12 +116,12 @@ export interface IRPTOverviewProjectExt extends IRPTOverviewProject {
 }
 
 export interface IRPTMemberResponse {
-  total: number,
-  members: IRPTMember[],
+  total: number;
+  members: IRPTMember[];
   team: {
-    id: string,
-    name: string,
-  }
+    id: string;
+    name: string;
+  };
 }
 
 export interface IRPTMember {
@@ -149,12 +149,12 @@ export interface ISingleMemberLogs {
 }
 
 export interface ISingleMemberLog {
-  time_spent_string: string
-  project_name: string,
-  task_name: string,
-  task_key: string,
-  task_id: string,
-  project_id: string
+  time_spent_string: string;
+  project_name: string;
+  task_name: string;
+  task_key: string;
+  task_id: string;
+  project_id: string;
 }
 
 export interface ISingleMemberActivityLogs {
@@ -190,7 +190,7 @@ export interface IRPTOverviewProjectMember {
   contribution: number;
   team_member_id: string;
   progress: number;
-  time_logged: string
+  time_logged: string;
 }
 
 export interface IRPTOverviewProjectTasksStats {
@@ -241,7 +241,7 @@ export interface IRPTOverviewMemberStats {
   overdue: number;
   total_tasks: number;
   total_logged: number;
-  assigned: number
+  assigned: number;
 }
 
 export interface IRPTOverviewMemberChartData {
@@ -258,7 +258,7 @@ export interface IRPTOverviewMemberInfo {
   stats?: IRPTOverviewMemberStats;
   by_status?: IRPTOverviewMemberChartData;
   by_priority?: IRPTOverviewMemberChartData;
-  by_project?: IRPTOverviewMemberChartData
+  by_project?: IRPTOverviewMemberChartData;
 }
 
 export interface IRPTReportingMemberTask {
@@ -269,7 +269,7 @@ export interface IRPTReportingMemberTask {
   priority_name: string;
   priority_color: string;
   project_color: string;
-  parent_task_id?:string;
+  parent_task_id?: string;
   status_name: string;
   status_color: string;
   end_date?: string;
@@ -298,7 +298,7 @@ export interface IRPTMemberDrawerData {
 
 export interface IRPTLastActivity {
   assigned_user?: null;
-  attribute_type?: "name";
+  attribute_type?: 'name';
   current?: string;
   done_by?: {
     name?: string;
@@ -343,14 +343,15 @@ export interface IRPTProject extends IRPTOverviewProject {
   comment?: string;
   project_health: string;
   health_color: string;
+  health_name: string;
   estimated_time_string?: string;
   actual_time_string?: string;
-  project_manager: ITeamMemberViewModel
+  project_manager: ITeamMemberViewModel;
 }
 
 export interface IDurationChangedEmitter {
-  selectedDuration: IRPTDuration | null,
-  dateRange: string[]
+  selectedDuration: IRPTDuration | null;
+  dateRange: string[];
 }
 
 export interface IRPTSingleMemberDrawerData {
@@ -369,16 +370,16 @@ export interface IProjectLogs {
 
 export interface IProjectLogsBreakdown {
   log_day: string;
-  logs: IProjectLogs[]
+  logs: IProjectLogs[];
 }
 
 export interface IRPTProjectsViewModel {
   total?: number;
-  projects?: IRPTProject[]
+  projects?: IRPTProject[];
 }
 export interface IRPTMembersViewModel {
   total?: number;
-  members?: IRPTMember[]
+  members?: IRPTMember[];
 }
 
 export interface IRPTMemberProject {
@@ -392,7 +393,7 @@ export interface IRPTMemberProject {
   team: string;
   team_member_id: string;
   time_logged: string;
-  id:string;
+  id: string;
 }
 
 export interface IRPTTimeProject {
@@ -412,16 +413,30 @@ export interface IRPTTimeMember {
 
 export interface IMemberTaskStatGroupResonse {
   team_member_name: string;
-  groups: IMemberTaskStatGroup[]
+  groups: IMemberTaskStatGroup[];
 }
 
 export interface IMemberProjectsResonse {
   team_member_name: string;
-  projects: IRPTProject[]
+  projects: IRPTProject[];
 }
 
 export interface IMemberTaskStatGroup {
   name: string;
   color_code: string;
   tasks: IProjectTask[];
+}
+
+export interface IGetProjectsRequestBody {
+  index: number;
+  size: number;
+  field: string;
+  order: string;
+  search: string | null;
+  filter: string;
+  statuses: string[];
+  healths: string[];
+  categories: string[];
+  project_managers: string[];
+  archived: boolean;
 }

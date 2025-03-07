@@ -7,9 +7,8 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { formatDateRange } from '@/utils/project-list-utils';
 import { CalendarOutlined } from '@ant-design/icons';
-import { Rate, Badge, Tooltip } from 'antd';
+import { Badge, Tooltip } from 'antd';
 import { TFunction } from 'i18next';
-import { useCallback } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
 export const ProjectNameCell: React.FC<{
@@ -21,13 +20,6 @@ export const ProjectNameCell: React.FC<{
   const [toggleFavoriteProject] = useToggleFavoriteProjectMutation();
   const { requestParams } = useAppSelector(state => state.projectsReducer);
   const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
-
-  const handleFavorite = useCallback(async () => {
-    if (record.id) {
-      await toggleFavoriteProject(record.id);
-      refetchProjects();
-    }
-  }, [dispatch, record.id]);
 
   const selectProject = (record: IProjectViewModel) => {
     if (!record.id) return;
@@ -57,13 +49,6 @@ export const ProjectNameCell: React.FC<{
 
   return (
     <div className="flex items-center">
-      <Rate
-        value={record.favorite ? 1 : 0}
-        onChange={handleFavorite}
-        count={1}
-        className="mr-2"
-        tooltips={[t('addToFavourites')]}
-      />
       <Badge color="geekblue" className="mr-2" />
       <span className="cursor-pointer">
         <span onClick={() => selectProject(record)}>{record.name}</span>

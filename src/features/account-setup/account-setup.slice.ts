@@ -64,4 +64,4 @@ export const {
   resetAccountSetup,
 } = accountSetupSlice.actions;
 
-export default accountSetupSlice.reducer; 
+export default accountSetupSlice.reducer;

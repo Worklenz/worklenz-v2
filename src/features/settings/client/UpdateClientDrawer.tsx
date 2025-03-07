@@ -1,7 +1,7 @@
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import React, { useEffect } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleUpdateClientDrawer, updateClient } from './clientSlice';
 import { IClient } from '../../../types/client.types';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ type UpdateClientDrawerProps = {
 
 const UpdateClientDrawer = ({ selectedClientId }: UpdateClientDrawerProps) => {
   // localization
-  const { t } = useTranslation('settings-clients');
+  const { t } = useTranslation('settings/clients');
 
   // get data from client reducer
   const clientsList = useAppSelector(state => state.clientReducer.clients);

@@ -19,7 +19,7 @@ const OverviewTeamInfoDrawer = ({ team }: OverviewTeamInfoDrawerProps) => {
 
   const dispatch = useAppDispatch();
 
-  const isDrawerOpen = useAppSelector((state) => state.reportingReducer.showOverViewTeamDrawer);
+  const isDrawerOpen = useAppSelector(state => state.reportingReducer.showOverViewTeamDrawer);
 
   const handleClose = () => {
     dispatch(toggleOverViewTeamDrawer());
@@ -36,9 +36,7 @@ const OverviewTeamInfoDrawer = ({ team }: OverviewTeamInfoDrawerProps) => {
           <Flex align="center" justify="space-between">
             <Flex gap={4} align="center" style={{ fontWeight: 500 }}>
               <BankOutlined style={{ color: colors.lightGray }} />
-              <Typography.Text style={{ fontSize: 16 }}>
-                {team.name}
-              </Typography.Text>
+              <Typography.Text style={{ fontSize: 16 }}>{team.name}</Typography.Text>
             </Flex>
 
             <Dropdown

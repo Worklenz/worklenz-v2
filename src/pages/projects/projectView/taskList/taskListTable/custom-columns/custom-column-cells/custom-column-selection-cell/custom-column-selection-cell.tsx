@@ -1,13 +1,4 @@
-import {
-  Badge,
-  Card,
-  Dropdown,
-  Empty,
-  Flex,
-  Menu,
-  MenuProps,
-  Typography,
-} from 'antd';
+import { Badge, Card, Dropdown, Empty, Flex, Menu, MenuProps, Typography } from 'antd';
 import React, { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 // custom css file
@@ -16,13 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { colors } from '../../../../../../../../styles/colors';
 import { SelectionType } from '../../custom-column-modal/selection-type-column/selection-type-column';
 
-const CustomColumnSelectionCell = ({
-  selectionsList,
-}: {
-  selectionsList: SelectionType[];
-}) => {
-  const [currentSelectionOption, setCurrentSelectionOption] =
-    useState<SelectionType | null>(null);
+const CustomColumnSelectionCell = ({ selectionsList }: { selectionsList: SelectionType[] }) => {
+  const [currentSelectionOption, setCurrentSelectionOption] = useState<SelectionType | null>(null);
 
   // localization
   const { t } = useTranslation('task-list-table');
@@ -30,12 +16,11 @@ const CustomColumnSelectionCell = ({
   // esure selectionsList is an array and has valid data
   const selectionMenuItems: MenuProps['items'] =
     Array.isArray(selectionsList) && selectionsList.length > 0
-      ? selectionsList.map((selection) => ({
+      ? selectionsList.map(selection => ({
           key: selection.selectionId,
           label: (
             <Flex gap={4}>
-              <Badge color={selection.selectionColor} />{' '}
-              {selection.selectionName}
+              <Badge color={selection.selectionColor} /> {selection.selectionName}
             </Flex>
           ),
         }))
@@ -47,10 +32,8 @@ const CustomColumnSelectionCell = ({
         ];
 
   // handle selection selection
-  const handleSelectionOptionSelect: MenuProps['onClick'] = (e) => {
-    const selectedOption = selectionsList.find(
-      (option) => option.selectionId === e.key
-    );
+  const handleSelectionOptionSelect: MenuProps['onClick'] = e => {
+    const selectedOption = selectionsList.find(option => option.selectionId === e.key);
     if (selectedOption) {
       setCurrentSelectionOption(selectedOption);
     }
@@ -61,10 +44,7 @@ const CustomColumnSelectionCell = ({
     {
       key: '1',
       label: (
-        <Card
-          className="custom-column-selection-dropdown-card"
-          bordered={false}
-        >
+        <Card className="custom-column-selection-dropdown-card" bordered={false}>
           <Menu
             className="custom-column-selection-menu"
             items={selectionMenuItems}
@@ -92,8 +72,7 @@ const CustomColumnSelectionCell = ({
           paddingInline: 8,
           height: 22,
           fontSize: 13,
-          backgroundColor:
-            currentSelectionOption?.selectionColor || colors.transparent,
+          backgroundColor: currentSelectionOption?.selectionColor || colors.transparent,
           color: colors.darkGray,
           cursor: 'pointer',
         }}

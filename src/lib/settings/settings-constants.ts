@@ -33,9 +33,11 @@ type SettingMenuItems = {
   endpoint: string;
   icon: ReactNode;
   element: ReactNode;
+  adminOnly?: boolean;
 };
 // settings all element items use for sidebar and routes
 export const settingsItems: SettingMenuItems[] = [
+  // Available for everyone
   {
     key: 'profile',
     name: 'profile',
@@ -64,12 +66,14 @@ export const settingsItems: SettingMenuItems[] = [
     icon: React.createElement(GlobalOutlined),
     element: React.createElement(LanguageAndRegionSettings),
   },
+  // Admin only items
   {
     key: 'clients',
     name: 'clients',
     endpoint: 'clients',
     icon: React.createElement(UserSwitchOutlined),
     element: React.createElement(ClientsSettings),
+    adminOnly: true,
   },
   {
     key: 'job-titles',
@@ -77,6 +81,7 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'job-titles',
     icon: React.createElement(IdcardOutlined),
     element: React.createElement(JobTitlesSettings),
+    adminOnly: true,
   },
   {
     key: 'labels',
@@ -84,6 +89,7 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'labels',
     icon: React.createElement(TagsOutlined),
     element: React.createElement(LabelsSettings),
+    adminOnly: true,
   },
   {
     key: 'categories',
@@ -91,6 +97,7 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'categories',
     icon: React.createElement(GroupOutlined),
     element: React.createElement(CategoriesSettings),
+    adminOnly: true,
   },
   {
     key: 'project-templates',
@@ -98,6 +105,7 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'project-templates',
     icon: React.createElement(FileZipOutlined),
     element: React.createElement(ProjectTemplatesSettings),
+    adminOnly: true,
   },
   {
     key: 'task-templates',
@@ -105,6 +113,7 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'task-templates',
     icon: React.createElement(ProfileOutlined),
     element: React.createElement(TaskTemplatesSettings),
+    adminOnly: true,
   },
   {
     key: 'team-members',
@@ -112,6 +121,7 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'team-members',
     icon: React.createElement(TeamOutlined),
     element: React.createElement(TeamMembersSettings),
+    adminOnly: true,
   },
   {
     key: 'teams',
@@ -119,5 +129,10 @@ export const settingsItems: SettingMenuItems[] = [
     endpoint: 'teams',
     icon: React.createElement(BankOutlined),
     element: React.createElement(TeamsSettings),
+    adminOnly: true,
   },
 ];
+
+export const getAccessibleSettings = (isAdmin: boolean) => {
+  return settingsItems.filter(item => !item.adminOnly || isAdmin);
+};

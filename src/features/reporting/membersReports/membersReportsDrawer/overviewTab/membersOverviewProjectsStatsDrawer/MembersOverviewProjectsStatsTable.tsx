@@ -1,28 +1,20 @@
 import { memo } from 'react';
-import {
-  ConfigProvider,
-  Flex,
-  Table,
-  TableColumnsType,
-  Typography,
-} from 'antd';
+import { ConfigProvider, Flex, Table, TableColumnsType, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CustomTableTitle from '@components/CustomTableTitle';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { colors } from '@/styles/colors';
-import { statusData } from '@/lib/project/projectConstants';
+import { statusData } from '@/lib/project/project-constants';
 import { toCamelCase } from '@/utils/toCamelCase';
-import ProjectCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-cell/project-cell';
-import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';
-import ProjectManagerCell from '@/pages/reporting/projectsReports/projectsReportsTable/tableCells/project-manager-cell/project-manager-cell';
+import ProjectCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-cell/project-cell';
+import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';
+import ProjectManagerCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-manager-cell/project-manager-cell';
 
 type ProjectReportsTableProps = {
   projectList: any[];
 };
 
-const MembersOverviewProjectsStatsTable = ({
-  projectList,
-}: ProjectReportsTableProps) => {
+const MembersOverviewProjectsStatsTable = ({ projectList }: ProjectReportsTableProps) => {
   // localization
   const { t } = useTranslation('reporting-members-drawer');
 
@@ -31,19 +23,15 @@ const MembersOverviewProjectsStatsTable = ({
       key: 'name',
       title: <CustomTableTitle title={t('nameColumn')} />,
       width: 300,
-      render: (record) => (
-        <ProjectCell
-          projectId={record.id}
-          project={record.name}
-          projectColor={record.color_code}
-        />
+      render: record => (
+        <ProjectCell projectId={record.id} project={record.name} projectColor={record.color_code} />
       ),
       fixed: 'left' as const,
     },
     {
       key: 'startDate',
       title: <CustomTableTitle title={t('startDateColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="group-hover:text-[#1890ff]">
           {record?.start_date ? simpleDateFormat(record?.start_date) : '-'}
         </Typography.Text>
@@ -53,7 +41,7 @@ const MembersOverviewProjectsStatsTable = ({
     {
       key: 'endDate',
       title: <CustomTableTitle title={t('endDateColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="group-hover:text-[#1890ff]">
           {record?.start_date ? simpleDateFormat(record?.end_date) : '-'}
         </Typography.Text>
@@ -63,15 +51,13 @@ const MembersOverviewProjectsStatsTable = ({
     {
       key: 'daysLeft',
       title: <CustomTableTitle title={t('daysLeftColumn')} />,
-      render: (record) => (
-        <ProjectDaysLeftAndOverdueCell daysLeft={record.days_left} />
-      ),
+      render: record => <ProjectDaysLeftAndOverdueCell daysLeft={record.days_left} />,
       width: 150,
     },
     {
       key: 'estimatedTime',
       title: <CustomTableTitle title={t('estimatedTimeColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="group-hover:text-[#1890ff]">
           {record.estimated_time_string}
         </Typography.Text>
@@ -81,7 +67,7 @@ const MembersOverviewProjectsStatsTable = ({
     {
       key: 'actualTime',
       title: <CustomTableTitle title={t('actualTimeColumn')} />,
-      render: (record) => (
+      render: record => (
         <Typography.Text className="group-hover:text-[#1890ff]">
           {record.actual_time_string}
         </Typography.Text>
@@ -91,10 +77,8 @@ const MembersOverviewProjectsStatsTable = ({
     {
       key: 'status',
       title: <CustomTableTitle title={t('statusColumn')} />,
-      render: (record) => {
-        const statusItem = statusData.find(
-          (item) => item.label === record.status_name
-        );
+      render: record => {
+        const statusItem = statusData.find(item => item.label === record.status_name);
 
         return statusItem ? (
           <Typography.Text
@@ -113,7 +97,7 @@ const MembersOverviewProjectsStatsTable = ({
     {
       key: 'projectHealth',
       title: <CustomTableTitle title={t('projectHealthColumn')} />,
-      render: (record) => (
+      render: record => (
         <Flex
           gap={6}
           align="center"
@@ -133,9 +117,7 @@ const MembersOverviewProjectsStatsTable = ({
               fontSize: 13,
             }}
           >
-            {record.health_name
-              ? t(`${toCamelCase(record.health_name)}Text`)
-              : '-'}
+            {record.health_name ? t(`${toCamelCase(record.health_name)}Text`) : '-'}
           </Typography.Text>
         </Flex>
       ),
@@ -144,7 +126,7 @@ const MembersOverviewProjectsStatsTable = ({
     {
       key: 'category',
       title: <CustomTableTitle title="Category" />,
-      render: (record) => (
+      render: record => (
         <Flex
           gap={6}
           align="center"
@@ -166,9 +148,7 @@ const MembersOverviewProjectsStatsTable = ({
     {
       key: 'projectManager',
       title: <CustomTableTitle title={t('projectManagerColumn')} />,
-      render: (record) => (
-        <ProjectManagerCell manager={record.project_manager} />
-      ),
+      render: record => <ProjectManagerCell manager={record.project_manager} />,
       width: 180,
     },
   ];
@@ -189,7 +169,7 @@ const MembersOverviewProjectsStatsTable = ({
         dataSource={projectList}
         pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
         scroll={{ x: 'max-content' }}
-        onRow={(record) => {
+        onRow={record => {
           return {
             style: { height: 38, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',

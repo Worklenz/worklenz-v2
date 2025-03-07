@@ -1,7 +1,7 @@
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import React from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { nanoid } from '@reduxjs/toolkit';
 import { addJobTitle, toggleCreateJobTitleDrawer } from './jobSlice';
 import { JobType } from '../../../types/job.types';
@@ -9,11 +9,9 @@ import { useTranslation } from 'react-i18next';
 
 const CreateJobTitlesDrawer = () => {
   // localization
-  const { t } = useTranslation('settings-job-titles');
+  const { t } = useTranslation('settings/job-titles');
 
-  const isDrawerOpen = useAppSelector(
-    (state) => state.jobReducer.isCreateJobTitleDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.jobReducer.isCreateJobTitleDrawerOpen);
   const dispatch = useAppDispatch();
 
   const [form] = Form.useForm();

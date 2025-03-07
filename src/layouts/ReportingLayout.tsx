@@ -1,21 +1,31 @@
 import { Col, ConfigProvider, Layout } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../features/navbar/Navbar';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { colors } from '../styles/colors';
 import { themeWiseColor } from '../utils/themeWiseColor';
 import ReportingSider from '../pages/reporting/sidebar/reporting-sider';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import ReportingCollapsedButton from '../pages/reporting/sidebar/reporting-collapsed-button';
+import { useAuthService } from '@/hooks/useAuth';
 
 const ReportingLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { getCurrentSession } = useAuthService();
+  const currentSession = getCurrentSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentSession?.is_expired) {
+      navigate('/worklenz/license-expired');
+    }
+  }, [currentSession, navigate]);
 
   // function to handle collapse
   const handleCollapsedToggler = () => {
-    setIsCollapsed((prev) => !prev);
+    setIsCollapsed(prev => !prev);
   };
 
   return (

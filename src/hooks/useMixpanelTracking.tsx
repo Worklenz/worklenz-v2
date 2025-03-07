@@ -9,10 +9,10 @@ export const useMixpanelTracking = () => {
 
   const token = useMemo(() => {
     const host = window.location.host;
-    if (host === "uat.worklenz.com" || host === "dev.worklenz.com") {
+    if (host === 'uat.worklenz.com' || host === 'dev.worklenz.com' || host === 'api.worklenz.com') {
       return import.meta.env.VITE_MIXPANEL_TOKEN;
     }
-    if (host === "app.worklenz.com") {
+    if (host === 'app.worklenz.com' || host === 'v2.worklenz.com') {
       return import.meta.env.VITE_MIXPANEL_TOKEN;
     }
     return import.meta.env.VITE_MIXPANEL_TOKEN;
@@ -29,7 +29,7 @@ export const useMixpanelTracking = () => {
         $user_id: user.id,
         $name: user.name,
         $email: user.email,
-        $avatar: user.avatar_url
+        $avatar: user.avatar_url,
       });
     }
   }, []);
@@ -38,23 +38,26 @@ export const useMixpanelTracking = () => {
     mixpanel.reset();
   }, []);
 
-  const trackMixpanelEvent = useCallback((event: string, properties?: Dict) => {
-    try {
-      const currentUser = auth.getCurrentSession();
-      const props = {
-        ...(properties || {}),
-        ...(currentUser?.user_no ? { id: currentUser.user_no } : {})
-      };
+  const trackMixpanelEvent = useCallback(
+    (event: string, properties?: Dict) => {
+      try {
+        const currentUser = auth.getCurrentSession();
+        const props = {
+          ...(properties || {}),
+          ...(currentUser?.user_no ? { id: currentUser.user_no } : {}),
+        };
 
-      mixpanel.track(event, props);
-    } catch (e) {
-      logger.error('Error tracking mixpanel event', e);
-    }
-  }, [auth.getCurrentSession]);
+        mixpanel.track(event, props);
+      } catch (e) {
+        logger.error('Error tracking mixpanel event', e);
+      }
+    },
+    [auth.getCurrentSession]
+  );
 
   return {
     setIdentity,
     reset,
-    trackMixpanelEvent
+    trackMixpanelEvent,
   };
 };

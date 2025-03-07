@@ -41,7 +41,7 @@ const api = createApi({
     getMyTasks: builder.query<IServerResponse<IHomeTasksModel>, IHomeTasksConfig>({
       query: config => {
         const { tasks_group_by, current_tab, is_calendar_view, selected_date, time_zone } = config;
-        const url = `${rootUrl}/tasks?${toQueryString({
+        const url = `${rootUrl}/tasks${toQueryString({
           group_by: tasks_group_by,
           current_tab,
           is_calendar_view,

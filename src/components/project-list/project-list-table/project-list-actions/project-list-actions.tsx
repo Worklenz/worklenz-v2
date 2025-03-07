@@ -1,8 +1,13 @@
 import { useGetProjectsQuery } from '@/api/projects/projects.v1.api.service';
 import { AppDispatch } from '@/app/store';
-import { getProject, setProjectId } from '@/features/project/project.slice';
-import { toggleArchiveProjectForAll, toggleArchiveProject, toggleDrawer } from '@/features/projects/projectsSlice';
+import { fetchProjectData, setProjectId, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
+import {
+  toggleArchiveProjectForAll,
+  toggleArchiveProject,
+} from '@/features/projects/projectsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import useIsProjectManager from '@/hooks/useIsProjectManager';
+import { useAuthService } from '@/hooks/useAuth';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import logger from '@/utils/errorLogger';
 import { SettingOutlined, InboxOutlined } from '@ant-design/icons';
@@ -21,14 +26,18 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   dispatch,
   isOwnerOrAdmin,
 }) => {
+  // Add permission hooks
+  const isProjectManager = useIsProjectManager();
+  const isEditable = isOwnerOrAdmin;
+
   const { requestParams } = useAppSelector(state => state.projectsReducer);
-  const { refetch: refetchProjects  } = useGetProjectsQuery(requestParams);
+  const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
 
   const handleSettingsClick = () => {
     if (record.id) {
       dispatch(setProjectId(record.id));
-      dispatch(getProject(record.id));
-      dispatch(toggleDrawer());
+      dispatch(fetchProjectData(record.id));
+      dispatch(toggleProjectDrawer());
     }
   };
 
@@ -47,7 +56,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   };
 
   return (
-    <Space>
+    <Space onClick={e => e.stopPropagation()}>
       <Tooltip title={t('setting')}>
         <Button
           className="action-button"
@@ -56,15 +65,21 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
           icon={<SettingOutlined />}
         />
       </Tooltip>
-      <Tooltip title={record.archived ? t('unarchive') : t('archive')}>
+      <Tooltip title={isEditable ? (record.archived ? t('unarchive') : t('archive')) : t('noPermission')}>
         <Popconfirm
           title={record.archived ? t('unarchive') : t('archive')}
           description={record.archived ? t('unarchiveConfirm') : t('archiveConfirm')}
           onConfirm={handleArchiveClick}
           okText={t('yes')}
           cancelText={t('no')}
+          disabled={!isEditable}
         >
-          <Button className="action-button" size="small" icon={<InboxOutlined />} />
+          <Button
+            className="action-button"
+            size="small"
+            icon={<InboxOutlined />}
+            disabled={!isEditable}
+          />
         </Popconfirm>
       </Tooltip>
     </Space>

@@ -89,7 +89,7 @@ const OverviewReportsMembersReportsTable = ({
         columns={columns}
         dataSource={membersList}
         scroll={{ x: 'max-content' }}
-        onRow={(record) => {
+        onRow={record => {
           return {
             style: { height: 38, cursor: 'pointer' },
             className: 'group even:bg-[#4e4e4e10]',

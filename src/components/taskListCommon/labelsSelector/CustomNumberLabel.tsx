@@ -1,19 +1,15 @@
 import { Tag, Tooltip } from 'antd';
-import React from 'react';
-import { LabelType } from '../../../types/label.type';
 
-const CustomNumberLabel = ({
-  labelList,
-}: {
-  labelList: LabelType[] | null;
-}) => {
-  const list = labelList?.slice(2);
+interface ICustomNumberLabelProps {
+  labelList: string[];
+  namesString: string;
+}
 
-  const labelNamesStirng = list?.map((label) => label.labelName).join(', ');
-
+const CustomNumberLabel = ({ labelList, namesString }: ICustomNumberLabelProps) => {
   return (
-    <Tooltip title={labelNamesStirng}>
+    <Tooltip title={labelList.join(', ')}>
       <Tag
+
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -22,9 +18,10 @@ const CustomNumberLabel = ({
           fontSize: 11,
         }}
       >
-        +{list?.length}
+        {namesString}
       </Tag>
     </Tooltip>
+
   );
 };
 

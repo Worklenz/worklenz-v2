@@ -2,7 +2,7 @@ import { Badge, Card, Dropdown, Flex, Menu, MenuProps } from 'antd';
 import React from 'react';
 import { TaskStatusType } from '../../../types/task.types';
 import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import './ChangeCategoryDropdown.css';
 import { updateStatusCategory } from '../../../features/projects/status/StatusSlice';
@@ -12,12 +12,10 @@ interface ChangeCategoryDropdownProps {
   id: string;
 }
 
-const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({
-  id,
-}) => {
+const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({ id }) => {
   const dispatch = useAppDispatch();
   // const [currentStatus, setCurrentStatus] = useState(category);
-  const {t} = useTranslation('kanban-board')
+  const { t } = useTranslation('kanban-board');
 
   const getStatuColor = (status: TaskStatusType) => {
     if (status === 'todo') return colors.deepLightGray;
@@ -55,7 +53,7 @@ const ChangeCategoryDropdown: React.FC<ChangeCategoryDropdownProps> = ({
     },
   ];
 
-  const onClick: MenuProps['onClick'] = (e) => {
+  const onClick: MenuProps['onClick'] = e => {
     if (e.key === 'todo') {
       dispatch(updateStatusCategory({ id: id, category: 'todo' }));
     } else if (e.key === 'doing') {

@@ -1,4 +1,4 @@
-import { InlineMember } from "../teamMembers/inlineMember.types";
+import { InlineMember } from '../teamMembers/inlineMember.types';
 
 export interface IMyDashboardProjectTask {
   id: string;

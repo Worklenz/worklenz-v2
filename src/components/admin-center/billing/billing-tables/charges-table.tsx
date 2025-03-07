@@ -1,90 +1,99 @@
-import { Table, TableProps } from 'antd';
-import React from 'react';
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { IBillingCharge, IBillingChargesResponse } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
+import { formatDate } from '@/utils/timeUtils';
+import { Table, TableProps, Tag } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface DataType {
-  key: string;
-  description: string;
-  startingDate: Date;
-  endingDate: Date;
-  billStatus: string;
-  perUserValue: number;
-  users: number;
-  amount: number;
-}
-
 const ChargesTable: React.FC = () => {
-  const perUserValue = 5.99;
-  const users = 23;
+  const { t } = useTranslation('admin-center/current-bill');
+  const [charges, setCharges] = useState<IBillingChargesResponse>({});
+  const [loadingCharges, setLoadingCharges] = useState(false);
 
-  const { t } = useTranslation('current-bill');
+  const fetchCharges = async () => {
+    try {
+      setLoadingCharges(true);
+      const res = await adminCenterApiService.getCharges();
+      if (res.done) {
+        setCharges(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching charges:', error);
+    } finally {
+      setLoadingCharges(false);
+    }
+  };
 
-  const columns: TableProps['columns'] = [
+  const columns: TableProps<IBillingCharge>['columns'] = [
     {
       title: t('description'),
-      key: 'description',
-      dataIndex: 'description',
+      key: 'name',
+      dataIndex: 'name',
     },
     {
       title: t('billingPeriod'),
       key: 'billingPeriod',
-      render: (record) => {
-        const formattedStartingDate = new Date(
-          record.startingDate
-        ).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        const formattedEndingDate = new Date(
-          record.endingDate
-        ).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-
-        return `${formattedStartingDate} - ${formattedEndingDate}`;
+      render: record => {
+        return `${formatDate(new Date(record.start_date))} - ${formatDate(new Date(record.end_date))}`;
       },
     },
     {
       title: t('billStatus'),
-      key: 'billStatus',
-      dataIndex: 'billStatus',
+      key: 'status',
+      dataIndex: 'status',
+      render: (_, record) => {
+        return (
+          <Tag
+            color={
+              record.status === 'success' ? 'green' : record.status === 'deleted' ? 'red' : 'blue'
+            }
+          >
+            {record.status?.toUpperCase()}
+          </Tag>
+        );
+      },
     },
     {
       title: t('perUserValue'),
       key: 'perUserValue',
       dataIndex: 'perUserValue',
-      render: (text) => <span>USD {text}</span>,
+      render: (_, record) => (
+        <span>
+          {record.currency} {record.unit_price}
+        </span>
+      ),
     },
     {
       title: t('users'),
-      key: 'users',
-      dataIndex: 'users',
+      key: 'quantity',
+      dataIndex: 'quantity',
     },
     {
       title: t('amount'),
       key: 'amount',
       dataIndex: 'amount',
-      render: (text) => <span>USD {text}</span>,
+      render: (_, record) => (
+        <span>
+          {record.currency} {record.amount}
+        </span>
+      ),
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      description: 'PRO - Monthly Plan Charge',
-      startingDate: new Date('2024-08-31T08:30:00'),
-      endingDate: new Date('2025-08-30T08:30:00'),
-      billStatus: 'Deleted',
-      perUserValue: perUserValue,
-      users: users,
-      amount: perUserValue * users,
-    },
-  ];
+  useEffect(() => {
+    fetchCharges();
+  }, []);
 
-  return <Table columns={columns} dataSource={data} pagination={false} />;
+  return (
+    <Table<IBillingCharge>
+      columns={columns}
+      dataSource={charges.plan_charges}
+      pagination={false}
+      loading={loadingCharges}
+      rowKey="id"
+    />
+  );
 };
 
 export default ChargesTable;

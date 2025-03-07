@@ -3,7 +3,7 @@ import TimeReportPageHeader from '@/pages/reporting/timeReports/page-header/time
 import ProjectTimeSheetChart from '@/pages/reporting/timeReports/project-time-sheet/project-time-sheet-chart';
 import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
 import { useTranslation } from 'react-i18next';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const ProjectsTimeReports = () => {
   const { t } = useTranslation('time-report');

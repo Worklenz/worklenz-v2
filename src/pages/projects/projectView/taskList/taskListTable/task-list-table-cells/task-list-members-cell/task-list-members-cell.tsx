@@ -1,21 +1,19 @@
-import { Flex } from 'antd';
+import Flex from 'antd/es/flex';
+
 import Avatars from '@/components/avatars/avatars';
-import AssigneeSelector from '@/components/taskListCommon/assigneeSelector/AssigneeSelector';
-import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
 type TaskListMembersCellProps = {
-  members: InlineMember[];
-  selectedTaskId: string | null;
+  groupId: string;
+  task: IProjectTask;
 };
 
-const TaskListMembersCell = ({
-  members,
-  selectedTaskId,
-}: TaskListMembersCellProps) => {
+const TaskListMembersCell = ({ groupId, task }: TaskListMembersCellProps) => {
   return (
-    <Flex gap={4} align="center">
-      <Avatars members={members} />
-      <AssigneeSelector taskId={selectedTaskId || ''} />
+    <Flex gap={4} align="center" onClick={() => {}}>
+      <Avatars members={task.assignees || []} />
+      <AssigneeSelector task={task} groupId={groupId} />
     </Flex>
   );
 };

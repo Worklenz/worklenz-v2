@@ -1,7 +1,5 @@
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAuthService } from '@/hooks/useAuth';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
-import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 import { ColumnsType } from 'antd/es/table';
@@ -15,44 +13,40 @@ import { CategoryCell } from './project-list-table/project-list-category/project
 import { ProgressListProgress } from './project-list-table/project-list-progress/progress-list-progress';
 import { ProjectListUpdatedAt } from './project-list-table/project-list-updated-at/project-list-updated';
 import { ProjectNameCell } from './project-list-table/project-name/project-name-cell';
-import { setFilteredCategories, setFilteredStatuses } from '@/features/projects/projectsSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { ProjectRateCell } from './project-list-table/project-list-favorite/project-rate-cell';
 
 const createFilters = (items: { id: string; name: string }[]) =>
   items.map(item => ({ text: item.name, value: item.id })) as ColumnFilterItem[];
 
 interface ITableColumnsProps {
   navigate: NavigateFunction;
-  statuses: IProjectStatus[];
-  categories: IProjectCategory[];
-  filteredCategories: string[];
-  filteredStatuses: string[];
+  filteredInfo: any;
 }
 
 const TableColumns = ({
   navigate,
-  statuses,
-  categories,
-  filteredCategories,
-  filteredStatuses,
+  filteredInfo,
 }: ITableColumnsProps): ColumnsType<IProjectViewModel> => {
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
 
-  const onCategoryFilterChange = (value: string, record: IProjectViewModel) => {
-    if (!filteredCategories.includes(value)) {
-      dispatch(setFilteredCategories([...filteredCategories, value]));
-    }
-  };
-
-  const onStatusFilterChange = (value: string, record: IProjectViewModel) => {
-    if (!filteredStatuses.includes(value)) {
-      dispatch(setFilteredStatuses([...filteredStatuses, value]));
-    }
-  };
-
+  const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
+  const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
+  const { filteredCategories, filteredStatuses } = useAppSelector(
+    state => state.projectsReducer
+  );
   const columns = useMemo(
     () => [
+      {
+        title: '',
+        dataIndex: 'favorite',
+        key: 'favorite',
+        render: (text: string, record: IProjectViewModel) => (
+          <ProjectRateCell key={record.id} t={t} record={record} />
+        ),
+      },
       {
         title: t('name'),
         dataIndex: 'name',
@@ -76,10 +70,9 @@ const TableColumns = ({
         dataIndex: 'category',
         key: 'category_id',
         filters: createFilters(
-          categories.map(category => ({ id: category.id || '', name: category.name || '' }))
+          projectCategories.map(category => ({ id: category.id || '', name: category.name || '' }))
         ),
-        filteredValue: filteredCategories,
-        onFilter: onCategoryFilterChange,
+        filteredValue: filteredInfo.category_id || filteredCategories || [],
         filterMultiple: true,
         render: (text: string, record: IProjectViewModel) => (
           <CategoryCell key={record.id} t={t} record={record} />
@@ -91,11 +84,10 @@ const TableColumns = ({
         dataIndex: 'status',
         key: 'status_id',
         filters: createFilters(
-          statuses.map(status => ({ id: status.id || '', name: status.name || '' }))
+          projectStatuses.map(status => ({ id: status.id || '', name: status.name || '' }))
         ),
+        filteredValue: filteredInfo.status_id || [],
         filterMultiple: true,
-        filteredValue: filteredStatuses,
-        onFilter: onStatusFilterChange,
         sorter: true,
       },
       {
@@ -132,9 +124,8 @@ const TableColumns = ({
         ),
       },
     ],
-    [t, categories, statuses, filteredCategories]
+    [t, projectCategories, projectStatuses, filteredInfo, filteredCategories, filteredStatuses]
   );
-
   return columns as ColumnsType<IProjectViewModel>;
 };
 

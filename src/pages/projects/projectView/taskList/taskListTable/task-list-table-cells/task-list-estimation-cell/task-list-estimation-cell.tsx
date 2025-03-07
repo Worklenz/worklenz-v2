@@ -1,8 +1,12 @@
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { Typography } from 'antd';
 import React from 'react';
 
-const TaskListEstimationCell = () => {
-  return <Typography.Text>0h 0m</Typography.Text>;
+interface ITaskListEstimationCellProps {
+  task: IProjectTask
+}
+const TaskListEstimationCell = ({ task }: ITaskListEstimationCellProps) => {
+  return <Typography.Text>{task?.total_time_string}</Typography.Text>;
 };
 
 export default TaskListEstimationCell;

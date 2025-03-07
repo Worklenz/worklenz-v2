@@ -1,24 +1,21 @@
-import { Tabs } from 'antd';
-import { TabsProps } from 'antd/lib';
-import React from 'react';
-import TaskDrawerInfoTab from './infoTab/TaskDrawerInfoTab';
-import TaskDrawerTimeLog from './timeLog/TaskDrawerTimeLog';
-import TaskDrawerActivityLog from './activityLog/TaskDrawerActivityLog';
+import Tabs, { TabsProps } from 'antd/es/tabs';
 
-const TaskDrawerTabs = ({
-  drawerType,
-  taskId = null,
-}: {
-  drawerType: 'create' | 'update';
-  taskId?: string | null;
-}) => {
+import TaskDrawerInfoTab from './infoTab/TaskDrawerInfoTab';
+import TaskDrawerTimeLog from './timeLog/task-drawer-time-log';
+import TaskDrawerActivityLog from './activity-log/task-drawer-activity-log';
+
+const TaskDrawerTabs = () => {
   const tabItems: TabsProps['items'] = [
     {
       key: 'info',
       label: 'Info',
-      children: <TaskDrawerInfoTab taskId={taskId} />,
+      children: <TaskDrawerInfoTab />,
     },
-    { key: 'timeLog', label: 'Time Log', children: <TaskDrawerTimeLog /> },
+    {
+      key: 'timeLog',
+      label: 'Time Log',
+      children: <TaskDrawerTimeLog />,
+    },
     {
       key: 'activityLog',
       label: 'Activity Log',
@@ -26,7 +23,7 @@ const TaskDrawerTabs = ({
     },
   ];
 
-  return <Tabs type="card" items={tabItems} />;
+  return <Tabs type="card" items={tabItems} destroyInactiveTabPane />;
 };
 
 export default TaskDrawerTabs;

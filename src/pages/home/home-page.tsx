@@ -1,6 +1,7 @@
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { Col, Flex, Skeleton } from 'antd';
+import Col from 'antd/es/col';
+import Flex from 'antd/es/flex';
 
 import GreetingWithTime from './greeting-with-time';
 import TasksList from '@/pages/home/task-list/tasks-list';
@@ -11,15 +12,13 @@ import RecentAndFavouriteProjectList from '@/pages/home/recent-and-favourite-pro
 
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAuthService } from '@/hooks/useAuth';
 
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { fetchProjects } from '@/features/home-page/home-page.slice';
-
-import { SuspenseFallback } from '@/components/suspense-fallback/suspense-fallback';
+import { createPortal } from 'react-dom';
 
 const DESKTOP_MIN_WIDTH = 1024;
 const TASK_LIST_MIN_WIDTH = 500;
@@ -31,10 +30,6 @@ const HomePage = () => {
   const isDesktop = useMediaQuery({ query: `(min-width: ${DESKTOP_MIN_WIDTH}px)` });
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   useDocumentTitle('Home');
-
-  const { projectCategories } = useAppSelector(state => state.projectCategoriesReducer);
-  const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
-  const { projectHealths } = useAppSelector(state => state.projectHealthReducer);
 
   useEffect(() => {
     const fetchLookups = async () => {
@@ -88,11 +83,7 @@ const HomePage = () => {
 
       <MainContent />
 
-      <ProjectDrawer
-        categories={projectCategories}
-        statuses={projectStatuses}
-        healths={projectHealths}
-      />
+      {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
     </div>
   );
 };

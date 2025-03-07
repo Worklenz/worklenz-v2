@@ -1,137 +1,138 @@
-import { Badge, Button, DatePicker, Divider, Drawer, Flex, Form, Input, InputRef, Select, Tag, Typography } from "antd";
-import React, { useRef, useState } from "react";
-import { healthStatusData, projectColors, statusData } from "../../../lib/project/projectConstants";
-import { PlusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { colors } from "../../../styles/colors";
-import { useAppSelector } from "../../../hooks/useAppSelector";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
-import { ProjectType } from "../../../types/project.types";
-import { nanoid } from "@reduxjs/toolkit";
-import { createProject, toggleDrawer, toggleUpdatedrawer } from "../projectSlice";
-import ProjectList from "../../../pages/projects/ProjectList";
-import { CategoryType } from "../../../types/categories.types";
+import {
+  Badge,
+  Button,
+  DatePicker,
+  Divider,
+  Drawer,
+  Flex,
+  Form,
+  Input,
+  InputRef,
+  Select,
+  Tag,
+  Typography,
+} from 'antd';
+import React, { useRef, useState } from 'react';
+import { healthStatusData, projectColors, statusData } from '../../../lib/project/project-constants';
+import { PlusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { colors } from '../../../styles/colors';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { ProjectType } from '../../../types/project.types';
+import { nanoid } from '@reduxjs/toolkit';
+import { createProject, toggleDrawer, toggleUpdatedrawer } from '../projectSlice';
+import ProjectList from '../../../pages/projects/ProjectList';
+import { CategoryType } from '../../../types/categories.types';
 
 const UpdateProjectDrawer = () => {
-    const currentlyActiveTeamData = useAppSelector(
-        (state) => state.teamReducer.teamsList
-      ).find((item) => item.isActive);
-    
-      // get categories list from categories reducer
-      let categoriesList = useAppSelector(
-        (state) => state.categoriesReducer.categoriesList
-      );
-    
-      // state for show category add input box
-      const [isAddCategoryInputShow, setIsAddCategoryInputShow] =
-        useState<boolean>(false);
-      const [categoryText, setCategoryText] = useState<string>('');
-    
-      const isDrawerOpen = useAppSelector(
-        (state) => state.projectReducer.isUpdateDrawerOpen
-      );
-      const dispatch = useAppDispatch();
-    
-      const [form] = Form.useForm();
-    
-    
-      // status selection options
-      const statusOptions = [
-        ...statusData.map((status, index) => ({
-          key: index,
-          value: status.value,
-          label: (
-            <Typography.Text
-              style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-            >
-              {status.icon}
-              {status.label}
-            </Typography.Text>
-          ),
-        })),
-      ];
-    
-      // health selection options
-      const healthOptions = [
-        ...healthStatusData.map((status, index) => ({
-          key: index,
-          value: status.value,
-          label: (
-            <Typography.Text
-              style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-            >
-              <Badge color={status.color} /> {status.label}
-            </Typography.Text>
-          ),
-        })),
-      ];
-    
-      // project color options
-      const projectColorOptions = [
-        ...projectColors.map((color, index) => ({
-          key: index,
-          value: color,
-          label: (
-            <Tag
-              color={color}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                width: 20,
-                height: 20,
-                borderRadius: '50%',
-              }}
-            />
-          ),
-        })),
-      ];
-    
-      // category input ref
-      const categoryInputRef = useRef<InputRef>(null);
-    
-      const handleCategoryInputFocus = (open: boolean) => {
-        setTimeout(() => {
-          categoryInputRef.current?.focus();
-        }, 0);
-      };
-    
-      // show input to add new category
-      const handleShowAddCategoryInput = () => {
-        setIsAddCategoryInputShow(true);
-        handleCategoryInputFocus(true);
-      };
-    
-      // function to handle category add
-      const handleAddCategoryItem = (category: string) => {
-        const newCategory: CategoryType = {
-          categoryId: nanoid(),
-          categoryName: category,
-          categoryColor: '#ee87c5',
-        };
-    
-        setCategoryText('');
-        setIsAddCategoryInputShow(false);
-      };
+  const currentlyActiveTeamData = useAppSelector(state => state.teamReducer.teamsList).find(
+    item => item.isActive
+  );
 
-      interface DataType {
-        key: string;
-        name: string;
-        client: string;
-        category: string;
-        status: string;
-        totalTasks: number;
-        completedTasks: number;
-        lastUpdated: Date;
-        startDate: Date | null;
-        endDate: Date | null;
-        members: string[];
-      }
+  // get categories list from categories reducer
+  let categoriesList = useAppSelector(state => state.categoriesReducer.categoriesList);
+
+  // state for show category add input box
+  const [isAddCategoryInputShow, setIsAddCategoryInputShow] = useState<boolean>(false);
+  const [categoryText, setCategoryText] = useState<string>('');
+
+  const isDrawerOpen = useAppSelector(state => state.projectReducer.isUpdateDrawerOpen);
+  const dispatch = useAppDispatch();
+
+  const [form] = Form.useForm();
+
+  // status selection options
+  const statusOptions = [
+    ...statusData.map((status, index) => ({
+      key: index,
+      value: status.value,
+      label: (
+        <Typography.Text style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {status.icon}
+          {status.label}
+        </Typography.Text>
+      ),
+    })),
+  ];
+
+  // health selection options
+  const healthOptions = [
+    ...healthStatusData.map((status, index) => ({
+      key: index,
+      value: status.value,
+      label: (
+        <Typography.Text style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Badge color={status.color} /> {status.label}
+        </Typography.Text>
+      ),
+    })),
+  ];
+
+  // project color options
+  const projectColorOptions = [
+    ...projectColors.map((color, index) => ({
+      key: index,
+      value: color,
+      label: (
+        <Tag
+          color={color}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            width: 20,
+            height: 20,
+            borderRadius: '50%',
+          }}
+        />
+      ),
+    })),
+  ];
+
+  // category input ref
+  const categoryInputRef = useRef<InputRef>(null);
+
+  const handleCategoryInputFocus = (open: boolean) => {
+    setTimeout(() => {
+      categoryInputRef.current?.focus();
+    }, 0);
+  };
+
+  // show input to add new category
+  const handleShowAddCategoryInput = () => {
+    setIsAddCategoryInputShow(true);
+    handleCategoryInputFocus(true);
+  };
+
+  // function to handle category add
+  const handleAddCategoryItem = (category: string) => {
+    const newCategory: CategoryType = {
+      categoryId: nanoid(),
+      categoryName: category,
+      categoryColor: '#ee87c5',
+    };
+
+    setCategoryText('');
+    setIsAddCategoryInputShow(false);
+  };
+
+  interface DataType {
+    key: string;
+    name: string;
+    client: string;
+    category: string;
+    status: string;
+    totalTasks: number;
+    completedTasks: number;
+    lastUpdated: Date;
+    startDate: Date | null;
+    endDate: Date | null;
+    members: string[];
+  }
 
   return (
     <Drawer
       title={
-        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
-          Update Project
-        </Typography.Text>
+        <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>Update Project</Typography.Text>
       }
       open={isDrawerOpen}
       onClose={() => dispatch(toggleUpdatedrawer(''))}
@@ -162,12 +163,7 @@ const UpdateProjectDrawer = () => {
         >
           <Input placeholder="Name" />
         </Form.Item>
-        <Form.Item
-          name="color"
-          label="Project Color"
-          layout="horizontal"
-          required
-        >
+        <Form.Item name="color" label="Project Color" layout="horizontal" required>
           <Select
             variant="borderless"
             suffixIcon={null}
@@ -205,10 +201,8 @@ const UpdateProjectDrawer = () => {
                 ref={categoryInputRef}
                 placeholder="Enter a name for the category"
                 value={categoryText}
-                onChange={(e) => setCategoryText(e.currentTarget.value)}
-                onKeyDown={(e) =>
-                  e.key === 'Enter' && handleAddCategoryItem(categoryText)
-                }
+                onChange={e => setCategoryText(e.currentTarget.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAddCategoryItem(categoryText)}
               />
               <Typography.Text style={{ color: colors.lightGray }}>
                 Hit enter to create!
@@ -229,11 +223,7 @@ const UpdateProjectDrawer = () => {
         >
           <Input placeholder="Select client" />
         </Form.Item>
-        <Form.Item
-          name="projectManager"
-          label="Project Manager"
-          layout="horizontal"
-        >
+        <Form.Item name="projectManager" label="Project Manager" layout="horizontal">
           <Button type="dashed" shape="circle" icon={<PlusCircleOutlined />} />
         </Form.Item>
         <Form.Item name="date" layout="horizontal">
@@ -256,20 +246,24 @@ const UpdateProjectDrawer = () => {
           <Input type="number" />
         </Form.Item>
 
-          <Button type="primary" style={{ width: '100%' }} htmlType="submit">
-            Save Changes
-          </Button>
-          <Button type="dashed" danger style={{ width: '100%', marginTop: '8px' }} htmlType="submit">
-            Delete Project
-          </Button>
+        <Button type="primary" style={{ width: '100%' }} htmlType="submit">
+          Save Changes
+        </Button>
+        <Button type="dashed" danger style={{ width: '100%', marginTop: '8px' }} htmlType="submit">
+          Delete Project
+        </Button>
       </Form>
-      <Divider style={{marginTop: '1rem', marginBottom: '0.5rem'}}/>
-      <div style={{paddingBottom: '0.25rem', display: 'flex', flexDirection: 'column'}}>
-          <Typography.Text type="secondary"><small> Created a day ago by Raveesha Dilanka </small></Typography.Text>
-          <Typography.Text type="secondary"><small>  Updated a day ago  </small></Typography.Text>
+      <Divider style={{ marginTop: '1rem', marginBottom: '0.5rem' }} />
+      <div style={{ paddingBottom: '0.25rem', display: 'flex', flexDirection: 'column' }}>
+        <Typography.Text type="secondary">
+          <small> Created a day ago by Raveesha Dilanka </small>
+        </Typography.Text>
+        <Typography.Text type="secondary">
+          <small> Updated a day ago </small>
+        </Typography.Text>
       </div>
     </Drawer>
-  )
+  );
 };
 
 export default UpdateProjectDrawer;

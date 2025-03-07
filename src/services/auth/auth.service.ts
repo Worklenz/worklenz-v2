@@ -24,9 +24,14 @@ class AuthService {
     return !!this.getCurrentSession();
   }
 
+  public isExpired(): boolean {
+    return !!this.getCurrentSession()?.is_expired;
+  }
+
   public setCurrentSession(user: ILocalSession): void {
     setSession(user);
   }
+
 
   public getCurrentSession(): ILocalSession | null {
     return getUserSession();

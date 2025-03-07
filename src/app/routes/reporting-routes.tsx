@@ -1,11 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 import ReportingLayout from '@/layouts/ReportingLayout';
-import {
-  ReportingMenuItems,
-  reportingsItems,
-} from '@/lib/reporting/reporting-constants';
-import { SuspenseFallback } from '@/components/suspense-fallback/suspense-fallback';
-import { Suspense } from 'react';
+import { ReportingMenuItems, reportingsItems } from '@/lib/reporting/reporting-constants';
 
 //  function to flatten nested menu items
 const flattenItems = (items: ReportingMenuItems[]): ReportingMenuItems[] => {
@@ -22,12 +17,8 @@ const flattenedItems = flattenItems(reportingsItems);
 const reportingRoutes: RouteObject[] = [
   {
     path: 'worklenz/reporting',
-    element: (
-      <Suspense fallback={<SuspenseFallback />}>
-        <ReportingLayout />
-      </Suspense>
-    ),
-    children: flattenedItems.map((item) => ({
+    element: <ReportingLayout />,
+    children: flattenedItems.map(item => ({
       path: item.endpoint,
       element: item.element,
     })),

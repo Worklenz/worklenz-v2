@@ -72,7 +72,7 @@ const OrganizationName = ({ themeMode, name, t, refetch }: OrganizationNameProps
                   height: '32px',
                   paddingRight: '40px',
                   resize: 'none',
-                  borderRadius: '4px'
+                  borderRadius: '4px',
                 }}
                 onPressEnter={handleBlur}
                 value={newName}
@@ -92,7 +92,7 @@ const OrganizationName = ({ themeMode, name, t, refetch }: OrganizationNameProps
                   top: '50%',
                   transform: 'translateY(-50%)',
                   padding: '4px 8px',
-                  color: '#1890ff'
+                  color: '#1890ff',
                 }}
                 onClick={handleBlur}
               />
@@ -102,9 +102,9 @@ const OrganizationName = ({ themeMode, name, t, refetch }: OrganizationNameProps
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {name}
                 <Tooltip title={t('edit')}>
-                  <Button 
-                    onClick={() => setIsEditable(true)} 
-                    size="small" 
+                  <Button
+                    onClick={() => setIsEditable(true)}
+                    size="small"
                     type="text"
                     icon={<EditOutlined />}
                     style={{ padding: '4px', color: '#1890ff' }}

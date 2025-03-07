@@ -5,15 +5,14 @@ const TaskRowDescription = ({ description }: { description: string }) => {
     <div
       style={{
         whiteSpace: 'nowrap',
-        overflow: 'hidden', 
+        overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: 'block',
         maxHeight: '24px', // Enforce single line height
-        lineHeight: '24px'
+        lineHeight: '24px',
       }}
       dangerouslySetInnerHTML={{ __html: description }}
     />
-    
   );
 };
 

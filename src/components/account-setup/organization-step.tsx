@@ -29,7 +29,7 @@ export const OrganizationStep: React.FC<Props> = ({
   }, []);
 
   const onPressEnter = () => {
-    if (!organizationName) return;
+    if (!organizationName.trim()) return;
     onEnter();
   };
 

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Avatar, 
-  Button, 
-  Drawer, 
-  Flex, 
-  Form, 
-  message, 
-  Select, 
-  Spin, 
-  Tooltip, 
-  Typography 
+import {
+  Avatar,
+  Button,
+  Drawer,
+  Flex,
+  Form,
+  message,
+  Select,
+  Spin,
+  Tooltip,
+  Typography,
 } from 'antd';
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -31,7 +31,7 @@ type UpdateMemberDrawerProps = {
 };
 
 const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
-  const { t } = useTranslation('settings-team-members');
+  const { t } = useTranslation('settings/team-members');
   const dispatch = useAppDispatch();
   const auth = useAuthService();
   const [form] = Form.useForm();
@@ -150,7 +150,8 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
               {teamMember?.name}
             </Typography.Text>
 
-            <Typography.Text type="secondary"
+            <Typography.Text
+              type="secondary"
               style={{
                 fontSize: 12.8,
                 fontWeight: 400,
@@ -203,7 +204,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
         </Form.Item>
 
         <Form.Item label={t('memberAccessLabel')} name="access" rules={[{ required: true }]}>
-          <Select 
+          <Select
             disabled={isOwnAccount}
             options={[
               { value: 'member', label: t('memberText') },
@@ -235,7 +236,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
                   color: colors.lightGray,
                 }}
               >
-                {t('addedText')} 
+                {t('addedText')}
                 <Tooltip title={formatDateTimeWithLocale(teamMember?.created_at || '')}>
                   &nbsp;{calculateTimeDifference(teamMember?.created_at || '')}
                 </Tooltip>

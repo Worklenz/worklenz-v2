@@ -11,28 +11,44 @@ export const categoriesApiService = {
     return response.data;
   },
 
-  getCategoriesByTeam: async (id: string): Promise<IServerResponse<IProjectCategoryViewModel[]>> => {
-    const response = await apiClient.get<IServerResponse<IProjectCategoryViewModel[]>>(`${rootUrl}/${id}`);
+  getCategoriesByTeam: async (
+    id: string
+  ): Promise<IServerResponse<IProjectCategoryViewModel[]>> => {
+    const response = await apiClient.get<IServerResponse<IProjectCategoryViewModel[]>>(
+      `${rootUrl}/${id}`
+    );
     return response.data;
   },
 
   getCategoriesByOrganization: async (): Promise<IServerResponse<IProjectCategoryViewModel[]>> => {
-    const response = await apiClient.get<IServerResponse<IProjectCategoryViewModel[]>>(`${rootUrl}/org-categories`);
+    const response = await apiClient.get<IServerResponse<IProjectCategoryViewModel[]>>(
+      `${rootUrl}/org-categories`
+    );
     return response.data;
   },
 
-  createCategory: async (category: Partial<IProjectCategory>): Promise<IServerResponse<IProjectCategoryViewModel>> => {
-    const response = await apiClient.post<IServerResponse<IProjectCategoryViewModel>>(rootUrl, category);
+  createCategory: async (
+    category: Partial<IProjectCategory>
+  ): Promise<IServerResponse<IProjectCategoryViewModel>> => {
+    const response = await apiClient.post<IServerResponse<IProjectCategoryViewModel>>(
+      rootUrl,
+      category
+    );
     return response.data;
   },
 
-  updateCategory: async (category: IProjectCategoryViewModel): Promise<IServerResponse<IProjectCategoryViewModel>> => {
-    const response = await apiClient.put<IServerResponse<IProjectCategoryViewModel>>(`${rootUrl}/${category.id}`, category);
+  updateCategory: async (
+    category: IProjectCategoryViewModel
+  ): Promise<IServerResponse<IProjectCategoryViewModel>> => {
+    const response = await apiClient.put<IServerResponse<IProjectCategoryViewModel>>(
+      `${rootUrl}/${category.id}`,
+      category
+    );
     return response.data;
   },
 
   deleteCategory: async (id: string): Promise<IServerResponse<string>> => {
     const response = await apiClient.delete<IServerResponse<string>>(`${rootUrl}/${id}`);
     return response.data;
-  }
+  },
 };

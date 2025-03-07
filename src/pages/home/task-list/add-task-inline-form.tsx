@@ -87,13 +87,12 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
       project_id: values.project,
       reporter_id: currentSession?.id,
       team_id: currentSession?.team_id,
-      end_date: calculateEndDate(values.dueDate),
+      end_date: (calendarView ? homeTasksConfig.selected_date?.format('YYYY-MM-DD') : calculateEndDate(values.dueDate)),
     };
 
     socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(newTask));
     socket?.on(SocketEvents.QUICK_TASK.toString(), (task: IMyTask) => {
       if (task) {
-        
         const taskBody = {
           team_member_id: currentSession?.team_member_id,
           project_id: task.project_id,
@@ -124,6 +123,10 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
   };
 
   useEffect(() => {
+    form.setFieldValue('dueDate', homeTasksConfig.selected_date || dayjs());
+  }, [homeTasksConfig.selected_date]);
+
+  useEffect(() => {
     if (calendarView) {
       form.setFieldValue('dueDate', homeTasksConfig.selected_date || dayjs());
     } else {
@@ -141,7 +144,7 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
       onFinish={handleTaskSubmit}
       style={{ display: 'flex', gap: 8 }}
       initialValues={{
-        dueDate: calendarView ? (homeTasksConfig.selected_date || dayjs()) : dueDateOptions[0]?.value,
+        dueDate: calendarView ? homeTasksConfig.selected_date || dayjs() : dueDateOptions[0]?.value,
         project: projectOptions[0]?.value,
       }}
     >
@@ -237,8 +240,8 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
             placeholder={'Project'}
             options={projectOptions}
             defaultOpen
-            autoFocus
             showSearch
+            autoFocus={!calendarView}
             optionFilterProp="label"
             filterSort={(optionA, optionB) =>
               (optionA?.label ?? '')
@@ -249,7 +252,7 @@ const AddTaskInlineForm = ({ t, calendarView }: AddTaskInlineFormProps) => {
               form.submit();
             }}
             onInputKeyDown={e => {
-              if (e.key === 'Enter') {
+              if (e.key === 'Tab' || e.key === 'Enter') {
                 form.submit();
               }
             }}

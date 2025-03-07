@@ -25,12 +25,12 @@ const MembersReportsPriorityGraph = () => {
 
   // chart data
   const chartData = {
-    labels: priorityGraphItems.map((item) => t(`${item.name}Text`)),
+    labels: priorityGraphItems.map(item => t(`${item.name}Text`)),
     datasets: [
       {
         label: t('tasksText'),
-        data: priorityGraphItems.map((item) => item.count),
-        backgroundColor: priorityGraphItems.map((item) => item.color),
+        data: priorityGraphItems.map(item => item.count),
+        backgroundColor: priorityGraphItems.map(item => item.color),
       },
     ],
   };
@@ -43,15 +43,12 @@ const MembersReportsPriorityGraph = () => {
         position: 'top' as const,
       },
       datalabels: {
-        display: false
+        display: false,
       },
     },
-  }
+  };
 
-  const totalTasks = priorityGraphItems.reduce(
-    (sum, item) => sum + item.count,
-    0
-  );
+  const totalTasks = priorityGraphItems.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <Card
@@ -78,7 +75,7 @@ const MembersReportsPriorityGraph = () => {
           </Flex>
 
           {/* priority-specific tasks */}
-          {priorityGraphItems.map((item) => (
+          {priorityGraphItems.map(item => (
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>

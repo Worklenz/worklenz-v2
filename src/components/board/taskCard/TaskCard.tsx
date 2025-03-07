@@ -24,10 +24,10 @@ import {
 import './TaskCard.css';
 import dayjs, { Dayjs } from 'dayjs';
 import AddMembersDropdown from '../../add-members-dropdown/add-members-dropdown';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { deleteTask } from '../../../features/tasks/tasks.slice';
 import SubTaskCard from '../subTaskCard/SubTaskCard';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Avatars from '@/components/avatars/avatars';
@@ -45,29 +45,22 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
   const [isToday, setIsToday] = useState(false);
   const [isTomorrow, setIsTomorrow] = useState(false);
   const [isItPrevDate, setIsItPrevDate] = useState(false);
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id as UniqueIdentifier,
     data: {
       type: 'task',
-      task
-    }
+      task,
+    },
   });
 
   const handleDateChange = (date: Dayjs | null) => {
     setDueDate(date);
   };
-  const {t} = useTranslation('kanban-board')
+  const { t } = useTranslation('kanban-board');
 
   const formatDate = (date: Dayjs | null) => {
     if (!date) return '';
@@ -80,9 +73,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     } else if (date.isSame(tomorrow, 'day')) {
       return t('tomorrow');
     } else {
-      return date.isSame(today, 'year')
-        ? date.format('MMM DD')
-        : date.format('MMM DD, YYYY');
+      return date.isSame(today, 'year') ? date.format('MMM DD') : date.format('MMM DD, YYYY');
     }
   };
 
@@ -137,16 +128,11 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
     transition,
     opacity: isDragging ? 0.5 : 1,
     position: 'relative',
-    touchAction: 'none'
+    touchAction: 'none',
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <Dropdown menu={{ items }} trigger={['contextMenu']}>
         <div
           className={`task-card ${themeMode === 'dark' ? 'dark-mode' : ''}`}
@@ -170,21 +156,13 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
               {task.labels?.length ? (
                 <>
                   {task.labels.slice(0, 2).map((label, index) => (
-                    <Tag
-                      key={index}
-                      style={{ marginRight: '4px' }}
-                      color={label.color_code}
-                    >
-                      <span
-                        style={{ color: themeMode === 'dark' ? '#383838' : '' }}
-                      >
+                    <Tag key={index} style={{ marginRight: '4px' }} color={label.color_code}>
+                      <span style={{ color: themeMode === 'dark' ? '#383838' : '' }}>
                         {label.name}
                       </span>
                     </Tag>
                   ))}
-                  {task.labels?.length > 2 && (
-                    <Tag>+ {task.labels.length - 2}</Tag>
-                  )}
+                  {task.labels?.length > 2 && <Tag>+ {task.labels.length - 2}</Tag>}
                 </>
               ) : (
                 ''
@@ -229,11 +207,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                 }}
               />
             )}
-            <Typography.Text
-              style={{ fontWeight: 500 }}
-            >
-              {task.name}
-            </Typography.Text>
+            <Typography.Text style={{ fontWeight: 500 }}>{task.name}</Typography.Text>
           </div>
 
           {/* Subtask Section */}
@@ -261,9 +235,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                 <Avatar
                   size="small"
                   className={
-                    task.assignees?.length
-                      ? 'add-member-avatar'
-                      : 'hide-add-member-avatar'
+                    task.assignees?.length ? 'add-member-avatar' : 'hide-add-member-avatar'
                   }
                   style={{
                     backgroundColor: '#fff',
@@ -309,7 +281,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                     variant="borderless"
                     size="small"
                     suffixIcon={false}
-                    format={(value) => formatDate(value)}
+                    format={value => formatDate(value)}
                   />
                 </div>
                 {task.sub_tasks_count && task.sub_tasks_count > 0 && (
@@ -317,7 +289,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
                     onClick={() => setIsSubTaskShow(!isSubTaskShow)}
                     size="small"
                     style={{ padding: 0 }}
-                    type='text'
+                    type="text"
                   >
                     <Tag
                       bordered={false}
@@ -335,7 +307,7 @@ const TaskCard: React.FC<taskProps> = ({ task }) => {
             {isSubTaskShow &&
               task.sub_tasks_count &&
               task.sub_tasks_count > 0 &&
-              task.sub_tasks?.map((subtask) => <SubTaskCard subtask={subtask} />)}
+              task.sub_tasks?.map(subtask => <SubTaskCard subtask={subtask} />)}
           </div>
         </div>
       </Dropdown>

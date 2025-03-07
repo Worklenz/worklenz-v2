@@ -7,19 +7,16 @@ import {
   MoreOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import {
-  setTaskCardDisabled,
-  initializeStatus,
-} from '../../../features/board/createCardSlice';
+import { setTaskCardDisabled, initializeStatus } from '../../../features/board/create-card.slice';
 import { TaskType } from '../../../types/task.types';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
-import { useAppSelector } from '../../../hooks/useAppSelector';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 import './CommonStatusSection.css';
 
 import { deleteStatus } from '../../../features/projects/status/StatusSlice';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import ChangeCategoryDropdown from '../changeCategoryDropdown/ChangeCategoryDropdown';
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +26,6 @@ interface CommonStatusSectionProps {
   category: string;
   id: string;
 }
-
 
 const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   status,
@@ -47,12 +43,12 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
 
   // Get status-specific disable controls from Redux state
   const isTopCardDisabled = useAppSelector(
-    (state) => state.createCardReducer.taskCardDisabledStatus[status]?.top
+    state => state.createCardReducer.taskCardDisabledStatus[status]?.top
   );
   const isBottomCardDisabled = useAppSelector(
-    (state) => state.createCardReducer.taskCardDisabledStatus[status]?.bottom
+    state => state.createCardReducer.taskCardDisabledStatus[status]?.bottom
   );
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const [addTaskCount, setAddTaskCount] = useState(0);
   const [name, setName] = useState(status);
@@ -60,18 +56,16 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [isLoading, setIsLoading] = useState(false);
   const taskCardRef = useRef<HTMLDivElement>(null);
-  const {t} = useTranslation('kanban-board')
+  const { t } = useTranslation('kanban-board');
 
   const handleAddTaskClick = () => {
-    dispatch(
-      setTaskCardDisabled({ status, position: 'bottom', disabled: false })
-    );
-    setAddTaskCount((prev) => prev + 1);
+    dispatch(setTaskCardDisabled({ status, position: 'bottom', disabled: false }));
+    setAddTaskCount(prev => prev + 1);
   };
 
   const handleTopAddTaskClick = () => {
     dispatch(setTaskCardDisabled({ status, position: 'top', disabled: false }));
-    setAddTaskCount((prev) => prev + 1);
+    setAddTaskCount(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -179,11 +173,7 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
               display: 'flex',
               justifyContent: 'space-between',
               backgroundColor:
-                category === 'todo'
-                  ? '#d1d0d3'
-                  : category === 'doing'
-                    ? '#b9cef1'
-                    : '#c2e4d0',
+                category === 'todo' ? '#d1d0d3' : category === 'doing' ? '#b9cef1' : '#c2e4d0',
               borderRadius: '10px',
             }}
           >
@@ -265,23 +255,15 @@ const CommonStatusSection: React.FC<CommonStatusSectionProps> = ({
           }}
         >
           {!isTopCardDisabled && (
-            <TaskCreateCard
-              ref={createTaskInputRef}
-              status={status}
-              position={'top'}
-            />
+            <TaskCreateCard ref={createTaskInputRef} status={status} position={'top'} />
           )}
 
-          {dataSource.map((task) => (
+          {dataSource.map(task => (
             <TaskCard key={task.taskId} task={task} />
           ))}
 
           {!isBottomCardDisabled && (
-            <TaskCreateCard
-              ref={createTaskInputRef}
-              status={status}
-              position={'bottom'}
-            />
+            <TaskCreateCard ref={createTaskInputRef} status={status} position={'bottom'} />
           )}
         </div>
 

@@ -10,7 +10,6 @@ const initialState: ILocalSession = {
   email: sessionData?.email || '',
 };
 
-
 const userSlice = createSlice({
   name: 'userReducer',
   initialState,

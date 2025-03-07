@@ -17,16 +17,11 @@ class AlertService {
   private sanitizeHtml(content: string): string {
     return DOMPurify.sanitize(content, {
       ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
-      ALLOWED_ATTR: ['href', 'target']
+      ALLOWED_ATTR: ['href', 'target'],
     });
   }
 
-  private show(
-    type: AlertType,
-    title: string,
-    message: string,
-    duration?: number
-  ): void {
+  private show(type: AlertType, title: string, message: string, duration?: number): void {
     if (this.activeAlerts.has(message)) return;
 
     const safeTitle = this.sanitizeHtml(title);
@@ -42,7 +37,7 @@ class AlertService {
       style: { borderRadius: '4px' },
       onClose: () => {
         this.activeAlerts.delete(message);
-      }
+      },
     });
   }
 

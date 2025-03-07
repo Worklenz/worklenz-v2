@@ -1,7 +1,7 @@
 import { Drawer, Empty, Segmented, Typography } from 'antd';
 import { useEffect } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   fetchInvitations,
   fetchNotifications,
@@ -17,6 +17,7 @@ import { useSocket } from '@/socket/socketContext';
 import { ITeamInvitationViewModel } from '@/types/notifications/notifications.types';
 import { teamsApiService } from '@/api/teams/teams.api.service';
 import { setLoading } from '@/features/projects/insights/project-insights.slice';
+import logger from '@/utils/errorLogger';
 
 const NotficationDrawer = () => {
   const { isDrawerOpen, notificationType } = useAppSelector(state => state.notificationReducer);
@@ -26,15 +27,15 @@ const NotficationDrawer = () => {
   const { socket, connected } = useSocket();
 
   const handleInvitationsUpdate = (data: ITeamInvitationViewModel[]) => {
-    console.log(data);
+    logger.info('Invitations updated', data);
   };
 
   const handleNotificationsUpdate = (data: IWorklenzNotification[]) => {
-    console.log(data);
+    logger.info('Notifications updated', data);
   };
 
   const handleTeamInvitationsUpdate = (data: ITeamInvitationViewModel[]) => {
-    console.log(data);
+    logger.info('Team invitations updated', data);
   };
 
   const askPushPermission = () => {
@@ -42,12 +43,12 @@ const NotficationDrawer = () => {
       if (Notification.permission !== 'granted') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
-            console.log('Permission granted');
+            logger.info('Permission granted');    
           }
         });
       }
     } else {
-      console.log('This browser does not support notification permission.');
+      logger.error('This browser does not support notification permission.');
       return;
     }
   };

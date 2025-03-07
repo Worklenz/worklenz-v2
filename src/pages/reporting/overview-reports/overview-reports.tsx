@@ -16,7 +16,7 @@ const OverviewReports = () => {
   const dispatch = useAppDispatch();
   const { trackMixpanelEvent } = useMixpanelTracking();
   const includeArchivedProjects = useAppSelector(
-    (state) => state.reportingReducer.includeArchivedProjects
+    state => state.reportingReducer.includeArchivedProjects
   );
 
   useDocumentTitle('Reporting - Overview');

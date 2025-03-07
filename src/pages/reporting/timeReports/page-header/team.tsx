@@ -1,14 +1,14 @@
-import { CaretDownFilled } from "@ant-design/icons";
-import { Button, Checkbox, Divider, Dropdown, Input, MenuProps, Space } from "antd";
-import React, { useState } from "react";
-import type { CheckboxChangeEvent } from "antd/es/checkbox"; 
-import { useTranslation } from "react-i18next";
+import { CaretDownFilled } from '@ant-design/icons';
+import { Button, Checkbox, Divider, Dropdown, Input, MenuProps, Space } from 'antd';
+import React, { useState } from 'react';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { useTranslation } from 'react-i18next';
 
 const Team: React.FC = () => {
   const [checkedList, setCheckedList] = useState<string[]>([]);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [selectAll, setSelectAll] = useState(false);
-  const {t} = useTranslation('time-report')
+  const { t } = useTranslation('time-report');
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const allItems = [
@@ -24,9 +24,7 @@ const Team: React.FC = () => {
 
   // Handle checkbox change for individual items
   const handleCheckboxChange = (key: string, checked: boolean) => {
-    setCheckedList(prev => 
-      checked ? [...prev, key] : prev.filter(item => item !== key)
-    );
+    setCheckedList(prev => (checked ? [...prev, key] : prev.filter(item => item !== key)));
   };
 
   // Handle "Select All" checkbox change
@@ -38,25 +36,29 @@ const Team: React.FC = () => {
 
   // Dropdown items for the menu
   const menuItems: MenuProps['items'] = [
-      {
-        key: 'search',
-        label: (
-          <Input
-            placeholder={t('searchByName')}
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-          />
-        ),
-      },
+    {
+      key: 'search',
+      label: (
+        <Input
+          placeholder={t('searchByName')}
+          value={searchText}
+          onChange={e => setSearchText(e.target.value)}
+          onClick={e => e.stopPropagation()}
+        />
+      ),
+    },
     {
       key: 'selectAll',
       label: (
         <div>
-            <Checkbox  onClick={(e) => e.stopPropagation()} onChange={handleSelectAllChange} checked={selectAll}>
-              {t('selectAll')}
-            </Checkbox>
-            <Divider style={{margin: '4px 0'}}/>
+          <Checkbox
+            onClick={e => e.stopPropagation()}
+            onChange={handleSelectAllChange}
+            checked={selectAll}
+          >
+            {t('selectAll')}
+          </Checkbox>
+          <Divider style={{ margin: '4px 0' }} />
         </div>
       ),
     },
@@ -64,9 +66,9 @@ const Team: React.FC = () => {
       key: item.key,
       label: (
         <Checkbox
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
           checked={checkedList.includes(item.key)}
-          onChange={(e) => handleCheckboxChange(item.key, e.target.checked)}
+          onChange={e => handleCheckboxChange(item.key, e.target.checked)}
         >
           {item.label}
         </Checkbox>
@@ -80,15 +82,15 @@ const Team: React.FC = () => {
         menu={{ items: menuItems }}
         placement="bottomLeft"
         trigger={['click']}
-        overlayStyle={{maxHeight: '330px', overflowY: 'auto'}}
-        onOpenChange={(visible) => {
-          setDropdownVisible(visible)
+        overlayStyle={{ maxHeight: '330px', overflowY: 'auto' }}
+        onOpenChange={visible => {
+          setDropdownVisible(visible);
           if (!visible) {
-            setSearchText('')
+            setSearchText('');
           }
         }}
       >
-        <Button >
+        <Button>
           {t('teams')} <CaretDownFilled />
         </Button>
       </Dropdown>

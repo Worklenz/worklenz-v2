@@ -1,24 +1,26 @@
 import { Button, Flex, Select, Typography } from 'antd';
 import { useState } from 'react';
-import StatusGroupTables from '../../../projects/project-view/taskList/statusTables/StatusGroupTables';
+import StatusGroupTables from '../../../projects/project-view-1/taskList/statusTables/StatusGroupTables';
 import { TaskType } from '../../../../types/task.types';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { PageHeader } from '@ant-design/pro-components';
 import { ArrowLeftOutlined, CaretDownFilled } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import SearchDropdown from '../../../projects/project-view/taskList/taskListFilters/SearchDropdown';
+import SearchDropdown from '../../../projects/project-view-1/taskList/taskListFilters/SearchDropdown';
 import { useSelectedProject } from '../../../../hooks/useSelectedProject';
 import { useTranslation } from 'react-i18next';
-import { toggleDrawer as togglePhaseDrawer } from '../../../../features/projects/singleProject/phase/phaseSlice';
+import { toggleDrawer as togglePhaseDrawer } from '../../../../features/projects/singleProject/phase/phases.slice';
 import { toggleDrawer } from '../../../../features/projects/status/StatusSlice';
-import PhaseDrawer from '../../../../features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '../../../../features/projects/status/StatusDrawer';
 import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import React from 'react';
+
+const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
+const StatusDrawer = React.lazy(
+  () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
+);
 
 const ProjectTemplateEditView = () => {
-  const dataSource: TaskType[] = useAppSelector(
-    (state) => state.taskReducer.tasks
-  );
+  const dataSource: TaskType[] = useAppSelector(state => state.taskReducer.tasks);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { templateId, templateName } = useParams();
@@ -37,8 +39,8 @@ const ProjectTemplateEditView = () => {
 
   //get phases details from phases slice
   const phase =
-    useAppSelector((state) => state.phaseReducer.phaseList).find(
-      (phase) => phase.projectId === selectedProject?.id
+    useAppSelector(state => state.phaseReducer.phaseList).find(
+      phase => phase.projectId === selectedProject?.id
     ) || null;
 
   const groupDropdownMenuItems = [
@@ -56,14 +58,8 @@ const ProjectTemplateEditView = () => {
         className="site-page-header"
         title={
           <Flex gap={8} align="center">
-            <ArrowLeftOutlined
-              style={{ fontSize: 16 }}
-              onClick={() => navigate(-1)}
-            />
-            <Typography.Title
-              level={4}
-              style={{ marginBlockEnd: 0, marginInlineStart: 12 }}
-            >
+            <ArrowLeftOutlined style={{ fontSize: 16 }} onClick={() => navigate(-1)} />
+            <Typography.Title level={4} style={{ marginBlockEnd: 0, marginInlineStart: 12 }}>
               {templateName}
             </Typography.Title>
           </Flex>
@@ -83,10 +79,7 @@ const ProjectTemplateEditView = () => {
             />
           </Flex>
           {activeGroup === 'phase' ? (
-            <Button
-              type="primary"
-              onClick={() => dispatch(togglePhaseDrawer())}
-            >
+            <Button type="primary" onClick={() => dispatch(togglePhaseDrawer())}>
               {t('addPhaseButton')}
             </Button>
           ) : activeGroup === 'status' ? (

@@ -13,7 +13,7 @@ type OverviewReportsOverviewTabProps = {
 const OverviewReportsOverviewTab = ({ teamId = null }: OverviewReportsOverviewTabProps) => {
   const [model, setModel] = useState<IRPTOverviewTeamInfo | null>(null);
   const [loading, setLoading] = useState(false);
-  const { includeArchivedProjects } = useAppSelector((state) => state.reportingReducer);
+  const { includeArchivedProjects } = useAppSelector(state => state.reportingReducer);
 
   const getModelData = async () => {
     if (!teamId) return;

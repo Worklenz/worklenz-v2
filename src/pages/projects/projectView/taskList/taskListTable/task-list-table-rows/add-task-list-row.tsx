@@ -1,18 +1,21 @@
-import { Input, InputRef, theme } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { colors } from '../../../../../../styles/colors';
+import Input, { InputRef } from 'antd/es/input';
+import { useMemo, useRef, useState } from 'react';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
-import { addTask } from '@/features/project/project.slice';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { reset } from 'mixpanel-browser';
 import { DRAWER_ANIMATION_INTERVAL } from '@/shared/constants';
-import { getCurrentGroup, GROUP_BY_STATUS_VALUE, GROUP_BY_PRIORITY_VALUE, GROUP_BY_PHASE_VALUE } from '@/features/tasks/tasks.slice';
+import {
+  getCurrentGroup,
+  GROUP_BY_STATUS_VALUE,
+  GROUP_BY_PRIORITY_VALUE,
+  GROUP_BY_PHASE_VALUE,
+  addTask,
+} from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useSocket } from '@/socket/socketContext';
 import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
-import { ILocalSession } from '@/types/auth/local-session.types';
 import { useAuthService } from '@/hooks/useAuth';
 
 interface IAddTaskListRowProps {
@@ -24,10 +27,7 @@ interface IAddNewTask extends IProjectTask {
   groupId: string;
 }
 
-const AddTaskListRow = ({
-  groupId = null,
-  parentTask = null,
-}: IAddTaskListRowProps) => {
+const AddTaskListRow = ({ groupId = null, parentTask = null }: IAddTaskListRowProps) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [taskName, setTaskName] = useState<string>('');
   const [creatingTask, setCreatingTask] = useState<boolean>(false);
@@ -36,7 +36,6 @@ const AddTaskListRow = ({
   const currentSession = useAuthService().getCurrentSession();
 
   const { socket } = useSocket();
-  const { token } = theme.useToken();
 
   const { t } = useTranslation('task-list-table');
 
@@ -65,8 +64,6 @@ const AddTaskListRow = ({
     if (parentTask) {
       body.parent_task_id = parentTask;
     }
-    console.log('createRequestBody', body);
-
     return body;
   };
 
@@ -81,42 +78,44 @@ const AddTaskListRow = ({
     setTimeout(() => {
       taskInputRef.current?.focus();
       if (scroll) window.scrollTo(0, document.body.scrollHeight);
-    }, DRAWER_ANIMATION_INTERVAL); // wait for the animation end
+    }, DRAWER_ANIMATION_INTERVAL);
   };
-  
+
   const onNewTaskReceived = (task: IAddNewTask) => {
     if (!groupId) return;
-    console.log('onNewTaskReceived', task);
-    task.groupId = groupId;
-    if (groupId && task.id) {
-      dispatch(addTask(task));
-      reset(false);
-      // if (this.map.has(task.id)) return;
+    
+    // Ensure we're adding the task with the correct group
+    const taskWithGroup = {
+      ...task,
+      groupId: groupId
+    };
 
-      // this.service.addTask(task, this.groupId);
-      // this.reset(false);
-    }
+    // Add the task to the state
+    dispatch(addTask({ 
+      task: taskWithGroup, 
+      groupId, 
+      insert: true 
+    }));
+
+    // Reset the input state
+    reset(false);
   };
-  
-  const addInstantTask = () => {
-    if (creatingTask) return;
-    console.log('addInstantTask', projectId, taskName.trim());
-    if (!projectId || !currentSession || taskName.trim() === '') return;
+
+  const addInstantTask = async () => {
+    if (creatingTask || !projectId || !currentSession || taskName.trim() === '') return;
 
     try {
       setCreatingTask(true);
       const body = createRequestBody();
       if (!body) return;
+
       socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
         setCreatingTask(false);
-        if (task.parent_task_id) {
-        }
         onNewTaskReceived(task as IAddNewTask);
       });
     } catch (error) {
-      console.error(error);
-    } finally {
+      console.error('Error adding task:', error);
       setCreatingTask(false);
     }
   };
@@ -142,7 +141,7 @@ const AddTaskListRow = ({
         <Input
           onFocus={() => setIsEdit(true)}
           className="w-[300px] border-none"
-          value={t('addTaskText')}
+          value={parentTask ? t('addSubTaskText') : t('addTaskText')}
           ref={taskInputRef}
         />
       )}

@@ -1,8 +1,8 @@
-import {IUserType} from "../user.types";
+import { IUserType } from '../user.types';
 
 export interface IWorklenzAlert {
   description: string;
-  type: "success" | "info" | "warning" | "error";
+  type: 'success' | 'info' | 'warning' | 'error';
 }
 
 export interface ILocalSession extends IUserType {

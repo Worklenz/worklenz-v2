@@ -29,11 +29,7 @@ const AddCustomColumnButton = () => {
         />
       </Tooltip>
 
-      <CustomColumnModal
-        modalType="create"
-        isModalOpen={isModalOpen}
-        handleCancel={handleCancel}
-      />
+      <CustomColumnModal modalType="create" isModalOpen={isModalOpen} handleCancel={handleCancel} />
     </>
   );
 };

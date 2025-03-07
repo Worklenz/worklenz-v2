@@ -1,6 +1,0 @@
-{
-    "login-success": "¡Inicio de sesión exitoso!",
-    "login-failed": "Error al iniciar sesión. Por favor verifica tus credenciales e intenta nuevamente.",
-    "signup-success": "¡Registro exitoso! Bienvenido a bordo.",
-    "signup-failed": "Error al registrarse. Por favor asegúrate de llenar todos los campos requeridos e intenta nuevamente."
-}

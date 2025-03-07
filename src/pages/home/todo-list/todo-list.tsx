@@ -1,25 +1,20 @@
 import { CheckCircleOutlined, SyncOutlined } from '@ant-design/icons';
-import {
-  Alert,
-  Button,
-  Card,
-  ConfigProvider,
-  Flex,
-  Form,
-  Input,
-  InputRef,
-  Table,
-  TableProps,
-  Tooltip,
-  Typography,
-} from 'antd';
 import { useRef, useState } from 'react';
+import Form from 'antd/es/form';
+import Input, { InputRef } from 'antd/es/input';
+import Flex from 'antd/es/flex';
+import Card from 'antd/es/card';
+import ConfigProvider from 'antd/es/config-provider';
+import Table, { TableProps } from 'antd/es/table';
+import Tooltip from 'antd/es/tooltip';
+import Typography from 'antd/es/typography';
+import Button from 'antd/es/button';
+import Alert from 'antd/es/alert';
 
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import { IMyTask } from '@/types/home/my-tasks.types';
 import { useTranslation } from 'react-i18next';
 import { colors } from '@/styles/colors';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   useGetPersonalTasksQuery,
   useMarkPersonalTaskAsDoneMutation,
@@ -27,7 +22,6 @@ import {
 import { useCreatePersonalTaskMutation } from '@/api/home-page/home-page.api.service';
 
 const TodoList = () => {
-  const dispatch = useAppDispatch();
   const [isAlertShowing, setIsAlertShowing] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation('home');

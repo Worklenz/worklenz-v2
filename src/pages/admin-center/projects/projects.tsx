@@ -39,7 +39,7 @@ const Projects: React.FC = () => {
     order: 'desc',
     search: '',
   });
-  
+
   const dispatch = useAppDispatch();
 
   const { t } = useTranslation('admin-center/projects');
@@ -72,7 +72,13 @@ const Projects: React.FC = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, [requestParams.search, requestParams.index, requestParams.size, requestParams.field, requestParams.order]);
+  }, [
+    requestParams.search,
+    requestParams.index,
+    requestParams.size,
+    requestParams.field,
+    requestParams.order,
+  ]);
 
   const columns: TableProps['columns'] = [
     {
@@ -140,7 +146,7 @@ const Projects: React.FC = () => {
             <Popconfirm
               title={t('confirm')}
               description={t('deleteProject')}
-              onConfirm={() => deleteProject(record.id  ?? '')}
+              onConfirm={() => deleteProject(record.id ?? '')}
             >
               <Button size="small">
                 <DeleteOutlined />
@@ -209,7 +215,8 @@ const Projects: React.FC = () => {
             total: requestParams.total,
             current: requestParams.index,
             pageSize: requestParams.size,
-            onChange: (page, pageSize) => setRequestParams(prev => ({ ...prev, index: page, size: pageSize })),
+            onChange: (page, pageSize) =>
+              setRequestParams(prev => ({ ...prev, index: page, size: pageSize })),
           }}
         />
       </Card>

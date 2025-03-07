@@ -171,14 +171,11 @@ const roadmapSlice = createSlice({
   name: 'roadmap',
   initialState,
   reducers: {
-    updateTaskDate: (
-      state,
-      action: PayloadAction<{ taskId: string; start: Date; end: Date }>
-    ) => {
+    updateTaskDate: (state, action: PayloadAction<{ taskId: string; start: Date; end: Date }>) => {
       const { taskId, start, end } = action.payload;
 
       const updateTask = (tasks: NewTaskType[]): NewTaskType[] => {
-        return tasks.map((task) => {
+        return tasks.map(task => {
           if (task.id === taskId) {
             return {
               ...task,
@@ -200,13 +197,11 @@ const roadmapSlice = createSlice({
 
       state.tasksList = updateTask(state.tasksList);
     },
-    updateTaskProgress: (
-      state,
-      action: PayloadAction<{ taskId: string; progress: number }>
-    ) => {
-      const { taskId, progress } = action.payload;
+    updateTaskProgress: (state, action: PayloadAction<{ taskId: string; progress: number, totalTasksCount: number, completedCount: number }>) => {
+      const { taskId, progress, totalTasksCount, completedCount } = action.payload;
       const updateTask = (tasks: NewTaskType[]) => {
-        tasks.forEach((task) => {
+        tasks.forEach(task => {
+
           if (task.id === taskId) {
             task.progress = progress;
           } else if (task.subTasks) {
@@ -217,9 +212,7 @@ const roadmapSlice = createSlice({
       updateTask(state.tasksList);
     },
     toggleTaskExpansion: (state, action: PayloadAction<string>) => {
-      const index = state.tasksList.findIndex(
-        (task) => task.id === action.payload
-      );
+      const index = state.tasksList.findIndex(task => task.id === action.payload);
 
       if (index !== -1) {
         state.tasksList[index] = {
@@ -231,6 +224,5 @@ const roadmapSlice = createSlice({
   },
 });
 
-export const { toggleTaskExpansion, updateTaskDate, updateTaskProgress } =
-  roadmapSlice.actions;
+export const { toggleTaskExpansion, updateTaskDate, updateTaskProgress } = roadmapSlice.actions;
 export default roadmapSlice.reducer;

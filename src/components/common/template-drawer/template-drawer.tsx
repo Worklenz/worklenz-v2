@@ -1,22 +1,37 @@
 import type { MenuProps } from 'antd';
-import { Empty, List, Menu, Skeleton, Tabs, Tag, Typography, Image, Input } from 'antd';
+import {
+  Empty,
+  List,
+  Menu,
+  Skeleton,
+  Tabs,
+  Tag,
+  Typography,
+  Image,
+  Input,
+  Flex,
+  Button,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '@/app/store';
 import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
 import {
+  ICustomTemplate,
   IProjectTemplate,
   IWorklenzTemplate,
 } from '@/types/project-templates/project-templates.types';
 import './template-drawer.css';
 import { SearchOutlined } from '@ant-design/icons';
+import logger from '@/utils/errorLogger';
 
 const { Title, Text } = Typography;
 
 interface TemplateDrawerProps {
   showBothTabs: boolean;
   templateSelected: (templateId: string) => void;
+  selectedTemplateType: (type: 'worklenz' | 'custom') => void;
 }
 
 const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
@@ -25,12 +40,19 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
     if (!templateId) return;
     templateId;
   },
+  selectedTemplateType = (type: 'worklenz' | 'custom') => {
+    type;
+  },
 }) => {
   const themeMode = useSelector((state: RootState) => state.themeReducer.mode);
   const { t } = useTranslation('template-drawer');
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [templates, setTemplates] = useState<IWorklenzTemplate[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
+
+  const [customTemplates, setCustomTemplates] = useState<ICustomTemplate[]>([]);
+  const [loadingCustomTemplates, setLoadingCustomTemplates] = useState(false);
 
   const [selectedTemplate, setSelectedTemplate] = useState<IProjectTemplate | null>(null);
   const [loadingSelectedTemplate, setLoadingSelectedTemplate] = useState(false);
@@ -43,7 +65,7 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         setSelectedTemplate(res.body);
       }
     } catch (error) {
-      console.error('Error loading template:', error);
+      logger.error('Error loading template:', error);
     } finally {
       setLoadingSelectedTemplate(false);
     }
@@ -61,9 +83,23 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         }
       }
     } catch (error) {
-      console.error('Error loading templates:', error);
+      logger.error('Error loading templates:', error);
     } finally {
       setLoadingTemplates(false);
+    }
+  };
+
+  const getCustomTemplates = async () => {
+    try {
+      setLoadingCustomTemplates(true);
+      const res = await projectTemplatesApiService.getCustomTemplates();
+      if (res.done) {
+        setCustomTemplates(res.body);
+      }
+    } catch (error) {
+      logger.error('Error loading custom templates:', error);
+    } finally {
+      setLoadingCustomTemplates(false);
     }
   };
 
@@ -81,6 +117,10 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
     templateSelected(templateId);
     getSelectedTemplate(templateId);
   };
+
+  const filteredCustomTemplates = customTemplates.filter(template =>
+    template.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderTemplateDetails = () => {
     if (!selectedTemplate) {
@@ -227,7 +267,14 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
         </Skeleton>
       </div>
       {/* Content Area */}
-      <div className="temp-details" style={{ flex: 1 }}>
+      <div
+        className="temp-details"
+        style={{
+          flex: 1,
+          maxHeight: 'calc(100vh - 200px)',
+          padding: '16px',
+        }}
+      >
         <Title level={4}>Details</Title>
         <Skeleton loading={loadingSelectedTemplate} active>
           {selectedTemplate?.image_url && (
@@ -239,12 +286,48 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
     </div>
   );
 
+  const handleCustomTemplateClick = (templateId: string) => {
+    const updatedCustomTemplates = customTemplates.map(template =>
+      template.id === templateId
+        ? { ...template, selected: true }
+        : { ...template, selected: false }
+    );
+    setCustomTemplates(updatedCustomTemplates);
+    templateSelected(templateId);
+    selectedTemplateType('custom');
+  };
+
   const customTemplatesContent = (
     <div>
-      <Input placeholder={t('searchTemplates')} suffix={<SearchOutlined />} />
+      <Flex justify="space-between" align="center">
+        <Input
+          placeholder={t('searchTemplates')}
+          suffix={<SearchOutlined />}
+          style={{ maxWidth: '300px' }}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+      </Flex>
+
       <List
-        dataSource={[]}
-        renderItem={item => <List.Item key={item.name}>{item.name}</List.Item>}
+        className="custom-template-list mt-4"
+        bordered
+        dataSource={filteredCustomTemplates}
+        loading={loadingCustomTemplates}
+        renderItem={item => (
+          <List.Item
+            key={item.id}
+            onClick={() => handleCustomTemplateClick(item.id || '')}
+            className={
+              item.selected && themeMode === 'dark'
+                ? 'selected-custom-template-dark'
+                : item.selected && themeMode === 'light'
+                  ? 'selected-custom-template'
+                  : ''
+            }
+          >
+            {item.name}
+          </List.Item>
+        )}
       />
     </div>
   );
@@ -262,6 +345,16 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
     },
   ];
 
+  const handleTabChange = (key: string) => {
+    if (key === '1') {
+      getTemplates();
+      selectedTemplateType('worklenz');
+    } else {
+      getCustomTemplates();
+      selectedTemplateType('custom');
+    }
+  };
+
   return (
     <div style={{ height: '100vh', overflow: 'hidden' }}>
       <div
@@ -273,7 +366,11 @@ const TemplateDrawer: React.FC<TemplateDrawerProps> = ({
           overflow: 'hidden',
         }}
       >
-        {showBothTabs ? <Tabs type="card" items={tabs} /> : menuContent}
+        {showBothTabs ? (
+          <Tabs type="card" items={tabs} onChange={handleTabChange} destroyInactiveTabPane />
+        ) : (
+          menuContent
+        )}
       </div>
     </div>
   );

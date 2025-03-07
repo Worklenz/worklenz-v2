@@ -8,10 +8,19 @@ import {
   IOrganizationUsersGetRequest,
   IOrganizationTeamGetRequest,
   IOrganizationProjectsGetResponse,
+  IBillingConfigurationCountry,
+  IBillingConfiguration,
+  IBillingAccountInfo,
+  IUpgradeSubscriptionPlanResponse,
+  IPricingPlans,
+  IBillingTransaction,
+  IBillingChargesResponse,
+  IStorageInfo,
+  IFreePlanSettings,
+  IBillingAccountStorage,
 } from '@/types/admin-center/admin-center.types';
 import { IClient } from '@/types/client.types';
 import { toQueryString } from '@/utils/toQueryString';
-import search from 'antd/es/transfer/search';
 
 const rootUrl = `${API_BASE_URL}/admin-center`;
 
@@ -142,4 +151,103 @@ export const adminCenterApiService = {
     );
     return response.data;
   },
+
+  
+  // Billing - Configuration
+  async getCountries(): Promise<IServerResponse<IBillingConfigurationCountry[]>> {
+    const response = await apiClient.get<IServerResponse<IBillingConfigurationCountry[]>>(
+      `${rootUrl}/billing/countries`
+    );
+    return response.data;
+  },
+
+  async getBillingConfiguration(): Promise<IServerResponse<IBillingConfiguration>> {
+    const response = await apiClient.get<IServerResponse<IBillingConfiguration>>(
+      `${rootUrl}/billing/configuration`
+    );
+    return response.data;
+  },
+
+  async updateBillingConfiguration(body: IBillingConfiguration): Promise<IServerResponse<IBillingConfiguration>> {
+    const response = await apiClient.put<IServerResponse<IBillingConfiguration>>(
+      `${rootUrl}/billing/configuration`,
+      body
+    );
+    return response.data;
+  },
+
+  // Billing - Current Bill
+  async getCharges(): Promise<IServerResponse<IBillingChargesResponse>> {
+    const response = await apiClient.get<IServerResponse<IBillingChargesResponse>>(`${rootUrl}/billing/charges`);
+    return response.data;
+  },
+
+  async getTransactions(): Promise<IServerResponse<IBillingTransaction[]>> {
+    const response = await apiClient.get<IServerResponse<IBillingTransaction[]>>(`${rootUrl}/billing/transactions`);
+    return response.data;
+  },
+
+  async getBillingAccountInfo(): Promise<IServerResponse<IBillingAccountInfo>> {
+    const response = await apiClient.get<IServerResponse<IBillingAccountInfo>>(`${rootUrl}/billing/info`);
+    return response.data;
+  },
+
+  async getFreePlanSettings(): Promise<IServerResponse<IFreePlanSettings>> {
+    const response = await apiClient.get<IServerResponse<IFreePlanSettings>>(`${rootUrl}/billing/free-plan`);
+    return response.data;
+  },
+
+  async upgradePlan(plan: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
+    const response = await apiClient.get<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/upgrade-plan${toQueryString({plan})}`);
+    return response.data;
+  },
+
+  async changePlan(plan: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
+    const response = await apiClient.get<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/change-plan${toQueryString({plan})}`);
+    return response.data;
+  },
+
+  async getPlans(): Promise<IServerResponse<IPricingPlans>> {
+    const response = await apiClient.get<IServerResponse<IPricingPlans>>(`${rootUrl}/billing/plans`);
+    return response.data;
+  },
+
+  async getStorageInfo(): Promise<IServerResponse<IStorageInfo>> {
+    const response = await apiClient.get<IServerResponse<IStorageInfo>>(`${rootUrl}/billing/storage`);
+    return response.data;
+  },
+
+  async pauseSubscription(): Promise<IServerResponse<any>> {
+    const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/pause-plan`);
+    return response.data;
+  },
+
+  async resumeSubscription(): Promise<IServerResponse<any>> {
+    const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/resume-plan`);
+    return response.data;
+  },  
+
+  async cancelSubscription(): Promise<IServerResponse<any>> {
+    const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/cancel-plan`);
+    return response.data;
+  },
+
+  async redeemCode(code: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
+    const response = await apiClient.post<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/redeem`, {
+      code,
+    });
+    return response.data;
+  },
+
+  async getAccountStorage(): Promise<IServerResponse<IBillingAccountStorage>> {
+    const response = await apiClient.get<IServerResponse<IBillingAccountStorage>>(`${rootUrl}/billing/account-storage`);
+    return response.data;
+  },
+
+  async switchToFreePlan(teamId: string): Promise<IServerResponse<any>> {
+    const response = await apiClient.get<IServerResponse<any>>(`${rootUrl}/billing/switch-to-free-plan/${teamId}`);
+    return response.data;
+  },
+
 };
+

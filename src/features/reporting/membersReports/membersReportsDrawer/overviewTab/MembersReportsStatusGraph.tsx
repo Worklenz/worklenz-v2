@@ -25,12 +25,12 @@ const MembersReportsStatusGraph = () => {
 
   // chart data
   const chartData = {
-    labels: statusGraphItems.map((item) => t(`${item.name}Text`)),
+    labels: statusGraphItems.map(item => t(`${item.name}Text`)),
     datasets: [
       {
         label: t('tasksText'),
-        data: statusGraphItems.map((item) => item.count),
-        backgroundColor: statusGraphItems.map((item) => item.color),
+        data: statusGraphItems.map(item => item.count),
+        backgroundColor: statusGraphItems.map(item => item.color),
       },
     ],
   };
@@ -43,15 +43,12 @@ const MembersReportsStatusGraph = () => {
         position: 'top' as const,
       },
       datalabels: {
-        display: false
+        display: false,
       },
     },
-  }
+  };
 
-  const totalTasks = statusGraphItems.reduce(
-    (sum, item) => sum + item.count,
-    0
-  );
+  const totalTasks = statusGraphItems.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <Card
@@ -78,7 +75,7 @@ const MembersReportsStatusGraph = () => {
           </Flex>
 
           {/* status-specific tasks */}
-          {statusGraphItems.map((item) => (
+          {statusGraphItems.map(item => (
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>

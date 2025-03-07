@@ -4,4 +4,3 @@ export interface IUpdatePasswordRequest {
   hash?: string;
   confirmPassword?: string;
 }
-

@@ -1,6 +1,10 @@
 import { IServerResponse } from '@/types/common.types';
 import apiClient from '../api-client';
-import { IUserLoginRequest, IUserLoginResponse, IAuthorizeResponse } from '@/types/auth/login.types';
+import {
+  IUserLoginRequest,
+  IUserLoginResponse,
+  IAuthorizeResponse,
+} from '@/types/auth/login.types';
 import { AUTH_API_BASE_URL } from '@/shared/constants';
 
 const rootUrl = `${AUTH_API_BASE_URL}`;
@@ -32,17 +36,24 @@ export const authApiService = {
   },
 
   async resetPassword(email: string): Promise<IServerResponse<string>> {
-    const response = await apiClient.post<IServerResponse<string>>(`${rootUrl}/reset-password`, { email });
+    const response = await apiClient.post<IServerResponse<string>>(`${rootUrl}/reset-password`, {
+      email,
+    });
     return response.data;
   },
 
   async updatePassword(values: any): Promise<IServerResponse<string>> {
-    const response = await apiClient.post<IServerResponse<string>>(`${rootUrl}/update-password`, values);
+    const response = await apiClient.post<IServerResponse<string>>(
+      `${rootUrl}/update-password`,
+      values
+    );
     return response.data;
   },
 
   async verifyRecaptchaToken(token: string): Promise<IServerResponse<string>> {
-    const response = await apiClient.post<IServerResponse<string>>(`${rootUrl}/verify-captcha`, { token });
+    const response = await apiClient.post<IServerResponse<string>>(`${rootUrl}/verify-captcha`, {
+      token,
+    });
     return response.data;
-  }
+  },
 };

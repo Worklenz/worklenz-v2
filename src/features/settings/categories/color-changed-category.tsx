@@ -4,16 +4,12 @@ import { CategoryType } from '../../../types/categories.types';
 import { useTranslation } from 'react-i18next';
 import { PhaseColorCodes } from '../../../shared/constants';
 
-const ColorChangedCategory = ({
-  category,
-}: {
-  category: CategoryType | null;
-}) => {
+const ColorChangedCategory = ({ category }: { category: CategoryType | null }) => {
   // localization
   const { t } = useTranslation('categoriesSettings');
 
   // color options for the categories
-  const colorsOptions = PhaseColorCodes.map((color) => ({
+  const colorsOptions = PhaseColorCodes.map(color => ({
     key: color,
     value: color,
     label: (

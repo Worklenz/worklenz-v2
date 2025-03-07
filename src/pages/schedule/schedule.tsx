@@ -1,35 +1,36 @@
-import { Button, DatePicker, DatePickerProps, Select, Space } from 'antd';
-import React, { Suspense, useState } from 'react';
-import Team from '../../components/schedule/team/Team';
+import { Button, DatePicker, DatePickerProps, Flex, Select, Space } from 'antd';
+import React, { useRef, useState } from 'react';
 import { SettingOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { toggleSettingsDrawer } from '@features/schedule/scheduleSlice';
-import ScheduleSettingsDrawer from '@features/schedule/ScheduleSettingsDrawer';
+import { setDate, setType, toggleSettingsDrawer } from '@/features/schedule/scheduleSlice';
+import ScheduleSettingsDrawer from '@/features/schedule/ScheduleSettingsDrawer';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { useDocumentTitle } from '../../hooks/useDoumentTItle';
-import { SuspenseFallback } from '@/components/suspense-fallback/suspense-fallback';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import ScheduleDrawer from '@/features/schedule/ScheduleDrawer';
+import GranttChart from '@/components/schedule/grant-chart/grantt-chart';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { PickerType } from '@/types/schedule/schedule-v2.types';
 
 const { Option } = Select;
-
-type PickerType = 'week' | 'month';
 
 const PickerWithType = ({
   type,
   onChange,
+  date,
 }: {
   type: PickerType;
   onChange: DatePickerProps['onChange'];
+  date?: Date;
 }) => {
-  return <DatePicker picker={type} onChange={onChange} />;
+  return <DatePicker value={dayjs(date)} picker={type} onChange={onChange} />;
 };
 
 const Schedule: React.FC = () => {
-  const [type, setType] = useState<PickerType>('week');
-  const [date, setDate] = useState<Date | null>(null);
   const { t } = useTranslation('schedule');
-
   const dispatch = useDispatch();
+  const granttChartRef = useRef<any>(null);
+  const { date, type } = useAppSelector(state => state.scheduleReducer);
 
   useDocumentTitle('Schedule');
 
@@ -42,47 +43,48 @@ const Schedule: React.FC = () => {
       selectedDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     }
 
-    setDate(selectedDate);
+    dispatch(setDate(selectedDate));
   };
 
   const handleToday = () => {
     const today = new Date();
     setDate(today);
+    granttChartRef.current?.scrollToToday();
+    console.log('Today:', today);
   };
 
   return (
-    <Suspense fallback={<SuspenseFallback />}>
-      <div style={{ marginBlock: 65, minHeight: '90vh' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-              paddingTop: '25px',
-              paddingBottom: '20px',
-            }}
-          >
-            <Button onClick={handleToday}>{t('today')}</Button>
-            <Space>
-              <Select value={type} onChange={value => setType(value as PickerType)}>
-                <Option value="week">{t('week')}</Option>
-                <Option value="month">{t('month')}</Option>
-              </Select>
-              <PickerWithType type={type} onChange={handleDateChange} />
-            </Space>
-          </div>
-          <Button size="small" shape="circle" onClick={() => dispatch(toggleSettingsDrawer())}>
-            <SettingOutlined />
-          </Button>
-        </div>
+    <div style={{ marginBlockStart: 65, minHeight: '90vh' }}>
+      <Flex align="center" justify="space-between">
+        <Flex
+          gap={16}
+          align="center"
+          style={{
+            paddingTop: '25px',
+            paddingBottom: '20px',
+          }}
+        >
+          <Button onClick={handleToday}>{t('today')}</Button>
+          <Space>
+            <Select value={type} onChange={value => dispatch(setType(value))}>
+              <Option value="week">{t('week')}</Option>
+              <Option value="month">{t('month')}</Option>
+            </Select>
+            <PickerWithType date={date as Date} type={type} onChange={handleDateChange} />
+          </Space>
+        </Flex>
+        <Button size="small" shape="circle" onClick={() => dispatch(toggleSettingsDrawer())}>
+          <SettingOutlined />
+        </Button>
+      </Flex>
 
-        <div>
-          <Team date={date} />
-        </div>
-        <ScheduleSettingsDrawer />
-      </div>
-    </Suspense>
+      <Flex vertical gap={24}>
+        <GranttChart type={type} date={date} ref={granttChartRef} />
+      </Flex>
+
+      <ScheduleSettingsDrawer />
+      <ScheduleDrawer />
+    </div>
   );
 };
 

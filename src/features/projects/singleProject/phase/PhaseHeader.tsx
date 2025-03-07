@@ -14,12 +14,10 @@ const PhaseHeader = () => {
   const selectedProject = useSelectedProject();
 
   // get phase data from redux
-  const phaseList = useAppSelector((state) => state.phaseReducer.phaseList);
+  const phaseList = useAppSelector(state => state.phaseReducer.phaseList);
 
   //get phases details from phases slice
-  const phase = phaseList.find(
-    (el) => el.projectId === selectedProject?.projectId
-  );
+  const phase = phaseList.find(el => el.projectId === selectedProject?.projectId);
 
   return (
     <Flex align="center" justify="space-between">

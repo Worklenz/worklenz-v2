@@ -1,13 +1,4 @@
-import {
-  Badge,
-  Card,
-  Dropdown,
-  Empty,
-  Flex,
-  Menu,
-  MenuProps,
-  Typography,
-} from 'antd';
+import { Badge, Card, Dropdown, Empty, Flex, Menu, MenuProps, Typography } from 'antd';
 import React, { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 // custom css file
@@ -18,10 +9,8 @@ import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
 // temp label type
 
-
 const CustomColumnLabelCell = ({ labelsList }: { labelsList: ITaskLabel[] }) => {
-  const [currentLabelOption, setCurrentLabelOption] =
-    useState<ITaskLabel | null>(null);
+  const [currentLabelOption, setCurrentLabelOption] = useState<ITaskLabel | null>(null);
 
   // localization
   const { t } = useTranslation('task-list-table');
@@ -29,7 +18,7 @@ const CustomColumnLabelCell = ({ labelsList }: { labelsList: ITaskLabel[] }) => 
   // esure labelsList is an array and has valid data
   const labelMenuItems: MenuProps['items'] =
     Array.isArray(labelsList) && labelsList.length > 0
-      ? labelsList.map((label) => ({
+      ? labelsList.map(label => ({
           key: label.id,
           label: (
             <Flex gap={4}>
@@ -46,10 +35,8 @@ const CustomColumnLabelCell = ({ labelsList }: { labelsList: ITaskLabel[] }) => 
         ];
 
   // handle label selection
-  const handleLabelOptionSelect: MenuProps['onClick'] = (e) => {
-    const selectedOption = labelsList.find(
-      (option) => option.id === e.key
-    );
+  const handleLabelOptionSelect: MenuProps['onClick'] = e => {
+    const selectedOption = labelsList.find(option => option.id === e.key);
     if (selectedOption) {
       setCurrentLabelOption(selectedOption);
     }

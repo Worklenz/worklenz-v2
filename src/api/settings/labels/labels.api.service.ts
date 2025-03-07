@@ -19,12 +19,16 @@ export const labelsApiService = {
   },
 
   getByProjectId: async (projectId: string): Promise<IServerResponse<ITaskLabel>> => {
-    const response = await apiClient.get<IServerResponse<ITaskLabel>>(`${rootUrl}/project/${projectId}`);
+    const response = await apiClient.get<IServerResponse<ITaskLabel>>(
+      `${rootUrl}/project/${projectId}`
+    );
     return response.data;
   },
 
   updateColor: async (id: string, color: string): Promise<IServerResponse<ITaskLabel>> => {
-    const response = await apiClient.put<IServerResponse<ITaskLabel>>(`${rootUrl}/tasks/${id}`, { color });
+    const response = await apiClient.put<IServerResponse<ITaskLabel>>(`${rootUrl}/tasks/${id}`, {
+      color,
+    });
     return response.data;
   },
 

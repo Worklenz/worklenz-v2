@@ -5,13 +5,9 @@ import { useAppSelector } from './useAppSelector';
 export const useSelectedProject = () => {
   const { projectId } = useParams();
 
-  const projectList = useAppSelector(
-    (state) => state.projectsReducer.projects
-  );
+  const projectList = useAppSelector(state => state.projectsReducer.projects);
 
-  const selectedProject = projectList.data.find(
-    (project) => project.id === projectId
-  );
+  const selectedProject = projectList.data.find(project => project.id === projectId);
 
   try {
     return selectedProject;

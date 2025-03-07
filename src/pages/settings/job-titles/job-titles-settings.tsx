@@ -1,4 +1,9 @@
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleFilled,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
@@ -21,6 +26,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import JobTitleDrawer from './job-titles-drawer';
+import logger from '@/utils/errorLogger';
 
 interface PaginationType {
   current: number;
@@ -33,7 +39,7 @@ interface PaginationType {
 }
 
 const JobTitlesSettings = () => {
-  const { t } = useTranslation('settings-job-titles');
+  const { t } = useTranslation('settings/job-titles');
   const dispatch = useAppDispatch();
   useDocumentTitle('Manage Job Titles');
 
@@ -88,9 +94,14 @@ const JobTitlesSettings = () => {
   };
 
   const deleteJobTitle = async (id: string) => {
-    const res = await jobTitlesApiService.deleteJobTitle(id);
-    if (res.done) {
-      getJobTitles();
+    if (!id) return;
+    try {
+      const res = await jobTitlesApiService.deleteJobTitle(id);
+      if (res.done) {
+        getJobTitles();
+      }
+    } catch (error) {
+      logger.error('Failed to delete job title:', error);
     }
   };
 
@@ -164,7 +175,11 @@ const JobTitlesSettings = () => {
             </Button>
 
             <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-              <PinRouteToNavbarButton name="jobTitles" path="/worklenz/settings/job-titles" adminOnly />
+              <PinRouteToNavbarButton
+                name="jobTitles"
+                path="/worklenz/settings/job-titles"
+                adminOnly
+              />
             </Tooltip>
           </Flex>
         </Flex>
