@@ -41,8 +41,9 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    e.preventDefault();
-    addTask();
+    if (!e.target.value.trim()) return;
+      e.preventDefault();
+      addTask();
   };
 
   useEffect(() => {

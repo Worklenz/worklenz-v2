@@ -20,17 +20,20 @@ export const projectsApi = createApi({
     credentials: 'include',
   }),
   tagTypes: ['Projects', 'ProjectCategories', 'ProjectMembers'],
-  endpoints: (builder) => ({
-    getProjects: builder.query<IServerResponse<IProjectsViewModel>, {
-      index: number;
-      size: number;
-      field: string | null;
-      order: string | null;
-      search: string | null;
-      filter: number | null;
-      statuses: string | null;
-      categories: string | null;
-    }>({
+  endpoints: builder => ({
+    getProjects: builder.query<
+      IServerResponse<IProjectsViewModel>,
+      {
+        index: number;
+        size: number;
+        field: string | null;
+        order: string | null;
+        search: string | null;
+        filter: number | null;
+        statuses: string | null;
+        categories: string | null;
+      }
+    >({
       query: ({ index, size, field, order, search, filter, statuses, categories }) => {
         const params = new URLSearchParams({
           index: index.toString(),
@@ -44,16 +47,16 @@ export const projectsApi = createApi({
         });
         return `${rootUrl}?${params.toString()}`;
       },
-      providesTags: (result) => [{ type: 'Projects', id: 'LIST' }],
+      providesTags: result => [{ type: 'Projects', id: 'LIST' }],
     }),
 
     getProject: builder.query<IServerResponse<IProjectViewModel>, string>({
-      query: (id) => `${rootUrl}/${id}`,
+      query: id => `${rootUrl}/${id}`,
       providesTags: (result, error, id) => [{ type: 'Projects', id }],
     }),
 
     createProject: builder.mutation<IServerResponse<IProjectViewModel>, IProjectViewModel>({
-      query: (project) => ({
+      query: project => ({
         url: rootUrl,
         method: 'POST',
         body: project,
@@ -61,7 +64,10 @@ export const projectsApi = createApi({
       invalidatesTags: [{ type: 'Projects', id: 'LIST' }],
     }),
 
-    updateProject: builder.mutation<IServerResponse<IProjectViewModel>, { id: string; project: IProjectViewModel }>({
+    updateProject: builder.mutation<
+      IServerResponse<IProjectViewModel>,
+      { id: string; project: IProjectViewModel }
+    >({
       query: ({ id, project }) => ({
         url: `${rootUrl}/${id}`,
         method: 'PUT',
@@ -71,7 +77,7 @@ export const projectsApi = createApi({
     }),
 
     deleteProject: builder.mutation<IServerResponse<IProjectViewModel>, string>({
-      query: (id) => ({
+      query: id => ({
         url: `${rootUrl}/${id}`,
         method: 'DELETE',
       }),
@@ -79,7 +85,7 @@ export const projectsApi = createApi({
     }),
 
     toggleFavoriteProject: builder.mutation<IServerResponse<IProjectsViewModel>, string>({
-      query: (id) => ({
+      query: id => ({
         url: `${rootUrl}/favorite/${id}`,
         method: 'GET',
       }),
@@ -87,7 +93,7 @@ export const projectsApi = createApi({
     }),
 
     toggleArchiveProject: builder.mutation<IServerResponse<any>, string>({
-      query: (id) => ({
+      query: id => ({
         url: `${rootUrl}/archive/${id}`,
         method: 'GET',
       }),
@@ -95,7 +101,7 @@ export const projectsApi = createApi({
     }),
 
     toggleArchiveProjectForAll: builder.mutation<IServerResponse<any>, string>({
-      query: (id) => ({
+      query: id => ({
         url: `${rootUrl}/archive-all/${id}`,
         method: 'GET',
       }),
@@ -107,14 +113,17 @@ export const projectsApi = createApi({
       providesTags: ['ProjectCategories'],
     }),
 
-    getProjectMembers: builder.query<IServerResponse<IProjectMembersViewModel>, {
-      id: string;
-      index: number;
-      size: number;
-      field: string | null;
-      order: string | null;
-      search: string | null;
-    }>({
+    getProjectMembers: builder.query<
+      IServerResponse<IProjectMembersViewModel>,
+      {
+        id: string;
+        index: number;
+        size: number;
+        field: string | null;
+        order: string | null;
+        search: string | null;
+      }
+    >({
       query: ({ id, index, size, field, order, search }) => {
         const params = new URLSearchParams({
           index: index.toString(),

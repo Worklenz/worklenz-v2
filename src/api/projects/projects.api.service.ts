@@ -6,6 +6,7 @@ import { toQueryString } from '@/utils/toQueryString';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { ITeamMemberOverviewGetResponse } from '@/types/project/project-insights.types';
 import { IProjectMembersViewModel } from '@/types/projectMember.types';
+import { IProjectManager } from '@/types/project/projectManager.types';
 
 const rootUrl = `${API_BASE_URL}/projects`;
 
@@ -81,7 +82,7 @@ export const projectsApiService = {
     id: string,
     project: IProjectViewModel
   ): Promise<IServerResponse<IProjectViewModel>> => {
-    const q = toQueryString({current_project_id: id})
+    const q = toQueryString({ current_project_id: id });
     const url = `${rootUrl}/${id}${q}`;
     const response = await apiClient.put<IServerResponse<IProjectViewModel>>(`${url}`, project);
     return response.data;
@@ -104,4 +105,17 @@ export const projectsApiService = {
     const response = await apiClient.get<IServerResponse<IProjectViewModel>>(`${url}`);
     return response.data;
   },
+
+  updateDefaultTab: async (body: { project_id: string; default_view: string }): Promise<IServerResponse<any>> => {
+    const url = `${rootUrl}/update-pinned-view`;
+    const response = await apiClient.put<IServerResponse<IProjectViewModel>>(`${url}`, body);
+    return response.data;
+  },
+
+  getProjectManagers: async (): Promise<IServerResponse<IProjectManager[]>> => {
+    const url = `${API_BASE_URL}/project-managers`;
+    const response = await apiClient.get<IServerResponse<IProjectManager[]>>(`${url}`);
+    return response.data;
+  },
 };
+

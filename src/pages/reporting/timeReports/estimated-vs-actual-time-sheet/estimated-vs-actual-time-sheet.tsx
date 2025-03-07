@@ -1,14 +1,22 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from 'chart.js';
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Title,
+  Tooltip,
+} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import jsonData from './estimated-vs-actual-time-sheet.json';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 const EstimatedVsActualTimeSheet = () => {
-  const labels = jsonData.map((item) => item.name);
-  const actualDays = jsonData.map((item) => (item.value)); // Convert seconds to hours
-  const estimatedDays = jsonData.map((item) => item.estimated_value);
+  const labels = jsonData.map(item => item.name);
+  const actualDays = jsonData.map(item => item.value); // Convert seconds to hours
+  const estimatedDays = jsonData.map(item => item.estimated_value);
 
   // Chart data
   const data = {

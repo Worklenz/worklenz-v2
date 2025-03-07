@@ -1,17 +1,13 @@
 import React from 'react';
 import { Tag, Typography } from 'antd';
 import { colors } from '@/styles/colors';
-import { CategoryType } from '@/types/categories.types';
+import { IProjectCategory } from '@/types/project/projectCategory.types';
 
-const CustomColorsCategoryTag = ({
-  category,
-}: {
-  category: CategoryType | null;
-}) => {
+const CustomColorsCategoryTag = ({ category }: { category: IProjectCategory | null }) => {
   return (
-    <Tag key={category?.categoryId} color={category?.categoryColor}>
+    <Tag key={category?.id} color={category?.color_code}>
       <Typography.Text style={{ fontSize: 12, color: colors.darkGray }}>
-        {category?.categoryName}
+        {category?.name}
       </Typography.Text>
     </Tag>
   );

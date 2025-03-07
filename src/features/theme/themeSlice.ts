@@ -9,17 +9,20 @@ interface ThemeState {
 
 const isBrowser = typeof window !== 'undefined';
 
-const getPreloadedTheme = (): ThemeType => 
-  !isBrowser ? 'light' : ((window as any).__THEME_STATE__ || 'light');
+const getPreloadedTheme = (): ThemeType =>
+  !isBrowser ? 'light' : (window as any).__THEME_STATE__ || 'light';
 
 const getSystemTheme = (): ThemeType =>
-  !isBrowser ? 'light' : 
-  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  !isBrowser
+    ? 'light'
+    : window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
 
 const getThemeModeFromLocalStorage = (): ThemeType => {
   if (!isBrowser) return 'light';
   try {
-    return localStorage.getItem('theme') as ThemeType || getSystemTheme();
+    return (localStorage.getItem('theme') as ThemeType) || getSystemTheme();
   } catch {
     return 'light';
   }
@@ -27,22 +30,20 @@ const getThemeModeFromLocalStorage = (): ThemeType => {
 
 const updateDocumentTheme = (themeMode: ThemeType): void => {
   if (!isBrowser) return;
-  
+
   const root = document.documentElement;
   const oppositeTheme = themeMode === 'dark' ? 'light' : 'dark';
   const themeColor = themeMode === 'dark' ? '#181818' : '#ffffff';
-  
+
   [root, document.body].forEach(element => {
     element.classList.remove(oppositeTheme);
     element.classList.add(themeMode);
   });
-  
+
   root.style.colorScheme = themeMode;
-  
-  document
-    .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', themeColor);
-    
+
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
+
   (window as any).__THEME_STATE__ = themeMode;
 };
 
@@ -58,7 +59,7 @@ const saveThemeModeToLocalStorage = (themeMode: ThemeType): void => {
 
 const initialState: ThemeState = {
   mode: getPreloadedTheme(),
-  isInitialized: false
+  isInitialized: false,
 };
 
 const themeSlice = createSlice({

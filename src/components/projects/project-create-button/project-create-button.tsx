@@ -1,13 +1,17 @@
 import { Button, Drawer, Dropdown } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleDrawer } from '@/features/projects/projectsSlice';
 import { DownOutlined, EditOutlined, ImportOutlined } from '@ant-design/icons';
 import TemplateDrawer from '@/components/common/template-drawer/template-drawer';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
-import { setProject, setProjectId } from '@/features/project/project.slice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  setProjectData,
+  setProjectId,
+  toggleProjectDrawer,
+} from '@/features/project/project-drawer.slice';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
+import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
 
 interface CreateProjectButtonProps {
   className?: string;
@@ -15,7 +19,11 @@ interface CreateProjectButtonProps {
 
 const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [isTemplateDrawerOpen, setIsTemplateDrawerOpen] = useState(false);
+  const [currentTemplateId, setCurrentTemplateId] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<'worklenz' | 'custom'>('worklenz');
+  const [projectImporting, setProjectImporting] = useState(false);
   const [currentPath, setCurrentPath] = useState<string>('');
   const location = useLocation();
   const { t } = useTranslation('create-first-project-form');
@@ -31,10 +39,63 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
 
   const handleTemplateDrawerClose = () => {
     setIsTemplateDrawerOpen(false);
+    setCurrentTemplateId('');
+    setSelectedType('worklenz');
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    handleTemplateDrawerClose();
+    setCurrentTemplateId(templateId);
+  };
+
+  const createFromWorklenzTemplate = async () => {
+    if (!currentTemplateId || currentTemplateId === '') return;
+    try {
+      setProjectImporting(true);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setProjectImporting(false);
+      handleTemplateDrawerClose();
+    }
+  };
+
+  const createFromCustomTemplate = async () => {
+    if (!currentTemplateId || currentTemplateId === '') return;
+    try {
+      setProjectImporting(true);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setProjectImporting(false);
+      handleTemplateDrawerClose();
+    }
+  };
+
+  const setCreatedProjectTemplate = async () => {
+    if (!currentTemplateId || currentTemplateId === '') return;
+    try {
+      setProjectImporting(true);
+      if (selectedType === 'worklenz') {
+        const res = await projectTemplatesApiService.createFromWorklenzTemplate({
+          template_id: currentTemplateId,
+        });
+        if (res.done) {
+          navigate(`/worklenz/projects/${res.body.project_id}?tab=tasks-list&pinned_tab=tasks-list`);
+        }
+      } else {
+        const res = await projectTemplatesApiService.createFromCustomTemplate({
+          template_id: currentTemplateId,
+        });
+        if (res.done) {
+          navigate(`/worklenz/projects/${res.body.project_id}?tab=tasks-list&pinned_tab=tasks-list`);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setProjectImporting(false);
+      handleTemplateDrawerClose();
+    }
   };
 
   const dropdownItems = [
@@ -51,9 +112,9 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
 
   const handleCreateProject = () => {
     dispatch(setProjectId(null));
-    dispatch(setProject({} as IProjectViewModel));
+    dispatch(setProjectData({} as IProjectViewModel));
     setTimeout(() => {
-      dispatch(toggleDrawer());
+      dispatch(toggleProjectDrawer());
     }, 300);
   };
 
@@ -79,11 +140,17 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
             <Button className="mr-2" onClick={handleTemplateDrawerClose}>
               {t('cancel')}
             </Button>
-            <Button type="primary">{t('create')}</Button>
+            <Button type="primary" loading={projectImporting} onClick={setCreatedProjectTemplate}>
+              {t('create')}
+            </Button>
           </div>
         }
       >
-        <TemplateDrawer showBothTabs={true} templateSelected={handleTemplateSelect} />
+        <TemplateDrawer
+          showBothTabs={true}
+          templateSelected={handleTemplateSelect}
+          selectedTemplateType={setSelectedType}
+        />
       </Drawer>
     </div>
   );

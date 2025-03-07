@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Card, Flex, Spin, Typography } from 'antd';
+import { Card, Flex, Spin, Typography } from 'antd/es';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
 import { verifyAuthentication } from '@/features/auth/authSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSession } from '@/utils/session-helper';
@@ -25,7 +26,7 @@ const AuthenticatingPage: React.FC = () => {
     }
 
     navigate('/worklenz/home');
-  }
+  };
 
   useEffect(() => {
     const handleAuthentication = async () => {
@@ -48,7 +49,6 @@ const AuthenticatingPage: React.FC = () => {
         setTimeout(() => {
           handleSuccessRedirect();
         }, REDIRECT_DELAY);
-
       } catch (error) {
         logger.error('Authentication verification failed:', error);
         navigate('/auth/login');
@@ -60,7 +60,7 @@ const AuthenticatingPage: React.FC = () => {
 
   const cardStyles = {
     width: '100%',
-    boxShadow: 'none'
+    boxShadow: 'none',
   };
 
   return (

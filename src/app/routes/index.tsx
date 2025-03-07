@@ -6,7 +6,9 @@ import notFoundRoute from './not-found-route';
 import accountSetupRoute from './account-setup-routes';
 import reportingRoutes from './reporting-routes';
 import { useAuthService } from '@/hooks/useAuth';
-import { useSocket } from '@/socket/socketContext';
+import { AuthenticatedLayout } from '@/layouts/AuthenticatedLayout';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import NotFoundPage from '@/pages/404-page/404-page';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -24,16 +26,16 @@ export const AuthGuard = ({ children }: GuardProps) => {
 };
 
 export const AdminGuard = ({ children }: GuardProps) => {
-  const { isAuthenticated, isOwnerOrAdmin } = useAuthService();
-
+  const isAuthenticated = useAuthService().isAuthenticated();
+  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   if (!isOwnerOrAdmin) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/worklenz/unauthorized" replace />;
   }
 
   return <>{children}</>;
@@ -41,7 +43,6 @@ export const AdminGuard = ({ children }: GuardProps) => {
 
 export const SetupGuard = ({ children }: GuardProps) => {
   const isAuthenticated = useAuthService().isAuthenticated();
-
   const location = useLocation();
 
   if (!isAuthenticated) {
@@ -52,7 +53,10 @@ export const SetupGuard = ({ children }: GuardProps) => {
 };
 
 // Helper to wrap routes with guards
-const wrapRoutes = (routes: RouteObject[], Guard: React.ComponentType<{ children: React.ReactNode }>): RouteObject[] => {
+const wrapRoutes = (
+  routes: RouteObject[],
+  Guard: React.ComponentType<{ children: React.ReactNode }>
+): RouteObject[] => {
   return routes.map(route => {
     const wrappedRoute = {
       ...route,
@@ -77,10 +81,16 @@ const adminRoutes = wrapRoutes(reportingRoutes, AdminGuard);
 const setupRoutes = wrapRoutes([accountSetupRoute], SetupGuard);
 
 const router = createBrowserRouter([
+  {
+    element: <ErrorBoundary><AuthenticatedLayout /></ErrorBoundary>,
+    errorElement: <ErrorBoundary><NotFoundPage /></ErrorBoundary>,
+    children: [
+      ...protectedMainRoutes,
+      ...adminRoutes,
+      ...setupRoutes,
+    ],
+  },
   ...publicRoutes,
-  ...protectedMainRoutes,
-  ...adminRoutes,
-  ...setupRoutes,
 ]);
 
 export default router;

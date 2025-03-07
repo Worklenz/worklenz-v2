@@ -1,4 +1,4 @@
-import { ITeamMember } from "@/features/taskAttributes/taskMemberSlice";
+import { ITeamMember } from '@/features/taskAttributes/taskMemberSlice';
 
 export interface IProjectInsightsGetRequest {
   total_tasks_count?: number;

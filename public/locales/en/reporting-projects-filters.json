@@ -22,7 +22,7 @@
   "atRiskText": "At Risk",
   "goodText": "Good",
 
-  "projectText": "Project",
+  "nameText": "Project",
   "estimatedVsActualText": "Estimated Vs Actual",
   "tasksProgressText": "Tasks Progress",
   "lastActivityText": "Last Activity",

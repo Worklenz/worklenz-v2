@@ -1,5 +1,6 @@
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { IOrganization } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
 import { MailOutlined, PhoneOutlined, EditOutlined } from '@ant-design/icons';
 import { Card, Tooltip, Input, Button, Typography, InputRef } from 'antd';
 import { TFunction } from 'i18next';
@@ -29,7 +30,7 @@ const OrganizationOwner = ({ themeMode, organization, t, refetch }: Organization
         refetch();
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error updating organization contact number:', error);
     }
   };
 
@@ -97,9 +98,7 @@ const OrganizationOwner = ({ themeMode, organization, t, refetch }: Organization
             ref={contactNoRef}
           />
         ) : number === '' ? (
-          <Typography.Link onClick={addContactNumber}>
-            {t('contactNumber')}
-          </Typography.Link>
+          <Typography.Link onClick={addContactNumber}>{t('contactNumber')}</Typography.Link>
         ) : (
           <Typography.Text>
             {number}

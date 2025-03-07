@@ -11,13 +11,7 @@ type InsightCardProps = {
   loading?: boolean;
 };
 
-const ProjectStatsCard = ({
-  icon,
-  title,
-  tooltip,
-  children,
-  loading,
-}: InsightCardProps) => {
+const ProjectStatsCard = ({ icon, title, tooltip, children, loading }: InsightCardProps) => {
   return (
     <Card
       className="custom-insights-card"

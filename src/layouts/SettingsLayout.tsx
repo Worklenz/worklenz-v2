@@ -1,12 +1,21 @@
 import { Flex, Typography } from 'antd';
 import SettingsSidebar from '../pages/settings/sidebar/settings-sidebar';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import { useEffect } from 'react';
+import { useAuthService } from '@/hooks/useAuth';
 
-// this layout is a sub layout of the main layout
 const SettingsLayout = () => {
-  // media queries from react-responsive package
   const isTablet = useMediaQuery({ query: '(min-width: 768px)' });
+  const { getCurrentSession } = useAuthService();
+  const currentSession = getCurrentSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentSession?.is_expired) {
+      navigate('/worklenz/license-expired');
+    }
+  }, [currentSession, navigate]);
 
   return (
     <div style={{ marginBlock: 96, minHeight: '90vh' }}>

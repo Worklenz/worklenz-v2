@@ -7,32 +7,27 @@ import { setDecimals } from '../../../../../../../../features/projects/singlePro
 
 const FormattedTypeNumberColumn = () => {
   // Get theme details from the theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
   // get initial data from task list custom column slice
-  const decimals: number = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.decimals
-  );
+  const decimals: number = useAppSelector(state => state.taskListCustomColumnsReducer.decimals);
   const previewValue: number = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.previewValue
+    state => state.taskListCustomColumnsReducer.previewValue
   );
 
   return (
     <>
-      <Form.Item
-        name="decimals"
-        label={<Typography.Text>Decimals</Typography.Text>}
-      >
+      <Form.Item name="decimals" label={<Typography.Text>Decimals</Typography.Text>}>
         <Select
-          options={[1, 2, 3, 4].map((item) => ({
+          options={[1, 2, 3, 4].map(item => ({
             key: item,
             value: item,
             label: item,
           }))}
           defaultValue={decimals}
-          onChange={(value) => dispatch(setDecimals(value))}
+          onChange={value => dispatch(setDecimals(value))}
           style={{
             border: `1px solid ${themeWiseColor('#d9d9d9', '#424242', themeMode)}`,
             borderRadius: 4,
@@ -40,10 +35,7 @@ const FormattedTypeNumberColumn = () => {
         />
       </Form.Item>
 
-      <Form.Item
-        name="previewValue"
-        label={<Typography.Text>Preview</Typography.Text>}
-      >
+      <Form.Item name="previewValue" label={<Typography.Text>Preview</Typography.Text>}>
         <Typography.Text>{previewValue.toFixed(decimals)}</Typography.Text>
       </Form.Item>
     </>

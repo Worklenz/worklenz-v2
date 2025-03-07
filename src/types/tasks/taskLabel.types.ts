@@ -5,6 +5,10 @@ export interface ITaskLabel {
   team_id?: string;
   selected?: boolean;
   end?: boolean;
-  names?: string;
+  names?: string[];
   usage?: number;
+}
+
+export interface ITaskLabelFilter extends ITaskLabel {
+  selected?: boolean;
 }

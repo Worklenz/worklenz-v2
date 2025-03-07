@@ -96,10 +96,10 @@ const projectCategoriesSlice = createSlice({
       state.projectCategories = state.projectCategories.filter(cat => cat.id !== action.payload);
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // Fetch categories
     builder
-      .addCase(fetchProjectCategories.pending, (state) => {
+      .addCase(fetchProjectCategories.pending, state => {
         state.loading = true;
       })
       .addCase(fetchProjectCategories.fulfilled, (state, action) => {
@@ -107,26 +107,26 @@ const projectCategoriesSlice = createSlice({
         state.loading = false;
         state.initialized = true;
       })
-      .addCase(fetchProjectCategories.rejected, (state) => {
+      .addCase(fetchProjectCategories.rejected, state => {
         state.loading = false;
       });
 
     // Create category
     builder
-      .addCase(createProjectCategory.pending, (state) => {
+      .addCase(createProjectCategory.pending, state => {
         state.loading = true;
       })
       .addCase(createProjectCategory.fulfilled, (state, action) => {
         state.projectCategories.push(action.payload);
         state.loading = false;
       })
-      .addCase(createProjectCategory.rejected, (state) => {
+      .addCase(createProjectCategory.rejected, state => {
         state.loading = false;
       });
 
     // Update category
     builder
-      .addCase(updateProjectCategory.pending, (state) => {
+      .addCase(updateProjectCategory.pending, state => {
         state.loading = true;
       })
       .addCase(updateProjectCategory.fulfilled, (state, action) => {
@@ -136,20 +136,20 @@ const projectCategoriesSlice = createSlice({
         }
         state.loading = false;
       })
-      .addCase(updateProjectCategory.rejected, (state) => {
+      .addCase(updateProjectCategory.rejected, state => {
         state.loading = false;
       });
 
     // Delete category
     builder
-      .addCase(deleteProjectCategory.pending, (state) => {
+      .addCase(deleteProjectCategory.pending, state => {
         state.loading = true;
       })
       .addCase(deleteProjectCategory.fulfilled, (state, action) => {
         state.projectCategories = state.projectCategories.filter(cat => cat.id !== action.payload);
         state.loading = false;
       })
-      .addCase(deleteProjectCategory.rejected, (state) => {
+      .addCase(deleteProjectCategory.rejected, state => {
         state.loading = false;
       });
   },

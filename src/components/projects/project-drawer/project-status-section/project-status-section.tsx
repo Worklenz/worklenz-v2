@@ -9,10 +9,10 @@ interface ProjectStatusSectionProps {
   statuses: IProjectStatus[];
   form: FormInstance;
   t: TFunction;
+  disabled: boolean;
 }
 
-const ProjectStatusSection = ({ statuses, form, t }: ProjectStatusSectionProps) => {
-
+const ProjectStatusSection = ({ statuses, form, t, disabled }: ProjectStatusSectionProps) => {
   const statusOptions = statuses.map((status, index) => ({
     key: index,
     value: status.id,
@@ -30,6 +30,7 @@ const ProjectStatusSection = ({ statuses, form, t }: ProjectStatusSectionProps) 
         options={statusOptions}
         onChange={value => form.setFieldValue('status_id', value)}
         placeholder={t('selectStatus')}
+        disabled={disabled}
       />
     </Form.Item>
   );

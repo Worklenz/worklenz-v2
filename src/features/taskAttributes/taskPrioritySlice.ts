@@ -16,7 +16,7 @@ const initialState: ITaskPriorityState = {
   selectedPriority: null,
   loading: false,
   error: null,
-  initialized: false
+  initialized: false,
 };
 
 // Create async thunk for fetching priorities
@@ -68,23 +68,26 @@ const taskPrioritySlice = createSlice({
   name: 'taskPriorityReducer',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchPriorities.pending, (state) => {
+      .addCase(fetchPriorities.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPriorities.fulfilled, (state, action: PayloadAction<ITaskPrioritiesGetResponse[]>) => {
-        state.loading = false;
-        state.priorities = action.payload;
-        state.initialized = true;
-      })
+      .addCase(
+        fetchPriorities.fulfilled,
+        (state, action: PayloadAction<ITaskPrioritiesGetResponse[]>) => {
+          state.loading = false;
+          state.priorities = action.payload;
+          state.initialized = true;
+        }
+      )
       .addCase(fetchPriorities.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
       // Fetch Priority By Id
-      .addCase(fetchPriorityById.pending, (state) => {
+      .addCase(fetchPriorityById.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -96,7 +99,7 @@ const taskPrioritySlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       });
-  }
+  },
 });
 
 export default taskPrioritySlice.reducer;

@@ -1,130 +1,167 @@
+import React, { useEffect, useState } from 'react';
 import { PushpinFilled, PushpinOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-
 import { Badge, Button, ConfigProvider, Flex, Tabs, TabsProps, Tooltip } from 'antd';
-import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { getProject, setProjectId, setProjectView } from '@/features/project/project.slice';
+import { fetchStatuses, resetStatuses } from '@/features/taskAttributes/taskStatusSlice';
+import { projectsApiService } from '@/api/projects/projects.api.service';
 import { colors } from '@/styles/colors';
-import { tabItems } from '@/lib/project/projectViewConstants';
-import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageFunctions';
-import ProjectMemberDrawer from '@/features/projects/singleProject/members/ProjectMemberDrawer';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import ProjectViewHeader from './project-view-header';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import CreateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/createTaskDrawer/CreateTaskDrawer';
-import PhaseDrawer from '@/features/projects/singleProject/phase/PhaseDrawer';
-import StatusDrawer from '@/features/projects/status/StatusDrawer';
-import UpdateTaskDrawer from '@/features/tasks/taskCreationAndUpdate/updateTaskDrawer/UpdateTaskDrawer';
 import './project-view.css';
-import CustomAvatar from '@/components/CustomAvatar';
-import { useResponsive } from '@/hooks/useResponsive';
-import { getProject, setProjectId } from '@/features/project/project.slice';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
-import { useAppSelector } from '@/hooks/useAppSelector';
+import { resetTaskListData } from '@/features/tasks/tasks.slice';
+import { resetBoardData } from '@/features/board/board-slice';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
+import { tabItems } from '@/lib/project/project-view-constants';
+
+const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
+const StatusDrawer = React.lazy(
+  () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
+);
+const ProjectMemberDrawer = React.lazy(
+  () => import('@/components/projects/project-member-invite-drawer/project-member-invite-drawer')
+);
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 const ProjectView = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
   const [searchParams] = useSearchParams();
   const { projectId } = useParams();
-  if (projectId) dispatch(setProjectId(projectId));
-  
-  // useResponsive custom hook
-  const { isDesktop } = useResponsive();
 
   const selectedProject = useAppSelector(state => state.projectReducer.project);
-  useDocumentTitle(`${selectedProject?.name}`);
-
+  useDocumentTitle(selectedProject?.name || 'Project View');
   const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || tabItems[0].key);
   const [pinnedTab, setPinnedTab] = useState<string>(searchParams.get('pinned_tab') || '');
 
-  // set query params
   useEffect(() => {
-    if (activeTab) setActiveTab(activeTab);
-    if (pinnedTab) setPinnedTab(pinnedTab);
     if (projectId) {
+      dispatch(setProjectId(projectId));
       dispatch(getProject(projectId)).then((res: any) => {
-        if (!res.payload) navigate('/worklenz/projects');
-
+        if (!res.payload) {
+          navigate('/worklenz/projects');
+          return;
+        }
         dispatch(fetchStatuses(projectId));
+        dispatch(fetchLabels());
       });
     }
-  }, [activeTab, pinnedTab, location.search, projectId]);
+  }, [dispatch, navigate, projectId]);
 
-  // function for pin a tab and update url
-  const pinToDefaultTab = (itemKey: string) => {
-    setPinnedTab(itemKey);
+  const pinToDefaultTab = async (itemKey: string) => {
+    if (!itemKey || !projectId) return;
 
-    saveToLocalStorage('pinnedTab', itemKey);
-    navigate(`${location.pathname}?tab=${activeTab}&pinned_tab=${itemKey}`);
+    const defaultView = itemKey === 'tasks-list' ? 'TASK_LIST' : 'BOARD';
+    const res = await projectsApiService.updateDefaultTab({
+      project_id: projectId,
+      default_view: defaultView,
+    });
+
+    if (res.done) {
+      setPinnedTab(itemKey);
+      tabItems.forEach(item => {
+        if (item.key === itemKey) {
+          item.isPinned = true;
+        } else {
+          item.isPinned = false;
+        }
+      });
+
+      navigate({
+        pathname: `/worklenz/projects/${projectId}`,
+        search: new URLSearchParams({ pinned_tab: itemKey }).toString(),
+      });
+    }
   };
 
-  // function to handle tab change
   const handleTabChange = (key: string) => {
     setActiveTab(key);
-
-    navigate(`${location.pathname}?tab=${key}&pinned_tab=${pinnedTab}`);
+    dispatch(setProjectView(key === 'board' ? 'kanban' : 'list'));
+    navigate({
+      pathname: location.pathname,
+      search: new URLSearchParams({
+        tab: key,
+        pinned_tab: pinnedTab,
+      }).toString(),
+    });
   };
 
-  type TabItem = Required<TabsProps>['items'][number];
+  const tabMenuItems = tabItems.map(item => ({
+    key: item.key,
+    label: (
+      <Flex align="center" style={{ color: colors.skyBlue }}>
+        {item.label}
+        {item.key === 'tasks-list' || item.key === 'board' ? (
+          <ConfigProvider wave={{ disabled: true }}>
+            <Button
+              className="borderless-icon-btn"
+              style={{
+                backgroundColor: colors.transparent,
+                boxShadow: 'none',
+              }}
+              icon={
+                item.key === pinnedTab ? (
+                  <PushpinFilled
+                    size={20}
+                    style={{
+                      color: colors.skyBlue,
+                      rotate: '-45deg',
+                      transition: 'transform ease-in 300ms',
+                    }}
+                  />
+                ) : (
+                  <PushpinOutlined
+                    size={20}
+                    style={{
+                      color: colors.skyBlue,
+                    }}
+                  />
+                )
+              }
+              onClick={e => {
+                e.stopPropagation();
+                pinToDefaultTab(item.key);
+              }}
+            />
+          </ConfigProvider>
+        ) : null}
+      </Flex>
+    ),
+    children: item.element,
+  }));
 
-  const tabMenuItems: TabItem[] = [
-    ...tabItems.map(item => ({
-      key: item.key,
-      label: (
-        <Flex align="center" style={{ color: colors.skyBlue }}>
-          {item.label}{' '}
-          {item.isPinned && (
-            <ConfigProvider wave={{ disabled: true }}>
-              <Button
-                className="borderless-icon-btn"
-                style={{
-                  backgroundColor: colors.transparent,
-                  boxShadow: 'none',
-                }}
-                icon={
-                  getFromLocalStorage('pinnedTab') === item.key ? (
-                    <PushpinFilled
-                      style={{
-                        color: colors.skyBlue,
-                        rotate: '-45deg',
-                        transition: 'transform ease-in 300ms',
-                      }}
-                    />
-                  ) : (
-                    <PushpinOutlined
-                      style={{
-                        color: colors.skyBlue,
-                      }}
-                    />
-                  )
-                }
-                onClick={() => pinToDefaultTab(item.key)}
-              />
-            </ConfigProvider>
-          )}
-        </Flex>
-      ),
-      children: item.element,
-    })),
-  ];
+  const resetProjectData = () => {
+    dispatch(setProjectId(null));
+    dispatch(resetStatuses());
+    dispatch(deselectAll());
+    dispatch(resetTaskListData());
+    dispatch(resetBoardData());
+  };
+
+  useEffect(() => {
+    return () => {
+      resetProjectData();
+    };
+  }, []);
 
   return (
     <div style={{ marginBlockStart: 80, marginBlockEnd: 24, minHeight: '80vh' }}>
-      {/* page header for the project view  */}
       <ProjectViewHeader />
 
-      {/* tabs for the project view  */}
       <Tabs
         activeKey={activeTab}
         onChange={handleTabChange}
         items={tabMenuItems}
         tabBarStyle={{ paddingInline: 0 }}
+        destroyInactiveTabPane={true}
         tabBarExtraContent={
           <div>
-            <CustomAvatar avatarName={'Raveesha dilanka'} size={26} />
             <span style={{ position: 'relative', top: '-10px' }}>
               <Tooltip title="Members who are active on this project will be displayed here.">
                 <QuestionCircleOutlined />
@@ -143,17 +180,10 @@ const ProjectView = () => {
         }
       />
 
-      {/* drawers  */}
-      {/* add project members drawer */}
-      <ProjectMemberDrawer />
-      {/* create task drawer  */}
-      <CreateTaskDrawer />
-      {/* phase drawer  */}
-      <PhaseDrawer />
-      {/* status drawer  */}
-      <StatusDrawer />
-      {/* update task drawer  */}
-      <UpdateTaskDrawer taskId={'SP-1'} />
+      {createPortal(<ProjectMemberDrawer />, document.body, 'project-member-drawer')}
+      {createPortal(<PhaseDrawer />, document.body, 'phase-drawer')}
+      {createPortal(<StatusDrawer />, document.body, 'status-drawer')}
+      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
     </div>
   );
 };

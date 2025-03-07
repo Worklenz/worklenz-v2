@@ -23,15 +23,12 @@ const MembersOverviewProjectsStatsDrawer = ({
 
   // get drawer open state from the member reports reducer
   const isDrawerOpen = useAppSelector(
-    (state) =>
-      state.membersReportsReducer.isMembersOverviewProjectsStatsDrawerOpen
+    state => state.membersReportsReducer.isMembersOverviewProjectsStatsDrawerOpen
   );
-  const { membersList } = useAppSelector(
-    (state) => state.membersReportsReducer
-  );
+  const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
   // find the selected member based on memberId
-  const selectedMember = membersList.find((member) => member.id === memberId);
+  const selectedMember = membersList.find(member => member.id === memberId);
 
   // function to handle drawer close
   const handleClose = () => {
@@ -40,10 +37,7 @@ const MembersOverviewProjectsStatsDrawer = ({
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/membersReports/projectsStatsOverview.json',
-      setprojectsData
-    );
+    fetchData('/reportingMockData/membersReports/projectsStatsOverview.json', setprojectsData);
   }, []);
 
   return (

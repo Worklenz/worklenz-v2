@@ -14,7 +14,7 @@ const JobTitleDrawer = ({
   jobTitleId = null,
   drawerClosed,
 }: JobTitleDrawerProps) => {
-  const { t } = useTranslation('settings-job-titles');
+  const { t } = useTranslation('settings/job-titles');
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -39,7 +39,9 @@ const JobTitleDrawer = ({
   const handleFormSubmit = async (values: { name: string }) => {
     try {
       if (jobTitleId) {
-        const response = await jobTitlesApiService.updateJobTitle(jobTitleId, { name: values.name });
+        const response = await jobTitlesApiService.updateJobTitle(jobTitleId, {
+          name: values.name,
+        });
         if (response.done) {
           drawerClosed();
         }

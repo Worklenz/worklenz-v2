@@ -1,8 +1,8 @@
 {
-    "overview": "Resumen",
-    "users": "Usuarios",
-    "teams": "Equipos", 
-    "billing": "Facturación",
-    "projects": "Proyectos",
-    "adminCenter": "Centro de Administración"
+  "overview": "Resumen",
+  "users": "Usuarios",
+  "teams": "Equipos",
+  "billing": "Facturación",
+  "projects": "Proyectos",
+  "adminCenter": "Centro de Administración"
 }

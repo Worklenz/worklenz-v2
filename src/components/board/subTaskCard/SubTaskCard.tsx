@@ -15,7 +15,7 @@ const SubTaskCard: React.FC<SubTaskProps> = ({ subtask }) => {
   const [isSubTomorrow, setIsSubTomorrow] = useState(false);
   const [isItSubPrevDate, setIsItSubPrevDate] = useState(false);
   const [subTaskDueDate, setSubTaskDueDate] = useState<Dayjs | null>(null);
-  const {t} = useTranslation('kanbanBoard')
+  const { t } = useTranslation('kanban-board');
 
   const handleSubTaskDateChange = (date: Dayjs | null) => {
     setSubTaskDueDate(date);
@@ -32,9 +32,7 @@ const SubTaskCard: React.FC<SubTaskProps> = ({ subtask }) => {
     } else if (date.isSame(tomorrow, 'day')) {
       return 'Tomorrow';
     } else {
-      return date.isSame(today, 'year')
-        ? date.format('MMM DD')
-        : date.format('MMM DD, YYYY');
+      return date.isSame(today, 'year') ? date.format('MMM DD') : date.format('MMM DD, YYYY');
     }
   };
 
@@ -93,7 +91,7 @@ const SubTaskCard: React.FC<SubTaskProps> = ({ subtask }) => {
             variant="borderless"
             size="small"
             suffixIcon={false}
-            format={(value) => formatDate(value)}
+            format={value => formatDate(value)}
           />
           <div>
             <StatusDropdown currentStatus={subtask.status} />

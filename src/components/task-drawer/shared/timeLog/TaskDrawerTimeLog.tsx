@@ -1,92 +1,99 @@
-import {
-  DownloadOutlined,
-  PlayCircleFilled,
-  PlusOutlined,
-} from '@ant-design/icons';
-import { Button, Divider, Flex, Typography } from 'antd';
-import React, { useState } from 'react';
-import { colors } from '@/styles/colors';
+import { DownloadOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Divider, Flex, Skeleton, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import TimeLogForm from './TimeLogForm';
-import TimeLogList from './TimeLogList';
-
-type TimeLog = {
-  logId: string;
-  username: string;
-  duration: string;
-  date: string;
-  via?: string;
-};
+import TimeLogForm from './time-log-form';
+import { taskTimeLogsApiService } from '@/api/tasks/task-time-logs.api.service';
+import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
+import TaskTimer from '@/components/taskListCommon/task-timer/task-timer';
+import { useTaskTimer } from '@/hooks/useTaskTimer';
+import TimeLogItem from './time-log-item';
 
 const TaskDrawerTimeLog = () => {
-  const [timeLoggedList, setTimeLoggedList] = useState<TimeLog[]>([
-    {
-      logId: '1',
-      username: 'Sachintha Prasad',
-      duration: '1h 0m',
-      date: 'Sep 22, 2023, 10:47:02 AM',
-    },
-    {
-      logId: ' 4',
-      username: 'Raveesha Dilanka',
-      duration: '1m 4s',
-      date: 'Sep 12, 2023, 8:32:49 AM - Sep 12, 2023, 8:33:53 AM',
-      via: 'Timer',
-    },
-  ]);
+  const [timeLoggedList, setTimeLoggedList] = useState<ITaskLogViewModel[]>([]);
+  const [totalTimeText, setTotalTimeText] = useState<string>('0m 0s');
+  const [loading, setLoading] = useState<boolean>(false);
   const [isAddTimelogFormShow, setIsTimeLogFormShow] = useState<boolean>(false);
-  const [hoverRow, setHoverRow] = useState<string | null>(null);
 
-  // get theme details from theme slice
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { selectedTaskId, taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
 
-  return (
-    <Flex
-      vertical
-      justify="space-between"
-      style={{ width: '100%', height: '78vh' }}
-    >
-      <Flex vertical>
-        <Flex align="center" justify="space-between" style={{ width: '100%' }}>
-          <Typography.Text type="secondary">
-            Total Logged: 0m 0s
-          </Typography.Text>
-          <Flex gap={8} align="center">
-            <Flex gap={4} align="center">
-              <PlayCircleFilled
-                style={{ color: colors.skyBlue, fontSize: 22 }}
-              />
-              <Typography.Text style={{ fontSize: 12 }}>0m 0s</Typography.Text>
-            </Flex>
-            <Button size="small" icon={<DownloadOutlined />}>
-              Export to Excel
-            </Button>
-          </Flex>
+  const { started, timeString, handleStartTimer, handleStopTimer } = useTaskTimer(
+    selectedTaskId || '',
+    taskFormViewModel?.task?.timer_start_time || null
+  );
+
+  const buildTotalTimeText = (logs: ITaskLogViewModel[]) => {
+    const totalLogged = logs.reduce((total, log) => {
+      const timeSpentInSeconds = Number(log.time_spent || '0');
+      log.time_spent_text = `${Math.floor(timeSpentInSeconds / 60)}m ${timeSpentInSeconds % 60}s`;
+      return total + timeSpentInSeconds;
+    }, 0);
+
+    const totalMinutes = Math.floor(totalLogged / 60);
+    const totalSeconds = totalLogged % 60;
+    setTotalTimeText(`${totalMinutes}m ${totalSeconds}s`);
+  };
+
+  const fetchTimeLoggedList = async () => {
+    if (!selectedTaskId) return;
+    try {
+      setLoading(true);
+      const res = await taskTimeLogsApiService.getByTask(selectedTaskId);
+      if (res.done) {
+        buildTotalTimeText(res.body);
+        setTimeLoggedList(res.body);
+      }
+    } catch (error) {
+      console.error('Error fetching time logs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTimerStop = async () => {
+    handleStopTimer();
+    await fetchTimeLoggedList();
+  };
+
+  useEffect(() => {
+    fetchTimeLoggedList();
+  }, [selectedTaskId]);
+
+  const renderTimeLogList = () => {
+    if (timeLoggedList.length === 0) {
+      return (
+        <Flex vertical gap={8} align="center">
+          <EmptyListPlaceholder text="No time logs found in the task." imageHeight={120} />
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ width: 'fit-content' }}
+            onClick={() => setIsTimeLogFormShow(true)}
+          >
+            Add Timelog
+          </Button>
         </Flex>
-        <Divider style={{ marginBlock: 8 }} />
-        {timeLoggedList.length > 0 ? (
-          <TimeLogList timeLoggedList={timeLoggedList} />
-        ) : (
-          <Flex vertical gap={8} align="center">
-            <EmptyListPlaceholder
-              text="No time logs found in the task."
-              imageHeight={120}
-            />
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              style={{ width: 'fit-content' }}
-              onClick={() => setIsTimeLogFormShow(true)}
-            >
-              Add Timelog
-            </Button>
-          </Flex>
-        )}
-      </Flex>
+      );
+    }
 
-      {!isAddTimelogFormShow && timeLoggedList.length > 0 && (
+    return (
+      <Skeleton active loading={loading}>
+        <Flex vertical gap={6}>
+          {timeLoggedList.map(log => (
+            <TimeLogItem key={log.id} log={log} />
+          ))}
+        </Flex>
+      </Skeleton>
+    );
+  };
+
+  const renderAddTimeLogButton = () => {
+    if (!isAddTimelogFormShow && timeLoggedList.length > 0) {
+      return (
         <Flex
           gap={8}
           vertical
@@ -110,7 +117,6 @@ const TaskDrawerTimeLog = () => {
               backgroundColor: themeWiseColor('#ebebeb', '#3a3a3a', themeMode),
             }}
           />
-
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -120,11 +126,35 @@ const TaskDrawerTimeLog = () => {
             Add Timelog
           </Button>
         </Flex>
-      )}
+      );
+    }
+    return null;
+  };
 
-      {isAddTimelogFormShow && (
-        <TimeLogForm onCancel={() => setIsTimeLogFormShow(false)} />
-      )}
+  return (
+    <Flex vertical justify="space-between" style={{ width: '100%', height: '78vh' }}>
+      <Flex vertical>
+        <Flex align="center" justify="space-between" style={{ width: '100%' }}>
+          <Typography.Text type="secondary">Total Logged: {totalTimeText}</Typography.Text>
+          <Flex gap={8} align="center">
+            <TaskTimer
+              started={started}
+              handleStartTimer={handleStartTimer}
+              handleStopTimer={handleTimerStop}
+              timeString={timeString}
+              timeTrackingLogCard={<div>Time Tracking Log</div>}
+            />
+            <Button size="small" icon={<DownloadOutlined />}>
+              Export to Excel
+            </Button>
+          </Flex>
+        </Flex>
+        <Divider style={{ marginBlock: 8 }} />
+        {renderTimeLogList()}
+      </Flex>
+
+      {renderAddTimeLogButton()}
+      {isAddTimelogFormShow && <TimeLogForm onCancel={() => setIsTimeLogFormShow(false)} />}
     </Flex>
   );
 };

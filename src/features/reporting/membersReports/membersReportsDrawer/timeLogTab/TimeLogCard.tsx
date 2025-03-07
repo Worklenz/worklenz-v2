@@ -54,15 +54,15 @@ const TimeLogCard = ({ data, setSelectedTaskId }: TimeLogCardProps) => {
         }
       >
         <Timeline>
-          {data.logs.map((log) => (
+          {data.logs.map(log => (
             <Timeline.Item key={log.created_at}>
               <Typography.Text
                 className="cursor-pointer hover:text-[#1899ff]"
                 onClick={() => handleUpdateTaskDrawer(log.task_id)}
               >
-                {t('loggedText')} <strong>{log.time_spent_string}</strong>{' '}
-                {t('forText')} <strong>{log.task_name}</strong> {t('inText')}{' '}
-                <strong>{log.project_name}</strong> <Tag>{log.task_key}</Tag>
+                {t('loggedText')} <strong>{log.time_spent_string}</strong> {t('forText')}{' '}
+                <strong>{log.task_name}</strong> {t('inText')} <strong>{log.project_name}</strong>{' '}
+                <Tag>{log.task_key}</Tag>
               </Typography.Text>
             </Timeline.Item>
           ))}

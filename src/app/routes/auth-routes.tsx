@@ -13,9 +13,7 @@ const authRoutes = [
   {
     path: '/auth',
     element: (
-      <Suspense fallback={<SuspenseFallback />}>
-        <AuthLayout />
-      </Suspense>
+      <AuthLayout />
     ),
     children: [
       {

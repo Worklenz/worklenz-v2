@@ -7,7 +7,11 @@ import { IRPTOverviewTeamChartData } from '@/types/reporting/reporting.types';
 
 Chart.register(ArcElement, Tooltip);
 
-const OverviewReportsProjectCategoryGraph = ({ data }: { data: IRPTOverviewTeamChartData | undefined }) => {
+const OverviewReportsProjectCategoryGraph = ({
+  data,
+}: {
+  data: IRPTOverviewTeamChartData | undefined;
+}) => {
   // localization
   const { t } = useTranslation('reporting-overview-drawer');
 
@@ -18,28 +22,26 @@ const OverviewReportsProjectCategoryGraph = ({ data }: { data: IRPTOverviewTeamC
   };
 
   // mock data
-  const categoryGraphItems: CategoryGraphItemType[] = data?.data.map((category) => ({
-    name: category.label,
-    color: category.color,
-    count: category.count,
-  })) ?? [];
+  const categoryGraphItems: CategoryGraphItemType[] =
+    data?.data.map(category => ({
+      name: category.label,
+      color: category.color,
+      count: category.count,
+    })) ?? [];
 
   // chart data
   const chartData = {
-    labels: categoryGraphItems.map((item) => item.name),
+    labels: categoryGraphItems.map(item => item.name),
     datasets: [
       {
         label: t('projectsText'),
-        data: categoryGraphItems.map((item) => item.count),
-        backgroundColor: categoryGraphItems.map((item) => item.color),
+        data: categoryGraphItems.map(item => item.count),
+        backgroundColor: categoryGraphItems.map(item => item.color),
       },
     ],
   };
 
-  const totalTasks = categoryGraphItems.reduce(
-    (sum, item) => sum + item.count,
-    0
-  );
+  const totalTasks = categoryGraphItems.reduce((sum, item) => sum + item.count, 0);
 
   const options: ChartOptions<'doughnut'> = {
     responsive: true,
@@ -53,15 +55,14 @@ const OverviewReportsProjectCategoryGraph = ({ data }: { data: IRPTOverviewTeamC
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: context => {
             const value = context.raw as number;
             return `${context.label}: ${value} task${value !== 1 ? 's' : ''}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
   };
-
 
   return (
     <Card
@@ -88,7 +89,7 @@ const OverviewReportsProjectCategoryGraph = ({ data }: { data: IRPTOverviewTeamC
           </Flex>
 
           {/* category-specific tasks */}
-          {categoryGraphItems.map((item) => (
+          {categoryGraphItems.map(item => (
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>

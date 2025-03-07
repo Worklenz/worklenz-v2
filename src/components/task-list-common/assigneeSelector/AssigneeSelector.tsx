@@ -13,16 +13,21 @@ import {
   Typography,
 } from 'antd';
 import React, { useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleProjectMemberDrawer } from '../../../features/projects/singleProject/members/projectMembersSlice';
-import { toggleMember } from '../../../features/tasks/tasks.slice';
 import CustomAvatar from '../../CustomAvatar';
 import { colors } from '../../../styles/colors';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { ITaskAssignee } from '@/types/tasks/task.types';
 
-const AssigneeSelector = ({ taskId }: { taskId: string }) => {
+interface AssigneeSelectorProps {
+  taskId: string | undefined | null;
+  currentAssignees: ITaskAssignee[] | string[];
+}
+
+const AssigneeSelector = ({ taskId, currentAssignees }: AssigneeSelectorProps) => {
   const membersInputRef = useRef<InputRef>(null);
   // this is for get the current string that type on search bar
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -34,13 +39,13 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
 
   // get members list from members reducer
   const membersList = [
-    ...useAppSelector((state) => state.memberReducer.membersList),
-    useAppSelector((state) => state.memberReducer.owner),
+    ...useAppSelector(state => state.memberReducer.membersList),
+    useAppSelector(state => state.memberReducer.owner),
   ];
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return membersList.filter((member) =>
+    return membersList.filter(member =>
       member.memberName.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [membersList, searchQuery]);
@@ -66,13 +71,13 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
         <Input
           ref={membersInputRef}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('searchInputPlaceholder')}
         />
 
         <List style={{ padding: 0 }}>
           {filteredMembersData.length ? (
-            filteredMembersData.map((member) => (
+            filteredMembersData.map(member => (
               <List.Item
                 className="custom-list-item"
                 key={member.memberId}
@@ -84,10 +89,7 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
                   border: 'none',
                 }}
               >
-                <Checkbox
-                  id={member.memberId}
-                  onChange={() => dispatch(toggleMember({ taskId, member }))}
-                />
+                <Checkbox id={member.memberId} onChange={() => {}} />
                 <div>
                   <CustomAvatar avatarName={member.memberName} />
                 </div>
@@ -126,11 +128,11 @@ const AssigneeSelector = ({ taskId }: { taskId: string }) => {
           {t('assigneeSelectorInviteButton')}
         </Button>
 
-        <Divider style={{ marginBlock: 8 }} />
+        {/* <Divider style={{ marginBlock: 8 }} />
 
         <Button type="primary" style={{ alignSelf: 'flex-end' }}>
           {t('okButton')}
-        </Button>
+        </Button> */}
       </Flex>
     </Card>
   );

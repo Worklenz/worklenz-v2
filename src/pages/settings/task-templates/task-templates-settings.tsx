@@ -1,34 +1,56 @@
-import {
-  Button,
-  Card,
-  Popconfirm,
-  Table,
-  TableProps,
-  Tooltip,
-  Typography,
-} from 'antd';
-import React from 'react';
+import { Button, Card, Popconfirm, Table, TableProps, Tooltip, Typography } from 'antd';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatDistanceToNowStrict } from 'date-fns';
-import jsonData from './TaskTemplates.json';
-import './TaskTemplatesSettings.css';
+import './task-templates-settings.css';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { setSelectedTemplate, toggleTaskTemplateDrawer } from '../../../features/settings/taskTemplates/taskTemplateSlice';
-import TaskTemplateDrawer from '../../../features/settings/taskTemplates/TaskTemplateDrawer';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import { ITaskTemplatesGetResponse } from '@/types/settings/task-templates.types';
+import logger from '@/utils/errorLogger';
+import { taskTemplatesApiService } from '@/api/task-templates/task-templates.api.service';
+import { calculateTimeGap } from '@/utils/calculate-time-gap';
 
 const TaskTemplatesSettings = () => {
-  // localization
-  const { t } = useTranslation('settings-task-templates');
-  const dispatch = useAppDispatch()
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-
+  const { t } = useTranslation('settings/task-templates');
+  const dispatch = useAppDispatch();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const [taskTemplates, setTaskTemplates] = useState<ITaskTemplatesGetResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [templateId, setTemplateId] = useState<string | null>(null);
+  const [showDrawer, setShowDrawer] = useState(false);
   useDocumentTitle('Task Templates');
 
-  // table columns
-  const columns: TableProps['columns'] = [
+  const fetchTaskTemplates = async () => {
+    try {
+      setIsLoading(true);
+      const res = await taskTemplatesApiService.getTemplates();
+      setTaskTemplates(res.body);
+    } catch (error) {
+      logger.error('Failed to fetch task templates:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTaskTemplates();
+  }, []);
+
+  const handleDeleteTemplate = async (id: string) => {
+    try {
+      setIsLoading(true);
+      await taskTemplatesApiService.deleteTemplate(id);
+      await fetchTaskTemplates();
+    } catch (error) {
+      logger.error('Failed to delete task template:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const columns: TableProps<ITaskTemplatesGetResponse>['columns'] = [
     {
       key: 'name',
       title: t('nameColumn'),
@@ -38,30 +60,29 @@ const TaskTemplatesSettings = () => {
       key: 'created',
       title: t('createdColumn'),
       dataIndex: 'created_at',
-      render: (date: string) =>
-        formatDistanceToNowStrict(new Date(date), { addSuffix: true }),
+      render: (date: string) => calculateTimeGap(date),
     },
     {
-      key: 'button',
-      render: (record) => (
+      key: 'actions',
+      width: 120,
+      render: record => (
         <div
           style={{ display: 'flex', gap: '10px', justifyContent: 'right' }}
           className="button-visibilty"
         >
           <Tooltip title={t('editToolTip')}>
-            <Button size="small" onClick={() => handleOnClick(record.id)}>
+            <Button size="small" onClick={() => setTemplateId(record.id)}>
               <EditOutlined />
             </Button>
           </Tooltip>
           <Tooltip title={t('deleteToolTip')}>
             <Popconfirm
               title={
-                <Typography.Text style={{ fontWeight: 400 }}>
-                  {t('confirmText')}
-                </Typography.Text>
+                <Typography.Text style={{ fontWeight: 400 }}>{t('confirmText')}</Typography.Text>
               }
               okText={t('okText')}
               cancelText={t('cancelText')}
+              onConfirm={() => handleDeleteTemplate(record.id)}
             >
               <Button size="small">
                 <DeleteOutlined />
@@ -73,24 +94,40 @@ const TaskTemplatesSettings = () => {
     },
   ];
 
-  const handleOnClick = (id: string) => {
-    dispatch(setSelectedTemplate(id))
-    dispatch(toggleTaskTemplateDrawer())
-  }
+  useEffect(() => {
+    if (templateId) {
+      setShowDrawer(true);
+    }
+  }, [templateId]);
+
+  const handleCloseDrawer = () => {
+    setTemplateId(null);
+    setShowDrawer(false);
+    fetchTaskTemplates();
+  };
 
   return (
     <Card style={{ width: '100%' }}>
       <Table
+        loading={isLoading}
         size="small"
-        pagination={{ size: 'small' }}
+        pagination={{ 
+          size: 'small',
+          showSizeChanger: true,
+          showTotal: (total) => t('totalItems', { total })
+        }}
         columns={columns}
-        dataSource={jsonData}
+        dataSource={taskTemplates}
         rowKey="id"
         rowClassName={(_, index) =>
           `no-border-row ${index % 2 === 0 ? '' : themeMode === 'dark' ? 'dark-alternate-row-color' : 'alternate-row-color'}`
         }
       />
-      <TaskTemplateDrawer />
+      <TaskTemplateDrawer
+        showDrawer={showDrawer}
+        selectedTemplateId={templateId}
+        onClose={handleCloseDrawer}
+      />
     </Card>
   );
 };

@@ -1,4 +1,4 @@
-import { ITask } from "./task.types";
+import { ITask } from './task.types';
 
 export interface ITaskCreateRequest extends ITask {
   status_id?: string;

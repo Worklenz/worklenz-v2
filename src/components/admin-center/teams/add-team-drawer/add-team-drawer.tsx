@@ -22,7 +22,7 @@ const AddTeamDrawer: React.FC<AddTeamDrawerProps> = ({ isDrawerOpen, onClose, re
   const handleFormSubmit = async (values: any) => {
     if (!values.name || values.name.trim() === '') return;
 
-    try {   
+    try {
       setCreating(true);
       const newTeam = {
         name: values.name,

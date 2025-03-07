@@ -58,7 +58,7 @@ const SwitchTeamButton = () => {
 
   const handleTeamSelect = async (id: string) => {
     if (!id) return;
-    
+
     await dispatch(setActiveTeam(id));
     await handleVerifyAuth();
     window.location.reload();
@@ -94,17 +94,18 @@ const SwitchTeamButton = () => {
     </Card>
   );
 
-  const dropdownItems = teamsList?.map((team, index) => ({
-    key: team.id || '',
-    label: renderTeamCard(team, index),
-    type: 'item' as const
-  })) || [];
+  const dropdownItems =
+    teamsList?.map((team, index) => ({
+      key: team.id || '',
+      label: renderTeamCard(team, index),
+      type: 'item' as const,
+    })) || [];
 
   return (
-    <Dropdown 
-      overlayClassName="switch-team-dropdown" 
-      menu={{ items: dropdownItems }} 
-      trigger={['click']} 
+    <Dropdown
+      overlayClassName="switch-team-dropdown"
+      menu={{ items: dropdownItems }}
+      trigger={['click']}
       placement="bottomRight"
     >
       <Tooltip title={t('switchTeamTooltip')} trigger={'hover'}>
@@ -119,7 +120,7 @@ const SwitchTeamButton = () => {
             borderRadius: '50rem',
             padding: '10px 16px',
             height: '39px',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           <BankOutlined />

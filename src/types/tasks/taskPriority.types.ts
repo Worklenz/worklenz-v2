@@ -3,6 +3,7 @@ export interface ITaskPriority {
   name: string;
   value: string;
   color_code?: string;
+  color_code_dark?: string;
 }
 
 export interface ITaskPrioritiesGetResponse extends ITaskPriority {

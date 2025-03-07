@@ -11,7 +11,9 @@ const rootUrl = `${API_BASE_URL}/notifications`;
 export const notificationsApiService = {
   getNotifications: async (filter: string): Promise<IServerResponse<IWorklenzNotification[]>> => {
     const q = toQueryString({ filter });
-    const response = await apiClient.get<IServerResponse<IWorklenzNotification[]>>(`${rootUrl}${q}`);
+    const response = await apiClient.get<IServerResponse<IWorklenzNotification[]>>(
+      `${rootUrl}${q}`
+    );
     return response.data;
   },
 

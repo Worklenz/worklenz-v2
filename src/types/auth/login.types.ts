@@ -1,4 +1,4 @@
-import { ILocalSession } from "./local-session.types";
+import { ILocalSession } from './local-session.types';
 
 export interface IUser {
   id?: string;

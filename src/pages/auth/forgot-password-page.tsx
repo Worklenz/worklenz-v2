@@ -1,18 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
-import { UserOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Form, Input, message, Result, Typography } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
-import PageHeader from '../../components/AuthPageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserOutlined } from '@ant-design/icons';
+import { Form, Card, Input, Flex, Button, Typography, Result } from 'antd/es';
+
+import PageHeader from '@components/AuthPageHeader';
+
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_forgot_password_page_visit } from '@/shared/worklenz-analytics-events';
-import { resetPassword, verifyAuthentication } from '@/features/auth/authSlice';
+import { resetPassword, verifyAuthentication } from '@features/auth/authSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSession } from '@/utils/session-helper';
-import { setUser } from '@/features/user/userSlice';
+import { setUser } from '@features/user/userSlice';
 import logger from '@/utils/errorLogger';
+
 const ForgotPasswordPage = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
@@ -82,14 +85,10 @@ const ForgotPasswordPage = () => {
           paddingInline: isMobile ? 24 : 48,
         },
       }}
-      bordered={false}
+      variant="outlined"
     >
       {isSuccess ? (
-        <Result
-          status="success"
-          title={t('successTitle')}
-          subTitle={t('successMessage')}
-        />
+        <Result status="success" title={t('successTitle')} subTitle={t('successMessage')} />
       ) : (
         <>
           <PageHeader description={t('headerDescription')} />

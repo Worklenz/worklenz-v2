@@ -42,12 +42,12 @@ const MembersReportsProjectGraph = () => {
 
   // chart data
   const chartData = {
-    labels: projectGraphItems.map((item) => item.name),
+    labels: projectGraphItems.map(item => item.name),
     datasets: [
       {
         label: t('tasksText'),
-        data: projectGraphItems.map((item) => item.count),
-        backgroundColor: projectGraphItems.map((item) => item.color),
+        data: projectGraphItems.map(item => item.count),
+        backgroundColor: projectGraphItems.map(item => item.color),
       },
     ],
   };
@@ -60,15 +60,12 @@ const MembersReportsProjectGraph = () => {
         position: 'top' as const,
       },
       datalabels: {
-        display: false
+        display: false,
       },
     },
-  }
+  };
 
-  const totalTasks = projectGraphItems.reduce(
-    (sum, item) => sum + item.count,
-    0
-  );
+  const totalTasks = projectGraphItems.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <Card
@@ -95,17 +92,11 @@ const MembersReportsProjectGraph = () => {
           </Flex>
 
           {/* project-specific tasks */}
-          {projectGraphItems.map((item) => (
+          {projectGraphItems.map(item => (
             <AntTooltip title={`${item.name} (${item.count})`}>
-              <Flex
-                key={item.name}
-                gap={4}
-                align="center"
-                style={{ maxWidth: 120 }}
-              >
+              <Flex key={item.name} gap={4} align="center" style={{ maxWidth: 120 }}>
                 <Badge color={item.color} />
-                <Typography.Text ellipsis>{item.name}</Typography.Text>(
-                {item.count})
+                <Typography.Text ellipsis>{item.name}</Typography.Text>({item.count})
               </Flex>
             </AntTooltip>
           ))}

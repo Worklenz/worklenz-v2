@@ -62,41 +62,29 @@ export const signUp = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk(
-  'secure/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await authApiService.logout();
-      if (!response.done) {
-        return rejectWithValue(response.message || 'Logout failed');
-      }
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(handleAuthError(error, 'Logout'));
+export const logout = createAsyncThunk('secure/logout', async (_, { rejectWithValue }) => {
+  try {
+    const response = await authApiService.logout();
+    if (!response.done) {
+      return rejectWithValue(response.message || 'Logout failed');
     }
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(handleAuthError(error, 'Logout'));
   }
-);
+});
 
-export const verifyAuthentication = createAsyncThunk(
-  'secure/verify',
-  async () => {
-    return await authApiService.verify();
-  }
-);
+export const verifyAuthentication = createAsyncThunk('secure/verify', async () => {
+  return await authApiService.verify();
+});
 
-export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
-  async (email: string) => {
-    return await authApiService.resetPassword(email);
-  }
-);
+export const resetPassword = createAsyncThunk('auth/resetPassword', async (email: string) => {
+  return await authApiService.resetPassword(email);
+});
 
-export const updatePassword = createAsyncThunk(
-  'auth/updatePassword',
-  async (values: any) => {
-    return await authApiService.updatePassword(values);
-  }
-);
+export const updatePassword = createAsyncThunk('auth/updatePassword', async (values: any) => {
+  return await authApiService.updatePassword(values);
+});
 
 // Common state updates
 const setPending = (state: IAuthState) => {
@@ -119,7 +107,7 @@ const authSlice = createSlice({
       state.projectId = action.payload.projectId;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // Login cases
       .addCase(login.pending, setPending)
@@ -136,7 +124,7 @@ const authSlice = createSlice({
 
       // Logout cases
       .addCase(logout.pending, setPending)
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, state => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
@@ -147,7 +135,7 @@ const authSlice = createSlice({
       .addCase(logout.rejected, setRejected)
 
       // Verify authentication cases
-      .addCase(verifyAuthentication.pending, (state) => {
+      .addCase(verifyAuthentication.pending, state => {
         state.isLoading = true;
       })
       .addCase(verifyAuthentication.fulfilled, (state, action) => {
@@ -156,7 +144,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         setSession(action.payload.user);
       })
-      .addCase(verifyAuthentication.rejected, (state) => {
+      .addCase(verifyAuthentication.rejected, state => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;

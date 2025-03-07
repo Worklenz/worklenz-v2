@@ -19,28 +19,28 @@ class ConsoleLogger {
     info: {
       title: 'color: #1890ff; font-weight: bold; font-size: 12px;',
       text: 'color: #1890ff; font-size: 12px;',
-      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;',
     },
     success: {
-      title: 'color: #52c41a; font-weight: bold; font-size: 12px;', 
+      title: 'color: #52c41a; font-weight: bold; font-size: 12px;',
       text: 'color: #52c41a; font-size: 12px;',
-      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;',
     },
     warning: {
       title: 'color: #faad14; font-weight: bold; font-size: 12px;',
       text: 'color: #faad14; font-size: 12px;',
-      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;',
     },
     error: {
       title: 'color: #ff4d4f; font-weight: bold; font-size: 12px;',
       text: 'color: #ff4d4f; font-size: 12px;',
-      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;',
     },
     debug: {
       title: 'color: #722ed1; font-weight: bold; font-size: 12px;',
       text: 'color: #722ed1; font-size: 12px;',
-      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;'
-    }
+      background: 'background: transparent; padding: 2px 5px; border-radius: 2px;',
+    },
   };
 
   // Private helper methods
@@ -63,11 +63,7 @@ class ConsoleLogger {
 
   private logObjectData(data: Record<string, unknown>, styles: LogStyles): void {
     for (const [key, value] of Object.entries(data)) {
-      console.log(
-        `%c${key}:`,
-        styles.title,
-        this.formatValue(value)
-      );
+      console.log(`%c${key}:`, styles.title, this.formatValue(value));
     }
   }
 
@@ -119,7 +115,7 @@ class ConsoleLogger {
   // Table logging
   public table(title: string, data: unknown[] = []): void {
     if (this.isProduction) return;
-    
+
     console.group(`%c${title}`, this.styles.info.title);
     if (data.length > 0) {
       console.table(data);
@@ -141,7 +137,7 @@ class ConsoleLogger {
   // Group logging
   public group(title: string, collapsed = false): void {
     if (this.isProduction) return;
-    
+
     const method = collapsed ? console.groupCollapsed : console.group;
     method(`%c${title}`, this.styles.info.title);
   }

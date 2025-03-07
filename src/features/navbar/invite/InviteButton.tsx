@@ -3,7 +3,7 @@ import { Button, Tooltip } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { colors } from '../../../styles/colors';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleInviteMemberDrawer } from '../../settings/member/memberSlice';
 
 const InviteButton = () => {

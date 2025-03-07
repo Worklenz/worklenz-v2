@@ -19,15 +19,9 @@
 }
 
 /* remove the border after the tabs in project view  */
-:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-top
-  > .ant-tabs-nav::before,
-:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-bottom
-  > .ant-tabs-nav::before,
-:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-top
-  > div
-  > .ant-tabs-nav::before,
-:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-bottom
-  > div
-  > .ant-tabs-nav::before {
+:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-top > .ant-tabs-nav::before,
+:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-bottom > .ant-tabs-nav::before,
+:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-top > div > .ant-tabs-nav::before,
+:where(.css-dev-only-do-not-override-17sis5b).ant-tabs-bottom > div > .ant-tabs-nav::before {
   border: none;
 }

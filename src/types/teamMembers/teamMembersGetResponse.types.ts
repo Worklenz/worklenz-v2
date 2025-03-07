@@ -1,6 +1,6 @@
 import { IInsightTasks } from '../project/projectInsights.types';
 import { ITask } from '../tasks/task.types';
-import {ITeamMember} from './teamMember.types';
+import { ITeamMember } from './teamMember.types';
 
 export interface ITeamMemberViewModel extends ITeamMember {
   id?: string;
@@ -60,7 +60,7 @@ export interface ITeamMemberFilterResponse {
 
 export interface ITeamMemberTreeMapResponse {
   total: number;
-  data: ITeamMemberTreeMap[]
+  data: ITeamMemberTreeMap[];
 }
 
 export interface ITeamMemberTreeMap {

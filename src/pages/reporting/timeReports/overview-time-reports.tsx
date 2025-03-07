@@ -4,7 +4,7 @@ import { Flex } from 'antd';
 import TimeSheetTable from '@/pages/reporting/timeReports/time-sheet-table/time-sheet-table';
 import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
 import { useTranslation } from 'react-i18next';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const OverviewTimeReports: React.FC = () => {
   const { t } = useTranslation('time-report');

@@ -35,11 +35,11 @@ root.render(
       },
     }}
   >
-      <Provider store={store}>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </Provider>
+    <Provider store={store}>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </Provider>
   </ConfigProvider>
 );
 

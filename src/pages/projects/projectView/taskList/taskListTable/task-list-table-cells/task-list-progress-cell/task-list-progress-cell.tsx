@@ -1,29 +1,53 @@
 import { Progress, Tooltip } from 'antd';
-import React from 'react';
 import './task-progress-cell.css';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { useSocket } from '@/socket/socketContext';
+import { useEffect } from 'react';
+import { SocketEvents } from '@/shared/socket-events';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { updateTaskProgress } from '@/features/tasks/tasks.slice';
 
 type TaskListProgressCellProps = {
-  progress: number;
-  numberOfSubTasks: number;
+  task: IProjectTask;
 };
 
-const TaskListProgressCell = ({
-  progress = 0,
-  numberOfSubTasks = 0,
-}: TaskListProgressCellProps) => {
-  const totalTasks = numberOfSubTasks + 1;
-  const completedTasks = 0;
+const TaskListProgressCell = ({ task }: TaskListProgressCellProps) => {
+  const { socket } = useSocket();
+  const dispatch = useAppDispatch();
 
-  const size = progress === 100 ? 21 : 26;
+  const handleTaskProgressUpdate = (response: {
+    id: string;
+    parent_task: string;
+    complete_ratio: number;
+    completed_count: number;
+    total_tasks_count: number;
+  }) => {
+    if (response && (response.parent_task === task.id || response.id === task.id)) {
+      dispatch(updateTaskProgress({
+        taskId: task.id,
+        progress: response.complete_ratio,
+        totalTasksCount: response.total_tasks_count,
+        completedCount: response.completed_count,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    socket?.on(SocketEvents.GET_TASK_PROGRESS.toString(), handleTaskProgressUpdate);
+
+    return () => {
+      socket?.removeListener(SocketEvents.GET_TASK_PROGRESS.toString(), handleTaskProgressUpdate);
+    };
+  }, [socket]);
 
   return (
-    <Tooltip title={`${completedTasks} / ${totalTasks}`}>
+    <Tooltip title={`${task.completed_count} / ${task.total_tasks_count}`}>
       <Progress
-        percent={progress}
+        percent={task.complete_ratio || 0}
         type="circle"
-        size={size}
+        size={24}
         style={{ cursor: 'default' }}
-        className="task-progress"
+        strokeWidth={(task.complete_ratio || 0) >= 100 ? 9 : 7}
       />
     </Tooltip>
   );

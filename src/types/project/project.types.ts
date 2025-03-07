@@ -45,4 +45,3 @@ export enum IProjectFilter {
   Favourites = 'Favorites',
   Archived = 'Archived',
 }
-

@@ -7,7 +7,9 @@ const rootUrl = `${API_BASE_URL}/task-priorities`;
 
 export const priorityApiService = {
   getPriorities: async (): Promise<IServerResponse<ITaskPrioritiesGetResponse[]>> => {
-    const response = await apiClient.get<IServerResponse<ITaskPrioritiesGetResponse[]>>(`${rootUrl}`);
+    const response = await apiClient.get<IServerResponse<ITaskPrioritiesGetResponse[]>>(
+      `${rootUrl}`
+    );
     return response.data;
   },
 

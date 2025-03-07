@@ -57,6 +57,7 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (!e.target.value.trim()) return;
     e.preventDefault();
     addEmail();
   };
@@ -110,14 +111,14 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
         rules={[{ required: true }]}
         label={
           <span className="font-medium">
-            {t('step3InputLabel')}&nbsp; <MailOutlined />  {t('maxMembers')}
+            {t('step3InputLabel')}&nbsp; <MailOutlined /> {t('maxMembers')}
           </span>
         }
       >
         <List
           dataSource={teamMembers}
           bordered={false}
-          itemLayout='vertical'
+          itemLayout="vertical"
           renderItem={(teamMember, index) => (
             <List.Item key={teamMember.id}>
               <div className="invite-members-form" style={{ display: 'flex', width: '600px' }}>

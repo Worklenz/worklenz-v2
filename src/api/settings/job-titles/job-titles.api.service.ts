@@ -30,7 +30,7 @@ export const jobTitlesApiService = {
   async createJobTitle(body: IJobTitle): Promise<IServerResponse<IJobTitle>> {
     const response = await apiClient.post<IServerResponse<IJobTitle>>(rootUrl, body);
     return response.data;
-  },    
+  },
 
   async updateJobTitle(id: string, body: IJobTitle): Promise<IServerResponse<IJobTitle>> {
     const response = await apiClient.put<IServerResponse<IJobTitle>>(`${rootUrl}/${id}`, body);

@@ -16,7 +16,7 @@ const initialState: ILabelState = {
   selectedLabel: null,
   loading: false,
   error: null,
-  initialized: false
+  initialized: false,
 };
 
 // Create async thunk for fetching labels
@@ -53,23 +53,6 @@ export const fetchLabelsByTask = createAsyncThunk(
   }
 );
 
-// Create async thunk for fetching labels by project
-export const fetchLabelsByProject = createAsyncThunk(
-  'taskLabel/fetchLabelsByProject',
-  async (projectId: string, { rejectWithValue }) => {
-    try {
-      const response = await labelsApiService.getPriorityByProject(projectId);
-      return response.body;
-    } catch (error) {
-      logger.error('Fetch Labels By Project', error);
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue('Failed to fetch project labels');
-    }
-  }
-);
-
 // Initialization thunk
 export const initializeLabels = createAsyncThunk(
   'taskLabel/initialize',
@@ -85,7 +68,7 @@ const taskLabelSlice = createSlice({
   name: 'taskLabelReducer',
   initialState,
   reducers: {
-    updateLabelColor: (state, action: PayloadAction<{id: string, color: string}>) => {
+    updateLabelColor: (state, action: PayloadAction<{ id: string; color: string }>) => {
       const label = state.labels.find(l => l.id === action.payload.id);
       if (label) {
         label.color_code = action.payload.color;
@@ -93,11 +76,11 @@ const taskLabelSlice = createSlice({
     },
     deleteLabel: (state, action: PayloadAction<string>) => {
       state.labels = state.labels.filter(label => label.id !== action.payload);
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchLabels.pending, (state) => {
+      .addCase(fetchLabels.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -111,7 +94,7 @@ const taskLabelSlice = createSlice({
         state.error = action.payload as string;
       })
       // Fetch Labels By Task
-      .addCase(fetchLabelsByTask.pending, (state) => {
+      .addCase(fetchLabelsByTask.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -122,23 +105,9 @@ const taskLabelSlice = createSlice({
       .addCase(fetchLabelsByTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
-      // Fetch Labels By Project
-      .addCase(fetchLabelsByProject.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchLabelsByProject.fulfilled, (state, action: PayloadAction<ITaskLabel[]>) => {
-        state.loading = false;
-        state.labels = action.payload;
-      })
-      .addCase(fetchLabelsByProject.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
       });
-  }
+  },
 });
 
 export const { updateLabelColor, deleteLabel } = taskLabelSlice.actions;
 export default taskLabelSlice.reducer;
-

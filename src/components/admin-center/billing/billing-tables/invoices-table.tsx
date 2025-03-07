@@ -1,101 +1,105 @@
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { IBillingTransaction } from '@/types/admin-center/admin-center.types';
+import logger from '@/utils/errorLogger';
+import { formatDate } from '@/utils/timeUtils';
 import { ContainerOutlined } from '@ant-design/icons';
-import { Badge, Button, Table, TableProps } from 'antd';
-import React from 'react';
+import { Button, Table, TableProps, Tag, Tooltip } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface DataType {
-  key: string;
-  transactionId: string;
-  startingDate: Date;
-  endingDate: Date;
-  status: string;
-  paymentMethod: string;
-}
-
 const InvoicesTable: React.FC = () => {
-  const { t } = useTranslation('current-bill');
+  const { t } = useTranslation('admin-center/current-bill');
 
-  const columns: TableProps['columns'] = [
+  const [transactions, setTransactions] = useState<IBillingTransaction[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+
+  const fetchTransactions = async () => {
+    try {
+      setLoadingTransactions(true);
+      const res = await adminCenterApiService.getTransactions();
+      if (res.done) {
+        setTransactions(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching transactions:', error);
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
+  const handleInvoiceViewClick = (record: IBillingTransaction) => {
+    if (!record.receipt_url) return;
+    window.open(record.receipt_url, '_blank');
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const columns: TableProps<IBillingTransaction>['columns'] = [
     {
       title: t('transactionId'),
       key: 'transactionId',
-      dataIndex: 'transactionId',
+      dataIndex: 'subscription_payment_id',
     },
     {
       title: t('transactionDate'),
       key: 'transactionDate',
-      render: (record) => {
-        const formattedStartingDate = new Date(
-          record.startingDate
-        ).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-
-        return `${formattedStartingDate}`;
-      },
+      render: record => `${formatDate(new Date(record.event_time))}`,
     },
+
     {
       title: t('billingPeriod'),
       key: 'billingPeriod',
-      render: (record) => {
-        const formattedStartingDate = new Date(
-          record.startingDate
-        ).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        const formattedEndingDate = new Date(
-          record.endingDate
-        ).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-
-        return `${formattedStartingDate} - ${formattedEndingDate}`;
+      render: record => {
+        return `${formatDate(new Date(record.event_time))} - ${formatDate(new Date(record.next_bill_date))}`;
       },
     },
+
     {
       title: t('paymentMethod'),
       key: 'paymentMethod',
-      dataIndex: 'paymentMethod',
+      dataIndex: 'payment_method',
     },
     {
       title: t('status'),
       key: 'status',
       dataIndex: 'status',
-      render: (text) => (
-        <>
-          <Badge status="success" />
-          <span style={{ paddingLeft: '4px' }}>{text}</span>
-        </>
+      render: (_, record) => (
+        <Tag
+          color={
+            record.payment_status === 'success'
+              ? 'green'
+              : record.payment_status === 'failed'
+                ? 'red'
+                : 'blue'
+          }
+        >
+          {record.payment_status?.toUpperCase()}
+        </Tag>
       ),
     },
     {
       key: 'button',
-      render: () => (
-        <Button size="small">
-          <ContainerOutlined />
-        </Button>
+      render: (_, record) => (
+        <Tooltip title={t('viewInvoice')}>
+          <Button size="small">
+            <ContainerOutlined onClick={() => handleInvoiceViewClick(record)} />
+          </Button>
+        </Tooltip>
       ),
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      transactionId: '113687890',
-      startingDate: new Date('2024-08-31T08:30:00'),
-      endingDate: new Date('2025-08-30T08:30:00'),
-      status: 'Success',
-      paymentMethod: 'Card',
-    },
-  ];
-
-  return <Table columns={columns} dataSource={data} pagination={false} />;
+  return (
+    <Table
+      columns={columns}
+      dataSource={transactions}
+      pagination={false}
+      loading={loadingTransactions}
+      rowKey="id"
+    />
+  );
 };
 
 export default InvoicesTable;

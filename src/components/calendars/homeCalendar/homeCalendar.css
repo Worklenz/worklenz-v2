@@ -1,7 +1,7 @@
 .home-calendar .ant-picker-calendar-date-content {
-    display: none;
+  display: none;
 }
 
 .home-calendar .ant-picker-calendar-date-value {
-    line-height: 44px !important;
+  line-height: 44px !important;
 }

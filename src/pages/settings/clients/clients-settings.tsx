@@ -30,9 +30,10 @@ import { useTranslation } from 'react-i18next';
 import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
 import ClientDrawer from './client-drawer';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import logger from '@/utils/errorLogger';
 
 const ClientsSettings: React.FC = () => {
-  const { t } = useTranslation('settings-clients');
+  const { t } = useTranslation('settings/clients');
   const { clients } = useAppSelector(state => state.clientReducer);
   const dispatch = useAppDispatch();
 
@@ -70,10 +71,14 @@ const ClientsSettings: React.FC = () => {
     dispatch(toggleClientDrawer());
   };
 
-  const deleteClientHandler = (id: string | undefined) => {
+  const deleteClientHandler = async (id: string | undefined) => {
     if (!id) return;
-    dispatch(deleteClient(id));
-    getClients();
+    try {
+      await dispatch(deleteClient(id)).unwrap();
+      getClients();
+    } catch (error) {
+      logger.error('Failed to delete client:', error);
+    }
   };
 
   const columns: TableProps['columns'] = useMemo(
@@ -121,7 +126,7 @@ const ClientsSettings: React.FC = () => {
                 onConfirm={() => deleteClientHandler(record.id)}
               >
                 <Tooltip title="Delete">
-                  <Button shape="default" icon={<DeleteOutlined />} size="small" />
+                  <Button shape="default" icon={<DeleteOutlined />} size="small" onClick={() => deleteClientHandler(record.id)} />
                 </Tooltip>
               </Popconfirm>
             </Flex>
@@ -154,7 +159,11 @@ const ClientsSettings: React.FC = () => {
               {t('createClient')}
             </Button>
             <Tooltip title={t('pinTooltip')} trigger={'hover'}>
-              <PinRouteToNavbarButton name="clients" path="/worklenz/settings/clients" adminOnly={true} />
+              <PinRouteToNavbarButton
+                name="clients"
+                path="/worklenz/settings/clients"
+                adminOnly={true}
+              />
             </Tooltip>
           </Flex>
         </Flex>
@@ -167,7 +176,6 @@ const ClientsSettings: React.FC = () => {
         rowKey={record => record.id}
         onRow={record => ({
           onMouseEnter: () => setHoverRow(record.id),
-          onMouseLeave: () => setHoverRow(null),
         })}
         pagination={{
           showSizeChanger: true,

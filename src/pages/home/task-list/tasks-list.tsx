@@ -3,7 +3,6 @@ import {
   Badge,
   Button,
   Card,
-  DatePicker,
   Flex,
   Segmented,
   Select,
@@ -13,37 +12,40 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+
+
 import ListView from './list-view';
 import CalendarView from './calendar-view';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
-import StatusDropdown from '@components/task-list-common/statusDropdown/StatusDropdown';
 import { colors } from '@/styles/colors';
-import { fetchHomeTasks, setHomeTasksConfig } from '@/features/home-page/home-page.slice';
+import { setHomeTasksConfig } from '@/features/home-page/home-page.slice';
 import { IMyTask } from '@/types/home/my-tasks.types';
-import { ITaskStatus } from '@/types/tasks/taskStatus.types';
-import { useTranslation } from 'react-i18next';
-import dayjs from 'dayjs';
-import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useGetMyTasksQuery } from '@/api/home-page/home-page.api.service';
 import { IHomeTasksModel } from '@/types/home/home-page.types';
-import type { Dayjs } from 'dayjs';
-import { useSocket } from '@/socket/socketContext';
-import { SocketEvents } from '@/shared/socket-events';
 import './tasks-list.css';
+import HomeTasksStatusDropdown from '@/components/home-tasks/statusDropdown/home-tasks-status-dropdown';
+import TaskDrawer from '@/components/task-drawer/task-drawer';
+import HomeTasksDatePicker from '@/components/home-tasks/taskDatePicker/home-tasks-date-picker';
 
 const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
-  const { socket, connected } = useSocket();
 
   const [viewOptions, setViewOptions] = useState<'List' | 'Calendar'>('List');
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
-  const { data, isFetching: homeTasksFetching, refetch, isLoading } = useGetMyTasksQuery(homeTasksConfig);
+  const {
+    data,
+    isFetching: homeTasksFetching,
+    refetch,
+    isLoading,
+  } = useGetMyTasksQuery(homeTasksConfig);
 
   const { t } = useTranslation('home');
   const { model } = useAppSelector(state => state.homePageReducer);
@@ -68,41 +70,9 @@ const TasksList: React.FC = React.memo(() => {
     refetch();
   };
 
-  const handleEndDateChanged = (value: Dayjs | null, taskId: string) => {
-    if (!value || !taskId) return;
-
-    const body = {
-      task_id: taskId,
-      end_date: value.format('YYYY-MM-DD'),
-    };
-    socket?.emit(SocketEvents.TASK_END_DATE_CHANGE.toString(), JSON.stringify(body));
-  };
-
-  const handleStatusChange = (value: string, taskId: string) => {
-    if (!value || !taskId) return;
-    const body = {
-      task_id: taskId,
-      status: value,
-    };
-    socket?.emit(SocketEvents.TASK_STATUS_CHANGE.toString(), JSON.stringify(body));
-  };
-
-  const handleChangeReceived = (value: any) => {
-    refetch();
-  };
-
   useEffect(() => {
     refetch();
   }, [homeTasksConfig]);
-
-  useEffect(() => {
-    socket?.on(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
-    socket?.on(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
-    return () => {
-      socket?.removeListener(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
-      socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
-    };
-  }, [connected]);
 
   const columns: TableProps<IMyTask>['columns'] = useMemo(
     () => [
@@ -113,16 +83,17 @@ const TasksList: React.FC = React.memo(() => {
         render: (_, record) => (
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Tooltip title={record.name}>
-              <Typography.Text>
-                {record.name}
-              </Typography.Text>
+              <Typography.Text>{record.name}</Typography.Text>
             </Tooltip>
             <div className="row-action-button">
               <Tooltip title={'Click open task form'}>
                 <Button
                   type="text"
                   icon={<ExpandAltOutlined />}
-                  onClick={() => dispatch(toggleTaskDrawer())}
+                  onClick={() => {
+                    dispatch(setShowTaskDrawer(true));
+                    dispatch(setSelectedTaskId(record.id || null));
+                  }}
                   style={{
                     backgroundColor: colors.transparent,
                     padding: 0,
@@ -156,12 +127,7 @@ const TasksList: React.FC = React.memo(() => {
         title: t('tasks.status'),
         width: '180px',
         render: (_, record) => (
-          <StatusDropdown
-            statusList={record.project_statuses as ITaskStatus[]}
-            task={record}
-            teamId={record.team_id || ''}
-            onChange={value => handleStatusChange(value || '', record.id || '')}
-          />
+          <HomeTasksStatusDropdown task={record} teamId={record.team_id || ''} />
         ),
       },
       {
@@ -170,14 +136,7 @@ const TasksList: React.FC = React.memo(() => {
         width: '180px',
         dataIndex: 'end_date',
         render: (_, record) => (
-          <DatePicker
-            allowClear
-            disabledDate={record.start_date ? (current => current.isBefore(dayjs(record.start_date))) : undefined}
-            format={'MMM DD, YYYY'}
-            placeholder={t('tasks.dueDatePlaceholder')}
-            defaultValue={record.end_date ? dayjs(record.end_date) : null}
-            onChange={value => handleEndDateChanged(value || null, record.id || '')}
-          />
+          <HomeTasksDatePicker record={record} />
         ),
       },
     ],
@@ -185,8 +144,7 @@ const TasksList: React.FC = React.memo(() => {
   );
 
   const handleTaskModeChange = (value: number) => {
-    dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: +value }));
-    refetch();
+    dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: value }));
   };
 
   return (
@@ -237,8 +195,8 @@ const TasksList: React.FC = React.memo(() => {
       )}
 
       {/* task list table --> render with different filters and views  */}
-      {homeTasksFetching && !isLoading ? (
-        <Skeleton active/>
+      {!data?.body || isLoading ? (
+        <Skeleton active />
       ) : data?.body.total === 0 ? (
         <EmptyListPlaceholder
           imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
@@ -256,7 +214,7 @@ const TasksList: React.FC = React.memo(() => {
           loading={homeTasksFetching}
         />
       )}
-      <TaskDrawer />
+      {createPortal(<TaskDrawer />, document.body, 'home-task-drawer')}
     </Card>
   );
 });

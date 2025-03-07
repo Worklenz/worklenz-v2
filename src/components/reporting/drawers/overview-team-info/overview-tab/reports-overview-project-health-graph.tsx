@@ -3,12 +3,19 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip, ChartOptions } from 'chart.js';
 import { Badge, Card, Flex, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { IRPTOverviewTeamByHealth, IRPTOverviewTeamChartData } from '@/types/reporting/reporting.types';
+import {
+  IRPTOverviewTeamByHealth,
+  IRPTOverviewTeamChartData,
+} from '@/types/reporting/reporting.types';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 
 Chart.register(ArcElement, Tooltip);
 
-const OverviewReportsProjectHealthGraph = ({ data }: { data: IRPTOverviewTeamByHealth| undefined }) => {
+const OverviewReportsProjectHealthGraph = ({
+  data,
+}: {
+  data: IRPTOverviewTeamByHealth | undefined;
+}) => {
   const { t } = useTranslation('reporting-overview-drawer');
 
   type HealthGraphItemType = {
@@ -29,12 +36,12 @@ const OverviewReportsProjectHealthGraph = ({ data }: { data: IRPTOverviewTeamByH
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: context => {
             const value = context.raw as number;
             return `${context.label}: ${value} task${value !== 1 ? 's' : ''}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
   };
 
@@ -81,7 +88,7 @@ const OverviewReportsProjectHealthGraph = ({ data }: { data: IRPTOverviewTeamByH
           </Flex>
 
           {/* health-specific tasks */}
-          {healthGraphItems.map((item) => (
+          {healthGraphItems.map(item => (
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>

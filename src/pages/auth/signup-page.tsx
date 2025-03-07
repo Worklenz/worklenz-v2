@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Form, Input, Space, Typography, message } from 'antd';
-import googleIcon from '../../assets/images/google-icon.png';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import PageHeader from '../../components/AuthPageHeader';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import { Form, Card, Input, Flex, Button, Typography, Space, message } from 'antd/es';
+import { Rule } from 'antd/es/form';
+
+import googleIcon from '@/assets/images/google-icon.png';
+import PageHeader from '@components/AuthPageHeader';
+
 import { authApiService } from '@/api/auth/auth.api.service';
 import { IUserSignUpRequest } from '@/types/auth/signup.types';
-import { Rule } from 'antd/es/form';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { signUp } from '@/features/auth/authSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
@@ -87,10 +89,7 @@ const SignupPage = () => {
   }, []);
 
   const getInvitationQueryParams = () => {
-    const params = [
-      `team=${urlParams.teamId}`,
-      `teamMember=${urlParams.teamMemberId}`,
-    ];
+    const params = [`team=${urlParams.teamId}`, `teamMember=${urlParams.teamMemberId}`];
     if (getProjectId()) {
       params.push(`project=${getProjectId()}`);
     }
@@ -231,7 +230,7 @@ const SignupPage = () => {
           paddingInline: isMobile ? 24 : 48,
         },
       }}
-      bordered={false}
+      variant="outlined"
     >
       <PageHeader description={t('headerDescription')} />
       <Form

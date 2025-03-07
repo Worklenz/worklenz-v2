@@ -10,8 +10,10 @@ export const projectMembersApiService = {
   createProjectMember: async (
     body: IProjectMemberViewModel
   ): Promise<IServerResponse<IProjectMemberViewModel>> => {
+    const q = toQueryString({current_project_id: body.project_id});
+
     const response = await apiClient.post<IServerResponse<IProjectMemberViewModel>>(
-      `${rootUrl}`,
+      `${rootUrl}${q}`,
       body
     );
     return response.data;
@@ -28,14 +30,23 @@ export const projectMembersApiService = {
     return response.data;
   },
 
-  getByProjectId: async (projectId: string): Promise<IServerResponse<IProjectMemberViewModel[]>> => {
-    const response = await apiClient.get<IServerResponse<IProjectMemberViewModel[]>>(`${rootUrl}/${projectId}`);
+  getByProjectId: async (
+    projectId: string
+  ): Promise<IServerResponse<IProjectMemberViewModel[]>> => {
+    const response = await apiClient.get<IServerResponse<IProjectMemberViewModel[]>>(
+      `${rootUrl}/${projectId}`
+    );
     return response.data;
   },
 
-  deleteProjectMember: async (id: string, currentProjectId: string): Promise<IServerResponse<IProjectMemberViewModel>> => {
+  deleteProjectMember: async (
+    id: string,
+    currentProjectId: string
+  ): Promise<IServerResponse<IProjectMemberViewModel>> => {
     const q = toQueryString({ current_project_id: currentProjectId });
-    const response = await apiClient.delete<IServerResponse<IProjectMemberViewModel>>(`${rootUrl}/${id}${q}`);
+    const response = await apiClient.delete<IServerResponse<IProjectMemberViewModel>>(
+      `${rootUrl}/${id}${q}`
+    );
     return response.data;
   },
 };

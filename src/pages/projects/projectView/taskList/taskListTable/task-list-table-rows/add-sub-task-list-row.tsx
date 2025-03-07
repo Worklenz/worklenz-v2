@@ -11,7 +11,7 @@ const AddSubTaskListRow = () => {
   const { t } = useTranslation('task-list-table');
 
   // get data theme data from redux
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const customBorderColor = themeMode === 'dark' && ' border-[#303030]';
 
   return (

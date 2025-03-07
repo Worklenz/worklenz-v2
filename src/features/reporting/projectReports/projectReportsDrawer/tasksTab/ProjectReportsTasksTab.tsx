@@ -1,69 +1,61 @@
 import { Flex } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import CustomSearchbar from '@components/CustomSearchbar';
-import GroupByFilter from './GroupByFilter';
+import GroupByFilter from './group-by-filter';
 import ProjectReportsTasksTable from './ProjectReportsTaskTable';
 import { fetchData } from '@/utils/fetchData';
 import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+import logger from '@/utils/errorLogger';
+import { reportingProjectsApiService } from '@/api/reporting/reporting-projects.api.service';
+import { IGroupByOption, ITaskListGroup } from '@/types/tasks/taskList.types';
+import { GROUP_BY_STATUS_VALUE, IGroupBy } from '@/features/board/board-slice';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type ProjectReportsTasksTabProps = {
   projectId?: string | null;
 };
 
-const ProjectReportsTasksTab = ({
-  projectId = null,
-}: ProjectReportsTasksTabProps) => {
+const ProjectReportsTasksTab = ({ projectId = null }: ProjectReportsTasksTabProps) => {
   const [searchQuery, setSearhQuery] = useState<string>('');
-  const [activeGroup, setActiveGroup] = useState<
-    'status' | 'priority' | 'phase'
-  >('status');
 
-  // save each tasks list according to the groups
-  const [statusTasks, setStatusTasks] = useState<any[]>([]);
-  const [priorityTasks, setPriorityTasks] = useState<any[]>([]);
-  const [phaseTasks, setPhaseTasks] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [groups, setGroups] = useState<ITaskListGroup[]>([]);
+  const [groupBy, setGroupBy] = useState<IGroupBy>(GROUP_BY_STATUS_VALUE);
 
-  const [activeTasksList, setActiveTasksList] = useState<any[]>(statusTasks);
-
-  // this state for open task drawer
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-
-  // localization
   const { t } = useTranslation('reporting-projects-drawer');
 
-  // useMemo for memoizing the fetch functions
-  useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/tasksStatus.json',
-      setStatusTasks
-    );
-  }, []);
+  const filteredGroups = useMemo(() => {
+    return groups
+      .filter(item => item.tasks.length > 0)
+      .map(item => ({
+        ...item,
+        tasks: item.tasks.filter(task => 
+          task.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      }))
+      .filter(item => item.tasks.length > 0);
+  }, [groups, searchQuery]);
 
-  useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/tasksPriority.json',
-      setPriorityTasks
-    );
-  }, []);
+  const fetchTasksData = async () => {
+    if (!projectId || loading) return;
 
-  useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/tasksPhase.json',
-      setPhaseTasks
-    );
-  }, []);
-
-  // update activeTasksList based on activeGroup
-  useMemo(() => {
-    if (activeGroup === 'status') {
-      setActiveTasksList(statusTasks);
-    } else if (activeGroup === 'priority') {
-      setActiveTasksList(priorityTasks);
-    } else {
-      setActiveTasksList(phaseTasks);
+    try {
+      setLoading(true);
+      const res = await reportingProjectsApiService.getTasks(projectId, groupBy);
+      if (res.done) {
+        setGroups(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching tasks data', error);
+    } finally {
+      setLoading(false);
     }
-  }, [activeGroup, statusTasks, priorityTasks, phaseTasks]);
+  };
+
+  useEffect(() => {
+    fetchTasksData();
+  }, [projectId, groupBy]);
 
   return (
     <Flex vertical gap={24}>
@@ -73,20 +65,18 @@ const ProjectReportsTasksTab = ({
           searchQuery={searchQuery}
           setSearchQuery={setSearhQuery}
         />
-        <GroupByFilter setActiveGroup={setActiveGroup} />
+        <GroupByFilter setActiveGroup={setGroupBy} />
       </Flex>
 
       <Flex vertical gap={12}>
-        {activeTasksList &&
-          activeTasksList.map((item) => (
-            <ProjectReportsTasksTable
-              tasksData={item.tasks}
-              title={item.name}
-              color={item.color_code}
-              type={activeGroup}
-              setSeletedTaskId={setSelectedTaskId}
-            />
-          ))}
+        {filteredGroups.map(item => (
+          <ProjectReportsTasksTable
+            tasksData={item.tasks}
+            title={item.name}
+            color={item.color_code}
+            type={groupBy}
+          />
+        ))}
       </Flex>
 
       <TaskDrawer />

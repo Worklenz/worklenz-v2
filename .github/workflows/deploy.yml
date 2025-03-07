@@ -3,41 +3,41 @@ name: Deploy React App to Azure VM
 on:
   push:
     branches:
-      - development  # This triggers the action when code is pushed to the main branch
+      - main # This triggers the action when code is pushed to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'  # Match this to the Node.js version on your VM
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Match this to the Node.js version on your VM
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Build React app
-      run: npm run build
+      - name: Build React app
+        run: npm run build
 
-    - name: Copy files to Azure VM
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.AZURE_VM_HOST }}       # Add your VM's IP or domain as a GitHub secret
-        username: ${{ secrets.AZURE_VM_USER }}    # Add your VM's username as a GitHub secret
-        key: ${{ secrets.AZURE_VM_SSH_KEY }}
-        source: "build/*"  # The React app build files
-        target: "/home/cdsadmin/apps/worklenz-react/build/"  # Adjust this path based on your Nginx config
+      - name: Copy files to Azure VM
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }} # Add your VM's IP or domain as a GitHub secret
+          username: ${{ secrets.AZURE_VM_USER }} # Add your VM's username as a GitHub secret
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          source: 'build/*' # The React app build files
+          target: '/home/cdsadmin/apps/worklenz-react/build/' # Adjust this path based on your Nginx config
 
-    - name: Restart Nginx
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.AZURE_VM_HOST }}
-        username: ${{ secrets.AZURE_VM_USER }}
-        key: ${{ secrets.AZURE_VM_SSH_KEY }}
-        script: |
-          sudo systemctl restart nginx
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USER }}
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          script: |
+            sudo systemctl restart nginx

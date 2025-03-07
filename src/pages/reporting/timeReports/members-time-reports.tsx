@@ -3,7 +3,7 @@ import TimeReportPageHeader from '@/pages/reporting/timeReports/page-header/time
 import MembersTimeSheet from '@/pages/reporting/timeReports/members-time-sheet/members-time-sheet';
 import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
 import { useTranslation } from 'react-i18next';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 
 const MembersTimeReports = () => {
   const { t } = useTranslation('time-report');

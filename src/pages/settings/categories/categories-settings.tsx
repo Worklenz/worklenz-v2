@@ -18,12 +18,12 @@ import CustomColorsCategoryTag from '@features/settings/categories/CustomColorsC
 import { deleteCategory } from '@features/settings/categories/categoriesSlice';
 import { categoriesApiService } from '@/api/settings/categories/categories.api.service';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const CategoriesSettings = () => {
   // localization
-  const { t } = useTranslation('settings-categories');
+  const { t } = useTranslation('settings/categories');
 
   useDocumentTitle('Manage Categories');
 
@@ -65,7 +65,7 @@ const CategoriesSettings = () => {
     {
       key: 'category',
       title: t('categoryColumn'),
-      render: (record: CategoryType) => <CustomColorsCategoryTag category={record} />,
+      render: (record: IProjectCategory) => <CustomColorsCategoryTag category={record} />,
     },
     {
       key: 'associatedTask',
@@ -75,14 +75,14 @@ const CategoriesSettings = () => {
     {
       key: 'actionBtns',
       width: 60,
-      render: (record: CategoryType) =>
-        hoverRow === record.categoryId && (
+      render: (record: IProjectCategory) =>
+        hoverRow === record.id && (
           <Popconfirm
             title={t('deleteConfirmationTitle')}
             icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
             okText={t('deleteConfirmationOk')}
             cancelText={t('deleteConfirmationCancel')}
-            onConfirm={() => dispatch(deleteCategory(record.categoryId))}
+            onConfirm={() => record.id && dispatch(deleteCategory(record.id))}
           >
             <Tooltip title="Delete">
               <Button shape="default" icon={<DeleteOutlined />} size="small" />
@@ -126,7 +126,6 @@ const CategoriesSettings = () => {
         onRow={record => {
           return {
             onMouseEnter: () => setHoverRow(record.categoryId),
-            onMouseLeave: () => setHoverRow(null),
             style: {
               cursor: 'pointer',
               height: 36,

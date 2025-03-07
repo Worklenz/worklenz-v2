@@ -1,14 +1,4 @@
-import {
-  Button,
-  Divider,
-  Flex,
-  Form,
-  Input,
-  message,
-  Modal,
-  Select,
-  Typography,
-} from 'antd';
+import { Button, Divider, Flex, Form, Input, message, Modal, Select, Typography } from 'antd';
 import React from 'react';
 import SelectionTypeColumn from './selection-type-column/selection-type-column';
 import NumberTypeColumn from './number-type-column/number-type-column';
@@ -48,53 +38,43 @@ const CustomColumnModal = ({
   const [mainForm] = Form.useForm();
 
   //   get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
   // get initial data from task list custom column slice
   const fieldType: CustomFieldsTypes = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.customFieldType
+    state => state.taskListCustomColumnsReducer.customFieldType
   );
   // number column initial data
   const numberType: CustomFieldNumberTypes = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.customFieldNumberType
+    state => state.taskListCustomColumnsReducer.customFieldNumberType
   );
-  const decimals: number = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.decimals
-  );
-  const label: string = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.label
-  );
+  const decimals: number = useAppSelector(state => state.taskListCustomColumnsReducer.decimals);
+  const label: string = useAppSelector(state => state.taskListCustomColumnsReducer.label);
   const labelPosition: 'left' | 'right' = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.labelPosition
+    state => state.taskListCustomColumnsReducer.labelPosition
   );
   const previewValue: number = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.previewValue
+    state => state.taskListCustomColumnsReducer.previewValue
   );
   // formula column initial data
-  const expression = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.expression
-  );
+  const expression = useAppSelector(state => state.taskListCustomColumnsReducer.expression);
   const firstNumericColumn = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.firstNumericColumn
+    state => state.taskListCustomColumnsReducer.firstNumericColumn
   );
   const secondNumericColumn = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.secondNumericColumn
+    state => state.taskListCustomColumnsReducer.secondNumericColumn
   );
   // labels column initial state
-  const labelsList = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.labelsList
-  );
+  const labelsList = useAppSelector(state => state.taskListCustomColumnsReducer.labelsList);
   // selection column initial state
-  const selectionsList = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.selectionsList
-  );
+  const selectionsList = useAppSelector(state => state.taskListCustomColumnsReducer.selectionsList);
 
   // if it is already created column get the column data
   const openedColumn = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnList
-  ).find((col) => col.key === columnId);
+    state => state.projectViewTaskListColumnsReducer.columnList
+  ).find(col => col.key === columnId);
 
   const fieldTypesOptions = [
     {
@@ -148,20 +128,14 @@ const CustomColumnModal = ({
         const newColumn: CustomTableColumnsType = {
           key: columnKey,
           name: value.fieldTitle,
-          columnHeader: (
-            <CustomColumnHeader
-              columnKey={columnKey}
-              columnName={value.fieldTitle}
-            />
-          ),
+          columnHeader: <CustomColumnHeader columnKey={columnKey} columnName={value.fieldTitle} />,
           width: 150,
           isVisible: true,
           isCustomColumn: true,
           customColumnObj: {
             ...value,
             labelsList: value.fieldType === 'labels' ? labelsList : [],
-            selectionsList:
-              value.fieldType === 'selection' ? selectionsList : [],
+            selectionsList: value.fieldType === 'selection' ? selectionsList : [],
           },
         };
 
@@ -173,10 +147,7 @@ const CustomColumnModal = ({
               ...openedColumn,
               name: value.fieldTitle,
               columnHeader: (
-                <CustomColumnHeader
-                  columnKey={columnId}
-                  columnName={value.fieldTitle}
-                />
+                <CustomColumnHeader columnKey={columnId} columnName={value.fieldTitle} />
               ),
               customColumnObj: {
                 ...openedColumn.customColumnObj,
@@ -191,8 +162,7 @@ const CustomColumnModal = ({
                 firstNumericColumn: value.firstNumericColumn,
                 secondNumericColumn: value.secondNumericColumn,
                 labelsList: value.fieldType === 'labels' ? labelsList : [],
-                selectionsList:
-                  value.fieldType === 'selection' ? selectionsList : [],
+                selectionsList: value.fieldType === 'selection' ? selectionsList : [],
               },
             }
           : null;
@@ -250,10 +220,8 @@ const CustomColumnModal = ({
                 labelPosition: openedColumn?.customColumnObj.labelPosition,
                 previewValue: openedColumn?.customColumnObj.previewValue,
                 expression: openedColumn?.customColumnObj.expression,
-                firstNumericColumn:
-                  openedColumn?.customColumnObj.firstNumericColumn,
-                secondNumericColumn:
-                  openedColumn?.customColumnObj.secondNumericColumn,
+                firstNumericColumn: openedColumn?.customColumnObj.firstNumericColumn,
+                secondNumericColumn: openedColumn?.customColumnObj.secondNumericColumn,
               }
         }
       >
@@ -270,10 +238,7 @@ const CustomColumnModal = ({
             ]}
             required={false}
           >
-            <Input
-              placeholder="title"
-              style={{ minWidth: '100%', width: 300 }}
-            />
+            <Input placeholder="title" style={{ minWidth: '100%', width: 300 }} />
           </Form.Item>
 
           <Form.Item
@@ -286,7 +251,7 @@ const CustomColumnModal = ({
               defaultValue={fieldType}
               // disabled={modalType === 'edit'}
               value={fieldType}
-              onChange={(value) => dispatch(setCustomFieldType(value))}
+              onChange={value => dispatch(setCustomFieldType(value))}
               style={{
                 minWidth: '100%',
                 width: 150,
@@ -311,10 +276,7 @@ const CustomColumnModal = ({
           style={{ marginBlockStart: 24 }}
         >
           {modalType === 'edit' && columnId && (
-            <Button
-              danger
-              onClick={() => dispatch(deleteCustomColumn(columnId))}
-            >
+            <Button danger onClick={() => dispatch(deleteCustomColumn(columnId))}>
               Delete
             </Button>
           )}

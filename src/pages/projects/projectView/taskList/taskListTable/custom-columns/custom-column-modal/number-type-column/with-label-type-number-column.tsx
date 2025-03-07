@@ -11,40 +11,27 @@ import {
 
 const WithLabelTypeNumberColumn = () => {
   //   get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
   // get initial data from task list custom column slice
-  const decimals: number = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.decimals
-  );
-  const label: string = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.label
-  );
+  const decimals: number = useAppSelector(state => state.taskListCustomColumnsReducer.decimals);
+  const label: string = useAppSelector(state => state.taskListCustomColumnsReducer.label);
   const labelPosition: 'left' | 'right' = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.labelPosition
+    state => state.taskListCustomColumnsReducer.labelPosition
   );
   const previewValue: number = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.previewValue
+    state => state.taskListCustomColumnsReducer.previewValue
   );
 
   return (
     <>
-      <Form.Item
-        name={'label'}
-        label={<Typography.Text>Label</Typography.Text>}
-      >
-        <Input
-          value={label}
-          onChange={(e) => dispatch(setLabel(e.currentTarget.value))}
-        />
+      <Form.Item name={'label'} label={<Typography.Text>Label</Typography.Text>}>
+        <Input value={label} onChange={e => dispatch(setLabel(e.currentTarget.value))} />
       </Form.Item>
 
-      <Form.Item
-        name={'labelPosition'}
-        label={<Typography.Text>Position</Typography.Text>}
-      >
+      <Form.Item name={'labelPosition'} label={<Typography.Text>Position</Typography.Text>}>
         <Select
           options={[
             {
@@ -56,7 +43,7 @@ const WithLabelTypeNumberColumn = () => {
           ]}
           defaultValue={labelPosition}
           value={labelPosition}
-          onChange={(value) => dispatch(setLabelPosition(value))}
+          onChange={value => dispatch(setLabelPosition(value))}
           style={{
             border: `1px solid ${themeWiseColor('#d9d9d9', '#424242', themeMode)}`,
             borderRadius: 4,
@@ -64,18 +51,15 @@ const WithLabelTypeNumberColumn = () => {
         />
       </Form.Item>
 
-      <Form.Item
-        name={'decimals'}
-        label={<Typography.Text>Decimals</Typography.Text>}
-      >
+      <Form.Item name={'decimals'} label={<Typography.Text>Decimals</Typography.Text>}>
         <Select
-          options={[1, 2, 3, 4].map((item) => ({
+          options={[1, 2, 3, 4].map(item => ({
             key: item,
             value: item,
             label: item,
           }))}
           value={decimals}
-          onChange={(value) => dispatch(setDecimals(value))}
+          onChange={value => dispatch(setDecimals(value))}
           style={{
             border: `1px solid ${themeWiseColor('#d9d9d9', '#424242', themeMode)}`,
             borderRadius: 4,

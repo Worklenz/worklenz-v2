@@ -40,11 +40,11 @@ export interface ILabelsChangeResponse {
   parent_task: string;
   is_new: boolean;
   new_label: ITaskLabel;
-  all_labels: ITaskLabel[],
+  all_labels: ITaskLabel[];
   labels: ITaskLabel[];
 }
 
 export interface IMembersFilterChange {
-  selection: string,
-  is_subtasks_included: boolean
+  selection: string;
+  is_subtasks_included: boolean;
 }

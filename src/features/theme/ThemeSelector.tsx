@@ -7,7 +7,7 @@ import { toggleTheme } from './themeSlice';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 
 const ThemeSelector = () => {
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const dispatch = useAppDispatch();
 
   const handleDarkModeToggle = () => {

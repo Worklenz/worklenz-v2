@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Card, Flex, Form, Input, Result, Typography } from 'antd';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Form, Card, Input, Flex, Button, Typography, Result } from 'antd/es';
+import { LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
-import PageHeader from '../../components/AuthPageHeader';
+import PageHeader from '@components/AuthPageHeader';
 
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
-import { resetPassword, updatePassword } from '@/features/auth/authSlice';
+import { updatePassword } from '@/features/auth/authSlice';
 import { evt_verify_reset_email_page_visit } from '@/shared/worklenz-analytics-events';
 
 import logger from '@/utils/errorLogger';
@@ -78,7 +78,7 @@ const VerifyResetEmailPage = () => {
           paddingInline: isMobile ? 24 : 48,
         },
       }}
-      bordered={false}
+      variant="outlined"
     >
       {isSuccess ? (
         <Result status="success" title={t('successTitle')} subTitle={t('successMessage')} />

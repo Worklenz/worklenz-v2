@@ -1,14 +1,10 @@
 import { Tag, Tooltip } from 'antd';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
-const CustomNumberLabel = ({
-  labelList,
-}: {
-  labelList: ITaskLabel[] | null;
-}) => {
+const CustomNumberLabel = ({ labelList }: { labelList: ITaskLabel[] | null }) => {
   const list = labelList?.slice(2);
 
-  const labelNamesStirng = list?.map((label) => label.names).join(', ');
+  const labelNamesStirng = list?.map(label => label.names).join(', ');
 
   return (
     <Tooltip title={labelNamesStirng}>

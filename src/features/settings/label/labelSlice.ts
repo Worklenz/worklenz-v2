@@ -37,9 +37,7 @@ const labelSlice = createSlice({
     },
     // action for delete label
     deleteLabel: (state, action: PayloadAction<string>) => {
-      state.labelList = state.labelList.filter(
-        (label) => label.labelId !== action.payload
-      );
+      state.labelList = state.labelList.filter(label => label.labelId !== action.payload);
     },
   },
 });

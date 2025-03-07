@@ -1,42 +1,30 @@
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, notification, Row, Typography } from 'antd';
 import React, { useState } from 'react';
-import { useDocumentTitle } from '../../../hooks/useDoumentTItle';
+import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
 
 const ChangePassword: React.FC = () => {
   useDocumentTitle('Change Password');
   const [passwordStrength, setPasswordStrength] = useState<string>('');
+  const [form] = Form.useForm();
 
-    // Function to evaluate password strength
-    const evaluatePasswordStrength = (password: string) => {
-      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  
-      if (regex.test(password)) {
-        return 'Strong';
-      }
-      return 'Weak';
+  const handleFormSubmit = async (values: any) => {
+    const body = {
+      password: values.newPassword,
+      confirm_password: values.confirmPassword,
+      current_password: values.currentPassword,
     };
-  
-    const handleFormSubmit = (values: { newPassword: string }) => {
-      const strength = evaluatePasswordStrength(values.newPassword);
-  
-      if (strength === 'Weak') {
-        notification.open({
-          message: 'Please use a strong new password',
-          description:
-            'Minimum 8 characters, with uppercase and lowercase and a number and a symbol.',
-          placement: 'topRight',
-        });
-      } 
-    };
+
+    const res = await profileSettingsApiService.changePassword(body);
+    if (res.done) {
+      form.resetFields();
+    }
+  };
 
   return (
     <Card style={{ width: '100%' }}>
-      <Form
-        layout="vertical"
-        initialValues={{ remember: true }}
-        onFinish={handleFormSubmit}
-      >
+      <Form layout="vertical" form={form} onFinish={handleFormSubmit}>
         <Row>
           <Form.Item
             name="currentPassword"
@@ -53,7 +41,7 @@ const ChangePassword: React.FC = () => {
               type="password"
               style={{ width: '350px' }}
               placeholder="Enter your current password"
-              iconRender={(visible) =>
+              iconRender={visible =>
                 visible ? (
                   <EyeInvisibleOutlined style={{ color: '#000000d9' }} />
                 ) : (
@@ -78,7 +66,7 @@ const ChangePassword: React.FC = () => {
               type="password"
               style={{ width: '350px' }}
               placeholder="New Password"
-              iconRender={(visible) =>
+              iconRender={visible =>
                 visible ? (
                   <EyeInvisibleOutlined style={{ color: '#000000d9' }} />
                 ) : (
@@ -103,9 +91,7 @@ const ChangePassword: React.FC = () => {
                   if (!value || getFieldValue('newPassword') === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(
-                    new Error('Passwords do not match!')
-                  );
+                  return Promise.reject(new Error('Passwords do not match!'));
                 },
               }),
             ]}
@@ -115,7 +101,7 @@ const ChangePassword: React.FC = () => {
               type="password"
               style={{ width: '350px' }}
               placeholder="Confirm Password"
-              iconRender={(visible) =>
+              iconRender={visible =>
                 visible ? (
                   <EyeInvisibleOutlined style={{ color: '#000000d9' }} />
                 ) : (
@@ -127,8 +113,8 @@ const ChangePassword: React.FC = () => {
         </Row>
         <Row style={{ width: '350px', margin: '0.5rem 0' }}>
           <Typography.Text type="secondary" style={{ fontSize: '12px' }}>
-            New password should be a minimum of 8 characters, with an
-            uppercase letter, a number, and a symbol.
+            New password should be a minimum of 8 characters, with an uppercase letter, a number,
+            and a symbol.
           </Typography.Text>
         </Row>
         <Row>

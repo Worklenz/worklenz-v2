@@ -1,11 +1,7 @@
 import { Flex, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import OverviewStatCard from './overview-stat-card';
-import {
-  BankOutlined,
-  FileOutlined,
-  UsergroupAddOutlined,
-} from '@ant-design/icons';
+import { BankOutlined, FileOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { IRPTOverviewStatistics } from '@/types/reporting/reporting.types';
@@ -16,12 +12,15 @@ const OverviewStats = () => {
   const [stats, setStats] = useState<IRPTOverviewStatistics>({});
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation('reporting-overview');
-  const includeArchivedProjects = useAppSelector(state => state.reportingReducer.includeArchivedProjects);
+  const includeArchivedProjects = useAppSelector(
+    state => state.reportingReducer.includeArchivedProjects
+  );
 
   const getOverviewStats = async () => {
     setLoading(true);
     try {
-      const { done, body } = await reportingApiService.getOverviewStatistics(includeArchivedProjects);
+      const { done, body } =
+        await reportingApiService.getOverviewStatistics(includeArchivedProjects);
       if (done) {
         setStats(body);
       }
@@ -44,7 +43,7 @@ const OverviewStats = () => {
     icon: React.ReactNode,
     mainCount: number = 0,
     mainKey: string,
-    stats: { text: string; type?: "secondary" | "danger" }[]
+    stats: { text: string; type?: 'secondary' | 'danger' }[]
   ) => (
     <OverviewStatCard
       icon={icon}
@@ -68,8 +67,14 @@ const OverviewStats = () => {
         stats?.teams?.count,
         'teamCount',
         [
-          { text: renderStatText(stats?.teams?.projects, 'projectCount', 'projectCountPlural'), type: 'secondary' },
-          { text: renderStatText(stats?.teams?.members, 'memberCount', 'memberCountPlural'), type: 'secondary' }
+          {
+            text: renderStatText(stats?.teams?.projects, 'projectCount', 'projectCountPlural'),
+            type: 'secondary',
+          },
+          {
+            text: renderStatText(stats?.teams?.members, 'memberCount', 'memberCountPlural'),
+            type: 'secondary',
+          },
         ]
       )}
 
@@ -78,8 +83,22 @@ const OverviewStats = () => {
         stats?.projects?.count,
         'projectCount',
         [
-          { text: renderStatText(stats?.projects?.active, 'activeProjectCount', 'activeProjectCountPlural'), type: 'secondary' },
-          { text: renderStatText(stats?.projects?.overdue, 'overdueProjectCount', 'overdueProjectCountPlural'), type: 'danger' }
+          {
+            text: renderStatText(
+              stats?.projects?.active,
+              'activeProjectCount',
+              'activeProjectCountPlural'
+            ),
+            type: 'secondary',
+          },
+          {
+            text: renderStatText(
+              stats?.projects?.overdue,
+              'overdueProjectCount',
+              'overdueProjectCountPlural'
+            ),
+            type: 'danger',
+          },
         ]
       )}
 
@@ -88,8 +107,22 @@ const OverviewStats = () => {
         stats?.members?.count,
         'memberCount',
         [
-          { text: renderStatText(stats?.members?.unassigned, 'unassignedMemberCount', 'unassignedMemberCountPlural'), type: 'secondary' },
-          { text: renderStatText(stats?.members?.overdue, 'memberWithOverdueTaskCount', 'memberWithOverdueTaskCountPlural'), type: 'danger' }
+          {
+            text: renderStatText(
+              stats?.members?.unassigned,
+              'unassignedMemberCount',
+              'unassignedMemberCountPlural'
+            ),
+            type: 'secondary',
+          },
+          {
+            text: renderStatText(
+              stats?.members?.overdue,
+              'memberWithOverdueTaskCount',
+              'memberWithOverdueTaskCountPlural'
+            ),
+            type: 'danger',
+          },
         ]
       )}
     </Flex>

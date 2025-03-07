@@ -1,7 +1,7 @@
 import { Button, Drawer, Form, Input, message, Typography } from 'antd';
 import React, { useEffect } from 'react';
-import { useAppSelector } from '../../../hooks/useAppSelector';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleUpdateJobTitleDrawer, updateJobTitle } from './jobSlice';
 import { JobType } from '../../../types/job.types';
 import { useTranslation } from 'react-i18next';
@@ -10,23 +10,17 @@ type UpdateJobTitleDrawerProps = {
   selectedJobTitleId: string | null;
 };
 
-const UpdateJobTitleDrawer = ({
-  selectedJobTitleId,
-}: UpdateJobTitleDrawerProps) => {
+const UpdateJobTitleDrawer = ({ selectedJobTitleId }: UpdateJobTitleDrawerProps) => {
   // localization
-  const { t } = useTranslation('settings-job-titles');
+  const { t } = useTranslation('settings/job-titles');
 
   // get data from client reducer
-  const jobTitlesList = useAppSelector((state) => state.jobReducer.jobsList);
+  const jobTitlesList = useAppSelector(state => state.jobReducer.jobsList);
 
   // get data of currentlt selectedClient
-  const selectedJobTitle = jobTitlesList.find(
-    (job) => job.jobId === selectedJobTitleId
-  );
+  const selectedJobTitle = jobTitlesList.find(job => job.jobId === selectedJobTitleId);
 
-  const isDrawerOpen = useAppSelector(
-    (state) => state.jobReducer.isUpdateJobTitleDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.jobReducer.isUpdateJobTitleDrawerOpen);
   const dispatch = useAppDispatch();
 
   const [form] = Form.useForm();

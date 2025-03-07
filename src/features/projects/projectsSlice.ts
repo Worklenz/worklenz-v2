@@ -4,6 +4,7 @@ import logger from '@/utils/errorLogger';
 import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import { IProjectCategory } from '@/types/project/projectCategory.types';
 import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
+import { IProjectManager } from '@/types/project/projectManager.types';
 
 interface ProjectState {
   projects: {
@@ -15,6 +16,7 @@ interface ProjectState {
   creatingProject: boolean;
   initialized: boolean;
   isProjectDrawerOpen: boolean;
+  isSaveAsTemplateDrawerOpen: boolean;
   filteredCategories: string[];
   filteredStatuses: string[];
   requestParams: {
@@ -27,6 +29,8 @@ interface ProjectState {
     statuses: string | null;
     categories: string | null;
   };
+  projectManagers: IProjectManager[];
+  projectManagersLoading: boolean;
 }
 
 const initialState: ProjectState = {
@@ -39,6 +43,7 @@ const initialState: ProjectState = {
   creatingProject: false,
   initialized: false,
   isProjectDrawerOpen: false,
+  isSaveAsTemplateDrawerOpen: false,
   filteredCategories: [],
   filteredStatuses: [],
   requestParams: {
@@ -51,6 +56,8 @@ const initialState: ProjectState = {
     statuses: null,
     categories: null,
   },
+  projectManagers: [],
+  projectManagersLoading: false,
 };
 
 // Create async thunk for fetching teams
@@ -153,12 +160,22 @@ export const toggleArchiveProjectForAll = createAsyncThunk(
   }
 );
 
+export const fetchProjectManagers = createAsyncThunk(
+  'projects/fetchProjectManagers',
+  async (_, { rejectWithValue }) => {
+    const response = await projectsApiService.getProjectManagers();
+    return response.body;
+  }
+);
 const projectSlice = createSlice({
   name: 'projectReducer',
   initialState,
   reducers: {
     toggleDrawer: state => {
       state.isProjectDrawerOpen = !state.isProjectDrawerOpen;
+    },
+    toggleSaveAsTemplateDrawer: state => {
+      state.isSaveAsTemplateDrawerOpen = !state.isSaveAsTemplateDrawerOpen;
     },
     createProject: (state, action: PayloadAction<IProjectViewModel>) => {
       state.creatingProject = true;
@@ -211,8 +228,25 @@ const projectSlice = createSlice({
       .addCase(toggleArchiveProjectForAll.fulfilled, state => {
         state.loading = false;
       })
+      .addCase(fetchProjectManagers.pending, state => {
+        state.projectManagersLoading = true;
+      })
+      .addCase(fetchProjectManagers.fulfilled, (state, action) => {
+        state.projectManagersLoading = false;
+        state.projectManagers = action.payload;
+      })
+      .addCase(fetchProjectManagers.rejected, state => {
+        state.projectManagersLoading = false;
+      });
   },
 });
 
-export const { toggleDrawer, setCategories, setFilteredCategories, setFilteredStatuses, setRequestParams } = projectSlice.actions;
+export const {
+  toggleDrawer,
+  toggleSaveAsTemplateDrawer,
+  setCategories,
+  setFilteredCategories,
+  setFilteredStatuses,
+  setRequestParams,
+} = projectSlice.actions;
 export default projectSlice.reducer;

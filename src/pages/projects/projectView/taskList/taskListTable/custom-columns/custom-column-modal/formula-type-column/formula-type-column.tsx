@@ -11,23 +11,21 @@ import {
 
 const FormulaTypeColumn = () => {
   // get theme details from the theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
   // get initial data from task list custom column slice
-  const expression = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.expression
-  );
+  const expression = useAppSelector(state => state.taskListCustomColumnsReducer.expression);
 
   // get columns from column slice and filter only numeric columns
   const columnsOptions = useAppSelector(
-    (state) => state.projectViewTaskListColumnsReducer.columnList
+    state => state.projectViewTaskListColumnsReducer.columnList
   );
 
   // filter numeric columns only
   const numericColumns = columnsOptions.filter(
-    (column) => column.customColumnObj?.fieldType === 'number'
+    column => column.customColumnObj?.fieldType === 'number'
   );
 
   // expression types options
@@ -46,12 +44,12 @@ const FormulaTypeColumn = () => {
       >
         {/* first numeric column */}
         <Select
-          options={numericColumns.map((col) => ({
+          options={numericColumns.map(col => ({
             key: col.key,
             value: col.key,
             label: col.name,
           }))}
-          onChange={(value) => dispatch(setFirstNumericColumn(value))}
+          onChange={value => dispatch(setFirstNumericColumn(value))}
           placeholder="Select first column"
           style={{
             minWidth: '100%',
@@ -62,15 +60,12 @@ const FormulaTypeColumn = () => {
         />
       </Form.Item>
 
-      <Form.Item
-        name={'expression'}
-        label={<Typography.Text>Expression</Typography.Text>}
-      >
+      <Form.Item name={'expression'} label={<Typography.Text>Expression</Typography.Text>}>
         {/* expression type */}
         <Select
           options={expressionTypesOptions}
           value={expression}
-          onChange={(value) => dispatch(setExpression(value))}
+          onChange={value => dispatch(setExpression(value))}
           style={{
             minWidth: '100%',
             width: 150,
@@ -86,12 +81,12 @@ const FormulaTypeColumn = () => {
       >
         {/* second numeric column */}
         <Select
-          options={numericColumns.map((col) => ({
+          options={numericColumns.map(col => ({
             key: col.key,
             value: col.key,
             label: col.name,
           }))}
-          onChange={(value) => dispatch(setSecondNumericColumn(value))}
+          onChange={value => dispatch(setSecondNumericColumn(value))}
           placeholder="Select second column"
           style={{
             minWidth: '100%',

@@ -18,9 +18,7 @@ const SingleAvatar: React.FC<SingleAvatarProps> = ({ avatarUrl, name, email = nu
         marginRight: '8px',
       }}
     >
-
-        {name?.charAt(0)}
-
+      {name?.charAt(0)}
     </Avatar>
   );
 };

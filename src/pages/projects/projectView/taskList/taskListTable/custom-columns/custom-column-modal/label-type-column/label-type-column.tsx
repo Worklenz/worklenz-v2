@@ -18,7 +18,7 @@ const LabelTypeColumn = () => {
   ]);
 
   // phase color options
-  const phaseOptionColorList = PhaseColorCodes.map((color) => ({
+  const phaseOptionColorList = PhaseColorCodes.map(color => ({
     value: color,
     label: (
       <Tag
@@ -41,13 +41,13 @@ const LabelTypeColumn = () => {
       labelName: 'Untitled label',
       labelColor: PhaseColorCodes[0],
     };
-    setLabels((prevLabels) => [...prevLabels, newLabel]);
+    setLabels(prevLabels => [...prevLabels, newLabel]);
     dispatch(setLabelsList([...labels, newLabel])); // update the slice with the new label
   };
 
   // update label name
   const handleUpdateLabelName = (labelId: string, labelName: string) => {
-    const updatedLabels = labels.map((label) =>
+    const updatedLabels = labels.map(label =>
       label.labelId === labelId ? { ...label, labelName } : label
     );
     setLabels(updatedLabels);
@@ -56,7 +56,7 @@ const LabelTypeColumn = () => {
 
   // update label color
   const handleUpdateLabelColor = (labelId: string, labelColor: string) => {
-    const updatedLabels = labels.map((label) =>
+    const updatedLabels = labels.map(label =>
       label.labelId === labelId ? { ...label, labelColor } : label
     );
     setLabels(updatedLabels);
@@ -65,7 +65,7 @@ const LabelTypeColumn = () => {
 
   // remove a label
   const handleRemoveLabel = (labelId: string) => {
-    const updatedLabels = labels.filter((label) => label.labelId !== labelId);
+    const updatedLabels = labels.filter(label => label.labelId !== labelId);
     setLabels(updatedLabels);
     dispatch(setLabelsList(updatedLabels)); // update the slice after label removal
   };
@@ -80,23 +80,19 @@ const LabelTypeColumn = () => {
       <Typography.Text>Labels</Typography.Text>
       <Flex vertical gap={8}>
         <Flex vertical gap={8} style={{ maxHeight: 120, overflow: 'auto' }}>
-          {labels.map((label) => (
+          {labels.map(label => (
             <Flex gap={8} key={label.labelId}>
               <HolderOutlined style={{ fontSize: 18 }} />
               <Input
                 value={label.labelName}
-                onChange={(e) =>
-                  handleUpdateLabelName(label.labelId, e.target.value)
-                }
+                onChange={e => handleUpdateLabelName(label.labelId, e.target.value)}
                 style={{ width: 'fit-content', maxWidth: 400 }}
               />
               <Flex gap={8} align="center">
                 <Select
                   options={phaseOptionColorList}
                   value={label.labelColor}
-                  onChange={(value) =>
-                    handleUpdateLabelColor(label.labelId, value)
-                  }
+                  onChange={value => handleUpdateLabelColor(label.labelId, value)}
                   style={{ width: 48 }}
                   suffixIcon={null}
                 />
@@ -109,11 +105,7 @@ const LabelTypeColumn = () => {
           ))}
         </Flex>
 
-        <Button
-          type="link"
-          onClick={handleAddLabel}
-          style={{ width: 'fit-content', padding: 0 }}
-        >
+        <Button type="link" onClick={handleAddLabel} style={{ width: 'fit-content', padding: 0 }}>
           + Add a label
         </Button>
       </Flex>

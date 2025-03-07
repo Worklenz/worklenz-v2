@@ -7,30 +7,24 @@ import MembersReportsDrawerTabs from './MembersReportsDrawerTabs';
 import { useTranslation } from 'react-i18next';
 import MembersOverviewTasksStatsDrawer from './overviewTab/membersOverviewTasksStatsDrawer/MembersOverviewTasksStatsDrawer';
 import MembersOverviewProjectsStatsDrawer from './overviewTab/membersOverviewProjectsStatsDrawer/MembersOverviewProjectsStatsDrawer';
-import TimeWiseFilter from '@/pages/reporting/members-reports/TimeWiseFilter';
+import TimeWiseFilter from '@/pages/reporting/members-reports/time-wise-filter';
 
 type MembersReportsDrawerProps = {
   memberId: string | null;
 };
 
 const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
-  // localization
   const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 
-  // get drawer open state and member list from the reducer
   const isDrawerOpen = useAppSelector(
-    (state) => state.membersReportsReducer.isMembersReportsDrawerOpen
+    state => state.membersReportsReducer.isMembersReportsDrawerOpen
   );
-  const { membersList } = useAppSelector(
-    (state) => state.membersReportsReducer
-  );
+  const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
-  // find the selected member based on memberId
-  const selectedMember = membersList.find((member) => member.id === memberId);
+  const selectedMember = membersList?.find(member => member.id === memberId);
 
-  // function to handle drawer close
   const handleClose = () => {
     dispatch(toggleMembersReportsDrawer());
   };
@@ -58,11 +52,7 @@ const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
                   ],
                 }}
               >
-                <Button
-                  type="primary"
-                  icon={<DownOutlined />}
-                  iconPosition="end"
-                >
+                <Button type="primary" icon={<DownOutlined />} iconPosition="end">
                   {t('exportButton')}
                 </Button>
               </Dropdown>
@@ -71,18 +61,9 @@ const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
         )
       }
     >
-      {selectedMember && (
-        <MembersReportsDrawerTabs memberId={selectedMember.id} />
-      )}
-
-      {/* members overview tasks stats drawer  */}
-      {selectedMember && (
-        <MembersOverviewTasksStatsDrawer memberId={selectedMember.id} />
-      )}
-      {/* members overview projects stats drawer  */}
-      {selectedMember && (
-        <MembersOverviewProjectsStatsDrawer memberId={selectedMember.id} />
-      )}
+      {selectedMember && <MembersReportsDrawerTabs memberId={selectedMember.id} />}
+      {selectedMember && <MembersOverviewTasksStatsDrawer memberId={selectedMember.id} />}
+      {selectedMember && <MembersOverviewProjectsStatsDrawer memberId={selectedMember.id} />}
     </Drawer>
   );
 };

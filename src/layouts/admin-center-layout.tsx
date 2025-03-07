@@ -1,14 +1,21 @@
 import { Flex, Typography } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import AdminCenterSidebar from '@/pages/admin-center/sidebar/sidebar';
 import { useTranslation } from 'react-i18next';
+import { verifyAuthentication } from '@/features/auth/authSlice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const AdminCenterLayout: React.FC = () => {
+  const dispatch = useAppDispatch();
   const isTablet = useMediaQuery({ query: '(min-width:768px)' });
   const isMarginAvailable = useMediaQuery({ query: '(min-width: 1000px)' });
   const { t } = useTranslation('admin-center/sidebar');
+
+  useEffect(() => {
+    void dispatch(verifyAuthentication())
+  }, [dispatch]);
 
   return (
     <div

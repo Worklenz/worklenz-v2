@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
-import { setTaskCardDisabled, initializeGroup } from '@features/board/createCardSlice';
+import { setTaskCardDisabled, initializeGroup } from '@/features/board/create-card.slice';
 import TaskCreateCard from '../taskCreateCard/TaskCreateCard';
 import TaskCard from '../taskCard/TaskCard';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -286,7 +286,10 @@ const KanbanGroup: React.FC<KanbanGroupProps> = ({ title, tasks, id, color }) =>
             <TaskCreateCard ref={createTaskInputRef} status={title} position={'top'} />
           )}
 
-          <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={tasks.map(task => task.id)}
+            strategy={verticalListSortingStrategy}
+          >
             <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
               {tasks.map(task => (
                 <TaskCard key={task.id} task={task} />

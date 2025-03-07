@@ -39,6 +39,6 @@ export interface IProjectViewModel extends IProject {
   project_manager?: ITeamMemberViewModel | null;
   project_manager_id?: string | null;
 
-  team_member_default_view? : string;
+  team_member_default_view?: string;
   working_days?: number;
 }

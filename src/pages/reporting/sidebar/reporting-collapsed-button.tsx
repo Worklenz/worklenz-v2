@@ -6,11 +6,17 @@ import { themeWiseColor } from '@utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 
-const ReportingCollapsedButton = ({isCollapsed, handleCollapseToggler}: { isCollapsed: boolean; handleCollapseToggler: () => void;}) => {
+const ReportingCollapsedButton = ({
+  isCollapsed,
+  handleCollapseToggler,
+}: {
+  isCollapsed: boolean;
+  handleCollapseToggler: () => void;
+}) => {
   // localization
   const { t } = useTranslation('reporting-sidebar');
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <Flex
@@ -24,10 +30,7 @@ const ReportingCollapsedButton = ({isCollapsed, handleCollapseToggler}: { isColl
       }}
     >
       {!isCollapsed && (
-        <Tooltip
-          title={!isCollapsed && t('currentOrganizationTooltip')}
-          trigger={'hover'}
-        >
+        <Tooltip title={!isCollapsed && t('currentOrganizationTooltip')} trigger={'hover'}>
           <Flex gap={8} align="center" style={{ marginInlineStart: 16 }}>
             <GlobalOutlined
               style={{

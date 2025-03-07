@@ -6,7 +6,10 @@ import React, { useEffect, useState } from 'react';
 
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { adminCenterApiService, IOrganizationTeamRequestParams } from '@/api/admin-center/admin-center.api.service';
+import {
+  adminCenterApiService,
+  IOrganizationTeamRequestParams,
+} from '@/api/admin-center/admin-center.api.service';
 
 import { IOrganizationTeam } from '@/types/admin-center/admin-center.types';
 import './teams.css';

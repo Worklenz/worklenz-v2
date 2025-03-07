@@ -4,7 +4,7 @@ import { getLanguageFromLocalStorage } from './language-utils';
 
 export const formatDateTimeWithLocale = (dateString: string): string => {
   if (!dateString) return '';
-  
+
   const date = new Date(dateString);
   const localeString = getLanguageFromLocalStorage();
   const locale = localeString === 'en' ? enUS : localeString === 'es' ? es : pt;

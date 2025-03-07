@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
-import {
-  Avatar,
-  Button,
-  Checkbox,
-  Dropdown,
-  Input,
-  Menu,
-  Typography,
-} from 'antd';
+import { Avatar, Button, Checkbox, Dropdown, Input, Menu, Typography } from 'antd';
 import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import './add-members-dropdown.css';
 import { AvatarNamesMap } from '../../shared/constants';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const AddMembersDropdown: React.FC = () => {
   const [checkedMembers, setCheckedMembers] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const teamMembers = useAppSelector(state => state.teamMembersReducer.teamMembers);
 
   const handleCheck = (member: string) => {
-    setCheckedMembers((prevChecked) =>
+    setCheckedMembers(prevChecked =>
       prevChecked.includes(member)
-        ? prevChecked.filter((m) => m !== member)
+        ? prevChecked.filter(m => m !== member)
         : [...prevChecked, member]
     );
   };
@@ -29,7 +25,7 @@ const AddMembersDropdown: React.FC = () => {
       label: (
         <Checkbox
           checked={checkedMembers.includes('Invite Member 1')}
-          onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
+          onClick={e => e.stopPropagation()} // Prevent dropdown from closing
           onChange={() => handleCheck('Invite Member 1')}
         >
           <div

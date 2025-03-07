@@ -1,13 +1,12 @@
-import { Typography } from 'antd';
+import { Tooltip, Typography } from 'antd';
 import { durationDateFormat } from '@/utils/durationDateFormat';
+import { formatDate } from '@/utils/timeUtils';
 
-const TaskListLastUpdatedCell = ({
-  lastUpdated,
-}: {
-  lastUpdated: string | null;
-}) => {
+const TaskListLastUpdatedCell = ({ lastUpdated }: { lastUpdated: string | null }) => {
   return (
-    <Typography.Text>{durationDateFormat(lastUpdated || null)}</Typography.Text>
+    <Tooltip title={lastUpdated ? formatDate(new Date(lastUpdated)) : 'N/A'}>
+      <Typography.Text>{durationDateFormat(lastUpdated || null)}</Typography.Text>
+    </Tooltip>
   );
 };
 

@@ -33,9 +33,10 @@ const projectInsightsSlice = createSlice({
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
-    }
-  }
+    },
+  },
 });
 
-export const { setActiveSegment, setIncludeArchivedTasks, setLoading, setProjectId } = projectInsightsSlice.actions;
+export const { setActiveSegment, setIncludeArchivedTasks, setLoading, setProjectId } =
+  projectInsightsSlice.actions;
 export default projectInsightsSlice.reducer;

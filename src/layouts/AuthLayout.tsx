@@ -5,7 +5,7 @@ import { useAppSelector } from '../hooks/useAppSelector';
 import { colors } from '../styles/colors';
 
 const AuthLayout = () => {
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   return (
     <ConfigProvider

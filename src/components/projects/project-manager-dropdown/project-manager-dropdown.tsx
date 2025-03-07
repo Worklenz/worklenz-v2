@@ -9,10 +9,17 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './project-manager-dropdown.css';
 
-const ProjectManagerDropdown: React.FC<{
+interface ProjectManagerDropdownProps {
   selectedProjectManager: ITeamMemberViewModel | null;
   setSelectedProjectManager: (member: ITeamMemberViewModel | null) => void;
-}> = ({ selectedProjectManager, setSelectedProjectManager }) => {
+  disabled: boolean;
+}
+
+const ProjectManagerDropdown: React.FC<ProjectManagerDropdownProps> = ({
+  selectedProjectManager,
+  setSelectedProjectManager,
+  disabled = false,
+}) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('project-drawer');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -83,6 +90,7 @@ const ProjectManagerDropdown: React.FC<{
       menu={{ items: projectManagerOptions }}
       trigger={['click']}
       dropdownRender={projectManagerOptionsDropdownRender}
+      disabled={disabled}
     >
       <div className={`project-manager-container ${selectedProjectManager ? 'selected' : ''}`}>
         {selectedProjectManager ? (

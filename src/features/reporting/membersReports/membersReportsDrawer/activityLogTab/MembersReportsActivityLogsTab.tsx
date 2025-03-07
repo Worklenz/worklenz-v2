@@ -4,15 +4,14 @@ import { fetchData } from '@/utils/fetchData';
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder';
 import ActivityLogCard from './ActivityLogCard';
 import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
+
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
 type MembersReportsActivityLogsTabProps = {
   memberId: string | null;
 };
 
-const MembersReportsActivityLogsTab = ({
-  memberId = null,
-}: MembersReportsActivityLogsTabProps) => {
+const MembersReportsActivityLogsTab = ({ memberId = null }: MembersReportsActivityLogsTabProps) => {
   // this state for open task drawer
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
@@ -23,22 +22,15 @@ const MembersReportsActivityLogsTab = ({
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
-    fetchData(
-      '/reportingMockData/membersReports/activityLogs.json',
-      setActivityLogsData
-    );
+    fetchData('/reportingMockData/membersReports/activityLogs.json', setActivityLogsData);
   }, []);
 
   return (
     <>
       {activityLogsData.length > 0 ? (
         <Flex vertical gap={24}>
-          {activityLogsData.map((logs) => (
-            <ActivityLogCard
-              key={logs.log_day}
-              data={logs}
-              setSelectedTaskId={setSelectedTaskId}
-            />
+          {activityLogsData.map(logs => (
+            <ActivityLogCard key={logs.log_day} data={logs} setSelectedTaskId={setSelectedTaskId} />
           ))}
         </Flex>
       ) : (
@@ -46,7 +38,7 @@ const MembersReportsActivityLogsTab = ({
       )}
 
       {/* update task drawer  */}
-      <TaskDrawer taskId={selectedTaskId || ''} />
+      <TaskDrawer />
     </>
   );
 };

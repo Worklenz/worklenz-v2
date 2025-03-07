@@ -7,6 +7,7 @@
   "statusText": "Status",
   "phaseText": "Phase",
   "memberText": "Members",
+  "assigneesText": "Assignees",
   "priorityText": "Priority",
   "labelsText": "Labels",
   "membersText": "Members",
@@ -20,14 +21,22 @@
   "listText": "List",
   "progressText": "Progress",
   "timeTrackingText": "Time Tracking",
+  "timetrackingText": "Time Tracking",
   "estimationText": "Estimation",
   "startDateText": "Start Date",
+  "startdateText": "Start Date",
   "endDateText": "End Date",
-  "dueDateText": "DueDate",
+  "dueDateText": "Due Date",
+  "duedateText": "Due Date",
   "completedDateText": "Completed Date",
+  "completeddateText": "Completed Date",
   "createdDateText": "Created Date",
+  "createddateText": "Created Date",
   "lastUpdatedText": "Last Updated",
+  "lastupdatedText": "Last Updated",
   "reporterText": "Reporter",
+  "dueTimeText": "Due Time",
+  "duetimeText": "Due Time",
 
   "lowText": "Low",
   "mediumText": "Medium",
@@ -38,5 +47,13 @@
   "noLabelsFound": "No labels found",
 
   "addStatusButton": "Add Status",
-  "addPhaseButton": "Add Phase"
+  "addPhaseButton": "Add Phase",
+
+  "createStatus": "Create Status",
+  "name": "Name",
+  "category": "Category",
+  "selectCategory": "Select a category",
+  "pleaseEnterAName": "Please enter a name",
+  "pleaseSelectACategory": "Please select a category",
+  "create": "Create"
 }

@@ -70,7 +70,7 @@ export const createClient = createAsyncThunk(
   async (body: IClient, { rejectWithValue }) => {
     try {
       const response = await clientsApiService.createClient(body);
-      return response.body;
+      return response;
     } catch (error) {
       logger.error('Create Client', error);
       if (error instanceof Error) {

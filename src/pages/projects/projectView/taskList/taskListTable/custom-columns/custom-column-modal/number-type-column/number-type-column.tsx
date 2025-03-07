@@ -14,13 +14,13 @@ import { useAppDispatch } from '../../../../../../../../hooks/useAppDispatch';
 
 const NumberTypeColumn = () => {
   //   get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
   // get initial data from task list custom column slice
   const numberType: CustomFieldNumberTypes = useAppSelector(
-    (state) => state.taskListCustomColumnsReducer.customFieldNumberType
+    state => state.taskListCustomColumnsReducer.customFieldNumberType
   );
 
   const numberTypesOptions = [
@@ -31,11 +31,7 @@ const NumberTypeColumn = () => {
   ];
 
   return (
-    <div
-      className={
-        numberType === 'withLabel' ? 'grid grid-cols-5 gap-x-4' : 'flex gap-4'
-      }
-    >
+    <div className={numberType === 'withLabel' ? 'grid grid-cols-5 gap-x-4' : 'flex gap-4'}>
       <Form.Item
         name="numberType"
         label={<Typography.Text>Number Type</Typography.Text>}
@@ -44,7 +40,7 @@ const NumberTypeColumn = () => {
         <Select
           options={numberTypesOptions}
           value={numberType}
-          onChange={(value) => dispatch(setCustomFieldNumberType(value))}
+          onChange={value => dispatch(setCustomFieldNumberType(value))}
           style={{
             minWidth: '100%',
             width: 150,

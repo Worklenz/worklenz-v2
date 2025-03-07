@@ -46,7 +46,7 @@ interface TaskMemberState {
 const initialState: TaskMemberState = {
   assignees: [],
   loading: false,
-  error: null
+  error: null,
 };
 
 export const fetchTaskAssignees = createAsyncThunk(
@@ -62,21 +62,24 @@ const taskMemberSlice = createSlice({
   name: 'taskMember',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchTaskAssignees.pending, (state) => {
+      .addCase(fetchTaskAssignees.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTaskAssignees.fulfilled, (state, action: PayloadAction<ITeamMemberViewModel[]>) => {
-        state.loading = false;
-        state.assignees = action.payload;
-      })
+      .addCase(
+        fetchTaskAssignees.fulfilled,
+        (state, action: PayloadAction<ITeamMemberViewModel[]>) => {
+          state.loading = false;
+          state.assignees = action.payload;
+        }
+      )
       .addCase(fetchTaskAssignees.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch assignees';
       });
-  }
+  },
 });
 
 export default taskMemberSlice.reducer;

@@ -1,32 +1,24 @@
 import { Flex } from 'antd';
-import React from 'react';
-import CustomColordLabel from '../../../../../../../components/taskListCommon/labelsSelector/CustomColordLabel';
-import CustomNumberLabel from '../../../../../../../components/taskListCommon/labelsSelector/CustomNumberLabel';
-import LabelsSelector from '../../../../../../../components/taskListCommon/labelsSelector/LabelsSelector';
-import { LabelType } from '../../../../../../../types/label.type';
+import CustomColordLabel from '@/components/taskListCommon/labelsSelector/CustomColordLabel';
+import CustomNumberLabel from '@/components/taskListCommon/labelsSelector/CustomNumberLabel';
+import LabelsSelector from '@/components/taskListCommon/labelsSelector/LabelsSelector';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 
-type TaskListLabelsCellProps = {
-  labels: LabelType[];
-  taskId: string;
-};
+interface TaskListLabelsCellProps {
+  task: IProjectTask;
+}
 
-const TaskListLabelsCell = ({ labels, taskId }: TaskListLabelsCellProps) => {
+const TaskListLabelsCell = ({ task }: TaskListLabelsCellProps) => {
   return (
     <Flex>
-      {labels && labels?.length <= 2 ? (
-        labels?.map((label) => <CustomColordLabel label={label} />)
-      ) : (
-        <Flex>
-          <CustomColordLabel label={labels ? labels[0] : null} />
-          <CustomColordLabel label={labels ? labels[1] : null} />
-          {/* this component show other label names  */}
-          <CustomNumberLabel
-            // this label list get the labels without 1, 2 elements
-            labelList={labels ? labels : null}
-          />
-        </Flex>
-      )}
-      <LabelsSelector taskId={taskId} />
+      {task.labels?.map((label, index) => (
+        label.end && label.names && label.name ? (
+          <CustomNumberLabel key={`${label.id}-${index}`} labelList={label.names ?? []} namesString={label.name} />
+        ) : (
+          <CustomColordLabel key={`${label.id}-${index}`} label={label} />
+        )
+      ))}
+      <LabelsSelector task={task} />
     </Flex>
   );
 };

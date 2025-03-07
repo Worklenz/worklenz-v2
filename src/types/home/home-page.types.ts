@@ -1,4 +1,4 @@
-import { IMyTask } from "./my-tasks.types";
+import { IMyTask } from './my-tasks.types';
 import type { Dayjs } from 'dayjs';
 
 export interface IHomeTasksConfig {

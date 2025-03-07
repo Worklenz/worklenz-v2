@@ -9,7 +9,7 @@ const ColorChangedLabel = ({ label }: { label: LabelType | null }) => {
   const { t } = useTranslation('labelsSettings');
 
   // color options for the labels
-  const colorsOptions = PhaseColorCodes.map((color) => ({
+  const colorsOptions = PhaseColorCodes.map(color => ({
     key: color,
     value: color,
     label: (

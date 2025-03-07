@@ -12,7 +12,7 @@ const KeyTypeColumn = () => {
           placeholder="ex-:MK"
           maxLength={5}
           style={{ textTransform: 'uppercase' }}
-          onChange={(e) => setKeyLabel(e.currentTarget.value)}
+          onChange={e => setKeyLabel(e.currentTarget.value)}
         />
       </Form.Item>
 

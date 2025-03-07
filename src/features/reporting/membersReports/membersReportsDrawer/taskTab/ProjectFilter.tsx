@@ -13,7 +13,7 @@ const ProjectFilter = ({ projectList }: ProjectFilterProps) => {
   // localization
   const { t } = useTranslation('reporting-members-drawer');
 
-  const selectOptions = projectList.map((project) => ({
+  const selectOptions = projectList.map(project => ({
     key: project.projectId,
     value: project.project,
   }));
@@ -21,10 +21,7 @@ const ProjectFilter = ({ projectList }: ProjectFilterProps) => {
   return (
     <Flex gap={4} align="center">
       <Typography.Text>{t('filterByText')}</Typography.Text>
-      <Select
-        placeholder={t('selectProjectPlaceholder')}
-        options={selectOptions}
-      />
+      <Select placeholder={t('selectProjectPlaceholder')} options={selectOptions} />
     </Flex>
   );
 };

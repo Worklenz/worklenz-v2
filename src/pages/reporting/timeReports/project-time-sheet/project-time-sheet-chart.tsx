@@ -20,27 +20,19 @@ import ProjectTimeLogDrawer from '../../../../features/timeReport/projects/Proje
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 const ProjectTimeSheetChart: React.FC = () => {
-  const labels = jsonData.map((item) => item.name);
-  const dataValues = jsonData.map((item) => {
-    const loggedTimeInHours = parseFloat(item.logged_time) / 3600; 
-    return loggedTimeInHours.toFixed(2); 
+  const labels = jsonData.map(item => item.name);
+  const dataValues = jsonData.map(item => {
+    const loggedTimeInHours = parseFloat(item.logged_time) / 3600;
+    return loggedTimeInHours.toFixed(2);
   });
-  const colors = jsonData.map((item) => item.color_code);
+  const colors = jsonData.map(item => item.color_code);
 
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const dispatch = useAppDispatch();
-  const {t} = useTranslation('time-report')
+  const { t } = useTranslation('time-report');
 
   const handleBarClick = (event: any, elements: any) => {
     if (elements.length > 0) {
@@ -118,16 +110,16 @@ const ProjectTimeSheetChart: React.FC = () => {
   };
 
   return (
-    <div >
+    <div>
       <div
         style={{
           maxWidth: 'calc(100vw - 220px)',
           minWidth: 'calc(100vw - 260px)',
           minHeight: 'calc(100vh - 300px)',
-          height: `${60 * data.labels.length}px`,         
+          height: `${60 * data.labels.length}px`,
         }}
       >
-        <Bar data={data} options={options}/>
+        <Bar data={data} options={options} />
         <ProjectTimeLogDrawer />
       </div>
     </div>

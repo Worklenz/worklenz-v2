@@ -12,11 +12,7 @@ export type ProjectStatus =
   | 'completed'
   | 'continuous';
 
-export type ProjectHealthStatus =
-  | 'notSet'
-  | 'needsAttention'
-  | 'atRisk'
-  | 'good';
+export type ProjectHealthStatus = 'notSet' | 'needsAttention' | 'atRisk' | 'good';
 
 export type ProjectType = {
   projectId: string;
@@ -50,6 +46,6 @@ export interface IProject {
   created_at?: string;
   updated_at?: string;
   status_id?: string;
-  man_days?: number
-  hours_per_day?: number
+  man_days?: number;
+  hours_per_day?: number;
 }

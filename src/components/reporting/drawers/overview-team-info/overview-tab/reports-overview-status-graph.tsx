@@ -8,7 +8,11 @@ import { ALPHA_CHANNEL } from '@/shared/constants';
 
 Chart.register(ArcElement, Tooltip);
 
-const OverviewReportsProjectStatusGraph = ({ data }: { data: IRPTOverviewTeamByStatus | undefined }) => {
+const OverviewReportsProjectStatusGraph = ({
+  data,
+}: {
+  data: IRPTOverviewTeamByStatus | undefined;
+}) => {
   const { t } = useTranslation('reporting-overview-drawer');
 
   type StatusGraphItemType = {
@@ -49,19 +53,16 @@ const OverviewReportsProjectStatusGraph = ({ data }: { data: IRPTOverviewTeamByS
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: context => {
             const value = context.raw as number;
             return `${context.label}: ${value} task${value !== 1 ? 's' : ''}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
   };
 
-  const totalTasks = statusGraphItems.reduce(
-    (sum, item) => sum + item.count,
-     0
-  );
+  const totalTasks = statusGraphItems.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <Card
@@ -88,7 +89,7 @@ const OverviewReportsProjectStatusGraph = ({ data }: { data: IRPTOverviewTeamByS
           </Flex>
 
           {/* status-specific tasks */}
-          {statusGraphItems.map((item) => (
+          {statusGraphItems.map(item => (
             <Flex key={item.name} gap={4} align="center">
               <Badge color={item.color} />
               <Typography.Text ellipsis>

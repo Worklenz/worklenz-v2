@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { IGroupByOption, ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
+import { ITaskListColumn, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITaskPrioritiesGetResponse } from '@/types/apiModels/taskPrioritiesGetResponse.types';
@@ -25,6 +25,9 @@ interface TaskListState {
   selectedTasks: IProjectTask[];
   isLoading: boolean;
   error: string | null;
+  importTaskTemplateDrawerOpen: boolean;
+  createTaskTemplateDrawerOpen: boolean;
+  projectView: 'list' | 'kanban';
 }
 
 const initialState: TaskListState = {
@@ -42,7 +45,10 @@ const initialState: TaskListState = {
   isSubtasksIncluded: false,
   selectedTasks: [],
   isLoading: false,
-  error: null
+  error: null,
+  importTaskTemplateDrawerOpen: false,
+  createTaskTemplateDrawerOpen: false,
+  projectView: 'list',
 };
 
 export const getProject = createAsyncThunk(
@@ -98,10 +104,24 @@ const projectSlice = createSlice({
     setActiveMembers: (state, action: PayloadAction<[]>) => {
       state.activeMembers = action.payload;
     },
-    addTask: (state, action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>) => {
+    setImportTaskTemplateDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.importTaskTemplateDrawerOpen = action.payload;
+    },
+    setCreateTaskTemplateDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.createTaskTemplateDrawerOpen = action.payload;
+    },
+    updatePhaseLabel: (state, action: PayloadAction<string>) => {
+      if (state.project) {
+        state.project.phase_label = action.payload;
+      }
+    },
+    addTask: (
+      state,
+      action: PayloadAction<{ task: IProjectTask; groupId: string; insert?: boolean }>
+    ) => {
       const { task, groupId, insert = false } = action.payload;
       const group = state.groups.find(g => g.id === groupId);
-      
+
       if (!group || !task.id) return;
 
       if (task.parent_task_id) {
@@ -110,20 +130,29 @@ const projectSlice = createSlice({
           parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
           if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
           parentTask.sub_tasks.push(task);
+
+          // Add subtask to the main tasks array if subtasks are included
+          if (state.isSubtasksIncluded) {
+            const parentIndex = group.tasks.indexOf(parentTask);
+            if (parentIndex !== -1) {
+              group.tasks.splice(parentIndex + 1, 0, task);
+            }
+          }
         }
       } else {
         insert ? group.tasks.unshift(task) : group.tasks.push(task);
       }
+      console.log('addTask', group.tasks);
     },
     deleteTask: (state, action: PayloadAction<{ taskId: string; index?: number }>) => {
       const { taskId, index } = action.payload;
-      
+
       for (const group of state.groups) {
         const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
         if (taskIndex === -1) continue;
 
         const task = group.tasks[taskIndex];
-        
+
         if (task.is_sub_task) {
           const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
           if (parentTask?.sub_tasks) {
@@ -139,11 +168,14 @@ const projectSlice = createSlice({
         break;
       }
     },
-    reset: () => initialState
+    reset: () => initialState,
+    setProjectView: (state, action: PayloadAction<'list' | 'kanban'>) => {
+      state.projectView = action.payload;
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(getProject.pending, (state) => {
+      .addCase(getProject.pending, state => {
         state.projectLoading = true;
         state.error = null;
       })
@@ -155,7 +187,7 @@ const projectSlice = createSlice({
         state.projectLoading = false;
         state.error = action.payload as string;
       });
-  }
+  },
 });
 
 export const {
@@ -173,7 +205,11 @@ export const {
   setActiveMembers,
   addTask,
   deleteTask,
-  reset
+  reset,
+  setImportTaskTemplateDrawerOpen,
+  setCreateTaskTemplateDrawerOpen,
+  setProjectView,
+  updatePhaseLabel,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

@@ -3,6 +3,7 @@ import { ICategorizedStatus, ITaskStatus } from '@/types/tasks/taskStatus.types'
 import logger from '@utils/errorLogger';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
 import { ITaskStatusCategory } from '@/types/status.types';
+import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
 
 interface IStatusState {
   status: ITaskStatus[];
@@ -53,19 +54,18 @@ export const fetchStatusesCategories = createAsyncThunk(
   }
 );
 
-// Initialization thunk
-export const initializeStatuses = createAsyncThunk(
-  'status/initialize',
-  async (_, { dispatch, getState }) => {
-    const state = getState() as { statusReducer: IStatusState };
-    if (!state.statusReducer.initialized) {
-      await dispatch(fetchStatuses());
-    }
+export const createStatus = createAsyncThunk(
+  'status/createStatus',
+  async (
+    { body, currentProjectId }: { body: ITaskStatusCreateRequest; currentProjectId: string },
+    { rejectWithValue }
+  ) => {
+    return await statusApiService.createStatus(body, currentProjectId);
   }
 );
 
 const taskStatusSlice = createSlice({
-  name: 'statusReducer',
+  name: 'taskStatusReducer',
   initialState,
   reducers: {
     addStatus: (state, action: PayloadAction<ITaskStatus>) => {
@@ -82,6 +82,12 @@ const taskStatusSlice = createSlice({
     },
     setCategorizedStatuses: (state, action: PayloadAction<ITaskStatusCategory[]>) => {
       state.statusCategories = action.payload;
+    },
+    resetStatuses: state => {
+      state.status = [];
+      state.loading = false;
+      state.error = null;
+      state.initialized = false;
     },
   },
   extraReducers: builder => {
@@ -119,6 +125,6 @@ const taskStatusSlice = createSlice({
   },
 });
 
-export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses } =
+export const { addStatus, updateStatus, deleteStatus, setCategorizedStatuses, resetStatuses } =
   taskStatusSlice.actions;
 export default taskStatusSlice.reducer;

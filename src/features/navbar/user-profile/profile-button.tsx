@@ -36,11 +36,25 @@ const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
           title={
             <div style={{ paddingBlock: '16px' }}>
               <Typography.Text>Account</Typography.Text>
-              <Flex gap={8} align="center" justify="flex-start">
-                <SingleAvatar avatarUrl={userDetails?.avatar_url} name={userDetails?.name} email={userDetails?.email} />
-                <Flex vertical>
-                  <Typography.Text>{userDetails?.name}</Typography.Text>
-                  <Typography.Text style={{ fontSize: 12 }}>{userDetails?.email}</Typography.Text>
+              <Flex gap={8} align="center" justify="flex-start" style={{ width: '100%' }}>
+                <SingleAvatar
+                  avatarUrl={userDetails?.avatar_url}
+                  name={userDetails?.name}
+                  email={userDetails?.email}
+                />
+                <Flex vertical style={{ flex: 1, minWidth: 0 }}>
+                  <Typography.Text
+                    ellipsis={{ tooltip: userDetails?.name }} // Show tooltip on hover
+                    style={{ width: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                  >
+                    {userDetails?.name}
+                  </Typography.Text>
+                  <Typography.Text
+                    ellipsis={{ tooltip: userDetails?.email }} // Show tooltip on hover
+                    style={{ fontSize: 12, width: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                  >
+                    {userDetails?.email}
+                  </Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     ({role})
                   </Typography.Text>

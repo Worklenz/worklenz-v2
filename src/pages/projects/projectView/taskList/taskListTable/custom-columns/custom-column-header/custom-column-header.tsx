@@ -9,10 +9,7 @@ type CustomColumnHeaderProps = {
   columnName: string;
 };
 
-const CustomColumnHeader = ({
-  columnKey,
-  columnName,
-}: CustomColumnHeaderProps) => {
+const CustomColumnHeader = ({ columnKey, columnName }: CustomColumnHeaderProps) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   // localization
   const { t } = useTranslation('task-list-table');
@@ -29,9 +26,7 @@ const CustomColumnHeader = ({
 
   return (
     <Flex gap={8} align="center" justify="space-between">
-      <Typography.Text ellipsis={{ expanded: false }}>
-        {columnName}
-      </Typography.Text>
+      <Typography.Text ellipsis={{ expanded: false }}>{columnName}</Typography.Text>
 
       <Tooltip title={t('editTooltip')}>
         <Button

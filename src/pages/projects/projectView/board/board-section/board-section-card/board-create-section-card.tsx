@@ -1,23 +1,20 @@
 import { Button, Flex } from 'antd';
-import React, { useState } from 'react';
-import { useAppSelector } from '../../../../../../hooks/useAppSelector';
-import { useTranslation } from 'react-i18next';
-import { themeWiseColor } from '../../../../../../utils/themeWiseColor';
 import { PlusOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../../../../../hooks/useAppDispatch';
-import { addBoardSectionCard } from '../../../../../../features/board/board-slice';
+import { useTranslation } from 'react-i18next';
 import { nanoid } from '@reduxjs/toolkit';
 
-const BoardCreateSectionCard = () => {
-  //   localization
-  const { t } = useTranslation('kanbanBoard');
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { themeWiseColor } from '@/utils/themeWiseColor';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { addBoardSectionCard } from '@features/board/board-slice';
 
-  //   get theme data from theme reducer
+const BoardCreateSectionCard = () => {
+  const { t } = useTranslation('kanban-board');
+
   const themeMode = useAppSelector((state) => state.themeReducer.mode);
 
   const dispatch = useAppDispatch();
 
-  // function to add section
   const handleAddSection = () => {
     dispatch(
       addBoardSectionCard({

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": false,
     "esModuleInterop": true,
@@ -28,9 +24,8 @@
       "@utils/*": ["src/utils/*"],
       "@api/*": ["src/api/*"],
       "@services/*": ["src/services/*"]
-    }
+    },
+    "types": ["vitest"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

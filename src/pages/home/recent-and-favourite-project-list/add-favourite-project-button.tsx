@@ -11,8 +11,8 @@ type AddFavouriteProjectButtonProps = {
 };
 
 const AddFavouriteProjectButton = ({ record, handleRefresh }: AddFavouriteProjectButtonProps) => {
-  const checkIconColor = useMemo(() => 
-    record.favorite ? colors.yellow : colors.lightGray,
+  const checkIconColor = useMemo(
+    () => (record.favorite ? colors.yellow : colors.lightGray),
     [record.favorite]
   );
 
@@ -26,8 +26,8 @@ const AddFavouriteProjectButton = ({ record, handleRefresh }: AddFavouriteProjec
     <ConfigProvider wave={{ disabled: true }}>
       <Tooltip title={record.favorite ? 'Remove from favorites' : 'Add to favourites'}>
         <Button
-          type='text'
-          className="borderless-icon-btn" 
+          type="text"
+          className="borderless-icon-btn"
           style={{ backgroundColor: colors.transparent }}
           shape="circle"
           icon={<StarFilled style={{ color: checkIconColor }} />}

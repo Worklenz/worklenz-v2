@@ -145,13 +145,6 @@ const initialState: projectViewTaskListColumnsState = {
       width: 150,
       isVisible: false,
     },
-    {
-      key: 'customColumn',
-      name: 'customColumn',
-      columnHeader: React.createElement(AddCustomColumnButton),
-      width: 80,
-      isVisible: true,
-    },
   ],
 };
 
@@ -160,14 +153,14 @@ const projectViewTaskListColumnsSlice = createSlice({
   initialState,
   reducers: {
     toggleColumnVisibility: (state, action: PayloadAction<string>) => {
-      const column = state.columnList.find((col) => col.key === action.payload);
+      const column = state.columnList.find(col => col.key === action.payload);
       if (column) {
         column.isVisible = !column.isVisible;
       }
     },
     addCustomColumn: (state, action: PayloadAction<CustomTableColumnsType>) => {
       const customColumnCreaterIndex = state.columnList.findIndex(
-        (col) => col.key === 'customColumn'
+        col => col.key === 'customColumn'
       );
 
       if (customColumnCreaterIndex > -1) {
@@ -177,9 +170,7 @@ const projectViewTaskListColumnsSlice = createSlice({
       }
     },
     deleteCustomColumn: (state, action: PayloadAction<string>) => {
-      state.columnList = state.columnList.filter(
-        (col) => col.key !== action.payload
-      );
+      state.columnList = state.columnList.filter(col => col.key !== action.payload);
     },
     updateCustomColumn(
       state,
@@ -188,9 +179,7 @@ const projectViewTaskListColumnsSlice = createSlice({
         updatedColumn: CustomTableColumnsType;
       }>
     ) {
-      const index = state.columnList.findIndex(
-        (column) => column.key === action.payload.key
-      );
+      const index = state.columnList.findIndex(column => column.key === action.payload.key);
       if (index !== -1) {
         state.columnList[index] = action.payload.updatedColumn;
       }
@@ -198,10 +187,6 @@ const projectViewTaskListColumnsSlice = createSlice({
   },
 });
 
-export const {
-  toggleColumnVisibility,
-  addCustomColumn,
-  deleteCustomColumn,
-  updateCustomColumn,
-} = projectViewTaskListColumnsSlice.actions;
+export const { toggleColumnVisibility, addCustomColumn, deleteCustomColumn, updateCustomColumn } =
+  projectViewTaskListColumnsSlice.actions;
 export default projectViewTaskListColumnsSlice.reducer;

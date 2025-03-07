@@ -1,9 +1,9 @@
 {
-    "title": "Usuários",
-    "subTitle": "usuários",
-    "placeholder": "Pesquisar por nome",
-    "user": "Usuário",
-    "email": "Email",
-    "lastActivity": "Última Atividade",
-    "refresh": "Atualizar usuários"
+  "title": "Usuários",
+  "subTitle": "usuários",
+  "placeholder": "Pesquisar por nome",
+  "user": "Usuário",
+  "email": "Email",
+  "lastActivity": "Última Atividade",
+  "refresh": "Atualizar usuários"
 }

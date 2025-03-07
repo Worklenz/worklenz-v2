@@ -1,6 +1,6 @@
-import { InlineMember } from "../teamMembers/inlineMember.types";
-import { ITaskLabel } from "../tasks/taskLabel.types";
-import { ITaskStatusViewModel } from "../tasks/taskStatusGetResponse.types";
+import { InlineMember } from '../teamMembers/inlineMember.types';
+import { ITaskLabel } from '../tasks/taskLabel.types';
+import { ITaskStatusViewModel } from '../tasks/taskStatusGetResponse.types';
 
 export interface ITaskAssignee {
   team_member_id: any;
@@ -24,7 +24,9 @@ export interface IProjectTask {
   names?: InlineMember[];
   reporter?: string;
   status?: string;
+  status_id?: string;
   status_color?: string;
+  status_color_dark?: string;
   priority?: string;
   start_date?: string;
   end_date?: string;
@@ -40,7 +42,7 @@ export interface IProjectTask {
   status_name?: string;
   total_time_string?: string;
   due_in?: string;
-  time_spent?: { hours?: number, minutes?: number };
+  time_spent?: { hours?: number; minutes?: number };
   project_id?: string;
   project_name?: string;
   updated_at?: string;
@@ -56,10 +58,12 @@ export interface IProjectTask {
   sort_order?: number;
   color_code?: string;
   priority_color?: string;
+  priority_color_dark?: string;
   show_sub_tasks?: boolean;
   sub_tasks?: IProjectTask[];
   sub_tasks_loading?: boolean;
   statuses?: ITaskStatusViewModel[];
+  project_statuses?: ITaskStatusViewModel[];
   labels?: ITaskLabel[];
   all_labels?: ITaskLabel[];
   archived?: boolean;
@@ -67,7 +71,7 @@ export interface IProjectTask {
   completed_count?: number;
   priority_value?: number;
   is_overdue?: boolean;
-  timer_start_time?: number;
+  timer_start_time?: number | null;
   description?: string;
   completed_at?: string;
   created_at?: string;

@@ -25,11 +25,12 @@ interface ProjectCategorySectionProps {
   categories: IProjectCategory[];
   form: FormInstance;
   t: TFunction;
+  disabled: boolean;
 }
 
 const defaultColorCode = '#ee87c5';
 
-const ProjectCategorySection = ({ categories, form, t }: ProjectCategorySectionProps) => {
+const ProjectCategorySection = ({ categories, form, t, disabled }: ProjectCategorySectionProps) => {
   const dispatch = useAppDispatch();
 
   const [isAddCategoryInputShow, setIsAddCategoryInputShow] = useState(false);
@@ -102,6 +103,7 @@ const ProjectCategorySection = ({ categories, form, t }: ProjectCategorySectionP
                 </Button>
               </>
             )}
+            disabled={disabled}
           />
         ) : (
           <Flex vertical gap={4}>
@@ -114,6 +116,7 @@ const ProjectCategorySection = ({ categories, form, t }: ProjectCategorySectionP
               onClear={() => setIsAddCategoryInputShow(false)}
               onPressEnter={() => handleAddCategoryItem(categoryText)}
               onBlur={handleAddCategoryInputBlur}
+              disabled={disabled}
             />
             <Typography.Text style={{ color: colors.lightGray }}>
               {t('hitEnterToCreate')}

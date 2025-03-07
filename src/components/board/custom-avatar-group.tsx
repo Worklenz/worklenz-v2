@@ -1,66 +1,29 @@
-import { Avatar, Button, Flex, Tooltip } from 'antd';
-import React from 'react';
+import { Button, Flex } from 'antd';
 import AddMembersDropdown from '@/components/add-members-dropdown/add-members-dropdown';
-import CustomAvatar from '../CustomAvatar';
+import Avatars from '../avatars/avatars';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import AssigneeSelector from '../taskListCommon/assignee-selector/assignee-selector';
 
-const CustomAvatarGroup = ({ assignees }: { assignees: any[] | null }) => {
-  return assignees ? (
+type CustomAvatarGroupProps = {
+  task: IProjectTask;
+  sectionId: string;
+};
+
+const CustomAvatarGroup = ({ task, sectionId }: CustomAvatarGroupProps) => {
+  return (
     <Flex
       gap={4}
       align="center"
+      onClick={(e) => e.stopPropagation()}
       style={{
         borderRadius: 4,
         cursor: 'pointer',
       }}
     >
-      <Avatar.Group>
-        {assignees.map((assignee: any) =>
-          assignee?.avatar_url ? (
-            <Tooltip key={assignee.id} title={assignee?.name}>
-              <Avatar
-                src={assignee.avatar_url}
-                style={{ width: 26, height: 26 }}
-              />
-            </Tooltip>
-          ) : (
-            <CustomAvatar
-              key={assignee.id}
-              avatarName={assignee?.name}
-              size={26}
-            />
-          )
-        )}
-      </Avatar.Group>
-      <Button
-        shape="circle"
-        type="dashed"
-        size="small"
-        style={{
-          background: 'transparent',
-          boxShadow: 'none',
-          width: 26,
-          height: 26,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <AddMembersDropdown />
-      </Button>
+      <Avatars members={task.names || []} />
+
+      <AssigneeSelector task={task} groupId={sectionId} />
     </Flex>
-  ) : (
-    <Button
-      shape="circle"
-      type="dashed"
-      size="small"
-      style={{
-        background: 'transparent',
-        boxShadow: 'none',
-        width: 26,
-        height: 26,
-      }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <AddMembersDropdown />
-    </Button>
   );
 };
 

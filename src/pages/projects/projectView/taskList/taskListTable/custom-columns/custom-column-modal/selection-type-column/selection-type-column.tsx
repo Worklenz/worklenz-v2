@@ -24,7 +24,7 @@ const SelectionTypeColumn = () => {
   ]);
 
   // phase color options
-  const phaseOptionColorList = PhaseColorCodes.map((color) => ({
+  const phaseOptionColorList = PhaseColorCodes.map(color => ({
     value: color,
     label: (
       <Tag
@@ -47,33 +47,23 @@ const SelectionTypeColumn = () => {
       selectionName: 'Untitled selection',
       selectionColor: PhaseColorCodes[0],
     };
-    setSelections((prevSelections) => [...prevSelections, newSelection]);
+    setSelections(prevSelections => [...prevSelections, newSelection]);
     dispatch(setSelectionsList([...selections, newSelection])); // update the slice with the new selection
   };
 
   // update selection name
-  const handleUpdateSelectionName = (
-    selectionId: string,
-    selectionName: string
-  ) => {
-    const updatedSelections = selections.map((selection) =>
-      selection.selectionId === selectionId
-        ? { ...selection, selectionName }
-        : selection
+  const handleUpdateSelectionName = (selectionId: string, selectionName: string) => {
+    const updatedSelections = selections.map(selection =>
+      selection.selectionId === selectionId ? { ...selection, selectionName } : selection
     );
     setSelections(updatedSelections);
     dispatch(setSelectionsList(updatedSelections)); // update the slice with the new selection name
   };
 
   // update selection color
-  const handleUpdateSelectionColor = (
-    selectionId: string,
-    selectionColor: string
-  ) => {
-    const updatedSelections = selections.map((selection) =>
-      selection.selectionId === selectionId
-        ? { ...selection, selectionColor }
-        : selection
+  const handleUpdateSelectionColor = (selectionId: string, selectionColor: string) => {
+    const updatedSelections = selections.map(selection =>
+      selection.selectionId === selectionId ? { ...selection, selectionColor } : selection
     );
     setSelections(updatedSelections);
     dispatch(setSelectionsList(updatedSelections)); // update the slice with the new selection color
@@ -81,9 +71,7 @@ const SelectionTypeColumn = () => {
 
   // remove a selection
   const handleRemoveSelection = (selectionId: string) => {
-    const updatedSelections = selections.filter(
-      (selection) => selection.selectionId !== selectionId
-    );
+    const updatedSelections = selections.filter(selection => selection.selectionId !== selectionId);
     setSelections(updatedSelections);
     dispatch(setSelectionsList(updatedSelections)); // update the slice after selection removal
   };
@@ -98,26 +86,19 @@ const SelectionTypeColumn = () => {
       <Typography.Text>Selections</Typography.Text>
       <Flex vertical gap={8}>
         <Flex vertical gap={8} style={{ maxHeight: 120, overflow: 'auto' }}>
-          {selections.map((selection) => (
+          {selections.map(selection => (
             <Flex gap={8} key={selection.selectionId}>
               <HolderOutlined style={{ fontSize: 18 }} />
               <Input
                 value={selection.selectionName}
-                onChange={(e) =>
-                  handleUpdateSelectionName(
-                    selection.selectionId,
-                    e.target.value
-                  )
-                }
+                onChange={e => handleUpdateSelectionName(selection.selectionId, e.target.value)}
                 style={{ width: 'fit-content', maxWidth: 400 }}
               />
               <Flex gap={8} align="center">
                 <Select
                   options={phaseOptionColorList}
                   value={selection.selectionColor}
-                  onChange={(value) =>
-                    handleUpdateSelectionColor(selection.selectionId, value)
-                  }
+                  onChange={value => handleUpdateSelectionColor(selection.selectionId, value)}
                   style={{ width: 48 }}
                   suffixIcon={null}
                 />

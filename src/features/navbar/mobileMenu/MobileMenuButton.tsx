@@ -6,15 +6,7 @@ import {
   QuestionCircleOutlined,
   ReadOutlined,
 } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Dropdown,
-  Flex,
-  MenuProps,
-  Space,
-  Typography,
-} from 'antd';
+import { Button, Card, Dropdown, Flex, MenuProps, Space, Typography } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { colors } from '../../../styles/colors';
@@ -55,11 +47,7 @@ const MobileMenuButton = () => {
     {
       key: '1',
       label: (
-        <Card
-          className="mobile-menu-card"
-          bordered={false}
-          style={{ width: 230 }}
-        >
+        <Card className="mobile-menu-card" bordered={false} style={{ width: 230 }}>
           {navLinks.map((navEl, index) => (
             <NavLink key={index} to={`/worklenz/${navEl.name}`}>
               <Typography.Text strong>
@@ -103,10 +91,7 @@ const MobileMenuButton = () => {
       placement="bottomRight"
       trigger={['click']}
     >
-      <Button
-        className="borderless-icon-btn"
-        icon={<MenuOutlined style={{ fontSize: 20 }} />}
-      />
+      <Button className="borderless-icon-btn" icon={<MenuOutlined style={{ fontSize: 20 }} />} />
     </Dropdown>
   );
 };

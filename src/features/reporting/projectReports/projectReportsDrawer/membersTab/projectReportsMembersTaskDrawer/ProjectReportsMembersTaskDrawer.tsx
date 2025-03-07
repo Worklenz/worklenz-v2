@@ -1,64 +1,53 @@
 import { Drawer, Typography, Flex, Button } from 'antd';
 import React, { useMemo, useState } from 'react';
 import { FileOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { toggleProjectReportsMembersTaskDrawer } from '../../../projectReportsSlice';
+import { toggleProjectReportsMembersTaskDrawer } from '../../../project-reports-slice';
 import { colors } from '@/styles/colors';
 import ProjectReportsMembersTasksTable from './ProjectReportsMembersTaskTable';
 import CustomSearchbar from '@/components/CustomSearchbar';
-import { fetchData } from '@/utils/fetchData';
-import { useTranslation } from 'react-i18next';
-import TaskDrawer from '@/components/task-drawer/task-drawer';
 
 const ProjectReportsMembersTaskDrawer = () => {
+  const { t } = useTranslation('reporting-projects-drawer');
+  const dispatch = useAppDispatch();
+
   const [taskData, setTaskData] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // this state for open task drawer
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-
-  // localization
-  const { t } = useTranslation('reporting-projects-drawer');
-
-  const dispatch = useAppDispatch();
-
-  // get drawer open state and project list from the reducer
-  const isDrawerOpen = useAppSelector(
-    (state) => state.projectReportsReducer.isProjectReportsMembersTaskDrawerOpen
+  const { isProjectReportsMembersTaskDrawerOpen, selectedProject, selectedMember } = useAppSelector(
+    state => state.projectReportsReducer
   );
 
-  // function to handle drawer close
   const handleClose = () => {
     dispatch(toggleProjectReportsMembersTaskDrawer());
   };
 
-  //   get task data from mock json file in public/reporingMockData/projectRepoting
-  useMemo(() => {
-    fetchData(
-      '/reportingMockData/projectReports/memberTasks.json',
-      setTaskData
-    );
-  }, []);
+  const handleAfterOpenChange = (open: boolean) => {
+    if (open) {
+      
+    }
+  };
 
-  // used useMemo hook for re render the list when searching
   const filteredTaskData = useMemo(() => {
-    return taskData.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return taskData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [searchQuery, taskData]);
 
   return (
     <Drawer
-      open={isDrawerOpen}
+      open={isProjectReportsMembersTaskDrawerOpen}
       onClose={handleClose}
+      afterOpenChange={handleAfterOpenChange}
+      destroyOnClose
       width={900}
       title={
         <Flex align="center" justify="space-between">
           <Flex gap={8} align="center" style={{ fontWeight: 500 }}>
             <FileOutlined style={{ color: colors.lightGray }} />
-            <Typography.Text>/</Typography.Text>
-            <Typography.Text>Kavindu Mihiranga</Typography.Text>
+            <Typography.Text>{selectedProject?.name} /</Typography.Text>
+            <Typography.Text>{selectedMember?.name}</Typography.Text>
           </Flex>
 
           <Button type="primary">{t('exportButton')}</Button>
@@ -74,12 +63,8 @@ const ProjectReportsMembersTaskDrawer = () => {
 
         <ProjectReportsMembersTasksTable
           tasksData={filteredTaskData}
-          setSeletedTaskId={setSelectedTaskId}
         />
       </Flex>
-
-      {/* update task drawer  */}
-      <TaskDrawer />
     </Drawer>
   );
 };

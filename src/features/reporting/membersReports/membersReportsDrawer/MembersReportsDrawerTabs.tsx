@@ -16,18 +16,14 @@ type MembersReportsDrawerProps = {
 
 type TabsType = 'overview' | 'timeLogs' | 'activityLogs' | 'tasks';
 
-const MembersReportsDrawerTabs = ({
-  memberId = null,
-}: MembersReportsDrawerProps) => {
+const MembersReportsDrawerTabs = ({ memberId = null }: MembersReportsDrawerProps) => {
   // localization
   const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 
   // get active tab state from member reporting reducer
-  const activeTab = useAppSelector(
-    (state) => state.membersReportsReducer.activeTab
-  );
+  const activeTab = useAppSelector(state => state.membersReportsReducer.activeTab);
 
   const tabItems: TabsProps['items'] = [
     {
@@ -57,9 +53,7 @@ const MembersReportsDrawerTabs = ({
       type="card"
       items={tabItems}
       activeKey={activeTab}
-      onTabClick={(key) =>
-        dispatch(setMemberReportingDrawerActiveTab(key as TabsType))
-      }
+      onTabClick={key => dispatch(setMemberReportingDrawerActiveTab(key as TabsType))}
     />
   );
 };

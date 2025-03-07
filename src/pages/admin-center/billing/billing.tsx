@@ -6,12 +6,12 @@ import Configuration from '@/components/admin-center/configuration/configuration
 import { useTranslation } from 'react-i18next';
 
 const Billing: React.FC = () => {
-  const { t } = useTranslation('current-bill');
+  const { t } = useTranslation('admin-center/current-bill');;
 
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: t('current-bill'),
+      label: t('currentBill'),
       children: <CurrentBill />,
     },
     {
@@ -23,10 +23,7 @@ const Billing: React.FC = () => {
 
   return (
     <div style={{ width: '100%' }}>
-      <PageHeader
-        title={<span>{t('title')}</span>}
-        style={{ padding: '16px 0' }}
-      />
+      <PageHeader title={<span>{t('title')}</span>} style={{ padding: '16px 0' }} />
       <Tabs defaultActiveKey="1" items={items} />
     </div>
   );

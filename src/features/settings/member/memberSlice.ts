@@ -27,20 +27,18 @@ const memberSlice = createSlice({
   name: 'memberReducer',
   initialState,
   reducers: {
-    toggleInviteMemberDrawer: (state) => {
+    toggleInviteMemberDrawer: state => {
       state.isInviteMemberDrawerOpen
         ? (state.isInviteMemberDrawerOpen = false)
         : (state.isInviteMemberDrawerOpen = true);
     },
-    toggleUpdateMemberDrawer: (state) => {
+    toggleUpdateMemberDrawer: state => {
       state.isUpdateMemberDrawerOpen
         ? (state.isUpdateMemberDrawerOpen = false)
         : (state.isUpdateMemberDrawerOpen = true);
-    }  },
+    },
+  },
 });
 
-export const {
-  toggleInviteMemberDrawer,
-  toggleUpdateMemberDrawer
-} = memberSlice.actions;
+export const { toggleInviteMemberDrawer, toggleUpdateMemberDrawer } = memberSlice.actions;
 export default memberSlice.reducer;

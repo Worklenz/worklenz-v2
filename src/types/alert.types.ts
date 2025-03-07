@@ -9,7 +9,6 @@ export interface Alert {
   timestamp: number;
 }
 
-
 export interface AlertConfig {
   position: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
   duration: number;

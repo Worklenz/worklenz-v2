@@ -9,9 +9,7 @@ import { IRPTMember } from '@/types/reporting/reporting.types';
 
 type OverviewReportsMembersTabProps = { teamsId?: string | null };
 
-const OverviewReportsMembersTab = ({
-  teamsId = null,
-}: OverviewReportsMembersTabProps) => {
+const OverviewReportsMembersTab = ({ teamsId = null }: OverviewReportsMembersTabProps) => {
   const { t } = useTranslation('reporting-overview-drawer');
 
   const [searchQuery, setSearhQuery] = useState<string>('');
@@ -20,9 +18,7 @@ const OverviewReportsMembersTab = ({
 
   // used useMemo hook for re render the list when searching
   const filteredMembersData = useMemo(() => {
-    return membersList.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return membersList.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [searchQuery, membersList]);
 
   return (
@@ -33,11 +29,7 @@ const OverviewReportsMembersTab = ({
         setSearchQuery={setSearhQuery}
       />
 
-      {isLoading ? (
-        <Skeleton />
-      ) : (
-        <OverviewReportsMembersTable membersList={filteredMembersData} />
-      )}
+      {isLoading ? <Skeleton /> : <OverviewReportsMembersTable membersList={filteredMembersData} />}
     </Flex>
   );
 };

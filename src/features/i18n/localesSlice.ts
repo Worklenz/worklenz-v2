@@ -4,7 +4,7 @@ import i18n from '../../i18n';
 export enum Language {
   EN = 'en',
   ES = 'es',
-  PT = 'pt'
+  PT = 'pt',
 }
 
 export type ILanguageType = `${Language}`;
@@ -57,7 +57,7 @@ const localesSlice = createSlice({
   name: 'localesReducer',
   initialState,
   reducers: {
-    toggleLng: (state) => {
+    toggleLng: state => {
       const newLang: ILanguageType = state.lng === Language.EN ? Language.ES : Language.EN;
       state.lng = newLang;
       saveLanguageInLocalStorage(newLang);

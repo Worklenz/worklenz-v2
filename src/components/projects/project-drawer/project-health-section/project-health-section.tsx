@@ -7,10 +7,10 @@ interface ProjectHealthSectionProps {
   healths: IProjectHealth[];
   form: FormInstance;
   t: TFunction;
+  disabled: boolean;
 }
 
-const ProjectHealthSection = ({ healths, form, t }: ProjectHealthSectionProps) => {
-
+const ProjectHealthSection = ({ healths, form, t, disabled }: ProjectHealthSectionProps) => {
   const healthOptions = healths.map((status, index) => ({
     key: index,
     value: status.id,
@@ -26,6 +26,7 @@ const ProjectHealthSection = ({ healths, form, t }: ProjectHealthSectionProps) =
       <Select
         options={healthOptions}
         onChange={value => form.setFieldValue('health_id', value)}
+        disabled={disabled}
       />
     </Form.Item>
   );

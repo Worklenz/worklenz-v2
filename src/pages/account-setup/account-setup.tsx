@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Button, Space, Steps, Typography } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Space, Steps, Button, Typography } from 'antd/es';
+
 import logger from '@/utils/errorLogger';
 import { setCurrentStep } from '@/features/account-setup/account-setup.slice';
 import { OrganizationStep } from '@/components/account-setup/organization-step';
@@ -50,7 +51,7 @@ const AccountSetup: React.FC = () => {
     trackMixpanelEvent(evt_account_setup_visit);
     const verifyAuthStatus = async () => {
       try {
-        const response = (await dispatch(verifyAuthentication()).unwrap()) as IAuthorizeResponse;
+        const response = (await dispatch(verifyAuthentication()).unwrap()).payload as IAuthorizeResponse;
         if (response?.authenticated) {
           setSession(response.user);
           dispatch(setUser(response.user));
@@ -160,7 +161,7 @@ const AccountSetup: React.FC = () => {
       const res = await profileSettingsApiService.setupAccount(model);
       if (res.done && res.body.id) {
         trackMixpanelEvent(skip ? evt_account_setup_skip_invite : evt_account_setup_complete);
-        navigate(`/worklenz/projects/${res.body.id}`);
+        navigate(`/worklenz/projects/${res.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
       }
     } catch (error) {
       logger.error('completeAccountSetup', error);
@@ -244,7 +245,6 @@ const AccountSetup: React.FC = () => {
             current={currentStep}
             items={steps}
             style={styles.steps}
-
           />
           <div className="step-content" style={styles.stepContent}>
             {steps[currentStep].content}

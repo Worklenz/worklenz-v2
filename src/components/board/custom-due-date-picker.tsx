@@ -27,11 +27,7 @@ const CustomDueDatePicker = ({
       style={{ textAlign: 'right', padding: 0, maxWidth: 100 }}
     />
   ) : (
-    <Flex
-      gap={4}
-      align="center"
-      style={{ position: 'relative', width: 26, height: 26 }}
-    >
+    <Flex gap={4} align="center" style={{ position: 'relative', width: 26, height: 26 }}>
       <DatePicker
         open={isDatePickerOpen}
         value={dueDate}
@@ -40,7 +36,7 @@ const CustomDueDatePicker = ({
         style={{ opacity: 0, width: 0, height: 0, padding: 0 }}
         popupStyle={{ paddingBlock: 12 }}
         onBlur={() => setIsDatePickerOpen(false)}
-        onOpenChange={(open) => setIsDatePickerOpen(open)}
+        onOpenChange={open => setIsDatePickerOpen(open)}
         variant="borderless"
       />
       <Button
@@ -56,7 +52,7 @@ const CustomDueDatePicker = ({
           width: 26,
           height: 26,
         }}
-        onClick={(e) => {
+        onClick={e => {
           e.stopPropagation();
           setIsDatePickerOpen(true);
         }}

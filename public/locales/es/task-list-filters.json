@@ -26,15 +26,30 @@
   "createdDateText": "Fecha de creación",
   "lastUpdatedText": "Última actualización",
   "reporterText": "Reportero",
-
+  "dueTimeText": "Hora de vencimiento",
   "lowText": "Baja",
   "mediumText": "Media",
   "highText": "Alta",
-
+  "assigneesText": "Asignados",
+  "timetrackingText": "Seguimiento de tiempo",
+  "startdateText": "Fecha de inicio",
+  "duedateText": "Fecha de vencimiento",
+  "completeddateText": "Fecha de finalización",
+  "createddateText": "Fecha de creación",
+  "lastupdatedText": "Última actualización",
+  "duetimeText": "Hora de vencimiento",
   "createStatusButtonTooltip": "Configuración de estados",
   "configPhaseButtonTooltip": "Configuración de fases",
   "noLabelsFound": "No se encontraron etiquetas",
 
   "addStatusButton": "Agregar estado",
-  "addPhaseButton": "Agregar fase"
+  "addPhaseButton": "Agregar fase",
+
+  "createStatus": "Crear estado",
+  "name": "Nombre",
+  "category": "Categoría",
+  "selectCategory": "Seleccionar una categoría",
+  "pleaseEnterAName": "Por favor, ingrese un nombre",
+  "pleaseSelectACategory": "Por favor, seleccione una categoría",
+  "create": "Crear"
 }

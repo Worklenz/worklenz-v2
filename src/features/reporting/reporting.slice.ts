@@ -18,7 +18,7 @@ const reportingSlice = createSlice({
   name: 'reporting',
   initialState,
   reducers: {
-    toggleIncludeArchived: (state) => {
+    toggleIncludeArchived: state => {
       state.includeArchivedProjects = !state.includeArchivedProjects;
     },
     setSelectedProjects: (state, action: PayloadAction<string[]>) => {
@@ -27,22 +27,22 @@ const reportingSlice = createSlice({
     setSelectedTeams: (state, action: PayloadAction<string[]>) => {
       state.selectedTeamIds = action.payload;
     },
-    clearSelections: (state) => {
+    clearSelections: state => {
       state.selectedProjectIds = [];
       state.selectedTeamIds = [];
     },
-    toggleOverViewTeamDrawer: (state) => {
+    toggleOverViewTeamDrawer: state => {
       state.showOverViewTeamDrawer = !state.showOverViewTeamDrawer;
-    }
-  }
+    },
+  },
 });
 
-export const { 
+export const {
   toggleIncludeArchived,
   setSelectedProjects,
   setSelectedTeams,
   clearSelections,
-  toggleOverViewTeamDrawer
+  toggleOverViewTeamDrawer,
 } = reportingSlice.actions;
 
 export default reportingSlice.reducer;

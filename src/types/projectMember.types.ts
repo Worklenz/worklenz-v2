@@ -1,15 +1,12 @@
-export interface IProjectMemberViewModel {
-  id?: string;
+import { IProjectMember } from "./project/projectMember.types";
+
+export interface IProjectMemberViewModel extends IProjectMember {
   name?: string;
-  email?: string;
-  access?: string;
-  pending_invitation?: boolean;
-  all_tasks_count?: number;
-  completed_tasks_count?: number;
-  progress?: number;
-  job_title?: string;
-  avatar_url?: string;
   team_member_id?: string;
+  job_title?: string;
+  email?: string;
+  avatar_url?: string;
+  color_code?: string;
 }
 
 export interface IProjectMembersViewModel {

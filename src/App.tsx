@@ -6,7 +6,6 @@ import i18next from 'i18next';
 // Components
 import ThemeWrapper from './features/theme/ThemeWrapper';
 import PreferenceSelector from './components/PreferenceSelector';
-import { SocketProvider } from './socket/socketContext';
 
 // Routes
 import router from './app/routes';
@@ -19,9 +18,8 @@ import { initMixpanel } from './utils/mixpanelInit';
 import { Language } from './features/i18n/localesSlice';
 import logger from './utils/errorLogger';
 import { SuspenseFallback } from './components/suspense-fallback/suspense-fallback';
-import { Spin } from 'antd';
 
-const App: React.FC = () => {
+const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const language = useAppSelector(state => state.localesReducer.lng);
 
@@ -39,12 +37,10 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback={<SuspenseFallback />}>
-      <SocketProvider>
-        <ThemeWrapper>
-          <RouterProvider router={router} future={{ v7_startTransition: true }} />
-          <PreferenceSelector />
-        </ThemeWrapper>
-      </SocketProvider>
+      <ThemeWrapper>
+        <RouterProvider router={router} future={{ v7_startTransition: true }} />
+        <PreferenceSelector />
+      </ThemeWrapper>
     </Suspense>
   );
 };

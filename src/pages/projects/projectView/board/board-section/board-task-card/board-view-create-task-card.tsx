@@ -1,18 +1,18 @@
 import { Button, Flex, Input } from 'antd';
 import React, { useRef, useState } from 'react';
+import { Dayjs } from 'dayjs';
+import { nanoid } from '@reduxjs/toolkit';
+import { useTranslation } from 'react-i18next';
+
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   addTaskCardToTheBottom,
   addTaskCardToTheTop,
-} from '@/features/board/board-slice';
-import { useTranslation } from 'react-i18next';
+} from '@features/board/board-slice';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
-// import PriorityDropdown from '../../../../../../components/taskListCommon/priorityDropdown/PriorityDropdown';
 import CustomDueDatePicker from '@/components/board/custom-due-date-picker';
-import { Dayjs } from 'dayjs';
-import { nanoid } from '@reduxjs/toolkit';
-import AddMembersDropdown from '@/components/add-members-dropdown/add-members-dropdown';
+import AddMembersDropdown from '@/components/add-members-dropdown-v2/add-members-dropdown';
 
 type BoardViewCreateTaskCardProps = {
   position: 'top' | 'bottom';
@@ -25,20 +25,16 @@ const BoardViewCreateTaskCard = ({
   sectionId,
   setShowNewCard,
 }: BoardViewCreateTaskCardProps) => {
+  const { t } = useTranslation('kanban-board');
+  const dispatch = useAppDispatch();
+
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [dueDate, setDueDate] = useState<Dayjs | null>(null);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  //   localization
-  const { t } = useTranslation('kanbanBoard');
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  //   get theme details from theme reducer
-  const themeMode = useAppSelector((state) => state.themeReducer.mode);
-
-  const dispatch = useAppDispatch();
-
-  // function to add task card to the top
   const handleAddTaskToTheTop = () => {
     if (newTaskName.trim()) {
       dispatch(
@@ -56,7 +52,6 @@ const BoardViewCreateTaskCard = ({
     }
   };
 
-  // function to add task card to the bottom
   const handleAddTaskToTheBottom = () => {
     if (newTaskName.trim()) {
       dispatch(
@@ -102,12 +97,8 @@ const BoardViewCreateTaskCard = ({
       <Input
         autoFocus
         value={newTaskName}
-        onChange={(e) => setNewTaskName(e.target.value)}
-        onPressEnter={
-          position === 'bottom'
-            ? handleAddTaskToTheBottom
-            : handleAddTaskToTheTop
-        }
+        onChange={e => setNewTaskName(e.target.value)}
+        onPressEnter={position === 'bottom' ? handleAddTaskToTheBottom : handleAddTaskToTheTop}
         onBlur={
           newTaskName.length > 0 && position === 'bottom'
             ? handleAddTaskToTheBottom

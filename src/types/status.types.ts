@@ -24,5 +24,5 @@ export interface IKanbanTaskStatus extends ITaskStatus {
 export interface ICategorizedStatus {
   category_id: string;
   category_color: string;
-  statuses: ITaskStatusCategory[]
+  statuses: ITaskStatusCategory[];
 }
