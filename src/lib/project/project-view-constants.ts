@@ -5,7 +5,7 @@ import ProjectViewMembers from '@/pages/projects/project-view-1/members/project-
 import ProjectViewUpdates from '@/pages/projects/project-view-1/updates/project-view-updates';
 import ProjectViewTaskList from '@/pages/projects/projectView/taskList/project-view-task-list';
 import ProjectViewBoard from '@/pages/projects/projectView/board/ProjectViewBoard';
-
+import ProjectViewRoadmap from '@/pages/projects/projectView/roadmap/project-view-roadmap';
 // type of a tab items
 type TabItems = {
   index: number;
@@ -37,12 +37,12 @@ export const tabItems: TabItems[] = [
   //   label: 'Workload',
   //   element: React.createElement(ProjectViewWorkload),
   // },
-  // {
-  //   index: 3,
-  //   key: 'roadmap',
-  //   label: 'Roadmap',
-  //   element: React.createElement(ProjectViewRoadmap),
-  // },
+  {
+    index: 3,
+    key: 'roadmap',
+    label: 'Roadmap',
+    element: React.createElement(ProjectViewRoadmap),
+  },
   {
     index: 4,
     key: 'project-insights-member-overview',

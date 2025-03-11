@@ -8,3 +8,9 @@ export interface ITaskLabel {
   names?: string;
   usage?: number;
 }
+
+export type LabelType = {
+  labelId: string;
+  labelName: string;
+  labelColor: string;
+};
