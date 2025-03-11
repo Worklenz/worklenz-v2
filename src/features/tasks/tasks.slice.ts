@@ -670,6 +670,25 @@ const taskSlice = createSlice({
       }
     },
 
+    updateTaskEstimation: (
+      state,
+      action: PayloadAction<{
+        task: IProjectTask;
+      }>
+    ) => {
+      const { task } = action.payload;
+
+      for (const group of state.taskGroups) {
+        const existingTask =
+          group.tasks.find(t => t.id === task.id) ||
+          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
+        if (existingTask) {
+          existingTask.total_time_string = task.total_time_string;
+          break;
+        }
+      }
+    },
+
     updateTaskPhase: (state, action: PayloadAction<ITaskPhaseChangeResponse>) => {
       const { id: phase_id, task_id, color_code } = action.payload;
 
@@ -1018,6 +1037,7 @@ export const {
   updateTaskPriority,
   updateTaskEndDate,
   updateTaskStartDate,
+  updateTaskEstimation,
   updateTaskTimeTracking,
   toggleTaskRowExpansion,
   resetTaskListData,

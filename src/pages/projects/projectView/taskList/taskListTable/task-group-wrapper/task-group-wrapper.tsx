@@ -36,6 +36,7 @@ import {
   updateTaskStatus,
   updateTaskPriority,
   updateTaskEndDate,
+  updateTaskEstimation,
   updateTaskName,
   updateTaskPhase,
   updateTaskStartDate,
@@ -280,6 +281,25 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
 
     return () => {
       socket.off(SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(), handleTaskSubscribersChange);
+    };
+  }, [socket, dispatch]);
+
+  // Socket handler for task estimation updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleEstimationChange = (task: {
+      id: string;
+      parent_task: string | null;
+      estimation: number;
+    }) => {
+      dispatch(updateTaskEstimation({ task }));
+    };
+
+    socket.on(SocketEvents.TASK_TIME_ESTIMATION_CHANGE.toString(), handleEstimationChange);
+
+    return () => {
+      socket.off(SocketEvents.TASK_TIME_ESTIMATION_CHANGE.toString(), handleEstimationChange);
     };
   }, [socket, dispatch]);
 
