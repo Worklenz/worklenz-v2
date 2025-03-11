@@ -8,7 +8,7 @@ import { API_BASE_URL } from '@/shared/constants';
 import { IServerResponse } from '@/types/common.types';
 import { toQueryString } from '@/utils/toQueryString';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
-import { ITaskFormViewModel } from '@/types/tasks/task.types';
+import { ITaskFormViewModel, ITaskViewModel } from '@/types/tasks/task.types';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 const rootUrl = `${API_BASE_URL}/tasks`;
@@ -66,7 +66,10 @@ export const tasksApiService = {
     return response.data;
   },
 
-  toggleColumnVisibility: async (projectId: string, item: ITaskListColumn): Promise<IServerResponse<ITaskListColumn>> => {
+  toggleColumnVisibility: async (
+    projectId: string,
+    item: ITaskListColumn
+  ): Promise<IServerResponse<ITaskListColumn>> => {
     const response = await apiClient.put(`${rootUrl}/list/columns/${projectId}`, item);
     return response.data;
   },
@@ -76,13 +79,19 @@ export const tasksApiService = {
     return response.data;
   },
 
-  convertToSubtask: async (taskId: string, projectId: string, parentTaskId: string, groupBy: string, toGroupId: string): Promise<IServerResponse<void>> => {
+  convertToSubtask: async (
+    taskId: string,
+    projectId: string,
+    parentTaskId: string,
+    groupBy: string,
+    toGroupId: string
+  ): Promise<IServerResponse<void>> => {
     const response = await apiClient.post(`${rootUrl}/convert-to-subtask`, {
       id: taskId,
       project_id: projectId,
       parent_task_id: parentTaskId,
       group_by: groupBy,
-      to_group_id: toGroupId
+      to_group_id: toGroupId,
     });
     return response.data;
   },
@@ -90,9 +99,18 @@ export const tasksApiService = {
   convertToTask: async (taskId: string, projectId: string): Promise<IServerResponse<void>> => {
     const response = await apiClient.post(`${rootUrl}/convert`, {
       id: taskId,
-      project_id: projectId
+      project_id: projectId,
     });
     return response.data;
   },
 
+  searchTask: async (
+    taskId: string,
+    projectId: string,
+    searchQuery: string
+  ): Promise<IServerResponse<{ label: string; value: string }[]>> => {
+    const q = toQueryString({ taskId, projectId, searchQuery });
+    const response = await apiClient.get(`${rootUrl}/search${q}`);
+    return response.data;
+  },
 };
