@@ -126,7 +126,7 @@ const AddTaskListRow = ({ groupId = null, parentTask = null }: IAddTaskListRowPr
   };
 
   return (
-    <div className={`border-t ${customBorderColor}`}>
+    <div>
       {isEdit ? (
         <Input
           className="h-12 w-full rounded-none"

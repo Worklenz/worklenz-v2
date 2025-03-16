@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskListFilters from '../taskList/task-list-filters/task-list-filters';
-import { Empty, Flex, Skeleton } from 'antd';
+import { Flex, Skeleton } from 'antd';
 import BoardSectionCardContainer from './board-section/board-section-container';
 import {
   fetchBoardTaskGroups,
@@ -16,29 +16,23 @@ import {
   DragStartEvent,
   closestCorners,
   DragOverlay,
-  pointerWithin,
   MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
 import BoardViewTaskCard from './board-section/board-task-card/board-view-task-card';
-import { useSearchParams } from 'react-router-dom';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
 import { useSocket } from '@/socket/socketContext';
 import { useAuthService } from '@/hooks/useAuth';
 import { SocketEvents } from '@/shared/socket-events';
-import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import alertService from '@/services/alerts/alertService';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
-import apiClient from '@/api/api-client';
-import { API_BASE_URL } from '@/shared/constants';
 import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
-import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
-import useDragCursor from '@/hooks/useDragCursor';
+import logger from '@/utils/errorLogger';
 
 const ProjectViewBoard = () => {
   const dispatch = useAppDispatch();
@@ -54,10 +48,6 @@ const ProjectViewBoard = () => {
     state => state.taskStatusReducer
   );
   const [activeItem, setActiveItem] = useState<any>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  
-  // Use our custom hook to handle cursor styles during drag
-  useDragCursor(isDragging);
   
   // Store the original source group ID when drag starts
   const originalSourceGroupIdRef = useRef<string | null>(null);
@@ -69,39 +59,6 @@ const ProjectViewBoard = () => {
       }
     }
   }, [dispatch, projectId, groupBy, projectView]);
-
-  // Add CSS styles for drag and drop
-  useIsomorphicLayoutEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      /* Base styles for draggable items */
-      .board-task-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      
-      /* Style when dragging */
-      .board-task-card[data-dragging="true"] {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        z-index: 100;
-      }
-      
-      /* Style for droppable areas during drag */
-      .board-section[data-droppable="true"] {
-        transition: background-color 0.2s ease;
-      }
-      
-      /* Style for valid drop targets */
-      .board-section[data-over="true"] {
-        background-color: rgba(0, 120, 212, 0.05);
-        border-radius: 8px;
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -122,13 +79,6 @@ const ProjectViewBoard = () => {
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     setActiveItem(active.data.current);
-    setIsDragging(true);
-    
-    // Mark the dragged element
-    const draggedElement = document.querySelector(`[data-id="${active.id}"]`);
-    if (draggedElement) {
-      draggedElement.setAttribute('data-dragging', 'true');
-    }
     
     // Store the original source group ID when drag starts
     if (active.data.current?.type === 'task') {
@@ -145,25 +95,6 @@ const ProjectViewBoard = () => {
     const overId = over.id;
 
     if (activeId === overId) return;
-
-    // Update visual feedback for drop targets
-    document.querySelectorAll('.board-section').forEach(section => {
-      section.setAttribute('data-over', 'false');
-    });
-    
-    // Highlight the current drop target
-    if (over.data.current?.type === 'section') {
-      const sectionElement = document.querySelector(`[data-section-id="${over.id}"]`);
-      if (sectionElement) {
-        sectionElement.setAttribute('data-over', 'true');
-      }
-    } else if (over.data.current?.type === 'task') {
-      const sectionId = over.data.current?.sectionId;
-      const sectionElement = document.querySelector(`[data-section-id="${sectionId}"]`);
-      if (sectionElement) {
-        sectionElement.setAttribute('data-over', 'true');
-      }
-    }
 
     const isActiveTask = active.data.current?.type === 'task';
     const isOverTask = over.data.current?.type === 'task';
@@ -215,27 +146,7 @@ const ProjectViewBoard = () => {
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    
-    // Reset drag state and visual feedback
-    setIsDragging(false);
-    
-    // Reset all dragging attributes
-    document.querySelectorAll('[data-dragging="true"]').forEach(element => {
-      element.setAttribute('data-dragging', 'false');
-    });
-    
-    // Reset all drop target highlights
-    document.querySelectorAll('.board-section').forEach(section => {
-      section.setAttribute('data-over', 'false');
-    });
-    
-    // More detailed logging
-    console.log('Active object:', JSON.stringify(active, null, 2));
-    console.log('Over object:', JSON.stringify(over, null, 2));
-    console.log('Active data:', active.data.current);
-    console.log('Over data:', over?.data.current);
-    console.log('Original source group ID:', originalSourceGroupIdRef.current);
-    
+       
     if (!over || !projectId) {
       setActiveItem(null);
       originalSourceGroupIdRef.current = null; // Reset the ref
@@ -265,25 +176,15 @@ const ProjectViewBoard = () => {
         targetGroupId = over.id;
       }
       
-      console.log('Source Group ID:', sourceGroupId);
-      console.log('Target Group ID:', targetGroupId);
-
       // Find source and target groups
       const sourceGroup = taskGroups.find(group => group.id === sourceGroupId);
       const targetGroup = taskGroups.find(group => group.id === targetGroupId);
 
       if (!sourceGroup || !targetGroup || !task) {
-        console.error('Could not find source or target group, or task is undefined');
+        logger.error('Could not find source or target group, or task is undefined');
         setActiveItem(null);
         originalSourceGroupIdRef.current = null; // Reset the ref
         return;
-      }
-
-      // Verify that we have different groups when moving between columns
-      if (sourceGroupId === targetGroupId) {
-        console.log('Same group movement detected');
-      } else {
-        console.log('Cross-group movement detected');
       }
 
       // Find indices
@@ -324,7 +225,7 @@ const ProjectViewBoard = () => {
           team_id: currentSession?.team_id
         };
 
-        console.log('Emitting socket event with payload (task not found in source):', body);
+        logger.error('Emitting socket event with payload (task not found in source):', body);
 
         // Emit socket event
         if (socket) {
@@ -375,8 +276,6 @@ const ProjectViewBoard = () => {
         task,
         team_id: currentSession?.team_id
       };
-
-      console.log('Emitting socket event with payload:', body);
 
       // Emit socket event
       if (socket) {

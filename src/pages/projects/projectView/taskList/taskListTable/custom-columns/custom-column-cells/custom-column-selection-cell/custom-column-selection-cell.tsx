@@ -1,41 +1,74 @@
 import { Badge, Card, Dropdown, Empty, Flex, Menu, MenuProps, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 // custom css file
 import './custom-column-selection-cell.css';
 import { useTranslation } from 'react-i18next';
 import { colors } from '../../../../../../../../styles/colors';
 import { SelectionType } from '../../custom-column-modal/selection-type-column/selection-type-column';
+import { ALPHA_CHANNEL } from '@/shared/constants';
 
-const CustomColumnSelectionCell = ({ selectionsList }: { selectionsList: SelectionType[] }) => {
+const CustomColumnSelectionCell = ({ 
+  selectionsList,
+  value,
+  onChange
+}: { 
+  selectionsList: SelectionType[],
+  value?: string,
+  onChange?: (value: string) => void
+}) => {
   const [currentSelectionOption, setCurrentSelectionOption] = useState<SelectionType | null>(null);
 
   // localization
   const { t } = useTranslation('task-list-table');
 
-  // esure selectionsList is an array and has valid data
+  // Debug the selectionsList and value
+  console.log('CustomColumnSelectionCell props:', { 
+    selectionsList, 
+    value,
+    selectionsCount: selectionsList?.length || 0
+  });
+
+  // Set initial selection based on value prop
+  useEffect(() => {
+    if (value && Array.isArray(selectionsList) && selectionsList.length > 0) {
+      const selectedOption = selectionsList.find(option => option.selection_id === value);
+      console.log('Found selected option:', selectedOption);
+      if (selectedOption) {
+        setCurrentSelectionOption(selectedOption);
+      }
+    }
+  }, [value, selectionsList]);
+
+  // ensure selectionsList is an array and has valid data
   const selectionMenuItems: MenuProps['items'] =
     Array.isArray(selectionsList) && selectionsList.length > 0
       ? selectionsList.map(selection => ({
-          key: selection.selectionId,
+          key: selection.selection_id,
           label: (
             <Flex gap={4}>
-              <Badge color={selection.selectionColor} /> {selection.selectionName}
+              <Badge color={selection.selection_color + ALPHA_CHANNEL} /> {selection.selection_name}
             </Flex>
           ),
         }))
       : [
           {
             key: 'noSelections',
-            label: <Empty />,
+            label: <Empty description="No selections available" />,
           },
         ];
 
   // handle selection selection
   const handleSelectionOptionSelect: MenuProps['onClick'] = e => {
-    const selectedOption = selectionsList.find(option => option.selectionId === e.key);
+    if (e.key === 'noSelections') return;
+    
+    const selectedOption = selectionsList.find(option => option.selection_id === e.key);
     if (selectedOption) {
       setCurrentSelectionOption(selectedOption);
+      // Call the onChange callback if provided
+      if (onChange) {
+        onChange(selectedOption.selection_id);
+      }
     }
   };
 
@@ -44,7 +77,7 @@ const CustomColumnSelectionCell = ({ selectionsList }: { selectionsList: Selecti
     {
       key: '1',
       label: (
-        <Card className="custom-column-selection-dropdown-card" bordered={false}>
+        <Card className="custom-column-selection-dropdown-card" variant="borderless">
           <Menu
             className="custom-column-selection-menu"
             items={selectionMenuItems}
@@ -72,7 +105,7 @@ const CustomColumnSelectionCell = ({ selectionsList }: { selectionsList: Selecti
           paddingInline: 8,
           height: 22,
           fontSize: 13,
-          backgroundColor: currentSelectionOption?.selectionColor || colors.transparent,
+          backgroundColor: currentSelectionOption?.selection_color + ALPHA_CHANNEL || colors.transparent,
           color: colors.darkGray,
           cursor: 'pointer',
         }}
@@ -85,7 +118,7 @@ const CustomColumnSelectionCell = ({ selectionsList }: { selectionsList: Selecti
               fontSize: 13,
             }}
           >
-            {currentSelectionOption?.selectionName}
+            {currentSelectionOption?.selection_name}
           </Typography.Text>
         ) : (
           <Typography.Text type="secondary" style={{ fontSize: 13 }}>

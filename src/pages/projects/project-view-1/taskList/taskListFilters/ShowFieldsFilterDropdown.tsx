@@ -22,8 +22,8 @@ const ShowFieldsFilterDropdown = () => {
     ...columnList.filter(column => !['selector', 'task'].includes(column.key)),
     ...(customColumns || []).map(col => ({
       key: col.key,
-      columnHeader: col.customColumnObj.columnHeader,
-      isCustomColumn: col.isCustomColumn,
+      columnHeader: col.custom_column_obj.columnHeader,
+      isCustomColumn: col.custom_column,
     }))
   ];
 
@@ -66,7 +66,7 @@ const ShowFieldsFilterDropdown = () => {
               border: 'none',
               cursor: 'pointer',
             }}
-            onClick={() => handleColumnToggle(col.key, col.isCustomColumn)}
+            onClick={() => handleColumnToggle(col.key, col.custom_column)}
           >
             <Space>
               <Checkbox
@@ -76,7 +76,7 @@ const ShowFieldsFilterDropdown = () => {
                   ]
                 }
               />
-              {col.isCustomColumn
+              {col.custom_column
                 ? col.columnHeader 
                 : t(col.key === 'phases' ? 'phasesText' : `${col.columnHeader}Text`)}
             </Space>

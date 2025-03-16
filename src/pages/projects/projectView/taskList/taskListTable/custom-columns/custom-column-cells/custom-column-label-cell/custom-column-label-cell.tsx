@@ -1,5 +1,5 @@
 import { Badge, Card, Dropdown, Empty, Flex, Menu, MenuProps, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 // custom css file
 import './custom-column-label-cell.css';
@@ -7,26 +7,44 @@ import { useTranslation } from 'react-i18next';
 import { colors } from '../../../../../../../../styles/colors';
 import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 
-// temp label type
-
-const CustomColumnLabelCell = ({ labelsList }: { labelsList: ITaskLabel[] }) => {
+const CustomColumnLabelCell = ({ 
+  labelsList, 
+  selectedLabels = [],
+  onChange
+}: { 
+  labelsList: ITaskLabel[],
+  selectedLabels?: string[],
+  onChange?: (labels: string[]) => void
+}) => {
   const [currentLabelOption, setCurrentLabelOption] = useState<ITaskLabel | null>(null);
 
   // localization
   const { t } = useTranslation('task-list-table');
 
-  // esure labelsList is an array and has valid data
+  // Set initial selection based on selectedLabels prop
+  useEffect(() => {
+    if (selectedLabels && selectedLabels.length > 0 && labelsList.length > 0) {
+      const selectedLabel = labelsList.find(label => label.id && selectedLabels.includes(label.id));
+      if (selectedLabel) {
+        setCurrentLabelOption(selectedLabel);
+      }
+    }
+  }, [selectedLabels, labelsList]);
+
+  // ensure labelsList is an array and has valid data
   const labelMenuItems: MenuProps['items'] =
     Array.isArray(labelsList) && labelsList.length > 0
-      ? labelsList.map(label => ({
-          key: label.id,
-          label: (
-            <Flex gap={4}>
-              <Badge color={label.color_code} /> {label.name}
-            </Flex>
-          ),
-          type: 'item',
-        }))
+      ? labelsList
+          .filter(label => label.id) // Filter out items without an id
+          .map(label => ({
+            key: label.id as string, // Assert that id is a string
+            label: (
+              <Flex gap={4}>
+                <Badge color={label.color_code} /> {label.name}
+              </Flex>
+            ),
+            type: 'item' as const,
+          }))
       : [
           {
             key: 'noLabels',
@@ -37,8 +55,12 @@ const CustomColumnLabelCell = ({ labelsList }: { labelsList: ITaskLabel[] }) => 
   // handle label selection
   const handleLabelOptionSelect: MenuProps['onClick'] = e => {
     const selectedOption = labelsList.find(option => option.id === e.key);
-    if (selectedOption) {
+    if (selectedOption && selectedOption.id) {
       setCurrentLabelOption(selectedOption);
+      // Call the onChange callback if provided
+      if (onChange) {
+        onChange([selectedOption.id]);
+      }
     }
   };
 

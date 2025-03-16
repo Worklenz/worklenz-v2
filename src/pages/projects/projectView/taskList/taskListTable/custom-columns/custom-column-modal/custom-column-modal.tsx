@@ -11,6 +11,15 @@ import {
   setCustomColumnModalAttributes,
   setCustomFieldType,
   toggleCustomColumnModalOpen,
+  setCustomFieldNumberType,
+  setDecimals,
+  setLabel,
+  setLabelPosition,
+  setExpression,
+  setFirstNumericColumn,
+  setSecondNumericColumn,
+  setSelectionsList,
+  setLabelsList,
 } from '@features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import CustomColumnHeader from '../custom-column-header/custom-column-header';
 import { nanoid } from '@reduxjs/toolkit';
@@ -48,7 +57,7 @@ const CustomColumnModal = () => {
     secondNumericColumn,
     labelsList,
     selectionsList,
-    customFieldType
+    customFieldType,
   } = useAppSelector(state => state.taskListCustomColumnsReducer);
   // get initial data from task list custom column slice
   const fieldType: CustomFieldsTypes = useAppSelector(
@@ -60,9 +69,9 @@ const CustomColumnModal = () => {
   );
 
   // if it is already created column get the column data
-  const openedColumn = useAppSelector(
-    state => state.taskReducer.customColumns
-  ).find(col => col.key === customColumnId);
+  const openedColumn = useAppSelector(state => state.taskReducer.customColumns).find(
+    col => col.id === customColumnId
+  );
 
   const fieldTypesOptions = [
     {
@@ -125,10 +134,10 @@ const CustomColumnModal = () => {
           key: columnKey,
           name: value.fieldTitle,
           columnHeader: <CustomColumnHeader columnKey={columnKey} columnName={value.fieldTitle} />,
-          width: 150,
+          width: 120,
           isVisible: true,
-          isCustomColumn: true,
-          customColumnObj: {
+          custom_column: true,
+          custom_column_obj: {
             ...value,
             labelsList: value.fieldType === 'labels' ? labelsList : [],
             selectionsList: value.fieldType === 'selection' ? selectionsList : [],
@@ -142,7 +151,7 @@ const CustomColumnModal = () => {
             name: value.fieldTitle,
             key: columnKey,
             field_type: value.fieldType,
-            width: 150,
+            width: 120,
             is_visible: true,
             configuration: {
               field_title: value.fieldTitle,
@@ -155,21 +164,27 @@ const CustomColumnModal = () => {
               expression: value.expression,
               first_numeric_column_key: value.firstNumericColumn?.key,
               second_numeric_column_key: value.secondNumericColumn?.key,
-              selections_list: value.fieldType === 'selection' ? selectionsList.map((selection, index) => ({
-                selection_id: selection.selectionId,
-                selection_name: selection.selectionName,
-                selection_color: selection.selectionColor,
-                selection_order: index
-              })) : [],
-              labels_list: value.fieldType === 'labels' ? labelsList.map((label, index) => ({
-                label_id: label.labelId,
-                label_name: label.labelName,
-                label_color: label.labelColor,
-                label_order: index
-              })) : []
-            }
+              selections_list:
+                value.fieldType === 'selection'
+                  ? selectionsList.map((selection, index) => ({
+                      selection_id: selection.selection_id,
+                      selection_name: selection.selection_name,
+                      selection_color: selection.selection_color,
+                      selection_order: index,
+                    }))
+                  : [],
+              labels_list:
+                value.fieldType === 'labels'
+                  ? labelsList.map((label, index) => ({
+                      label_id: label.label_id,
+                      label_name: label.label_name,
+                      label_color: label.label_color,
+                      label_order: index,
+                    }))
+                  : [],
+            },
           });
-          
+
           // Add to local state
           dispatch(addCustomColumn(newColumn));
           dispatch(setCustomColumnModalAttributes({ modalType: 'create', columnId: null }));
@@ -186,8 +201,8 @@ const CustomColumnModal = () => {
               columnHeader: (
                 <CustomColumnHeader columnKey={customColumnId} columnName={value.fieldTitle} />
               ),
-              customColumnObj: {
-                ...openedColumn.customColumnObj,
+              custom_column_obj: {
+                ...openedColumn.custom_column_obj,
                 fieldTitle: value.fieldTitle,
                 fieldType: value.fieldType,
                 numberType: value.numberType,
@@ -223,25 +238,31 @@ const CustomColumnModal = () => {
                 expression: value.expression,
                 first_numeric_column_key: value.firstNumericColumn?.key,
                 second_numeric_column_key: value.secondNumericColumn?.key,
-                selections_list: value.fieldType === 'selection' ? selectionsList.map((selection, index) => ({
-                  selection_id: selection.selectionId,
-                  selection_name: selection.selectionName,
-                  selection_color: selection.selectionColor,
-                  selection_order: index
-                })) : [],
-                labels_list: value.fieldType === 'labels' ? labelsList.map((label, index) => ({
-                  label_id: label.labelId,
-                  label_name: label.labelName,
-                  label_color: label.labelColor,
-                  label_order: index
-                })) : []
-              }
+                selections_list:
+                  value.fieldType === 'selection'
+                    ? selectionsList.map((selection, index) => ({
+                        selection_id: selection.selection_id,
+                        selection_name: selection.selection_name,
+                        selection_color: selection.selection_color,
+                        selection_order: index,
+                      }))
+                    : [],
+                labels_list:
+                  value.fieldType === 'labels'
+                    ? labelsList.map((label, index) => ({
+                        label_id: label.label_id,
+                        label_name: label.label_name,
+                        label_color: label.label_color,
+                        label_order: index,
+                      }))
+                    : [],
+              },
             });
-            
+
             // Close modal
             dispatch(toggleCustomColumnModalOpen(false));
             dispatch(setCustomColumnModalAttributes({ modalType: 'create', columnId: null }));
-            
+
             // Reload the page instead of updating the slice
             window.location.reload();
           } catch (error) {
@@ -273,25 +294,57 @@ const CustomColumnModal = () => {
       onClose={() => {
         mainForm.resetFields();
       }}
-      afterOpenChange={
-        (open) => {
-          if (open) {
-            dispatch(setCustomFieldType(openedColumn?.customColumnObj.fieldType));
-            mainForm.setFieldsValue({
-              fieldTitle: openedColumn?.customColumnObj.fieldTitle,
-              fieldType: openedColumn?.customColumnObj.fieldType,
-              numberType: openedColumn?.customColumnObj.numberType,
-              decimals: openedColumn?.customColumnObj.decimals,
-              label: openedColumn?.customColumnObj.label,
-              labelPosition: openedColumn?.customColumnObj.labelPosition,
-              previewValue: openedColumn?.customColumnObj.previewValue,
-              expression: openedColumn?.customColumnObj.expression,
-              firstNumericColumn: openedColumn?.customColumnObj.firstNumericColumn,
-              secondNumericColumn: openedColumn?.customColumnObj.secondNumericColumn,
-            });
+      afterOpenChange={open => {
+        console.log('Modal opened for editing column:', openedColumn);
+        if (open && customColumnModalType === 'edit' && openedColumn) {
+          console.log('Modal opened for editing column:', openedColumn);
+          
+          // Set the field type first so the correct form fields are displayed
+          dispatch(setCustomFieldType(openedColumn.custom_column_obj?.fieldType || 'people'));
+          
+          // Set other field values based on the custom column type
+          if (openedColumn.custom_column_obj?.fieldType === 'number') {
+            dispatch(setCustomFieldNumberType(openedColumn.custom_column_obj?.numberType || 'formatted'));
+            dispatch(setDecimals(openedColumn.custom_column_obj?.decimals || 0));
+            dispatch(setLabel(openedColumn.custom_column_obj?.label || ''));
+            dispatch(setLabelPosition(openedColumn.custom_column_obj?.labelPosition || 'left'));
+          } else if (openedColumn.custom_column_obj?.fieldType === 'formula') {
+            dispatch(setExpression(openedColumn.custom_column_obj?.expression || 'add'));
+            dispatch(setFirstNumericColumn(openedColumn.custom_column_obj?.firstNumericColumn || null));
+            dispatch(setSecondNumericColumn(openedColumn.custom_column_obj?.secondNumericColumn || null));
+          } else if (openedColumn.custom_column_obj?.fieldType === 'selection') {
+            // Directly set the selections list in the Redux store
+            if (Array.isArray(openedColumn.custom_column_obj?.selectionsList)) {
+              console.log('Setting selections list:', openedColumn.custom_column_obj.selectionsList);
+              dispatch(setSelectionsList(openedColumn.custom_column_obj.selectionsList));
+            }
+          } else if (openedColumn.custom_column_obj?.fieldType === 'labels') {
+            // Directly set the labels list in the Redux store
+            if (Array.isArray(openedColumn.custom_column_obj?.labelsList)) {
+              console.log('Setting labels list:', openedColumn.custom_column_obj.labelsList);
+              dispatch(setLabelsList(openedColumn.custom_column_obj.labelsList));
+            }
           }
+          
+          // Set form values
+          mainForm.setFieldsValue({
+            fieldTitle: openedColumn.name || openedColumn.custom_column_obj?.fieldTitle,
+            fieldType: openedColumn.custom_column_obj?.fieldType,
+            numberType: openedColumn.custom_column_obj?.numberType,
+            decimals: openedColumn.custom_column_obj?.decimals,
+            label: openedColumn.custom_column_obj?.label,
+            labelPosition: openedColumn.custom_column_obj?.labelPosition,
+            previewValue: openedColumn.custom_column_obj?.previewValue,
+            expression: openedColumn.custom_column_obj?.expression,
+            firstNumericColumn: openedColumn.custom_column_obj?.firstNumericColumn,
+            secondNumericColumn: openedColumn.custom_column_obj?.secondNumericColumn,
+          });
+        } else if (open && customColumnModalType === 'create') {
+          // Reset form for create mode
+          mainForm.resetFields();
+          dispatch(setCustomFieldType('people'));
         }
-      }
+      }}
     >
       <Divider style={{ position: 'absolute', left: 0, top: 32 }} />
 
@@ -314,16 +367,16 @@ const CustomColumnModal = () => {
                 secondNumericColumn,
               }
             : {
-                fieldTitle: openedColumn?.customColumnObj.fieldTitle,
-                fieldType: openedColumn?.customColumnObj.fieldType,
-                numberType: openedColumn?.customColumnObj.numberType,
-                decimals: openedColumn?.customColumnObj.decimals,
-                label: openedColumn?.customColumnObj.label,
-                labelPosition: openedColumn?.customColumnObj.labelPosition,
-                previewValue: openedColumn?.customColumnObj.previewValue,
-                expression: openedColumn?.customColumnObj.expression,
-                firstNumericColumn: openedColumn?.customColumnObj.firstNumericColumn,
-                secondNumericColumn: openedColumn?.customColumnObj.secondNumericColumn,
+                fieldTitle: openedColumn?.custom_column_obj.fieldTitle,
+                fieldType: openedColumn?.custom_column_obj.fieldType,
+                numberType: openedColumn?.custom_column_obj.numberType,
+                decimals: openedColumn?.custom_column_obj.decimals,
+                label: openedColumn?.custom_column_obj.label,
+                labelPosition: openedColumn?.custom_column_obj.labelPosition,
+                previewValue: openedColumn?.custom_column_obj.previewValue,
+                expression: openedColumn?.custom_column_obj.expression,
+                firstNumericColumn: openedColumn?.custom_column_obj.firstNumericColumn,
+                secondNumericColumn: openedColumn?.custom_column_obj.secondNumericColumn,
               }
         }
       >

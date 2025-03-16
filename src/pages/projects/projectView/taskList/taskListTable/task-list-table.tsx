@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import DatePicker from 'antd/es/date-picker';
 import Checkbox from 'antd/es/checkbox';
 import Tag from 'antd/es/tag';
 import Tooltip from 'antd/es/tooltip';
-import Input from 'antd/es/input';
+import Input, { InputRef } from 'antd/es/input';
 import Typography from 'antd/es/typography';
 import Flex from 'antd/es/flex';
-import { HolderOutlined, SettingOutlined } from '@ant-design/icons';
+import { HolderOutlined, SettingOutlined, UsergroupAddOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -16,6 +16,8 @@ import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
 import { DragEndEvent } from '@dnd-kit/core';
+import { List, Card, Avatar, Dropdown, Empty, Divider, Button } from 'antd';
+import dayjs from 'dayjs';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -47,11 +49,15 @@ import { selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulk
 import StatusDropdown from '@/components/task-list-common/status-dropdown/status-dropdown';
 import PriorityDropdown from '@/components/task-list-common/priorityDropdown/priority-dropdown';
 import AddCustomColumnButton from './custom-columns/custom-column-modal/add-custom-column-button';
-import { fetchSubTasks, reorderTasks, toggleTaskRowExpansion } from '@/features/tasks/tasks.slice';
+import { fetchSubTasks, reorderTasks, toggleTaskRowExpansion, updateCustomColumnValue } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import ConfigPhaseButton from '@/features/projects/singleProject/phase/ConfigPhaseButton';
 import PhaseDropdown from '@/components/taskListCommon/phase-dropdown/phase-dropdown';
 import CustomColumnModal from './custom-columns/custom-column-modal/custom-column-modal';
+import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/members/projectMembersSlice';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 
 interface TaskListTableProps {
   taskList: IProjectTask[] | null;
@@ -104,7 +110,6 @@ const CustomColumnHeader: React.FC<{
   column: any;
   onSettingsClick: (columnId: string) => void;
 }> = ({ column, onSettingsClick }) => {
-  console.log('column', column);
   return (
     <Flex align="center" justify="space-between" className="w-full">
       <span>{column.name}</span>
@@ -123,6 +128,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
   const currentSession = useAuthService().getCurrentSession();
+  const { socket } = useSocket();
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const columnList = useAppSelector(state => state.taskReducer.columns);
@@ -130,6 +136,44 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const taskGroups = useAppSelector(state => state.taskReducer.taskGroups);
   const { project } = useAppSelector(state => state.projectReducer);
   const { selectedTaskIdsList, selectedTasks } = useAppSelector(state => state.bulkActionReducer);
+
+  // Function to update custom column values
+  const updateTaskCustomColumnValue = (taskId: string, columnKey: string, value: string) => {
+    try {
+      const projectId = project?.id;
+      if (!projectId) {
+        console.error('Project ID is missing');
+        return;
+      }
+
+      // Prepare the data to send via socket
+      const body = {
+        task_id: taskId,
+        column_key: columnKey,
+        value: value,
+        project_id: projectId,
+      };
+
+      // Emit socket event to update the custom column value
+      if (socket) {
+        socket.emit(SocketEvents.TASK_CUSTOM_COLUMN_UPDATE.toString(), JSON.stringify(body));
+        console.log('Socket event emitted:', SocketEvents.TASK_CUSTOM_COLUMN_UPDATE.toString(), body);
+      } else {
+        console.warn('Socket not connected, unable to emit TASK_CUSTOM_COLUMN_UPDATE event');
+      }
+
+      // Update the task in the Redux store
+      dispatch(
+        updateCustomColumnValue({
+          taskId,
+          columnKey,
+          value: String(value),
+        })
+      );
+    } catch (error) {
+      console.error('Error updating custom column value:', error);
+    }
+  };
 
   const isDarkMode = themeMode === 'dark';
   const customBorderColor = isDarkMode ? 'border-[#303030]' : '';
@@ -221,10 +265,11 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     if (!tableContainer) return;
 
     const handleScroll = () => {
-      setScrollingTables(prev => ({
-        ...prev,
-        [tableId]: tableContainer.scrollLeft > 0,
-      }));
+      if (tableContainer.scrollLeft > 0) {
+        tableContainer.classList.add('scrolled');
+      } else {
+        tableContainer.classList.remove('scrolled');
+      }
     };
 
     tableContainer.addEventListener('scroll', handleScroll);
@@ -315,46 +360,349 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   const renderCustomColumnContent = (
     columnObj: any,
     columnType: CustomFieldsTypes,
-    task: IProjectTask
+    task: IProjectTask,
+    columnKey: string
   ) => {
+    // Get the custom column value from the task
+    const customValue = task.custom_column_values?.[columnKey];
+
+    // If columnType is not provided, try to determine it from columnObj
+    const fieldType = columnType || columnObj?.fieldType;
+
+    if (!fieldType) {
+      console.warn('No field type provided for custom column', columnKey);
+      return null;
+    }
+
     const customComponents = {
-      people: () => <AssigneeSelector task={task} groupId={tableId} />,
-      date: () => (
-        <DatePicker
-          placeholder="Set Date"
-          format="MMM DD, YYYY"
-          suffixIcon={null}
-          style={{
-            backgroundColor: colors.transparent,
-            border: 'none',
-            boxShadow: 'none',
-          }}
-        />
-      ),
-      checkbox: () => <Checkbox />,
+      people: () => {
+        // People are stored as an array of IDs in JSON string format
+        const selectedMemberIds = useMemo(() => {
+          try {
+            return customValue ? JSON.parse(customValue) : [];
+          } catch (e) {
+            return [];
+          }
+        }, [customValue]);
+        
+        const PeopleSelector = () => {
+          const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+          const membersInputRef = useRef<InputRef>(null);
+          const [searchQuery, setSearchQuery] = useState<string>('');
+          const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
+          const themeMode = useAppSelector(state => state.themeReducer.mode);
+          const { t } = useTranslation('task-list-table');
+          const dispatch = useAppDispatch();
+
+          const filteredMembersData = useMemo(() => {
+            return members?.data?.filter(member =>
+              member.name?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+          }, [members, searchQuery]);
+
+          const handleInviteProjectMemberDrawer = () => {
+            dispatch(toggleProjectMemberDrawer());
+          };
+
+          const handleMembersDropdownOpen = (open: boolean) => {
+            setIsDropdownOpen(open);
+            if (open) {
+              setTimeout(() => {
+                membersInputRef.current?.focus();
+              }, 0);
+            }
+          };
+
+          const handleMemberSelection = (memberId: string) => {
+            // Toggle the selection of this member
+            const newSelectedIds = selectedMemberIds.includes(memberId)
+              ? selectedMemberIds.filter((id: string) => id !== memberId)
+              : [...selectedMemberIds, memberId];
+            
+            // Update the custom column value
+            if (task.id) {
+              updateTaskCustomColumnValue(
+                task.id,
+                columnKey,
+                JSON.stringify(newSelectedIds)
+              );
+            }
+          };
+
+          const membersDropdownContent = (
+            <Card className="custom-card" styles={{ body: { padding: 8 } }}>
+              <Flex vertical>
+                <Input
+                  ref={membersInputRef}
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.currentTarget.value)}
+                  placeholder={t('searchInputPlaceholder')}
+                />
+
+                <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+                  {filteredMembersData?.length ? (
+                    filteredMembersData.map(member => (
+                      <List.Item
+                        className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}`}
+                        key={member.id || ''}
+                        style={{
+                          display: 'flex',
+                          gap: 8,
+                          justifyContent: 'flex-start',
+                          padding: '4px 8px',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => member.id && handleMemberSelection(member.id)}
+                      >
+                        <Checkbox 
+                          checked={member.id ? selectedMemberIds.includes(member.id) : false} 
+                          onClick={e => e.stopPropagation()}
+                          onChange={() => member.id && handleMemberSelection(member.id)}
+                        />
+                        <div>
+                          <SingleAvatar
+                            avatarUrl={member.avatar_url}
+                            name={member.name}
+                            email={member.email}
+                          />
+                        </div>
+                        <Flex vertical>
+                          <Typography.Text>{member.name}</Typography.Text>
+                          <Typography.Text
+                            style={{
+                              fontSize: 12,
+                              color: colors.lightGray,
+                            }}
+                          >
+                            {member.email}
+                          </Typography.Text>
+                        </Flex>
+                      </List.Item>
+                    ))
+                  ) : (
+                    <Empty />
+                  )}
+                </List>
+
+                <Divider style={{ marginBlock: 0 }} />
+
+                <Button
+                  icon={<UsergroupAddOutlined />}
+                  type="text"
+                  style={{
+                    color: colors.skyBlue,
+                    border: 'none',
+                    backgroundColor: colors.transparent,
+                    width: '100%',
+                  }}
+                  onClick={handleInviteProjectMemberDrawer}
+                >
+                  {t('assigneeSelectorInviteButton')}
+                </Button>
+              </Flex>
+            </Card>
+          );
+
+          // Display selected members as avatars
+          const selectedMembers = useMemo(() => {
+            if (!members?.data || !selectedMemberIds.length) return [];
+            return members.data.filter(member => selectedMemberIds.includes(member.id));
+          }, [members, selectedMemberIds]);
+
+          return (
+            <Dropdown
+              overlayClassName="custom-dropdown"
+              trigger={['click']}
+              dropdownRender={() => membersDropdownContent}
+              onOpenChange={handleMembersDropdownOpen}
+            >
+              <Flex align="center" gap={4}>
+                {selectedMembers.length > 0 ? (
+                  <Avatar.Group max={{count: 3}} size="small">
+                    {selectedMembers.map(member => (
+                      <Tooltip key={member.id} title={member.name}>
+                        <Avatar 
+                          src={member.avatar_url} 
+                          style={{ fontSize: '14px' }}
+                        >
+                          {!member.avatar_url && member.name ? member.name.charAt(0).toUpperCase() : null}
+                        </Avatar>
+                      </Tooltip>
+                    ))}
+                  </Avatar.Group>
+                ) : null}
+                <Button
+                  type="dashed"
+                  shape="circle"
+                  size="small"
+                  icon={
+                    <PlusOutlined
+                      style={{
+                        fontSize: 12,
+                        width: 22,
+                        height: 22,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    />
+                  }
+                />
+              </Flex>
+            </Dropdown>
+          );
+        };
+
+        return <PeopleSelector />;
+      },
+      date: () => {
+        // Parse the date string if it exists
+        const dateValue = customValue ? dayjs(customValue) : undefined;
+        
+        return (
+          <DatePicker
+            placeholder="Set Date"
+            format="MMM DD, YYYY"
+            suffixIcon={null}
+            value={dateValue}
+            onChange={(date) => {
+              if (task.id) {
+                // Format as ISO string for storage
+                updateTaskCustomColumnValue(
+                  task.id,
+                  columnKey,
+                  date ? date.toISOString() : ''
+                );
+              }
+            }}
+            style={{
+              backgroundColor: colors.transparent,
+              border: 'none',
+              boxShadow: 'none',
+            }}
+          />
+        );
+      },
+      checkbox: () => {
+        // Parse the boolean value - could be stored as "true"/"false" or true/false
+        const isChecked = customValue === true || customValue === 'true';
+        
+        return (
+          <Checkbox 
+            checked={isChecked}
+            onChange={(e) => {
+              if (task.id) {
+                updateTaskCustomColumnValue(
+                  task.id,
+                  columnKey,
+                  e.target.checked.toString()
+                );
+              }
+            }}
+          />
+        );
+      },
       key: () => (
         <Tooltip title={task.id || ''} className="flex justify-center">
           <Tag>{task.id || ''}</Tag>
         </Tooltip>
       ),
       number: () => {
+        // Parse the number value - it's stored directly as a number
+        const numberValue = customValue !== undefined ? Number(customValue) : undefined;
+        
+        const handleNumberChange = (value: string) => {
+          // Validate input to allow only numeric values
+          // Allow: empty string, numbers, one decimal point, and minus sign at the beginning
+          const isValidInput = /^-?\d*\.?\d*$/.test(value);
+          
+          if (!isValidInput && value !== '') {
+            return; // Reject invalid input
+          }
+          
+          if (task.id) {
+            // Store as a number (or empty string if invalid)
+            const numValue = value.trim() === '' ? '' : value;
+            updateTaskCustomColumnValue(
+              task.id,
+              columnKey,
+              numValue
+            );
+          }
+        };
+
         const numberTypes = {
           formatted: () => (
             <Input
-              defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals)}
+              value={numberValue !== undefined ? numberValue.toFixed(columnObj?.decimals || 0) : ''}
+              onChange={(e) => handleNumberChange(e.target.value)}
               style={{ padding: 0, border: 'none', background: 'transparent' }}
+              onKeyDown={(e) => {
+                // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
+                if (
+                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
+                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+                  // Allow: home, end, left, right, up, down
+                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+                ) {
+                  // Allow these keys
+                  // For decimal point, only allow one
+                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                  // For minus sign, only allow at the beginning
+                  if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
+                    e.preventDefault();
+                  }
+                  return;
+                }
+                
+                // Block non-numeric keys
+                if (!/^\d$/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
             />
           ),
           withLabel: () => (
             <Flex gap={4} align="center" justify="flex-start">
               {columnObj?.labelPosition === 'left' && columnObj?.label}
               <Input
-                defaultValue={columnObj?.previewValue.toFixed(columnObj?.decimals)}
+                value={numberValue !== undefined ? numberValue.toFixed(columnObj?.decimals || 0) : ''}
+                onChange={(e) => handleNumberChange(e.target.value)}
                 style={{
                   padding: 0,
                   border: 'none',
                   background: 'transparent',
                   width: '100%',
+                }}
+                onKeyDown={(e) => {
+                  // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
+                  if (
+                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
+                    // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                    (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+                    // Allow: home, end, left, right, up, down
+                    ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+                  ) {
+                    // Allow these keys
+                    // For decimal point, only allow one
+                    if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                      e.preventDefault();
+                    }
+                    // For minus sign, only allow at the beginning
+                    if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
+                      e.preventDefault();
+                    }
+                    return;
+                  }
+                  
+                  // Block non-numeric keys
+                  if (!/^\d$/.test(e.key)) {
+                    e.preventDefault();
+                  }
                 }}
               />
               {columnObj?.labelPosition === 'right' && columnObj?.label}
@@ -362,14 +710,68 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
           ),
           unformatted: () => (
             <Input
-              defaultValue={columnObj?.previewValue}
+              value={numberValue !== undefined ? numberValue.toString() : ''}
+              onChange={(e) => handleNumberChange(e.target.value)}
               style={{ padding: 0, border: 'none', background: 'transparent' }}
+              onKeyDown={(e) => {
+                // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
+                if (
+                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
+                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+                  // Allow: home, end, left, right, up, down
+                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+                ) {
+                  // Allow these keys
+                  // For decimal point, only allow one
+                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                  // For minus sign, only allow at the beginning
+                  if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
+                    e.preventDefault();
+                  }
+                  return;
+                }
+                
+                // Block non-numeric keys
+                if (!/^\d$/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
             />
           ),
           percentage: () => (
             <Input
-              defaultValue={`${columnObj?.previewValue?.toFixed(columnObj?.decimals)}%`}
+              value={numberValue !== undefined ? `${numberValue.toFixed(columnObj?.decimals || 0)}%` : ''}
+              onChange={(e) => {
+                // Remove the % sign if present
+                const value = e.target.value.replace('%', '');
+                handleNumberChange(value);
+              }}
               style={{ padding: 0, border: 'none', background: 'transparent' }}
+              onKeyDown={(e) => {
+                // Allow: backspace, delete, tab, escape, enter, decimal point
+                if (
+                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.'].includes(e.key) ||
+                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+                  // Allow: home, end, left, right, up, down
+                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+                ) {
+                  // Allow these keys
+                  // For decimal point, only allow one
+                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                    e.preventDefault();
+                  }
+                  return;
+                }
+                
+                // Block non-numeric keys
+                if (!/^\d$/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
             />
           ),
         };
@@ -401,13 +803,62 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
 
         return <Typography.Text>{calculateResult() ?? 'Invalid Formula'}</Typography.Text>;
       },
-      labels: () => <CustomColumnLabelCell labelsList={columnObj?.labelsList || []} />,
-      selection: () => (
-        <CustomColumnSelectionCell selectionsList={columnObj?.selectionsList || []} />
-      ),
+      labels: () => {
+        // Labels are stored as an array of IDs in JSON string format
+        const selectedLabels = useMemo(() => {
+          try {
+            return customValue ? JSON.parse(customValue) : [];
+          } catch (e) {
+            return [];
+          }
+        }, [customValue]);
+        
+        return (
+          <CustomColumnLabelCell 
+            labelsList={columnObj?.labelsList || []} 
+            selectedLabels={selectedLabels}
+            onChange={(labels) => {
+              if (task.id) {
+                updateTaskCustomColumnValue(
+                  task.id,
+                  columnKey,
+                  JSON.stringify(labels)
+                );
+              }
+            }}
+          />
+        );
+      },
+      selection: () => {
+        // The selection value is stored as a string ID
+        const selectedValue = customValue || '';
+        
+        // Debug the selectionsList data
+        console.log('Selection column data:', {
+          columnKey,
+          columnObj,
+          selectionsList: columnObj?.selectionsList || []
+        });
+        
+        return (
+          <CustomColumnSelectionCell 
+            selectionsList={columnObj?.selectionsList || []} 
+            value={selectedValue}
+            onChange={(value) => {
+              if (task.id) {
+                updateTaskCustomColumnValue(
+                  task.id,
+                  columnKey,
+                  value
+                );
+              }
+            }}
+          />
+        );
+      },
     };
 
-    return customComponents[columnType]?.() || null;
+    return customComponents[fieldType]?.() || null;
   };
 
   const getRowBackgroundColor = (taskId: string | undefined) => {
@@ -467,15 +918,17 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                 className={getColumnStyles(column.key, false)}
                 style={{
                   backgroundColor: getRowBackgroundColor(task.id),
+                  minWidth: column.custom_column ? '120px' : undefined,
                 }}
                 data-task-cell
                 onContextMenu={e => handleContextMenu(e, task)}
               >
-                {column.isCustomColumn && column.customColumnObj
+                {column.custom_column && column.key
                   ? renderCustomColumnContent(
-                      column.customColumnObj,
-                      column.customColumnObj.fieldType,
-                      task
+                      column.custom_column_obj || {},
+                      column.custom_column_obj?.fieldType,
+                      task,
+                      column.key
                     )
                   : renderColumnContent(column.key, task, isSubtask)}
               </td>
@@ -514,8 +967,8 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     }
   };
 
-  const handleCustomColumnSettings = (columnKey: string) => {
-    console.log('columnKey', columnKey);
+  const handleCustomColumnSettings = (columnKey: string) => {     
+    if (!columnKey) return;
     setEditColumnKey(columnKey);
     dispatch(setCustomColumnModalAttributes({modalType: 'edit', columnId: columnKey}));
     dispatch(toggleCustomColumnModalOpen(true));
@@ -558,10 +1011,10 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                         </Flex>
                       )}
                       {column.key !== 'PHASE' &&
-                        (column.isCustomColumn ? (
+                        (column.custom_column ? (
                           <CustomColumnHeader
                             column={column}
-                            onSettingsClick={handleCustomColumnSettings}
+                            onSettingsClick={() => handleCustomColumnSettings(column.id || '')}
                           />
                         ) : (
                           t(`${column.key?.replace('_', '').toLowerCase()}Column`)

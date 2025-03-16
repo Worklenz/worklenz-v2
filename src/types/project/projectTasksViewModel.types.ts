@@ -88,6 +88,7 @@ export interface IProjectTask {
   width?: number;
   isVisible?: boolean;
   estimated_string?: string;
+  custom_column_values?: Record<string, any>;
 }
 
 export interface IProjectTasksViewModel {
