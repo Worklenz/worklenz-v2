@@ -124,7 +124,10 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
           <Button
             shape="circle"
             icon={<ReloadOutlined spin={loadingSubTasks} />}
-            onClick={() => fetchSubTasks()}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent click from bubbling up
+              fetchSubTasks();
+            }}
           />
         </Tooltip>
       ),

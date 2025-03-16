@@ -90,7 +90,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
     } finally {
       setCreatingTask(false);
       setNewTaskName('');
-      setIsEdit(false);
+      setIsEdit(true);
     }
   };
 
@@ -109,7 +109,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
 
   const handleOnBlur = () => {   
     if (newTaskName.trim() === '') {
-      setIsEdit(false);
+      setIsEdit(true);
       return;
     }
 
@@ -121,6 +121,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
       setIsEdit(false);
     } else {
       handleOnBlur();
+      setIsEdit(false);
     }
   };
 
