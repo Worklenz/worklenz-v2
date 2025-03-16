@@ -38,6 +38,7 @@ import { API_BASE_URL } from '@/shared/constants';
 import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
 import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
+import useDragCursor from '@/hooks/useDragCursor';
 
 const ProjectViewBoard = () => {
   const dispatch = useAppDispatch();
@@ -54,6 +55,9 @@ const ProjectViewBoard = () => {
   );
   const [activeItem, setActiveItem] = useState<any>(null);
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Use our custom hook to handle cursor styles during drag
+  useDragCursor(isDragging);
   
   // Store the original source group ID when drag starts
   const originalSourceGroupIdRef = useRef<string | null>(null);
@@ -72,13 +76,11 @@ const ProjectViewBoard = () => {
     style.textContent = `
       /* Base styles for draggable items */
       .board-task-card {
-        cursor: grab;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
       
       /* Style when dragging */
       .board-task-card[data-dragging="true"] {
-        cursor: grabbing !important;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         z-index: 100;
       }
@@ -92,11 +94,6 @@ const ProjectViewBoard = () => {
       .board-section[data-over="true"] {
         background-color: rgba(0, 120, 212, 0.05);
         border-radius: 8px;
-      }
-      
-      /* Style for the body during drag operations */
-      body.dragging {
-        cursor: grabbing !important;
       }
     `;
     document.head.appendChild(style);
@@ -126,9 +123,6 @@ const ProjectViewBoard = () => {
     const { active } = event;
     setActiveItem(active.data.current);
     setIsDragging(true);
-    
-    // Add dragging class to body for cursor control
-    document.body.classList.add('dragging');
     
     // Mark the dragged element
     const draggedElement = document.querySelector(`[data-id="${active.id}"]`);
@@ -224,7 +218,6 @@ const ProjectViewBoard = () => {
     
     // Reset drag state and visual feedback
     setIsDragging(false);
-    document.body.classList.remove('dragging');
     
     // Reset all dragging attributes
     document.querySelectorAll('[data-dragging="true"]').forEach(element => {
