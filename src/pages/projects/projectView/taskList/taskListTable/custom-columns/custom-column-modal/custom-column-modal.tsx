@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Form, Input, message, Modal, Select, Typography } from 'antd';
+import { Button, Divider, Flex, Form, Input, message, Modal, Select, Typography, Popconfirm } from 'antd';
 import SelectionTypeColumn from './selection-type-column/selection-type-column';
 import NumberTypeColumn from './number-type-column/number-type-column';
 import LabelTypeColumn from './label-type-column/label-type-column';
@@ -25,15 +25,15 @@ import CustomColumnHeader from '../custom-column-header/custom-column-header';
 import { nanoid } from '@reduxjs/toolkit';
 import {
   CustomTableColumnsType,
-  deleteCustomColumn,
-  updateCustomColumn,
+  deleteCustomColumn as deleteCustomColumnFromColumns,
 } from '@features/projects/singleProject/taskListColumns/taskColumnsSlice';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import KeyTypeColumn from './key-type-column/key-type-column';
 import logger from '@/utils/errorLogger';
-import { addCustomColumn } from '@/features/tasks/tasks.slice';
+import { addCustomColumn, deleteCustomColumn as deleteCustomColumnFromTasks } from '@/features/tasks/tasks.slice';
 import { useParams } from 'react-router-dom';
-import apiClient from '@/api/api-client';
+import { tasksCustomColumnsService } from '@/api/tasks/tasks-custom-columns.service';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 
 const CustomColumnModal = () => {
   const [mainForm] = Form.useForm();
@@ -70,8 +70,35 @@ const CustomColumnModal = () => {
 
   // if it is already created column get the column data
   const openedColumn = useAppSelector(state => state.taskReducer.customColumns).find(
-    col => col.id === customColumnId
+    col => col.key === customColumnId
   );
+
+  // Function to handle deleting a custom column
+  const handleDeleteColumn = async () => {
+    if (!customColumnId) return;
+    
+    try {
+      // Make API request to delete the custom column using the service
+      await tasksCustomColumnsService.deleteCustomColumn(openedColumn?.id || customColumnId);
+      
+      // Dispatch actions to update the Redux store
+      dispatch(deleteCustomColumnFromTasks(customColumnId));
+      dispatch(deleteCustomColumnFromColumns(customColumnId));
+      
+      // Close the modal
+      dispatch(toggleCustomColumnModalOpen(false));
+      dispatch(setCustomColumnModalAttributes({ modalType: 'create', columnId: null }));
+      
+      // Show success message
+      message.success('Custom column deleted successfully');
+      
+      // Reload the page to reflect the changes
+      window.location.reload();
+    } catch (error) {
+      logger.error('Error deleting custom column:', error);
+      message.error('Failed to delete custom column');
+    }
+  };
 
   const fieldTypesOptions = [
     {
@@ -144,45 +171,47 @@ const CustomColumnModal = () => {
           },
         };
 
-        // Make API request to create custom column
+        // Prepare the configuration object
+        const configuration = {
+          field_title: value.fieldTitle,
+          field_type: value.fieldType,
+          number_type: value.numberType,
+          decimals: value.decimals,
+          label: value.label,
+          label_position: value.labelPosition,
+          preview_value: value.previewValue,
+          expression: value.expression,
+          first_numeric_column_key: value.firstNumericColumn?.key,
+          second_numeric_column_key: value.secondNumericColumn?.key,
+          selections_list:
+            value.fieldType === 'selection'
+              ? selectionsList.map((selection, index) => ({
+                  selection_id: selection.selection_id,
+                  selection_name: selection.selection_name,
+                  selection_color: selection.selection_color,
+                  selection_order: index,
+                }))
+              : [],
+          labels_list:
+            value.fieldType === 'labels'
+              ? labelsList.map((label, index) => ({
+                  label_id: label.label_id,
+                  label_name: label.label_name,
+                  label_color: label.label_color,
+                  label_order: index,
+                }))
+              : [],
+        };
+
+        // Make API request to create custom column using the service
         try {
-          await apiClient.post('/api/v1/custom-columns', {
-            project_id: projectId,
+          await tasksCustomColumnsService.createCustomColumn(projectId || '', {
             name: value.fieldTitle,
             key: columnKey,
             field_type: value.fieldType,
             width: 120,
             is_visible: true,
-            configuration: {
-              field_title: value.fieldTitle,
-              field_type: value.fieldType,
-              number_type: value.numberType,
-              decimals: value.decimals,
-              label: value.label,
-              label_position: value.labelPosition,
-              preview_value: value.previewValue,
-              expression: value.expression,
-              first_numeric_column_key: value.firstNumericColumn?.key,
-              second_numeric_column_key: value.secondNumericColumn?.key,
-              selections_list:
-                value.fieldType === 'selection'
-                  ? selectionsList.map((selection, index) => ({
-                      selection_id: selection.selection_id,
-                      selection_name: selection.selection_name,
-                      selection_color: selection.selection_color,
-                      selection_order: index,
-                    }))
-                  : [],
-              labels_list:
-                value.fieldType === 'labels'
-                  ? labelsList.map((label, index) => ({
-                      label_id: label.label_id,
-                      label_name: label.label_name,
-                      label_color: label.label_color,
-                      label_order: index,
-                    }))
-                  : [],
-            },
+            configuration
           });
 
           // Add to local state
@@ -221,42 +250,45 @@ const CustomColumnModal = () => {
 
         if (updatedColumn) {
           try {
-            // Make API request to update custom column
-            await apiClient.put(`/api/v1/custom-columns/${openedColumn?.id || customColumnId}`, {
+            // Prepare the configuration object
+            const configuration = {
+              field_title: value.fieldTitle,
+              field_type: value.fieldType,
+              number_type: value.numberType,
+              decimals: value.decimals,
+              label: value.label,
+              label_position: value.labelPosition,
+              preview_value: value.previewValue,
+              expression: value.expression,
+              first_numeric_column_key: value.firstNumericColumn?.key,
+              second_numeric_column_key: value.secondNumericColumn?.key,
+              selections_list:
+                value.fieldType === 'selection'
+                  ? selectionsList.map((selection, index) => ({
+                      selection_id: selection.selection_id,
+                      selection_name: selection.selection_name,
+                      selection_color: selection.selection_color,
+                      selection_order: index,
+                    }))
+                  : [],
+              labels_list:
+                value.fieldType === 'labels'
+                  ? labelsList.map((label, index) => ({
+                      label_id: label.label_id,
+                      label_name: label.label_name,
+                      label_color: label.label_color,
+                      label_order: index,
+                    }))
+                  : [],
+            };
+
+            // Make API request to update custom column using the service
+            await tasksCustomColumnsService.updateCustomColumn(openedColumn?.id || customColumnId, {
               name: value.fieldTitle,
               field_type: value.fieldType,
               width: 150,
               is_visible: true,
-              configuration: {
-                field_title: value.fieldTitle,
-                field_type: value.fieldType,
-                number_type: value.numberType,
-                decimals: value.decimals,
-                label: value.label,
-                label_position: value.labelPosition,
-                preview_value: value.previewValue,
-                expression: value.expression,
-                first_numeric_column_key: value.firstNumericColumn?.key,
-                second_numeric_column_key: value.secondNumericColumn?.key,
-                selections_list:
-                  value.fieldType === 'selection'
-                    ? selectionsList.map((selection, index) => ({
-                        selection_id: selection.selection_id,
-                        selection_name: selection.selection_name,
-                        selection_color: selection.selection_color,
-                        selection_order: index,
-                      }))
-                    : [],
-                labels_list:
-                  value.fieldType === 'labels'
-                    ? labelsList.map((label, index) => ({
-                        label_id: label.label_id,
-                        label_name: label.label_name,
-                        label_color: label.label_color,
-                        label_order: index,
-                      }))
-                    : [],
-              },
+              configuration
             });
 
             // Close modal
@@ -295,7 +327,6 @@ const CustomColumnModal = () => {
         mainForm.resetFields();
       }}
       afterOpenChange={open => {
-        console.log('Modal opened for editing column:', openedColumn);
         if (open && customColumnModalType === 'edit' && openedColumn) {
           console.log('Modal opened for editing column:', openedColumn);
           
@@ -430,9 +461,17 @@ const CustomColumnModal = () => {
           style={{ marginBlockStart: 24 }}
         >
           {customColumnModalType === 'edit' && customColumnId && (
-            <Button danger onClick={() => dispatch(deleteCustomColumn(customColumnId))}>
-              Delete
-            </Button>
+            <Popconfirm
+              title="Are you sure you want to delete this custom column?"
+              description="This action cannot be undone. All data associated with this column will be permanently deleted."
+              icon={<ExclamationCircleFilled style={{ color: 'red' }} />}
+              onConfirm={handleDeleteColumn}
+              okText="Delete"
+              cancelText="Cancel"
+              okButtonProps={{ danger: true }}
+            >
+              <Button danger>Delete</Button>
+            </Popconfirm>
           )}
 
           <Flex gap={8}>
