@@ -239,11 +239,13 @@ const BoardViewTaskCard = ({ task, sectionId }: IBoardViewTaskCardProps) => {
           padding: 12,
           backgroundColor: themeMode === 'dark' ? '#292929' : '#fafafa',
           borderRadius: 6,
-          cursor: 'pointer',
+          cursor: 'grab',
           overflow: 'hidden',
         }}
-        className={`group outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline`}
+        className={`group outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline board-task-card`}
         onClick={e => handleCardClick(e, task.id || '')}
+        data-id={task.id}
+        data-dragging={isDragging ? "true" : "false"}
       >
         {/* Labels and Progress */}
         <Flex align="center" justify="space-between">
