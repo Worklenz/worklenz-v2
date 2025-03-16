@@ -10,7 +10,6 @@ import {
   Typography,
 } from 'antd';
 import { useEffect, useState } from 'react';
-import { filesData } from './files-date';
 import { colors } from '@/styles/colors';
 import {
   AppstoreOutlined,
@@ -238,34 +237,25 @@ const ProjectViewFiles = () => {
         </Flex>
       }
     >
-      {filesData.length === 0 ? (
-        <EmptyListPlaceholder
-          imageSrc="https://app.worklenz.com/assets/images/empty-box.webp"
-          imageHeight={120}
-          text={t('emptyText')}
-        />
-      ) : (
-        <Table<ITaskAttachmentViewModel>
-          className="custom-two-colors-row-table"
-          dataSource={attachments.data}
-          columns={columns}
-          rowKey={record => record.id || ''}
-          loading={loading}
-          pagination={{
-            showSizeChanger: paginationConfig.showSizeChanger,
-            defaultPageSize: paginationConfig.defaultPageSize,
-
-            total: paginationConfig.total,
-            current: paginationConfig.pageIndex,
-            onChange: (page, pageSize) =>
-              setPaginationConfig(prev => ({
-                ...prev,
-                pageIndex: page,
-                defaultPageSize: pageSize,
-              })),
-          }}
-        />
-      )}
+      <Table<ITaskAttachmentViewModel>
+        className="custom-two-colors-row-table"
+        dataSource={attachments.data}
+        columns={columns}
+        rowKey={record => record.id || ''}
+        loading={loading}
+        pagination={{
+          showSizeChanger: paginationConfig.showSizeChanger,
+          defaultPageSize: paginationConfig.defaultPageSize,
+          total: paginationConfig.total,
+          current: paginationConfig.pageIndex,
+          onChange: (page, pageSize) =>
+            setPaginationConfig(prev => ({
+              ...prev,
+              pageIndex: page,
+              defaultPageSize: pageSize,
+            })),
+        }}
+      />
     </Card>
   );
 };

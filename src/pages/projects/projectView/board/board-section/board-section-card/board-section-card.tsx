@@ -134,7 +134,10 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
         padding: 8,
         borderRadius: 12,
       }}
-      className="h-[600px] max-h-[600px] overflow-y-scroll"
+      className="h-[600px] max-h-[600px] overflow-y-scroll board-section"
+      data-section-id={taskGroup.id}
+      data-droppable="true"
+      data-over="false"
     >
       <BoardSectionCardHeader
         groupId={taskGroup.id}
