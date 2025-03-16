@@ -919,6 +919,50 @@ const taskSlice = createSlice({
         }
       }
     },
+
+    updateCustomColumnValue: (
+      state,
+      action: PayloadAction<{
+        taskId: string;
+        columnKey: string;
+        value: string;
+      }>
+    ) => {
+      const { taskId, columnKey, value } = action.payload;
+      
+      // Update in task groups
+      for (const group of state.taskGroups) {
+        // Check in main tasks
+        const taskIndex = group.tasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          if (!group.tasks[taskIndex].custom_column_values) {
+            group.tasks[taskIndex].custom_column_values = {};
+          }
+          group.tasks[taskIndex].custom_column_values[columnKey] = value;
+          break;
+        }
+        
+        // Check in subtasks
+        for (const parentTask of group.tasks) {
+          if (parentTask.sub_tasks) {
+            const subtaskIndex = parentTask.sub_tasks.findIndex(st => st.id === taskId);
+            if (subtaskIndex !== -1) {
+              if (!parentTask.sub_tasks[subtaskIndex].custom_column_values) {
+                parentTask.sub_tasks[subtaskIndex].custom_column_values = {};
+              }
+              parentTask.sub_tasks[subtaskIndex].custom_column_values[columnKey] = value;
+              break;
+            }
+          }
+        }
+      }
+      
+      // Also update in the customColumnValues state if needed
+      if (!state.customColumnValues[taskId]) {
+        state.customColumnValues[taskId] = {};
+      }
+      state.customColumnValues[taskId][columnKey] = value;
+    },
   },
 
   extraReducers: builder => {
@@ -1080,6 +1124,7 @@ export const {
   updateCustomColumn,
   deleteCustomColumn,
   updateSubTasks,
+  updateCustomColumnValue,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

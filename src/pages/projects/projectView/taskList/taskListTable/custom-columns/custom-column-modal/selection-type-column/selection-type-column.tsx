@@ -5,23 +5,55 @@ import { Button, Flex, Input, Select, Tag, Typography } from 'antd';
 import { CloseCircleOutlined, HolderOutlined } from '@ant-design/icons';
 
 import { useAppDispatch } from '../../../../../../../../hooks/useAppDispatch';
+import { useAppSelector } from '../../../../../../../../hooks/useAppSelector';
 import { setSelectionsList } from '../../../../../../../../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 
 export type SelectionType = {
-  selectionId: string;
-  selectionName: string;
-  selectionColor: string;
+  selection_color: string;
+  selection_id: string;
+  selection_name: string;
 };
 
 const SelectionTypeColumn = () => {
   const dispatch = useAppDispatch();
   const [selections, setSelections] = useState<SelectionType[]>([
     {
-      selectionId: nanoid(),
-      selectionName: 'Untitled selection',
-      selectionColor: PhaseColorCodes[0],
+      selection_id: nanoid(),
+      selection_name: 'Untitled selection',
+      selection_color: PhaseColorCodes[0],
     },
   ]);
+
+  // Get the custom column modal type and column ID from the store
+  const { customColumnModalType, customColumnId, selectionsList: storeSelectionsList } = useAppSelector(
+    state => state.taskListCustomColumnsReducer
+  );
+  
+  // Get the opened column data if in edit mode
+  const openedColumn = useAppSelector(state => 
+    state.taskReducer.customColumns.find(col => col.key === customColumnId)
+  );
+
+  console.log('SelectionTypeColumn render:', {
+    customColumnModalType,
+    customColumnId,
+    openedColumn,
+    storeSelectionsList,
+    'openedColumn?.custom_column_obj?.selectionsList': openedColumn?.custom_column_obj?.selectionsList
+  });
+
+  // Load existing selections when in edit mode
+  useEffect(() => {
+    if (customColumnModalType === 'edit' && openedColumn?.custom_column_obj?.selectionsList) {
+      const existingSelections = openedColumn.custom_column_obj.selectionsList;
+      console.log('Loading existing selections:', existingSelections);
+      
+      if (Array.isArray(existingSelections) && existingSelections.length > 0) {
+        setSelections(existingSelections);
+        dispatch(setSelectionsList(existingSelections));
+      }
+    }
+  }, [customColumnModalType, openedColumn, customColumnId, dispatch]);
 
   // phase color options
   const phaseOptionColorList = PhaseColorCodes.map(color => ({
@@ -43,9 +75,9 @@ const SelectionTypeColumn = () => {
   // add a new selection
   const handleAddSelection = () => {
     const newSelection = {
-      selectionId: nanoid(),
-      selectionName: 'Untitled selection',
-      selectionColor: PhaseColorCodes[0],
+      selection_id: nanoid(),
+      selection_name: 'Untitled selection',
+      selection_color: PhaseColorCodes[0],
     };
     setSelections(prevSelections => [...prevSelections, newSelection]);
     dispatch(setSelectionsList([...selections, newSelection])); // update the slice with the new selection
@@ -54,7 +86,7 @@ const SelectionTypeColumn = () => {
   // update selection name
   const handleUpdateSelectionName = (selectionId: string, selectionName: string) => {
     const updatedSelections = selections.map(selection =>
-      selection.selectionId === selectionId ? { ...selection, selectionName } : selection
+      selection.selection_id === selectionId ? { ...selection, selection_name: selectionName } : selection
     );
     setSelections(updatedSelections);
     dispatch(setSelectionsList(updatedSelections)); // update the slice with the new selection name
@@ -63,7 +95,7 @@ const SelectionTypeColumn = () => {
   // update selection color
   const handleUpdateSelectionColor = (selectionId: string, selectionColor: string) => {
     const updatedSelections = selections.map(selection =>
-      selection.selectionId === selectionId ? { ...selection, selectionColor } : selection
+      selection.selection_id === selectionId ? { ...selection, selection_color: selectionColor } : selection
     );
     setSelections(updatedSelections);
     dispatch(setSelectionsList(updatedSelections)); // update the slice with the new selection color
@@ -71,15 +103,10 @@ const SelectionTypeColumn = () => {
 
   // remove a selection
   const handleRemoveSelection = (selectionId: string) => {
-    const updatedSelections = selections.filter(selection => selection.selectionId !== selectionId);
+    const updatedSelections = selections.filter(selection => selection.selection_id !== selectionId);
     setSelections(updatedSelections);
     dispatch(setSelectionsList(updatedSelections)); // update the slice after selection removal
   };
-
-  useEffect(() => {
-    // initially dispatch the selections to the slice
-    dispatch(setSelectionsList(selections));
-  }, [dispatch, selections]);
 
   return (
     <div style={{ maxWidth: '100%', minHeight: 180 }}>
@@ -87,24 +114,24 @@ const SelectionTypeColumn = () => {
       <Flex vertical gap={8}>
         <Flex vertical gap={8} style={{ maxHeight: 120, overflow: 'auto' }}>
           {selections.map(selection => (
-            <Flex gap={8} key={selection.selectionId}>
+            <Flex gap={8} key={selection.selection_id}>
               <HolderOutlined style={{ fontSize: 18 }} />
               <Input
-                value={selection.selectionName}
-                onChange={e => handleUpdateSelectionName(selection.selectionId, e.target.value)}
+                value={selection.selection_name}
+                onChange={e => handleUpdateSelectionName(selection.selection_id, e.target.value)}
                 style={{ width: 'fit-content', maxWidth: 400 }}
               />
               <Flex gap={8} align="center">
                 <Select
                   options={phaseOptionColorList}
-                  value={selection.selectionColor}
-                  onChange={value => handleUpdateSelectionColor(selection.selectionId, value)}
+                  value={selection.selection_color}
+                  onChange={value => handleUpdateSelectionColor(selection.selection_id, value)}
                   style={{ width: 48 }}
                   suffixIcon={null}
                 />
 
                 <CloseCircleOutlined
-                  onClick={() => handleRemoveSelection(selection.selectionId)}
+                  onClick={() => handleRemoveSelection(selection.selection_id)}
                   style={{ cursor: 'pointer' }}
                 />
               </Flex>

@@ -41,12 +41,12 @@ const CustomColumnHeader = ({ columnKey, columnName }: CustomColumnHeaderProps) 
         />
       </Tooltip>
 
-      <CustomColumnModal
+      {/* <CustomColumnModal
         modalType="edit"
         isModalOpen={isModalOpen}
         handleCancel={handleCancel}
         columnId={columnKey}
-      />
+      /> */}
     </Flex>
   );
 };

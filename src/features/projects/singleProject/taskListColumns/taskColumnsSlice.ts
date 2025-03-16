@@ -9,8 +9,8 @@ export type CustomTableColumnsType = {
   columnHeader: ReactNode | null; // this column header used to render the actual column title
   width: number;
   isVisible: boolean;
-  isCustomColumn?: boolean;
-  customColumnObj?: any; // this object include specific values that are generated based on custom column types
+  custom_column?: boolean;
+  custom_column_obj?: any; // this object include specific values that are generated based on custom column types
 };
 
 export type projectViewTaskListColumnsState = {

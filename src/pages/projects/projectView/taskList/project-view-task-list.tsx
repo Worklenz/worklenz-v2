@@ -10,6 +10,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups, fetchTaskListColumns } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
+import { Empty } from 'antd';
 
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
@@ -44,9 +45,13 @@ const ProjectViewTaskList = () => {
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />
 
-      <Skeleton active loading={loadingGroups}>
-        <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
-      </Skeleton>
+      {taskGroups.length === 0 ? (
+        <Empty description="No tasks group found" />
+      ) : (
+        <Skeleton active loading={loadingGroups}>
+          <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
+        </Skeleton>
+      )}
     </Flex>
   );
 };
