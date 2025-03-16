@@ -70,7 +70,7 @@ const CustomColumnModal = () => {
 
   // if it is already created column get the column data
   const openedColumn = useAppSelector(state => state.taskReducer.customColumns).find(
-    col => col.key === customColumnId
+    col => col.id === customColumnId
   );
 
   // Function to handle deleting a custom column

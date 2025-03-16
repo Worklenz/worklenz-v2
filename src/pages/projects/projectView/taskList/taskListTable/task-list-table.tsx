@@ -95,13 +95,20 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
     position: 'relative' as const,
     zIndex: isDragging ? 1 : 'auto',
     backgroundColor: isDragging ? 'var(--dragging-bg)' : undefined,
-    border: isDragging ? '1px solid var(--border-color)' : undefined,
+  };
+
+  // Handle border styling separately to avoid conflicts
+  const borderStyle = {
+    borderStyle: isDragging ? 'solid' : undefined,
+    borderWidth: isDragging ? '1px' : undefined,
+    borderColor: isDragging ? 'var(--border-color)' : undefined,
+    borderBottomWidth: document.documentElement.getAttribute('data-theme') === 'light' && !isDragging ? '2px' : undefined
   };
 
   return (
     <tr
       ref={setNodeRef}
-      style={{ ...style, borderBottomWidth: document.documentElement.getAttribute('data-theme') === 'light' ? '2px' : undefined }}
+      style={{ ...style, ...borderStyle }}
       className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
       data-is-dragging={isDragging ? 'true' : 'false'}
       data-group-id={groupId}
@@ -494,9 +501,35 @@ const NumberFieldCell: React.FC<{
   columnObj: any;
   updateValue: (taskId: string, columnKey: string, value: string) => void;
 }> = ({ value, task, columnKey, columnObj, updateValue }) => {
-  const numberValue = value !== undefined ? Number(value) : undefined;
+  const initialNumberValue = value !== undefined ? Number(value) : undefined;
+  const [localValue, setLocalValue] = useState<string>(
+    initialNumberValue !== undefined ? 
+      initialNumberValue.toString() : 
+      ''
+  );
   
-  const handleNumberChange = (value: string) => {
+  // Track if this is the initial render to avoid unnecessary updates
+  const isInitialMount = useRef(true);
+  
+  useEffect(() => {
+    // Skip the first render to avoid unnecessary updates
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    // Update local value when the prop value changes (from external sources)
+    if (value !== undefined && value !== null) {
+      const numValue = Number(value);
+      if (!isNaN(numValue)) {
+        setLocalValue(numValue.toString());
+      }
+    } else {
+      setLocalValue('');
+    }
+  }, [value]);
+  
+  const handleLocalChange = (value: string) => {
     // Validate input to allow only numeric values
     // Allow: empty string, numbers, one decimal point, and minus sign at the beginning
     const isValidInput = /^-?\d*\.?\d*$/.test(value);
@@ -505,9 +538,15 @@ const NumberFieldCell: React.FC<{
       return; // Reject invalid input
     }
     
+    // Only update local state on keystroke
+    setLocalValue(value);
+  };
+  
+  const commitValueChange = () => {
+    // Only commit the value to the server when the user completes their input
     if (task.id) {
       // Store as a number (or empty string if invalid)
-      const numValue = value.trim() === '' ? '' : value;
+      const numValue = localValue.trim() === '' ? '' : localValue;
       updateValue(
         task.id,
         columnKey,
@@ -520,13 +559,33 @@ const NumberFieldCell: React.FC<{
   const decimals = columnObj?.decimals || 0;
   const label = columnObj?.label || '';
   const labelPosition = columnObj?.labelPosition || 'left';
+  
+  // Format the display value based on number type
+  const getDisplayValue = () => {
+    if (localValue === '') return '';
+    const num = Number(localValue);
+    if (isNaN(num)) return localValue;
+    
+    switch (numberType) {
+      case 'formatted':
+      case 'withLabel':
+        return num.toFixed(decimals);
+      case 'percentage':
+        return `${num.toFixed(decimals)}%`;
+      case 'unformatted':
+      default:
+        return localValue;
+    }
+  };
 
   switch (numberType) {
     case 'formatted':
       return (
         <Input
-          value={numberValue !== undefined ? numberValue.toFixed(decimals) : ''}
-          onChange={(e) => handleNumberChange(e.target.value)}
+          value={getDisplayValue()}
+          onChange={(e) => handleLocalChange(e.target.value)}
+          onBlur={commitValueChange}
+          onPressEnter={commitValueChange}
           style={{ padding: 0, border: 'none', background: 'transparent' }}
           onKeyDown={(e) => {
             // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
@@ -561,8 +620,10 @@ const NumberFieldCell: React.FC<{
         <Flex gap={4} align="center" justify="flex-start">
           {labelPosition === 'left' && label}
           <Input
-            value={numberValue !== undefined ? numberValue.toFixed(decimals) : ''}
-            onChange={(e) => handleNumberChange(e.target.value)}
+            value={getDisplayValue()}
+            onChange={(e) => handleLocalChange(e.target.value)}
+            onBlur={commitValueChange}
+            onPressEnter={commitValueChange}
             style={{
               padding: 0,
               border: 'none',
@@ -602,8 +663,10 @@ const NumberFieldCell: React.FC<{
     case 'unformatted':
       return (
         <Input
-          value={numberValue !== undefined ? numberValue.toString() : ''}
-          onChange={(e) => handleNumberChange(e.target.value)}
+          value={localValue}
+          onChange={(e) => handleLocalChange(e.target.value)}
+          onBlur={commitValueChange}
+          onPressEnter={commitValueChange}
           style={{ padding: 0, border: 'none', background: 'transparent' }}
           onKeyDown={(e) => {
             // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
@@ -636,12 +699,14 @@ const NumberFieldCell: React.FC<{
     case 'percentage':
       return (
         <Input
-          value={numberValue !== undefined ? `${numberValue.toFixed(decimals)}%` : ''}
+          value={getDisplayValue()}
           onChange={(e) => {
             // Remove the % sign if present
             const value = e.target.value.replace('%', '');
-            handleNumberChange(value);
+            handleLocalChange(value);
           }}
+          onBlur={commitValueChange}
+          onPressEnter={commitValueChange}
           style={{ padding: 0, border: 'none', background: 'transparent' }}
           onKeyDown={(e) => {
             // Allow: backspace, delete, tab, escape, enter, decimal point
@@ -1033,222 +1098,29 @@ const renderCustomColumnContent = (
       );
     },
     number: () => {
-      const numberValue = customValue !== undefined ? Number(customValue) : undefined;
-      
-      const handleNumberChange = (value: string) => {
-        // Validate input to allow only numeric values
-        // Allow: empty string, numbers, one decimal point, and minus sign at the beginning
-        const isValidInput = /^-?\d*\.?\d*$/.test(value);
-        
-        if (!isValidInput && value !== '') {
-          return; // Reject invalid input
-        }
-        
-        if (task.id) {
-          // Store as a number (or empty string if invalid)
-          const numValue = value.trim() === '' ? '' : value;
-          updateTaskCustomColumnValue(
-            task.id,
-            columnKey,
-            numValue
-          );
-        }
-      };
-    
-      const numberType = columnObj?.numberType || 'formatted';
-      const decimals = columnObj?.decimals || 0;
-      const label = columnObj?.label || '';
-      const labelPosition = columnObj?.labelPosition || 'left';
-    
-      switch (numberType) {
-        case 'formatted':
-          return (
-            <Input
-              value={numberValue !== undefined ? numberValue.toFixed(decimals) : ''}
-              onChange={(e) => handleNumberChange(e.target.value)}
-              style={{ padding: 0, border: 'none', background: 'transparent' }}
-              onKeyDown={(e) => {
-                // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
-                if (
-                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                  // Allow: home, end, left, right, up, down
-                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                ) {
-                  // Allow these keys
-                  // For decimal point, only allow one
-                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                  // For minus sign, only allow at the beginning
-                  if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
-                    e.preventDefault();
-                  }
-                  return;
-                }
-                
-                // Block non-numeric keys
-                if (!/^\d$/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-            />
-          );
-        case 'withLabel':
-          return (
-            <Flex gap={4} align="center" justify="flex-start">
-              {labelPosition === 'left' && label}
-              <Input
-                value={numberValue !== undefined ? numberValue.toFixed(decimals) : ''}
-                onChange={(e) => handleNumberChange(e.target.value)}
-                style={{
-                  padding: 0,
-                  border: 'none',
-                  background: 'transparent',
-                  width: '100%',
-                }}
-                onKeyDown={(e) => {
-                  // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
-                  if (
-                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-                    // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                    (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                    // Allow: home, end, left, right, up, down
-                    ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                  ) {
-                    // Allow these keys
-                    // For decimal point, only allow one
-                    if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                      e.preventDefault();
-                    }
-                    // For minus sign, only allow at the beginning
-                    if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
-                      e.preventDefault();
-                    }
-                    return;
-                  }
-                  
-                  // Block non-numeric keys
-                  if (!/^\d$/.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-              />
-              {labelPosition === 'right' && label}
-            </Flex>
-          );
-        case 'unformatted':
-          return (
-            <Input
-              value={numberValue !== undefined ? numberValue.toString() : ''}
-              onChange={(e) => handleNumberChange(e.target.value)}
-              style={{ padding: 0, border: 'none', background: 'transparent' }}
-              onKeyDown={(e) => {
-                // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
-                if (
-                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                  // Allow: home, end, left, right, up, down
-                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                ) {
-                  // Allow these keys
-                  // For decimal point, only allow one
-                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                  // For minus sign, only allow at the beginning
-                  if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
-                    e.preventDefault();
-                  }
-                  return;
-                }
-                
-                // Block non-numeric keys
-                if (!/^\d$/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-            />
-          );
-        case 'percentage':
-          return (
-            <Input
-              value={numberValue !== undefined ? `${numberValue.toFixed(decimals)}%` : ''}
-              onChange={(e) => {
-                // Remove the % sign if present
-                const value = e.target.value.replace('%', '');
-                handleNumberChange(value);
-              }}
-              style={{ padding: 0, border: 'none', background: 'transparent' }}
-              onKeyDown={(e) => {
-                // Allow: backspace, delete, tab, escape, enter, decimal point
-                if (
-                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.'].includes(e.key) ||
-                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                  // Allow: home, end, left, right, up, down
-                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                ) {
-                  // Allow these keys
-                  // For decimal point, only allow one
-                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                  return;
-                }
-                
-                // Block non-numeric keys
-                if (!/^\d$/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-            />
-          );
-        default:
-          return <Typography.Text>Invalid number type</Typography.Text>;
-      }
+      return (
+        <NumberFieldCell 
+          value={customValue} 
+          task={task} 
+          columnKey={columnKey} 
+          columnObj={columnObj} 
+          updateValue={updateTaskCustomColumnValue} 
+        />
+      );
     },
     formula: () => {
-      const calculateResult = () => {
-        if (
-          !columnObj?.firstNumericColumn ||
-          !columnObj?.secondNumericColumn ||
-          !columnObj?.expression
-        ) {
-          return null;
-        }
-    
-        const operations = {
-          add: () => columnObj?.firstNumericColumn + columnObj?.secondNumericColumn,
-          subtract: () => columnObj?.firstNumericColumn - columnObj?.secondNumericColumn,
-          multiply: () => columnObj?.firstNumericColumn * columnObj?.secondNumericColumn,
-          divide: () =>
-            columnObj?.secondNumericColumn !== 0
-              ? columnObj?.firstNumericColumn / columnObj?.secondNumericColumn
-              : null,
-        };
-    
-        return operations[columnObj.expression as keyof typeof operations]?.() || null;
-      };
-    
-      return <Typography.Text>{calculateResult() ?? 'Invalid Formula'}</Typography.Text>;
+      return (
+        <FormulaFieldCell columnObj={columnObj} />
+      );
     },
     labels: () => {
       return (
-        <CustomColumnLabelCell 
+        <LabelsFieldCell 
           labelsList={columnObj?.labelsList || []} 
           selectedLabels={selectedLabels}
-          onChange={(labels) => {
-            if (task.id) {
-              updateTaskCustomColumnValue(
-                task.id,
-                columnKey,
-                JSON.stringify(labels)
-              );
-            }
-          }}
+          task={task} 
+          columnKey={columnKey} 
+          updateValue={updateTaskCustomColumnValue} 
         />
       );
     },
@@ -1267,18 +1139,12 @@ const renderCustomColumnContent = (
       }, [columnKey, loggedInfo]);
     
       return (
-        <CustomColumnSelectionCell 
+        <SelectionFieldCell 
           selectionsList={columnObj?.selectionsList || []} 
           value={memoizedValue}
-          onChange={(value) => {
-            if (task.id) {
-              updateTaskCustomColumnValue(
-                task.id,
-                columnKey,
-                value
-              );
-            }
-          }}
+          task={task} 
+          columnKey={columnKey} 
+          updateValue={updateTaskCustomColumnValue} 
         />
       );
     }
