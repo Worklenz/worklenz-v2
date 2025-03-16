@@ -10,7 +10,7 @@ import { HolderOutlined, SettingOutlined, UsergroupAddOutlined, PlusOutlined } f
 import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DraggableAttributes } from '@dnd-kit/core';
+import { DraggableAttributes, UniqueIdentifier } from '@dnd-kit/core';
 import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -71,11 +71,16 @@ interface DraggableRowProps {
   groupId: string;
 }
 
+// Add a simplified EmptyRow component that doesn't use hooks
+const EmptyRow = () => null;
+
+// Simplify DraggableRow to eliminate conditional hook calls
 const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
-  if (!task?.id) return null;
+  // Return the EmptyRow component without using any hooks
+  if (!task?.id) return <EmptyRow />;
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: task.id,
+    id: task.id as UniqueIdentifier,
     data: {
       type: 'task',
       task,
@@ -90,13 +95,20 @@ const DraggableRow = ({ task, children, groupId }: DraggableRowProps) => {
     position: 'relative' as const,
     zIndex: isDragging ? 1 : 'auto',
     backgroundColor: isDragging ? 'var(--dragging-bg)' : undefined,
-    border: isDragging ? '1px solid var(--border-color)' : undefined,
+  };
+
+  // Handle border styling separately to avoid conflicts
+  const borderStyle = {
+    borderStyle: isDragging ? 'solid' : undefined,
+    borderWidth: isDragging ? '1px' : undefined,
+    borderColor: isDragging ? 'var(--border-color)' : undefined,
+    borderBottomWidth: document.documentElement.getAttribute('data-theme') === 'light' && !isDragging ? '2px' : undefined
   };
 
   return (
     <tr
       ref={setNodeRef}
-      style={{ ...style, borderBottomWidth: document.documentElement.getAttribute('data-theme') === 'light' ? '2px' : undefined }}
+      style={{ ...style, ...borderStyle }}
       className={`task-row h-[42px] ${isDragging ? 'shadow-lg' : ''}`}
       data-is-dragging={isDragging ? 'true' : 'false'}
       data-group-id={groupId}
@@ -122,6 +134,1023 @@ const CustomColumnHeader: React.FC<{
       />
     </Flex>
   );
+};
+
+// Fix the CustomCell component to handle nullable column keys
+const CustomCell = React.memo(({ 
+  column, 
+  task, 
+  isSubtask, 
+  renderCustomColumnContent, 
+  renderColumnContent,
+  updateTaskCustomColumnValue
+}: { 
+  column: any; 
+  task: IProjectTask; 
+  isSubtask: boolean; 
+  renderCustomColumnContent: any; 
+  renderColumnContent: any;
+  updateTaskCustomColumnValue: (taskId: string, columnKey: string, value: string) => void;
+}) => {
+  if (column.custom_column && column.key) {
+    return renderCustomColumnContent(
+      column.custom_column_obj || {},
+      column.custom_column_obj?.fieldType,
+      task,
+      column.key,
+      updateTaskCustomColumnValue
+    );
+  }
+  return renderColumnContent(column.key || '', task, isSubtask);
+});
+
+// First, let's extract the custom column cell to a completely separate component
+// This component will be responsible for rendering the appropriate cell based on field type
+// Moving this outside of the render flow of DraggableRow will prevent hook order issues
+
+// Add this before the TaskListTable component
+const CustomColumnCell: React.FC<{
+  columnObj: any;
+  columnType: CustomFieldsTypes;
+  task: IProjectTask;
+  columnKey: string;
+  updateTaskCustomColumnValue: (taskId: string, columnKey: string, value: string) => void;
+}> = React.memo(({ columnObj, columnType, task, columnKey, updateTaskCustomColumnValue }) => {
+  // Get the custom column value from the task
+  const customValue = task.custom_column_values?.[columnKey];
+
+  // If columnType is not provided, try to determine it from columnObj
+  const fieldType = columnType || columnObj?.fieldType;
+
+  if (!fieldType) {
+    return <span className="text-gray-400">No field type</span>;
+  }
+
+  // Process all potential values regardless of field type to keep hook order consistent
+  const selectedMemberIds = useMemo(() => {
+    if (customValue && typeof customValue === 'string') {
+      try {
+        return JSON.parse(customValue);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  }, [customValue]);
+
+  // Create cell components based on field type
+  switch (fieldType) {
+    case 'people':
+      return <PeopleFieldCell 
+        selectedMemberIds={selectedMemberIds} 
+        task={task} 
+        columnKey={columnKey} 
+        updateValue={updateTaskCustomColumnValue} 
+      />;
+    case 'date':
+      return <DateFieldCell 
+        value={customValue} 
+        task={task} 
+        columnKey={columnKey} 
+        updateValue={updateTaskCustomColumnValue} 
+      />;
+    case 'checkbox':
+      return <CheckboxFieldCell 
+        value={customValue} 
+        task={task} 
+        columnKey={columnKey} 
+        updateValue={updateTaskCustomColumnValue} 
+      />;
+    case 'key':
+      return <KeyFieldCell taskId={task.id || ''} />;
+    case 'number':
+      return <NumberFieldCell 
+        value={customValue} 
+        task={task} 
+        columnKey={columnKey} 
+        columnObj={columnObj} 
+        updateValue={updateTaskCustomColumnValue} 
+      />;
+    case 'formula':
+      return <FormulaFieldCell columnObj={columnObj} />;
+    case 'labels':
+      return <LabelsFieldCell 
+        labelsList={columnObj?.labelsList || []} 
+        selectedLabels={selectedMemberIds} 
+        task={task} 
+        columnKey={columnKey} 
+        updateValue={updateTaskCustomColumnValue} 
+      />;
+    case 'selection':
+      return <SelectionFieldCell 
+        selectionsList={columnObj?.selectionsList || []} 
+        value={customValue || ''} 
+        task={task} 
+        columnKey={columnKey} 
+        updateValue={updateTaskCustomColumnValue} 
+      />;
+    default:
+      return <span>Unsupported field type: {fieldType}</span>;
+  }
+});
+
+// Define each field type component separately
+const PeopleFieldCell: React.FC<{ 
+  selectedMemberIds: string[]; 
+  task: IProjectTask; 
+  columnKey: string; 
+  updateValue: (taskId: string, columnKey: string, value: string) => void;
+}> = ({ selectedMemberIds, task, columnKey, updateValue }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const membersInputRef = useRef<InputRef>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { t } = useTranslation('task-list-table');
+  const dispatch = useAppDispatch();
+
+  const filteredMembersData = useMemo(() => {
+    return members?.data?.filter(member =>
+      member.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [members, searchQuery]);
+
+  const handleInviteProjectMemberDrawer = () => {
+    dispatch(toggleProjectMemberDrawer());
+  };
+
+  const handleMembersDropdownOpen = (open: boolean) => {
+    setIsDropdownOpen(open);
+    if (open) {
+      setTimeout(() => {
+        membersInputRef.current?.focus();
+      }, 0);
+    }
+  };
+
+  const handleMemberSelection = (memberId: string) => {
+    // Toggle the selection of this member
+    const newSelectedIds = selectedMemberIds.includes(memberId)
+      ? selectedMemberIds.filter((id: string) => id !== memberId)
+      : [...selectedMemberIds, memberId];
+    
+    // Update the custom column value
+    if (task.id) {
+      updateValue(
+        task.id,
+        columnKey,
+        JSON.stringify(newSelectedIds)
+      );
+    }
+  };
+
+  const membersDropdownContent = (
+    <Card className="custom-card" styles={{ body: { padding: 8 } }}>
+      <Flex vertical>
+        <Input
+          ref={membersInputRef}
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.currentTarget.value)}
+          placeholder={t('searchInputPlaceholder')}
+        />
+
+        <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+          {filteredMembersData?.length ? (
+            filteredMembersData.map(member => (
+              <List.Item
+                className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}`}
+                key={member.id || ''}
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  justifyContent: 'flex-start',
+                  padding: '4px 8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onClick={() => member.id && handleMemberSelection(member.id)}
+              >
+                <Checkbox 
+                  checked={member.id ? selectedMemberIds.includes(member.id) : false} 
+                  onClick={e => e.stopPropagation()}
+                  onChange={() => member.id && handleMemberSelection(member.id)}
+                />
+                <div>
+                  <SingleAvatar
+                    avatarUrl={member.avatar_url}
+                    name={member.name}
+                    email={member.email}
+                  />
+                </div>
+                <Flex vertical>
+                  <Typography.Text>{member.name}</Typography.Text>
+                  <Typography.Text
+                    style={{
+                      fontSize: 12,
+                      color: colors.lightGray,
+                    }}
+                  >
+                    {member.email}
+                  </Typography.Text>
+                </Flex>
+              </List.Item>
+            ))
+          ) : (
+            <Empty />
+          )}
+        </List>
+
+        <Divider style={{ marginBlock: 0 }} />
+
+        <Button
+          icon={<UsergroupAddOutlined />}
+          type="text"
+          style={{
+            color: colors.skyBlue,
+            border: 'none',
+            backgroundColor: colors.transparent,
+            width: '100%',
+          }}
+          onClick={handleInviteProjectMemberDrawer}
+        >
+          {t('assigneeSelectorInviteButton')}
+        </Button>
+      </Flex>
+    </Card>
+  );
+
+  // Display selected members as avatars
+  const selectedMembers = useMemo(() => {
+    if (!members?.data || !selectedMemberIds.length) return [];
+    return members.data.filter(member => selectedMemberIds.includes(member.id || ''));
+  }, [members, selectedMemberIds]);
+
+  return (
+    <Dropdown
+      overlayClassName="custom-dropdown"
+      trigger={['click']}
+      dropdownRender={() => membersDropdownContent}
+      onOpenChange={handleMembersDropdownOpen}
+    >
+      <Flex align="center" gap={4}>
+        {selectedMembers.length > 0 ? (
+          <Avatar.Group max={{count: 3}} size="small">
+            {selectedMembers.map(member => (
+              <Tooltip key={member.id} title={member.name}>
+                <Avatar 
+                  src={member.avatar_url} 
+                  style={{ fontSize: '14px' }}
+                >
+                  {!member.avatar_url && member.name ? member.name.charAt(0).toUpperCase() : null}
+                </Avatar>
+              </Tooltip>
+            ))}
+          </Avatar.Group>
+        ) : null}
+        <Button
+          type="dashed"
+          shape="circle"
+          size="small"
+          icon={
+            <PlusOutlined
+              style={{
+                fontSize: 12,
+                width: 22,
+                height: 22,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            />
+          }
+        />
+      </Flex>
+    </Dropdown>
+  );
+};
+
+const DateFieldCell: React.FC<{
+  value: any;
+  task: IProjectTask;
+  columnKey: string;
+  updateValue: (taskId: string, columnKey: string, value: string) => void;
+}> = ({ value, task, columnKey, updateValue }) => {
+  const dateValue = value ? dayjs(value) : undefined;
+  
+  return (
+    <DatePicker
+      placeholder="Set Date"
+      format="MMM DD, YYYY"
+      suffixIcon={null}
+      value={dateValue}
+      onChange={(date) => {
+        if (task.id) {
+          // Format as ISO string for storage
+          updateValue(
+            task.id,
+            columnKey,
+            date ? date.toISOString() : ''
+          );
+        }
+      }}
+      style={{
+        backgroundColor: colors.transparent,
+        border: 'none',
+        boxShadow: 'none',
+      }}
+    />
+  );
+};
+
+const CheckboxFieldCell: React.FC<{
+  value: any;
+  task: IProjectTask;
+  columnKey: string;
+  updateValue: (taskId: string, columnKey: string, value: string) => void;
+}> = ({ value, task, columnKey, updateValue }) => {
+  const isChecked = value === true || value === 'true';
+  
+  return (
+    <Checkbox 
+      checked={isChecked}
+      onChange={(e) => {
+        if (task.id) {
+          updateValue(
+            task.id,
+            columnKey,
+            e.target.checked.toString()
+          );
+        }
+      }}
+    />
+  );
+};
+
+const KeyFieldCell: React.FC<{ taskId: string }> = ({ taskId }) => {
+  return (
+    <Tooltip title={taskId} className="flex justify-center">
+      <Tag>{taskId}</Tag>
+    </Tooltip>
+  );
+};
+
+const NumberFieldCell: React.FC<{
+  value: any;
+  task: IProjectTask;
+  columnKey: string;
+  columnObj: any;
+  updateValue: (taskId: string, columnKey: string, value: string) => void;
+}> = ({ value, task, columnKey, columnObj, updateValue }) => {
+  const initialNumberValue = value !== undefined ? Number(value) : undefined;
+  const [localValue, setLocalValue] = useState<string>(
+    initialNumberValue !== undefined ? 
+      initialNumberValue.toString() : 
+      ''
+  );
+  
+  // Track if this is the initial render to avoid unnecessary updates
+  const isInitialMount = useRef(true);
+  
+  useEffect(() => {
+    // Skip the first render to avoid unnecessary updates
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    // Update local value when the prop value changes (from external sources)
+    if (value !== undefined && value !== null) {
+      const numValue = Number(value);
+      if (!isNaN(numValue)) {
+        setLocalValue(numValue.toString());
+      }
+    } else {
+      setLocalValue('');
+    }
+  }, [value]);
+  
+  const handleLocalChange = (value: string) => {
+    // Validate input to allow only numeric values
+    // Allow: empty string, numbers, one decimal point, and minus sign at the beginning
+    const isValidInput = /^-?\d*\.?\d*$/.test(value);
+    
+    if (!isValidInput && value !== '') {
+      return; // Reject invalid input
+    }
+    
+    // Only update local state on keystroke
+    setLocalValue(value);
+  };
+  
+  const commitValueChange = () => {
+    // Only commit the value to the server when the user completes their input
+    if (task.id) {
+      // Store as a number (or empty string if invalid)
+      const numValue = localValue.trim() === '' ? '' : localValue;
+      updateValue(
+        task.id,
+        columnKey,
+        numValue
+      );
+    }
+  };
+
+  const numberType = columnObj?.numberType || 'formatted';
+  const decimals = columnObj?.decimals || 0;
+  const label = columnObj?.label || '';
+  const labelPosition = columnObj?.labelPosition || 'left';
+  
+  // Format the display value based on number type
+  const getDisplayValue = () => {
+    if (localValue === '') return '';
+    const num = Number(localValue);
+    if (isNaN(num)) return localValue;
+    
+    switch (numberType) {
+      case 'formatted':
+      case 'withLabel':
+        return num.toFixed(decimals);
+      case 'percentage':
+        return `${num.toFixed(decimals)}%`;
+      case 'unformatted':
+      default:
+        return localValue;
+    }
+  };
+
+  switch (numberType) {
+    case 'formatted':
+      return (
+        <Input
+          value={getDisplayValue()}
+          onChange={(e) => handleLocalChange(e.target.value)}
+          onBlur={commitValueChange}
+          onPressEnter={commitValueChange}
+          style={{ padding: 0, border: 'none', background: 'transparent' }}
+          onKeyDown={(e) => {
+            // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
+            if (
+              ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
+              // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+              (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+              // Allow: home, end, left, right, up, down
+              ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+            ) {
+              // Allow these keys
+              // For decimal point, only allow one
+              if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                e.preventDefault();
+              }
+              // For minus sign, only allow at the beginning
+              if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
+                e.preventDefault();
+              }
+              return;
+            }
+            
+            // Block non-numeric keys
+            if (!/^\d$/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
+        />
+      );
+    case 'withLabel':
+      return (
+        <Flex gap={4} align="center" justify="flex-start">
+          {labelPosition === 'left' && label}
+          <Input
+            value={getDisplayValue()}
+            onChange={(e) => handleLocalChange(e.target.value)}
+            onBlur={commitValueChange}
+            onPressEnter={commitValueChange}
+            style={{
+              padding: 0,
+              border: 'none',
+              background: 'transparent',
+              width: '100%',
+            }}
+            onKeyDown={(e) => {
+              // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
+              if (
+                ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+                // Allow: home, end, left, right, up, down
+                ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+              ) {
+                // Allow these keys
+                // For decimal point, only allow one
+                if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                  e.preventDefault();
+                }
+                // For minus sign, only allow at the beginning
+                if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
+                  e.preventDefault();
+                }
+                return;
+              }
+              
+              // Block non-numeric keys
+              if (!/^\d$/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+          />
+          {labelPosition === 'right' && label}
+        </Flex>
+      );
+    case 'unformatted':
+      return (
+        <Input
+          value={localValue}
+          onChange={(e) => handleLocalChange(e.target.value)}
+          onBlur={commitValueChange}
+          onPressEnter={commitValueChange}
+          style={{ padding: 0, border: 'none', background: 'transparent' }}
+          onKeyDown={(e) => {
+            // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
+            if (
+              ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
+              // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+              (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+              // Allow: home, end, left, right, up, down
+              ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+            ) {
+              // Allow these keys
+              // For decimal point, only allow one
+              if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                e.preventDefault();
+              }
+              // For minus sign, only allow at the beginning
+              if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
+                e.preventDefault();
+              }
+              return;
+            }
+            
+            // Block non-numeric keys
+            if (!/^\d$/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
+        />
+      );
+    case 'percentage':
+      return (
+        <Input
+          value={getDisplayValue()}
+          onChange={(e) => {
+            // Remove the % sign if present
+            const value = e.target.value.replace('%', '');
+            handleLocalChange(value);
+          }}
+          onBlur={commitValueChange}
+          onPressEnter={commitValueChange}
+          style={{ padding: 0, border: 'none', background: 'transparent' }}
+          onKeyDown={(e) => {
+            // Allow: backspace, delete, tab, escape, enter, decimal point
+            if (
+              ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.'].includes(e.key) ||
+              // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+              (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+              // Allow: home, end, left, right, up, down
+              ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+            ) {
+              // Allow these keys
+              // For decimal point, only allow one
+              if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                e.preventDefault();
+              }
+              return;
+            }
+            
+            // Block non-numeric keys
+            if (!/^\d$/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
+        />
+      );
+    default:
+      return <Typography.Text>Invalid number type</Typography.Text>;
+  }
+};
+
+const FormulaFieldCell: React.FC<{ columnObj: any }> = ({ columnObj }) => {
+  const calculateResult = () => {
+    if (
+      !columnObj?.firstNumericColumn ||
+      !columnObj?.secondNumericColumn ||
+      !columnObj?.expression
+    ) {
+      return null;
+    }
+
+    const operations = {
+      add: () => columnObj?.firstNumericColumn + columnObj?.secondNumericColumn,
+      subtract: () => columnObj?.firstNumericColumn - columnObj?.secondNumericColumn,
+      multiply: () => columnObj?.firstNumericColumn * columnObj?.secondNumericColumn,
+      divide: () =>
+        columnObj?.secondNumericColumn !== 0
+          ? columnObj?.firstNumericColumn / columnObj?.secondNumericColumn
+          : null,
+    };
+
+    return operations[columnObj.expression as keyof typeof operations]?.() || null;
+  };
+
+  return <Typography.Text>{calculateResult() ?? 'Invalid Formula'}</Typography.Text>;
+};
+
+const LabelsFieldCell: React.FC<{ 
+  labelsList: any[]; 
+  selectedLabels: any[];
+  task: IProjectTask;
+  columnKey: string;
+  updateValue: (taskId: string, columnKey: string, value: string) => void;
+}> = ({ labelsList, selectedLabels, task, columnKey, updateValue }) => {
+  return (
+    <CustomColumnLabelCell 
+      labelsList={labelsList} 
+      selectedLabels={selectedLabels}
+      onChange={(labels) => {
+        if (task.id) {
+          updateValue(
+            task.id,
+            columnKey,
+            JSON.stringify(labels)
+          );
+        }
+      }}
+    />
+  );
+};
+
+const SelectionFieldCell: React.FC<{ 
+  selectionsList: any[]; 
+  value: string;
+  task: IProjectTask;
+  columnKey: string;
+  updateValue: (taskId: string, columnKey: string, value: string) => void;
+}> = ({ selectionsList, value, task, columnKey, updateValue }) => {
+  // Debug the selectionsList data
+  const [loggedInfo, setLoggedInfo] = useState(false);
+
+  useEffect(() => {
+    if (!loggedInfo) {
+      console.log('Selection column data:', {
+        columnKey,
+        selectionsList,
+      });
+      setLoggedInfo(true);
+    }
+  }, [columnKey, selectionsList, loggedInfo]);
+
+  return (
+    <CustomColumnSelectionCell 
+      selectionsList={selectionsList} 
+      value={value}
+      onChange={(value) => {
+        if (task.id) {
+          updateValue(
+            task.id,
+            columnKey,
+            value
+          );
+        }
+      }}
+    />
+  );
+};
+
+// Now modify the renderCustomColumnContent function to use our new components
+const renderCustomColumnContent = (
+  columnObj: any,
+  columnType: CustomFieldsTypes,
+  task: IProjectTask,
+  columnKey: string,
+  updateTaskCustomColumnValue: (taskId: string, columnKey: string, value: string) => void
+) => {
+  // Get the custom column value from the task
+  const customValue = task.custom_column_values?.[columnKey];
+
+  // If columnType is not provided, try to determine it from columnObj
+  const fieldType = columnType || columnObj?.fieldType;
+
+  if (!fieldType) {
+    console.warn('No field type provided for custom column', columnKey);
+    return null;
+  }
+
+  // Pre-process values that need hooks - always call these hooks for all field types
+  // This ensures hooks are always called in the same order
+  const selectedMemberIds = useMemo(() => {
+    if (fieldType === 'people' && customValue) {
+      try {
+        return customValue ? JSON.parse(customValue) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  }, [customValue, fieldType]);
+
+  const selectedLabels = useMemo(() => {
+    if (fieldType === 'labels' && customValue) {
+      try {
+        return customValue ? JSON.parse(customValue) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  }, [customValue, fieldType]);
+
+  // Always use this memo regardless of field type to maintain consistent hook order
+  const memoizedValue = useMemo(() => {
+    return customValue || '';
+  }, [customValue]);
+
+  const customComponents: Record<CustomFieldsTypes, () => React.ReactNode> = {
+    people: () => {
+      // People component that uses the pre-processed selectedMemberIds
+      const PeopleSelector = () => {
+        const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+        const membersInputRef = useRef<InputRef>(null);
+        const [searchQuery, setSearchQuery] = useState<string>('');
+        const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
+        const themeMode = useAppSelector(state => state.themeReducer.mode);
+        const { t } = useTranslation('task-list-table');
+        const dispatch = useAppDispatch();
+
+        const filteredMembersData = useMemo(() => {
+          return members?.data?.filter(member =>
+            member.name?.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }, [members, searchQuery]);
+
+        const handleInviteProjectMemberDrawer = () => {
+          dispatch(toggleProjectMemberDrawer());
+        };
+
+        const handleMembersDropdownOpen = (open: boolean) => {
+          setIsDropdownOpen(open);
+          if (open) {
+            setTimeout(() => {
+              membersInputRef.current?.focus();
+            }, 0);
+          }
+        };
+
+        const handleMemberSelection = (memberId: string) => {
+          // Toggle the selection of this member
+          const newSelectedIds = selectedMemberIds.includes(memberId)
+            ? selectedMemberIds.filter((id: string) => id !== memberId)
+            : [...selectedMemberIds, memberId];
+          
+          // Update the custom column value
+          if (task.id) {
+            updateTaskCustomColumnValue(
+              task.id,
+              columnKey,
+              JSON.stringify(newSelectedIds)
+            );
+          }
+        };
+
+        const membersDropdownContent = (
+          <Card className="custom-card" styles={{ body: { padding: 8 } }}>
+            <Flex vertical>
+              <Input
+                ref={membersInputRef}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.currentTarget.value)}
+                placeholder={t('searchInputPlaceholder')}
+              />
+
+              <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
+                {filteredMembersData?.length ? (
+                  filteredMembersData.map(member => (
+                    <List.Item
+                      className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}`}
+                      key={member.id || ''}
+                      style={{
+                        display: 'flex',
+                        gap: 8,
+                        justifyContent: 'flex-start',
+                        padding: '4px 8px',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => member.id && handleMemberSelection(member.id)}
+                    >
+                      <Checkbox 
+                        checked={member.id ? selectedMemberIds.includes(member.id) : false} 
+                        onClick={e => e.stopPropagation()}
+                        onChange={() => member.id && handleMemberSelection(member.id)}
+                      />
+                      <div>
+                        <SingleAvatar
+                          avatarUrl={member.avatar_url}
+                          name={member.name}
+                          email={member.email}
+                        />
+                      </div>
+                      <Flex vertical>
+                        <Typography.Text>{member.name}</Typography.Text>
+                        <Typography.Text
+                          style={{
+                            fontSize: 12,
+                            color: colors.lightGray,
+                          }}
+                        >
+                          {member.email}
+                        </Typography.Text>
+                      </Flex>
+                    </List.Item>
+                  ))
+                ) : (
+                  <Empty />
+                )}
+              </List>
+
+              <Divider style={{ marginBlock: 0 }} />
+
+              <Button
+                icon={<UsergroupAddOutlined />}
+                type="text"
+                style={{
+                  color: colors.skyBlue,
+                  border: 'none',
+                  backgroundColor: colors.transparent,
+                  width: '100%',
+                }}
+                onClick={handleInviteProjectMemberDrawer}
+              >
+                {t('assigneeSelectorInviteButton')}
+              </Button>
+            </Flex>
+          </Card>
+        );
+
+        // Display selected members as avatars
+        const selectedMembers = useMemo(() => {
+          if (!members?.data || !selectedMemberIds.length) return [];
+          return members.data.filter(member => selectedMemberIds.includes(member.id));
+        }, [members, selectedMemberIds]);
+
+        return (
+          <Dropdown
+            overlayClassName="custom-dropdown"
+            trigger={['click']}
+            dropdownRender={() => membersDropdownContent}
+            onOpenChange={handleMembersDropdownOpen}
+          >
+            <Flex align="center" gap={4}>
+              {selectedMembers.length > 0 ? (
+                <Avatar.Group max={{count: 3}} size="small">
+                  {selectedMembers.map(member => (
+                    <Tooltip key={member.id} title={member.name}>
+                      <Avatar 
+                        src={member.avatar_url} 
+                        style={{ fontSize: '14px' }}
+                      >
+                        {!member.avatar_url && member.name ? member.name.charAt(0).toUpperCase() : null}
+                      </Avatar>
+                    </Tooltip>
+                  ))}
+                </Avatar.Group>
+              ) : null}
+              <Button
+                type="dashed"
+                shape="circle"
+                size="small"
+                icon={
+                  <PlusOutlined
+                    style={{
+                      fontSize: 12,
+                      width: 22,
+                      height: 22,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  />
+                }
+              />
+            </Flex>
+          </Dropdown>
+        );
+      };
+      return <PeopleSelector />;
+    },
+    date: () => {
+      const dateValue = customValue ? dayjs(customValue) : undefined;
+      
+      return (
+        <DatePicker
+          placeholder="Set Date"
+          format="MMM DD, YYYY"
+          suffixIcon={null}
+          value={dateValue}
+          onChange={(date) => {
+            if (task.id) {
+              // Format as ISO string for storage
+              updateTaskCustomColumnValue(
+                task.id,
+                columnKey,
+                date ? date.toISOString() : ''
+              );
+            }
+          }}
+          style={{
+            backgroundColor: colors.transparent,
+            border: 'none',
+            boxShadow: 'none',
+          }}
+        />
+      );
+    },
+    checkbox: () => {
+      const isChecked = customValue === true || customValue === 'true';
+      
+      return (
+        <Checkbox 
+          checked={isChecked}
+          onChange={(e) => {
+            if (task.id) {
+              updateTaskCustomColumnValue(
+                task.id,
+                columnKey,
+                e.target.checked.toString()
+              );
+            }
+          }}
+        />
+      );
+    },
+    key: () => {
+      return (
+        <Tooltip title={task.id} className="flex justify-center">
+          <Tag>{task.id}</Tag>
+        </Tooltip>
+      );
+    },
+    number: () => {
+      return (
+        <NumberFieldCell 
+          value={customValue} 
+          task={task} 
+          columnKey={columnKey} 
+          columnObj={columnObj} 
+          updateValue={updateTaskCustomColumnValue} 
+        />
+      );
+    },
+    formula: () => {
+      return (
+        <FormulaFieldCell columnObj={columnObj} />
+      );
+    },
+    labels: () => {
+      return (
+        <LabelsFieldCell 
+          labelsList={columnObj?.labelsList || []} 
+          selectedLabels={selectedLabels}
+          task={task} 
+          columnKey={columnKey} 
+          updateValue={updateTaskCustomColumnValue} 
+        />
+      );
+    },
+    selection: () => {
+      // Debug the selectionsList data
+      const [loggedInfo, setLoggedInfo] = useState(false);
+    
+      useEffect(() => {
+        if (!loggedInfo) {
+          console.log('Selection column data:', {
+            columnKey,
+            selectionsList: columnObj?.selectionsList,
+          });
+          setLoggedInfo(true);
+        }
+      }, [columnKey, loggedInfo]);
+    
+      return (
+        <SelectionFieldCell 
+          selectionsList={columnObj?.selectionsList || []} 
+          value={memoizedValue}
+          task={task} 
+          columnKey={columnKey} 
+          updateValue={updateTaskCustomColumnValue} 
+        />
+      );
+    }
+  };
+
+  return customComponents[fieldType] ? customComponents[fieldType]() : null;
 };
 
 const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, activeId }) => {
@@ -357,510 +1386,6 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     return component;
   };
 
-  const renderCustomColumnContent = (
-    columnObj: any,
-    columnType: CustomFieldsTypes,
-    task: IProjectTask,
-    columnKey: string
-  ) => {
-    // Get the custom column value from the task
-    const customValue = task.custom_column_values?.[columnKey];
-
-    // If columnType is not provided, try to determine it from columnObj
-    const fieldType = columnType || columnObj?.fieldType;
-
-    if (!fieldType) {
-      console.warn('No field type provided for custom column', columnKey);
-      return null;
-    }
-
-    const customComponents = {
-      people: () => {
-        // People are stored as an array of IDs in JSON string format
-        const selectedMemberIds = useMemo(() => {
-          try {
-            return customValue ? JSON.parse(customValue) : [];
-          } catch (e) {
-            return [];
-          }
-        }, [customValue]);
-        
-        const PeopleSelector = () => {
-          const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-          const membersInputRef = useRef<InputRef>(null);
-          const [searchQuery, setSearchQuery] = useState<string>('');
-          const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
-          const themeMode = useAppSelector(state => state.themeReducer.mode);
-          const { t } = useTranslation('task-list-table');
-          const dispatch = useAppDispatch();
-
-          const filteredMembersData = useMemo(() => {
-            return members?.data?.filter(member =>
-              member.name?.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-          }, [members, searchQuery]);
-
-          const handleInviteProjectMemberDrawer = () => {
-            dispatch(toggleProjectMemberDrawer());
-          };
-
-          const handleMembersDropdownOpen = (open: boolean) => {
-            setIsDropdownOpen(open);
-            if (open) {
-              setTimeout(() => {
-                membersInputRef.current?.focus();
-              }, 0);
-            }
-          };
-
-          const handleMemberSelection = (memberId: string) => {
-            // Toggle the selection of this member
-            const newSelectedIds = selectedMemberIds.includes(memberId)
-              ? selectedMemberIds.filter((id: string) => id !== memberId)
-              : [...selectedMemberIds, memberId];
-            
-            // Update the custom column value
-            if (task.id) {
-              updateTaskCustomColumnValue(
-                task.id,
-                columnKey,
-                JSON.stringify(newSelectedIds)
-              );
-            }
-          };
-
-          const membersDropdownContent = (
-            <Card className="custom-card" styles={{ body: { padding: 8 } }}>
-              <Flex vertical>
-                <Input
-                  ref={membersInputRef}
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.currentTarget.value)}
-                  placeholder={t('searchInputPlaceholder')}
-                />
-
-                <List style={{ padding: 0, height: 250, overflow: 'auto' }}>
-                  {filteredMembersData?.length ? (
-                    filteredMembersData.map(member => (
-                      <List.Item
-                        className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}`}
-                        key={member.id || ''}
-                        style={{
-                          display: 'flex',
-                          gap: 8,
-                          justifyContent: 'flex-start',
-                          padding: '4px 8px',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => member.id && handleMemberSelection(member.id)}
-                      >
-                        <Checkbox 
-                          checked={member.id ? selectedMemberIds.includes(member.id) : false} 
-                          onClick={e => e.stopPropagation()}
-                          onChange={() => member.id && handleMemberSelection(member.id)}
-                        />
-                        <div>
-                          <SingleAvatar
-                            avatarUrl={member.avatar_url}
-                            name={member.name}
-                            email={member.email}
-                          />
-                        </div>
-                        <Flex vertical>
-                          <Typography.Text>{member.name}</Typography.Text>
-                          <Typography.Text
-                            style={{
-                              fontSize: 12,
-                              color: colors.lightGray,
-                            }}
-                          >
-                            {member.email}
-                          </Typography.Text>
-                        </Flex>
-                      </List.Item>
-                    ))
-                  ) : (
-                    <Empty />
-                  )}
-                </List>
-
-                <Divider style={{ marginBlock: 0 }} />
-
-                <Button
-                  icon={<UsergroupAddOutlined />}
-                  type="text"
-                  style={{
-                    color: colors.skyBlue,
-                    border: 'none',
-                    backgroundColor: colors.transparent,
-                    width: '100%',
-                  }}
-                  onClick={handleInviteProjectMemberDrawer}
-                >
-                  {t('assigneeSelectorInviteButton')}
-                </Button>
-              </Flex>
-            </Card>
-          );
-
-          // Display selected members as avatars
-          const selectedMembers = useMemo(() => {
-            if (!members?.data || !selectedMemberIds.length) return [];
-            return members.data.filter(member => selectedMemberIds.includes(member.id));
-          }, [members, selectedMemberIds]);
-
-          return (
-            <Dropdown
-              overlayClassName="custom-dropdown"
-              trigger={['click']}
-              dropdownRender={() => membersDropdownContent}
-              onOpenChange={handleMembersDropdownOpen}
-            >
-              <Flex align="center" gap={4}>
-                {selectedMembers.length > 0 ? (
-                  <Avatar.Group max={{count: 3}} size="small">
-                    {selectedMembers.map(member => (
-                      <Tooltip key={member.id} title={member.name}>
-                        <Avatar 
-                          src={member.avatar_url} 
-                          style={{ fontSize: '14px' }}
-                        >
-                          {!member.avatar_url && member.name ? member.name.charAt(0).toUpperCase() : null}
-                        </Avatar>
-                      </Tooltip>
-                    ))}
-                  </Avatar.Group>
-                ) : null}
-                <Button
-                  type="dashed"
-                  shape="circle"
-                  size="small"
-                  icon={
-                    <PlusOutlined
-                      style={{
-                        fontSize: 12,
-                        width: 22,
-                        height: 22,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    />
-                  }
-                />
-              </Flex>
-            </Dropdown>
-          );
-        };
-
-        return <PeopleSelector />;
-      },
-      date: () => {
-        // Parse the date string if it exists
-        const dateValue = customValue ? dayjs(customValue) : undefined;
-        
-        return (
-          <DatePicker
-            placeholder="Set Date"
-            format="MMM DD, YYYY"
-            suffixIcon={null}
-            value={dateValue}
-            onChange={(date) => {
-              if (task.id) {
-                // Format as ISO string for storage
-                updateTaskCustomColumnValue(
-                  task.id,
-                  columnKey,
-                  date ? date.toISOString() : ''
-                );
-              }
-            }}
-            style={{
-              backgroundColor: colors.transparent,
-              border: 'none',
-              boxShadow: 'none',
-            }}
-          />
-        );
-      },
-      checkbox: () => {
-        // Parse the boolean value - could be stored as "true"/"false" or true/false
-        const isChecked = customValue === true || customValue === 'true';
-        
-        return (
-          <Checkbox 
-            checked={isChecked}
-            onChange={(e) => {
-              if (task.id) {
-                updateTaskCustomColumnValue(
-                  task.id,
-                  columnKey,
-                  e.target.checked.toString()
-                );
-              }
-            }}
-          />
-        );
-      },
-      key: () => (
-        <Tooltip title={task.id || ''} className="flex justify-center">
-          <Tag>{task.id || ''}</Tag>
-        </Tooltip>
-      ),
-      number: () => {
-        // Parse the number value - it's stored directly as a number
-        const numberValue = customValue !== undefined ? Number(customValue) : undefined;
-        
-        const handleNumberChange = (value: string) => {
-          // Validate input to allow only numeric values
-          // Allow: empty string, numbers, one decimal point, and minus sign at the beginning
-          const isValidInput = /^-?\d*\.?\d*$/.test(value);
-          
-          if (!isValidInput && value !== '') {
-            return; // Reject invalid input
-          }
-          
-          if (task.id) {
-            // Store as a number (or empty string if invalid)
-            const numValue = value.trim() === '' ? '' : value;
-            updateTaskCustomColumnValue(
-              task.id,
-              columnKey,
-              numValue
-            );
-          }
-        };
-
-        const numberTypes = {
-          formatted: () => (
-            <Input
-              value={numberValue !== undefined ? numberValue.toFixed(columnObj?.decimals || 0) : ''}
-              onChange={(e) => handleNumberChange(e.target.value)}
-              style={{ padding: 0, border: 'none', background: 'transparent' }}
-              onKeyDown={(e) => {
-                // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
-                if (
-                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                  // Allow: home, end, left, right, up, down
-                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                ) {
-                  // Allow these keys
-                  // For decimal point, only allow one
-                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                  // For minus sign, only allow at the beginning
-                  if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
-                    e.preventDefault();
-                  }
-                  return;
-                }
-                
-                // Block non-numeric keys
-                if (!/^\d$/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-            />
-          ),
-          withLabel: () => (
-            <Flex gap={4} align="center" justify="flex-start">
-              {columnObj?.labelPosition === 'left' && columnObj?.label}
-              <Input
-                value={numberValue !== undefined ? numberValue.toFixed(columnObj?.decimals || 0) : ''}
-                onChange={(e) => handleNumberChange(e.target.value)}
-                style={{
-                  padding: 0,
-                  border: 'none',
-                  background: 'transparent',
-                  width: '100%',
-                }}
-                onKeyDown={(e) => {
-                  // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
-                  if (
-                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-                    // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                    (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                    // Allow: home, end, left, right, up, down
-                    ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                  ) {
-                    // Allow these keys
-                    // For decimal point, only allow one
-                    if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                      e.preventDefault();
-                    }
-                    // For minus sign, only allow at the beginning
-                    if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
-                      e.preventDefault();
-                    }
-                    return;
-                  }
-                  
-                  // Block non-numeric keys
-                  if (!/^\d$/.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-              />
-              {columnObj?.labelPosition === 'right' && columnObj?.label}
-            </Flex>
-          ),
-          unformatted: () => (
-            <Input
-              value={numberValue !== undefined ? numberValue.toString() : ''}
-              onChange={(e) => handleNumberChange(e.target.value)}
-              style={{ padding: 0, border: 'none', background: 'transparent' }}
-              onKeyDown={(e) => {
-                // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
-                if (
-                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                  // Allow: home, end, left, right, up, down
-                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                ) {
-                  // Allow these keys
-                  // For decimal point, only allow one
-                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                  // For minus sign, only allow at the beginning
-                  if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
-                    e.preventDefault();
-                  }
-                  return;
-                }
-                
-                // Block non-numeric keys
-                if (!/^\d$/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-            />
-          ),
-          percentage: () => (
-            <Input
-              value={numberValue !== undefined ? `${numberValue.toFixed(columnObj?.decimals || 0)}%` : ''}
-              onChange={(e) => {
-                // Remove the % sign if present
-                const value = e.target.value.replace('%', '');
-                handleNumberChange(value);
-              }}
-              style={{ padding: 0, border: 'none', background: 'transparent' }}
-              onKeyDown={(e) => {
-                // Allow: backspace, delete, tab, escape, enter, decimal point
-                if (
-                  ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.'].includes(e.key) ||
-                  // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                  (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                  // Allow: home, end, left, right, up, down
-                  ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-                ) {
-                  // Allow these keys
-                  // For decimal point, only allow one
-                  if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                    e.preventDefault();
-                  }
-                  return;
-                }
-                
-                // Block non-numeric keys
-                if (!/^\d$/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-            />
-          ),
-        };
-
-        return numberTypes[columnObj?.numberType as keyof typeof numberTypes]?.() || null;
-      },
-      formula: () => {
-        const calculateResult = () => {
-          if (
-            !columnObj?.firstNumericColumn ||
-            !columnObj?.secondNumericColumn ||
-            !columnObj?.expression
-          ) {
-            return null;
-          }
-
-          const operations = {
-            add: () => columnObj?.firstNumericColumn + columnObj?.secondNumericColumn,
-            subtract: () => columnObj?.firstNumericColumn - columnObj?.secondNumericColumn,
-            multiply: () => columnObj?.firstNumericColumn * columnObj?.secondNumericColumn,
-            divide: () =>
-              columnObj?.secondNumericColumn !== 0
-                ? columnObj?.firstNumericColumn / columnObj?.secondNumericColumn
-                : null,
-          };
-
-          return operations[columnObj.expression as keyof typeof operations]?.() || null;
-        };
-
-        return <Typography.Text>{calculateResult() ?? 'Invalid Formula'}</Typography.Text>;
-      },
-      labels: () => {
-        // Labels are stored as an array of IDs in JSON string format
-        const selectedLabels = useMemo(() => {
-          try {
-            return customValue ? JSON.parse(customValue) : [];
-          } catch (e) {
-            return [];
-          }
-        }, [customValue]);
-        
-        return (
-          <CustomColumnLabelCell 
-            labelsList={columnObj?.labelsList || []} 
-            selectedLabels={selectedLabels}
-            onChange={(labels) => {
-              if (task.id) {
-                updateTaskCustomColumnValue(
-                  task.id,
-                  columnKey,
-                  JSON.stringify(labels)
-                );
-              }
-            }}
-          />
-        );
-      },
-      selection: () => {
-        // The selection value is stored as a string ID
-        const selectedValue = customValue || '';
-        
-        // Debug the selectionsList data
-        console.log('Selection column data:', {
-          columnKey,
-          columnObj,
-          selectionsList: columnObj?.selectionsList || []
-        });
-        
-        return (
-          <CustomColumnSelectionCell 
-            selectionsList={columnObj?.selectionsList || []} 
-            value={selectedValue}
-            onChange={(value) => {
-              if (task.id) {
-                updateTaskCustomColumnValue(
-                  task.id,
-                  columnKey,
-                  value
-                );
-              }
-            }}
-          />
-        );
-      },
-    };
-
-    return customComponents[fieldType]?.() || null;
-  };
-
   const getRowBackgroundColor = (taskId: string | undefined) => {
     if (!taskId) return isDarkMode ? '#181818' : '#fff';
     return selectedTaskIdsList.includes(taskId)
@@ -880,6 +1405,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
     return null;
   };
 
+  // Now update the renderTaskRow function to use our memoized component
   const renderTaskRow = (task: IProjectTask | undefined, isSubtask = false) => {
     if (!task?.id) return null;
 
@@ -923,14 +1449,14 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                 data-task-cell
                 onContextMenu={e => handleContextMenu(e, task)}
               >
-                {column.custom_column && column.key
-                  ? renderCustomColumnContent(
-                      column.custom_column_obj || {},
-                      column.custom_column_obj?.fieldType,
-                      task,
-                      column.key
-                    )
-                  : renderColumnContent(column.key, task, isSubtask)}
+                <CustomCell 
+                  column={column} 
+                  task={task} 
+                  isSubtask={isSubtask} 
+                  renderCustomColumnContent={renderCustomColumnContent} 
+                  renderColumnContent={renderColumnContent}
+                  updateTaskCustomColumnValue={updateTaskCustomColumnValue}
+                />
               </td>
             ))}
           </>
