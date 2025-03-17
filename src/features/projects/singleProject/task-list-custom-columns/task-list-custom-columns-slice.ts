@@ -45,7 +45,7 @@ const initialState: TaskListCustomColumnsState = {
   decimals: 0,
   label: 'LKR',
   labelPosition: 'left',
-  previewValue: 1000,
+  previewValue: 100,
   expression: 'add',
   firstNumericColumn: null,
   secondNumericColumn: null,

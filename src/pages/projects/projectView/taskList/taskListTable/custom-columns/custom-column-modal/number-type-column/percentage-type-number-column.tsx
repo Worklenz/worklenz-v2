@@ -1,9 +1,9 @@
 import { Form, Select, Typography } from 'antd';
 import React from 'react';
-import { useAppSelector } from '../../../../../../../../hooks/useAppSelector';
-import { themeWiseColor } from '../../../../../../../../utils/themeWiseColor';
-import { useAppDispatch } from '../../../../../../../../hooks/useAppDispatch';
-import { setDecimals } from '../../../../../../../../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { themeWiseColor } from '@/utils/themeWiseColor';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setDecimals } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 
 const PercentageTypeNumberColumn = () => {
   //   get theme details from theme reducer

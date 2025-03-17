@@ -327,9 +327,7 @@ const CustomColumnModal = () => {
         mainForm.resetFields();
       }}
       afterOpenChange={open => {
-        if (open && customColumnModalType === 'edit' && openedColumn) {
-          console.log('Modal opened for editing column:', openedColumn);
-          
+        if (open && customColumnModalType === 'edit' && openedColumn) {        
           // Set the field type first so the correct form fields are displayed
           dispatch(setCustomFieldType(openedColumn.custom_column_obj?.fieldType || 'people'));
           

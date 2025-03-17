@@ -1,7 +1,7 @@
 import { Form, Select, Typography } from 'antd';
 import React from 'react';
-import { useAppSelector } from '../../../../../../../../hooks/useAppSelector';
-import { themeWiseColor } from '../../../../../../../../utils/themeWiseColor';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { themeWiseColor } from '@/utils/themeWiseColor';
 import FormattedTypeNumberColumn from './formatted-type-number-column';
 import UnformattedTypeNumberColumn from './unformatted-type-number-column';
 import PercentageTypeNumberColumn from './percentage-type-number-column';
@@ -9,8 +9,8 @@ import WithLabelTypeNumberColumn from './with-label-type-number-column';
 import {
   CustomFieldNumberTypes,
   setCustomFieldNumberType,
-} from '../../../../../../../../features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
-import { useAppDispatch } from '../../../../../../../../hooks/useAppDispatch';
+} from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const NumberTypeColumn = () => {
   //   get theme details from theme reducer
