@@ -29,7 +29,7 @@ import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 // Features & Components
-import UpdateMemberDrawer from '@features/settings/member/UpdateMemberDrawer';
+import UpdateMemberDrawer from '@/components/settings/update-member-drawer';
 import {
   toggleInviteMemberDrawer,
   toggleUpdateMemberDrawer,
