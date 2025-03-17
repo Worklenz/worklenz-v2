@@ -7,17 +7,20 @@ import Space from 'antd/es/space';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleColumnVisibility, updateColumnVisibility } from '@/features/tasks/tasks.slice';
+import { toggleColumnVisibility, updateColumnVisibility, updateCustomColumnPinned } from '@/features/tasks/tasks.slice';
 import { ITaskListColumn } from '@/types/tasks/taskList.types';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 
 const ShowFieldsFilterDropdown = () => {
+  const { socket, connected } = useSocket();
   // localization
   const { t } = useTranslation('task-list-filters');
 
   const dispatch = useAppDispatch();
 
   const columnList = useAppSelector(state => state.taskReducer.columns);
-  const {projectId, project} = useAppSelector(state => state.projectReducer);
+  const { projectId, project } = useAppSelector(state => state.projectReducer);
 
   const visibilityChangableColumnList = columnList.filter(
     column => column.key !== 'selector' && column.key !== 'task' && column.key !== 'customColumn'
@@ -26,9 +29,20 @@ const ShowFieldsFilterDropdown = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const handleColumnVisibilityChange = async (col: ITaskListColumn) => {
+    console.log('col', col);
     if (!projectId) return;
-    const column = { ...col, pinned: !col.pinned };
-    await dispatch(updateColumnVisibility({ projectId, item: column }));
+    const column = { ...col, is_visible: !col.pinned };
+
+    if (col.custom_column) {
+      socket?.emit(SocketEvents.CUSTOM_COLUMN_PINNED_CHANGE.toString(), {
+        column_id: col.id,
+        project_id: projectId,
+        is_visible: !col.pinned,
+      });
+      if (col.id) dispatch(updateCustomColumnPinned({ columnId: col.id, isVisible: !col.pinned }));
+    } else {
+      await dispatch(updateColumnVisibility({ projectId, item: column }));
+    }
   };
 
   const menuItems = visibilityChangableColumnList.map(col => ({
@@ -37,19 +51,20 @@ const ShowFieldsFilterDropdown = () => {
       <Space>
         <Checkbox checked={col.pinned} onChange={e => handleColumnVisibilityChange(col)}>
           {col.key === 'PHASE' ? project?.phase_label : ''}
-          {col.key !== 'PHASE' && (col.custom_column
-            ? col.name
-            : t(`${col.key?.replace('_', '').toLowerCase() + 'Text'}`))}
+          {col.key !== 'PHASE' &&
+            (col.custom_column
+              ? col.name
+              : t(`${col.key?.replace('_', '').toLowerCase() + 'Text'}`))}
         </Checkbox>
       </Space>
-    )
+    ),
   }));
   return (
-    <Dropdown 
-      menu={{ 
+    <Dropdown
+      menu={{
         items: menuItems,
-        style: { maxHeight: '400px', overflowY: 'auto' } 
-      }} 
+        style: { maxHeight: '400px', overflowY: 'auto' },
+      }}
       trigger={['click']}
     >
       <Button icon={<MoreOutlined />}>{t('showFieldsText')}</Button>
