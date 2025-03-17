@@ -963,6 +963,14 @@ const taskSlice = createSlice({
       }
       state.customColumnValues[taskId][columnKey] = value;
     },
+
+    updateCustomColumnPinned: (state, action: PayloadAction<{ columnId: string; isVisible: boolean }>) => {
+      const { columnId, isVisible } = action.payload;
+      const column = state.customColumns.find(col => col.id === columnId);
+      if (column) {
+        column.pinned = isVisible;
+      }
+    },
   },
 
   extraReducers: builder => {
@@ -1125,6 +1133,7 @@ export const {
   deleteCustomColumn,
   updateSubTasks,
   updateCustomColumnValue,
+  updateCustomColumnPinned,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
