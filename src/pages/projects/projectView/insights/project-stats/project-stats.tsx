@@ -16,12 +16,13 @@ const ProjectStats = ({ t }: { t: TFunction }) => {
   const { includeArchivedTasks, projectId } = useAppSelector(state => state.projectInsightsReducer);
   const [stats, setStats] = useState<IProjectInsightsGetRequest>({});
   const [loading, setLoading] = useState(false);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+
 
   const getProjectStats = async () => {
     if (!projectId) return;
 
     setLoading(true);
-
     try {
       const res = await projectInsightsApiService.getProjectOverviewData(
         projectId,
@@ -39,7 +40,7 @@ const ProjectStats = ({ t }: { t: TFunction }) => {
 
   useEffect(() => {
     getProjectStats();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks,refreshTimestamp]);
 
   const tooltipTable = (
     <table>

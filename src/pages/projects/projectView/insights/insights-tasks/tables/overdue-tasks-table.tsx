@@ -16,6 +16,8 @@ const OverdueTasksTable = ({
 }) => {
   const [overdueTaskList, setOverdueTaskList] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+
 
   const getOverdueTasks = async () => {
     setLoading(true);
@@ -33,7 +35,7 @@ const OverdueTasksTable = ({
 
   useEffect(() => {
     getOverdueTasks();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks,refreshTimestamp]);
 
   // table columns
   const columns: TableProps['columns'] = [

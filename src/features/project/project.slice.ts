@@ -28,6 +28,7 @@ interface TaskListState {
   importTaskTemplateDrawerOpen: boolean;
   createTaskTemplateDrawerOpen: boolean;
   projectView: 'list' | 'kanban';
+  refreshTimestamp: string | null;
 }
 
 const initialState: TaskListState = {
@@ -49,6 +50,7 @@ const initialState: TaskListState = {
   importTaskTemplateDrawerOpen: false,
   createTaskTemplateDrawerOpen: false,
   projectView: 'list',
+  refreshTimestamp: null,
 };
 
 export const getProject = createAsyncThunk(
@@ -169,6 +171,9 @@ const projectSlice = createSlice({
       }
     },
     reset: () => initialState,
+    setRefreshTimestamp: (state) => {
+      state.refreshTimestamp = new Date().getTime().toString();
+    },
     setProjectView: (state, action: PayloadAction<'list' | 'kanban'>) => {
       state.projectView = action.payload;
     },
@@ -210,6 +215,7 @@ export const {
   setCreateTaskTemplateDrawerOpen,
   setProjectView,
   updatePhaseLabel,
+  setRefreshTimestamp
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

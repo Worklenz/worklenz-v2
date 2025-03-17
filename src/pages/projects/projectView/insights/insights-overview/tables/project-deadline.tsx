@@ -15,6 +15,7 @@ const ProjectDeadline = () => {
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<IDeadlineTaskStats | null>(null);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
 
   const getProjectDeadline = async () => {
     if (!projectId) return;
@@ -36,7 +37,7 @@ const ProjectDeadline = () => {
 
   useEffect(() => {
     getProjectDeadline();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks,refreshTimestamp]);
 
   // table columns
   const columns: TableProps['columns'] = [

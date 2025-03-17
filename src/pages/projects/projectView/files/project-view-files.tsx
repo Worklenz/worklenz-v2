@@ -30,10 +30,11 @@ import {
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { attachmentsApiService } from '@/api/attachments/attachments.api.service';
 import logger from '@/utils/errorLogger';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const ProjectViewFiles = () => {
   const { t } = useTranslation('project-view-files');
-  const { projectId } = useAppSelector(state => state.projectReducer);
+  const { projectId, refreshTimestamp } = useAppSelector(state => state.projectReducer);
   const [attachments, setAttachments] = useState<IProjectAttachmentsViewModel>({});
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -45,6 +46,7 @@ const ProjectViewFiles = () => {
     defaultPageSize: DEFAULT_PAGE_SIZE,
   });
 
+  
   const fetchAttachments = async () => {
     if (!projectId) return;
     try {
@@ -64,6 +66,10 @@ const ProjectViewFiles = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAttachments();
+  }, [refreshTimestamp]);
 
   const getFileTypeIcon = (type: string | undefined) => {
     if (!type) return IconsMap['search'];

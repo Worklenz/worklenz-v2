@@ -6,6 +6,7 @@ import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import { IInsightTasks } from '@/types/project/projectInsights.types';
 import logger from '@/utils/errorLogger';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const TaskCompletedLateTable = ({
   projectId,
@@ -16,9 +17,12 @@ const TaskCompletedLateTable = ({
 }) => {
   const [lateCompletedTaskList, setLateCompletedTaskList] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+  
 
   const getLateCompletedTasks = async () => {
     try {
+      setLoading(true);
       const res = await projectInsightsApiService.getTasksCompletedLate(
         projectId,
         includeArchivedTasks
@@ -35,7 +39,7 @@ const TaskCompletedLateTable = ({
 
   useEffect(() => {
     getLateCompletedTasks();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks,refreshTimestamp]);
 
   // table columns
   const columns: TableProps['columns'] = [
