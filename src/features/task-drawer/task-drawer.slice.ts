@@ -60,10 +60,11 @@ const taskDrawerSlice = createSlice({
       state.loadingTask = action.payload;
     },
     setTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
-      const { status_id, color_code, id: taskId } = action.payload;
+      const { status_id, color_code, id: taskId, color_code_dark } = action.payload;
       if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
         state.taskFormViewModel.task.status_id = status_id;
         state.taskFormViewModel.task.status_color = color_code;
+        state.taskFormViewModel.task.status_color_dark = color_code_dark
       }
     },
     setStartDate: (state, action: PayloadAction<IProjectTask>) => {
