@@ -15,8 +15,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { TFunction } from 'i18next';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
-import CustomAvatar from '@/components/CustomAvatar';
-import { colors } from '@/styles/colors';
 import { ITaskViewModel } from '@/types/tasks/task.types';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
 import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
@@ -24,14 +22,13 @@ import logger from '@/utils/errorLogger';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { sortTeamMembers } from '@/utils/sort-team-members';
 import { SocketEvents } from '@/shared/socket-events';
-import { connected } from 'process';
 import { useSocket } from '@/socket/socketContext';
 import { useAuthService } from '@/hooks/useAuth';
-import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 import Avatars from '@/components/avatars/avatars';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import { setTaskSubscribers } from '@/features/task-drawer/task-drawer.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 
 interface NotifyMemberSelectorProps {
   task: ITaskViewModel;
@@ -49,13 +46,16 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
   const [members, setMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { subscribers } = useAppSelector(state => state.taskDrawerReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
   const fetchTeamMembers = async () => {
+    if (!projectId) return;
+
     try {
       setTeamMembersLoading(true);
-      const response = await teamMembersApiService.get(1, 10, null, null, searchQuery, true);
+      const response = await teamMembersApiService.getAll(projectId);
       if (response.done) {
-        let sortedMembers = sortTeamMembers(response.body.data || []);
+        let sortedMembers = sortTeamMembers(response.body || []);
 
         setMembers({ data: sortedMembers });
       }
@@ -85,13 +85,13 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
     );
   }, [members, searchQuery]);
 
-  const handleMemberClick = (memberId: string | undefined, checked: boolean) => {
-    if (!task || !connected || !currentSession?.id || !memberId) return;
+  const handleMemberClick = (member: ITeamMemberViewModel, checked: boolean) => {
+    if (!task || !connected || !currentSession?.id || !member.id) return;
     try {
       const body = {
-        team_member_id: memberId,
+        team_member_id: member.id,
         task_id: task.id,
-        user_id: currentSession?.id,
+        user_id: member.user_id || null,
         mode: checked ? 0 : 1,
       };
       socket?.emit(SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(), body);
@@ -108,14 +108,18 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
           ref={membersInputRef}
           value={searchQuery}
           onChange={e => setSearchQuery(e.currentTarget.value)}
-          placeholder={t('searchInputPlaceholder')}
+          placeholder={t('taskInfoTab.searchInputPlaceholder')}
         />
 
-        <List style={{ padding: 0 }} loading={teamMembersLoading} size="small">
+        <List
+          style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}
+          loading={teamMembersLoading}
+          size="small"
+        >
           {filteredMembersData?.length ? (
             filteredMembersData.map(member => (
               <List.Item
-                className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'} ${member.pending_invitation ? 'disabled cursor-not-allowed' : ''}`}
+                className={`${themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'} ${member.pending_invitation || member.is_pending ? 'disabled' : ''}`}
                 key={member.id}
                 style={{
                   display: 'flex',
@@ -123,15 +127,24 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
                   justifyContent: 'flex-start',
                   padding: '4px 8px',
                   border: 'none',
-                  cursor: 'pointer',
+                  cursor:
+                    member.pending_invitation || member.is_pending ? 'not-allowed' : 'pointer',
+                  pointerEvents: member.pending_invitation || member.is_pending ? 'none' : 'auto',
+                  opacity: member.pending_invitation || member.is_pending ? 0.6 : 1,
                 }}
-                onClick={e => handleMemberClick(member.id, !subscribers?.some(sub => sub.team_member_id === member.id))}
+                onClick={e => {
+                  if (member.pending_invitation || member.is_pending) return;
+                  handleMemberClick(
+                    member,
+                    !subscribers?.some(sub => sub.team_member_id === member.id)
+                  );
+                }}
               >
                 <Checkbox
                   id={member.id}
                   checked={subscribers?.some(sub => sub.team_member_id === member.id)}
                   onChange={e => e.stopPropagation()}
-                  disabled={member.pending_invitation}
+                  disabled={member.pending_invitation || member.is_pending}
                 />
                 <div>
                   <SingleAvatar
@@ -144,9 +157,9 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
                   <Typography.Text>{member.name}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {member.email}&nbsp;
-                    {member.pending_invitation && (
+                    {member.is_pending && (
                       <Typography.Text type="danger" style={{ fontSize: 10 }}>
-                        ({t('pendingInvitation')})
+                        ({t('taskInfoTab.pendingInvitation')})
                       </Typography.Text>
                     )}
                   </Typography.Text>
