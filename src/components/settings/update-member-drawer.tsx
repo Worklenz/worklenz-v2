@@ -19,12 +19,16 @@ import { useAuthService } from '@/hooks/useAuth';
 import { colors } from '@/styles/colors';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
 import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
-import { toggleUpdateMemberDrawer } from './memberSlice';
+import { toggleUpdateMemberDrawer } from '../../features/settings/member/memberSlice';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { IJobTitle } from '@/types/job.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
 import { ITeamMemberCreateRequest } from '@/types/teamMembers/team-member-create-request';
+import logger from '@/utils/errorLogger';
+import { authApiService } from '@/api/auth/auth.api.service';
+import { setSession } from '@/utils/session-helper';
+import { setUser } from '@/features/user/userSlice';
 
 type UpdateMemberDrawerProps = {
   selectedMemberId: string | null;
@@ -81,8 +85,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
         });
       }
     } catch (error) {
-      console.error('Error fetching team member:', error);
-      message.error(t('teamMemberFetchError'));
+      logger.error('Error fetching team member:', error);
     }
   };
 
@@ -98,14 +101,18 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
 
       const res = await teamMembersApiService.update(selectedMemberId, body);
       if (res.done) {
-        message.success(t('updateSuccess'));
         form.resetFields();
         setSelectedJobTitle(null);
         dispatch(toggleUpdateMemberDrawer());
+
+        const authorizeResponse = await authApiService.verify();
+        if (authorizeResponse.authenticated) {
+          setSession(authorizeResponse.user);
+          dispatch(setUser(authorizeResponse.user));
+        }
       }
     } catch (error) {
-      console.error('Error updating member:', error);
-      message.error(t('updateMemberErrorMessage'));
+      logger.error('Error updating member:', error);
     }
   };
 
@@ -120,8 +127,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
         message.success(t('invitationResent'));
       }
     } catch (error) {
-      console.error('Error resending invitation:', error);
-      message.error(t('resendInvitationError'));
+      logger.error('Error resending invitation:', error);
     } finally {
       setResending(false);
     }
