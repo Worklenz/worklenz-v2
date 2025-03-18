@@ -16,6 +16,8 @@ const LastUpdatedTasks = () => {
 
   const [data, setData] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(false);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+
 
   const getLastUpdatedTasks = async () => {
     if (!projectId) return;
@@ -37,7 +39,7 @@ const LastUpdatedTasks = () => {
 
   useEffect(() => {
     getLastUpdatedTasks();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks,refreshTimestamp]);
 
   // table columns
   const columns: TableProps['columns'] = [

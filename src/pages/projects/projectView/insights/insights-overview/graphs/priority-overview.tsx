@@ -6,6 +6,7 @@ import { ITaskPriorityCounts } from '@/types/project/project-insights.types';
 import { useEffect, useState } from 'react';
 import { projectInsightsApiService } from '@/api/projects/insights/project-insights.api.service';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { Spin } from 'antd/lib';
 
 Chart.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement);
 
@@ -14,6 +15,8 @@ const PriorityOverview = () => {
 
   const [stats, setStats] = useState<ITaskPriorityCounts[]>([]);
   const [loading, setLoading] = useState(false);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+
 
   const getTaskPriorityCounts = async () => {
     if (!projectId) return;
@@ -36,7 +39,7 @@ const PriorityOverview = () => {
 
   useEffect(() => {
     getTaskPriorityCounts();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks, refreshTimestamp]);
 
   const options: ChartOptions<'bar'> = {
     responsive: true,
@@ -97,9 +100,17 @@ const PriorityOverview = () => {
       },
     ],
   };
+  if (loading) {
+    return (
+      <Flex justify="center" align="center" style={{ height: 350 }}>
+        <Spin size="large" />
+      </Flex>
+    );
+  }
 
   return (
     <Flex justify="center">
+      {loading && <Spin />}
       <Bar options={options} data={data} className="h-[350px] w-full md:max-w-[580px]" />
     </Flex>
   );

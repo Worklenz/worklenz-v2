@@ -14,6 +14,7 @@ const MemberStats = () => {
 
   const [memberStats, setMemberStats] = useState<IProjectMemberStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
 
   const fetchMemberStats = async () => {
     setLoadingStats(true);
@@ -34,7 +35,7 @@ const MemberStats = () => {
 
   useEffect(() => {
     fetchMemberStats();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks,refreshTimestamp]);
 
   return (
     <Flex gap={24} className="grid sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-3 lg:grid-rows-1">

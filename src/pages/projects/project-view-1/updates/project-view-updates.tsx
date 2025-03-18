@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Flex, Form, Mentions, Space, Tooltip, Typography } from 'antd';
+import { Button, ConfigProvider, Flex, Form, Mentions, Skeleton, Space, Tooltip, Typography } from 'antd';
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
@@ -29,9 +29,11 @@ const ProjectViewUpdates = () => {
   const [selectedMembers, setSelectedMembers] = useState<{ id: string; name: string }[]>([]);
   const [comments, setComments] = useState<IProjectUpdateCommentViewModel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingComments, setIsLoadingComments] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [commentValue, setCommentValue] = useState<string>('');
   const theme = useAppSelector(state => state.themeReducer.mode);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
 
   const { t } = useTranslation('project-view-updates');
   const [form] = Form.useForm();
@@ -54,12 +56,15 @@ const ProjectViewUpdates = () => {
   const getComments = useCallback(async () => {
     if (!projectId) return;
     try {
+      setIsLoadingComments(true);
       const res = await projectCommentsApiService.getByProjectId(projectId);
       if (res.done) {
         setComments(res.body);
       }
     } catch (error) {
       console.error('Failed to fetch comments:', error);
+    } finally {
+      setIsLoadingComments(false);
     }
   }, [projectId]);
 
@@ -99,7 +104,7 @@ const ProjectViewUpdates = () => {
   useEffect(() => {
     void getMembers();
     void getComments();
-  }, [getMembers, getComments]);
+  }, [getMembers, getComments,refreshTimestamp]);
 
   const handleCancel = useCallback(() => {
     form.resetFields(['comment']);
@@ -155,7 +160,11 @@ const ProjectViewUpdates = () => {
   return (
     <Flex gap={24} vertical>
       <Flex vertical gap={16}>
-        {comments.map(comment => (
+        {
+          isLoadingComments ? (
+            <Skeleton active />
+          ):
+          comments.map(comment => (
           <Flex key={comment.id} gap={8}>
             <CustomAvatar avatarName={comment.created_by || ''} />
             <Flex vertical flex={1}>

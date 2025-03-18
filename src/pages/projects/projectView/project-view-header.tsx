@@ -22,7 +22,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
-import { setProject, setImportTaskTemplateDrawerOpen } from '@features/project/project.slice';
+import { setProject, setImportTaskTemplateDrawerOpen, setRefreshTimestamp } from '@features/project/project.slice';
 import { addTask, fetchTaskGroups, IGroupBy } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
@@ -69,30 +69,29 @@ const ProjectViewHeader = () => {
 
   const handleRefresh = () => {
     if (!projectId) return;
-
     switch (tab) {
       case 'tasks-list':
-      dispatch(fetchTaskGroups(projectId));
-      break;
+        dispatch(fetchTaskGroups(projectId));
+        break;
       case 'board':
-      dispatch(fetchBoardTaskGroups(projectId));
-      break;
+        dispatch(fetchBoardTaskGroups(projectId));
+        break;
       case 'project-insights-member-overview':
-      dispatch(fetchProjectData(projectId));
-      break;
+        dispatch(setRefreshTimestamp());
+        break;
       case 'all-attachments':
-      // dispatch(fetchAttachments());
-      break;
+        dispatch(setRefreshTimestamp());
+        break;
       case 'members':
-      // dispatch(fetchMembersData());
-      break;
+        dispatch(setRefreshTimestamp());
+        break;
       case 'updates':
-      // dispatch(fetchUpdates(projectId));
-      break;
+        dispatch(setRefreshTimestamp());
+        break;
       default:
-      break;
+        break;
     }
-};
+  };
 
   const handleSubscribe = () => {
     if (selectedProject?.id) {

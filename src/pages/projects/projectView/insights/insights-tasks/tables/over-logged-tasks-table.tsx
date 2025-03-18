@@ -13,9 +13,12 @@ const OverLoggedTasksTable = () => {
 
   const [overLoggedTaskList, setOverLoggedTaskList] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+
 
   const getOverLoggedTasks = async () => {
     try {
+      setLoading(true);
       const res = await projectInsightsApiService.getOverloggedTasks(
         projectId,
         includeArchivedTasks
@@ -32,7 +35,7 @@ const OverLoggedTasksTable = () => {
 
   useEffect(() => {
     getOverLoggedTasks();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks,refreshTimestamp]);
 
   // table columns
   const columns: TableProps['columns'] = [
