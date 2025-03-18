@@ -22,9 +22,13 @@ export const sortBySelection = (data: Array<{ selected?: boolean }>) =>
 export const sortByPending = (data: Array<{ pending_invitation?: boolean }>) => 
   sortByBooleanField(data, 'pending_invitation', false);
 
-export const sortTeamMembers = (data: Array<{ selected?: boolean; pending_invitation?: boolean }>) => {
+export const sortTeamMembers = (data: Array<{ selected?: boolean; pending_invitation?: boolean; is_pending?: boolean }>) => {
   return sortByBooleanField(
-    sortByBooleanField(data, 'pending_invitation', false),
+    sortByBooleanField(
+      sortByBooleanField(data, 'is_pending', false),
+      'pending_invitation', 
+      false
+    ),
     'selected'
   );
 };
