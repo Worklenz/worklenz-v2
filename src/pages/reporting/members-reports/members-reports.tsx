@@ -1,8 +1,7 @@
 import { Button, Card, Checkbox, Dropdown, Flex, Skeleton, Space, Typography } from 'antd';
-import { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import MembersReportsTable from './members-reports-table/members-reports-table';
-import TimeWiseFilter from './time-wise-filter';
+import TimeWiseFilter from '@/components/reporting/time-wise-filter';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';

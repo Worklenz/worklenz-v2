@@ -1,7 +1,8 @@
-import { CaretDownFilled } from '@ant-design/icons';
+import { CaretDownFilled, DownOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Divider, Dropdown, Flex, List, Typography } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 import { colors } from '@/styles/colors';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -16,6 +17,7 @@ interface ITimeWiseFilterProps {
 
 const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITimeWiseFilterProps) => {
   const { t } = useTranslation('reporting-members');
+  const { mode: themeMode } = useAppSelector(state => state.themeReducer);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>(
@@ -24,7 +26,43 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
   const [customRange, setCustomRange] = useState<[string, string] | null>(
     dateRange ? [dateRange.split('-')[0], dateRange.split('-')[1]] : null,
   );
-  const { mode: themeMode } = useAppSelector(state => state.themeReducer);
+
+  // Format customRange for display
+  const getDisplayLabel = () => {
+    const f = "YY-MM-DD";
+    if (customRange && customRange.length === 2) {
+      return `${dayjs(customRange[0]).format(f)} - ${dayjs(customRange[1]).format(f)}`;
+    }
+    return t(selectedTimeFrame);
+  };
+
+  // Apply changes when date range is selected
+  const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setSelectedTimeFrame('');
+      setCustomRange([dateStrings[0], dateStrings[1]]);
+    } else {
+      setCustomRange(null);
+    }
+  };
+
+  // Apply custom date filter
+  const applyCustomDateFilter = () => {
+    if (customRange) {
+      setSelectedTimeFrame('customRange');
+      setIsDropdownOpen(false);
+      setDateRange(`${customRange[0]}-${customRange[1]}`);
+    }
+  };
+
+  // Handle duration item selection
+  const handleDurationSelect = (item: any) => {
+    setSelectedTimeFrame(item.label);
+    setCustomRange(null);
+    setDuration(item.key);
+    setDateRange(item.dates || '');
+    setIsDropdownOpen(false);
+  };
 
   // custom dropdown content
   const timeWiseDropdownContent = (
@@ -34,6 +72,8 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
         body: {
           padding: 0,
           minWidth: 320,
+          maxHeight: 330,
+          overflowY: 'auto',
         },
       }}
     >
@@ -56,12 +96,7 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
               border: 'none',
               cursor: 'pointer',
             }}
-            onClick={() => {
-              setSelectedTimeFrame(item.label);
-              setCustomRange(null);
-              setDuration(item.key);
-              setDateRange(item.dates || '');
-            }}
+            onClick={() => handleDurationSelect(item)}
           >
             <Typography.Text
               style={{
@@ -84,24 +119,16 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
 
         <DatePicker.RangePicker
           format={'MMM DD, YYYY'}
-          onChange={(dates, dateStrings) => {
-            if (dates) {
-              setSelectedTimeFrame('');
-              setCustomRange([dateStrings[0], dateStrings[1]]);
-            }
-          }}
+          onChange={handleDateRangeChange}
+          value={customRange ? [dayjs(customRange[0]), dayjs(customRange[1])] : null}
         />
 
         <Button
           type="primary"
           size="small"
           style={{ width: 'fit-content', alignSelf: 'flex-end' }}
-          onClick={() => {
-            if (customRange) {
-              setSelectedTimeFrame('customRange');
-              setIsDropdownOpen(false);
-            }
-          }}
+          onClick={applyCustomDateFilter}
+          disabled={!customRange}
         >
           {t('filterButton')}
         </Button>
@@ -115,9 +142,10 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
       trigger={['click']}
       dropdownRender={() => timeWiseDropdownContent}
       onOpenChange={open => setIsDropdownOpen(open)}
+      open={isDropdownOpen}
     >
       <Button
-        icon={<CaretDownFilled />}
+        icon={<DownOutlined />}
         iconPosition="end"
         className={`transition-colors duration-300 ${
           isDropdownOpen
@@ -125,7 +153,7 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
             : 'hover:text-[#1890ff hover:border-[#1890ff]'
         }`}
       >
-        {customRange ? `${customRange[0]} - ${customRange[1]}` : t(selectedTimeFrame)}
+        {getDisplayLabel()}
       </Button>
     </Dropdown>
   );
