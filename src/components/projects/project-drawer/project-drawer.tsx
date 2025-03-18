@@ -266,7 +266,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     [form]
   );
 
-  const handleFieldsChange = (_, allFields) => {
+  const handleFieldsChange = (_: any, allFields: any[]) => {
     const isValid = allFields.every(field => field.errors.length === 0);
     setIsFormValid(isValid);
   };
