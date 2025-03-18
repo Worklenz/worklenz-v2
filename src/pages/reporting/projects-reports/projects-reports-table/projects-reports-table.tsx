@@ -63,7 +63,7 @@ const ProjectsReportsTable = () => {
       width: 300,
       onCell: record => {
         return {
-          onClick: () => handleDrawerOpen(record),
+          onClick: () => handleDrawerOpen(record as IRPTProject),
         };
       },
       render: record => (

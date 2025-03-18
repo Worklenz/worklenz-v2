@@ -14,7 +14,7 @@ const MembersReportsTable = () => {
   const dispatch = useAppDispatch();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { membersList, isLoading, total, archived, searchQuery } = useAppSelector(state => state.membersReportsReducer);
+  const { membersList, isLoading, total, archived, searchQuery, dateRange } = useAppSelector(state => state.membersReportsReducer);
 
   // function to handle drawer toggle
   const handleDrawerOpen = (id: string) => {
@@ -93,7 +93,7 @@ const MembersReportsTable = () => {
 
   useEffect(() => {
     if (!isLoading) dispatch(fetchMembersData());
-  }, [dispatch, archived, searchQuery]);
+  }, [dispatch, archived, searchQuery, dateRange]);
 
   return (
     <ConfigProvider

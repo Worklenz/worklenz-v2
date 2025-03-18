@@ -7,7 +7,7 @@ import MembersReportsDrawerTabs from './MembersReportsDrawerTabs';
 import { useTranslation } from 'react-i18next';
 import MembersOverviewTasksStatsDrawer from './overviewTab/membersOverviewTasksStatsDrawer/MembersOverviewTasksStatsDrawer';
 import MembersOverviewProjectsStatsDrawer from './overviewTab/membersOverviewProjectsStatsDrawer/MembersOverviewProjectsStatsDrawer';
-import TimeWiseFilter from '@/pages/reporting/members-reports/time-wise-filter';
+import TimeWiseFilter from '@/components/reporting/time-wise-filter';
 
 type MembersReportsDrawerProps = {
   memberId: string | null;
