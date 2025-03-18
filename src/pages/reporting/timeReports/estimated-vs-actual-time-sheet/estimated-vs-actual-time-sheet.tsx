@@ -26,13 +26,13 @@ const EstimatedVsActualTimeSheet = () => {
         label: 'Estimated Days',
         data: estimatedDays,
         backgroundColor: '#A5AAD9',
-        barThickness: 50,
+        barThickness: 30,
       },
       {
         label: 'Actual Days',
         data: actualDays,
         backgroundColor: '#c191cc',
-        barThickness: 50,
+        barThickness: 30,
       },
     ],
   };
@@ -57,7 +57,6 @@ const EstimatedVsActualTimeSheet = () => {
     },
     backgroundColor: 'black',
     indexAxis: 'x' as const,
-    responsive: true,
     scales: {
       x: {
         title: {
@@ -68,6 +67,16 @@ const EstimatedVsActualTimeSheet = () => {
             family: 'Helvetica',
           },
         },
+        categoryPercentage: 0.6,
+        barPercentage: 0.8,
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45,
+          padding: 5,
+          font: {
+            size: 11
+          }
+        }
       },
       y: {
         title: {
