@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useGetProjectsQuery,
   useToggleFavoriteProjectMutation,
@@ -35,6 +35,9 @@ export const ProjectRateCell: React.FC<{
     () => (isFavorite ? colors.yellow : colors.lightGray),
     [isFavorite]
   );
+
+  useEffect(() => {
+    setIsFavorite(record.favorite);}, [record.favorite]);
 
   return (
     <ConfigProvider wave={{ disabled: true }}>
