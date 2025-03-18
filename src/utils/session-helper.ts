@@ -1,6 +1,6 @@
 import { ILocalSession } from '@/types/auth/local-session.types';
 
-export const WORKLENZ_SESSION_ID = 'worklenz.sid';
+export const WORKLENZ_SESSION_ID = import.meta.env.VITE_WORKLENZ_SESSION_ID;
 const storage: Storage = localStorage;
 
 export function setSession(user: ILocalSession): void {
