@@ -1,4 +1,3 @@
-// DescriptionEditor.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import DOMPurify from 'dompurify';
@@ -13,11 +12,12 @@ interface DescriptionEditorProps {
 }
 
 const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEditorProps) => {
-  const { socket, connected } = useSocket();
+  const { socket } = useSocket();
   const [isHovered, setIsHovered] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
   const [content, setContent] = useState<string>(description || '');
   const [isEditorLoading, setIsEditorLoading] = useState<boolean>(false);
+  const [wordCount, setWordCount] = useState<number>(0); // State for word count
   const editorRef = useRef<any>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -42,16 +42,23 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
       description: content || null,
       parent_task: parentTaskId,
     }));
-  }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const isClickedOutside = wrapperRef.current && !wrapperRef.current.contains(event.target as Node);
-      const isClickedOutsideEditor = !document.querySelector('.tox-tinymce')?.contains(event.target as Node);
-      
-      // Only save and close if the editor is actually open
-      if (isEditorOpen && isClickedOutside && isClickedOutsideEditor) {
-        // Check if content has changed before saving
+      const wrapper = wrapperRef.current;
+      const target = event.target as Node;
+
+      const isClickedInsideWrapper = wrapper && wrapper.contains(target);
+      const isClickedInsideEditor = document.querySelector('.tox-tinymce')?.contains(target);
+      const isClickedInsideToolbarPopup = document.querySelector('.tox-menu, .tox-pop, .tox-collection')?.contains(target);
+
+      if (
+        isEditorOpen &&
+        !isClickedInsideWrapper &&
+        !isClickedInsideEditor &&
+        !isClickedInsideToolbarPopup
+      ) {
         if (content !== description) {
           handleDescriptionChange();
         }
@@ -63,16 +70,24 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isEditorOpen, content, description]);
+  }, [isEditorOpen, content, description, taskId, parentTaskId, socket]);
 
   const handleEditorChange = (content: string) => {
     const sanitizedContent = DOMPurify.sanitize(content);
     setContent(sanitizedContent);
+    // Update word count when content changes
+    if (editorRef.current) {
+      const count = editorRef.current.plugins.wordcount.getCount();
+      setWordCount(count);
+    }
   };
 
   const handleInit = (evt: any, editor: any) => {
     editorRef.current = editor;
     editor.on('focus', () => setIsEditorOpen(true));
+    // Set initial word count on init
+    const initialCount = editor.plugins.wordcount.getCount();
+    setWordCount(initialCount);
     setIsEditorLoading(false);
   };
 
@@ -125,12 +140,11 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
               plugins: [
                 'advlist', 'autolink', 'lists', 'link', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code'
+                'insertdatetime', 'media', 'table', 'code', 'wordcount' // Added wordcount
               ],
-              toolbar: 'undo redo | blocks | ' +
-                'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
+              toolbar: 'blocks |' +
+                'bold italic underline strikethrough | ' +
+                'bullist numlist | link |  removeformat | help',
               content_style: `
                 body { 
                   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
@@ -144,7 +158,6 @@ const DescriptionEditor = ({ description, taskId, parentTaskId }: DescriptionEdi
               content_css_cors: true,
               auto_focus: true,
               init_instance_callback: (editor) => {
-                // Set initial background color
                 editor.dom.setStyle(editor.getBody(), 'backgroundColor', themeMode === 'dark' ? '#1e1e1e' : '#ffffff');
               }
             }}
