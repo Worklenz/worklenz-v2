@@ -118,6 +118,19 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     loadInitialData();
   }, [dispatch]);
 
+  useEffect(() => {
+    const startDate = form.getFieldValue('start_date');
+    const endDate = form.getFieldValue('end_date');
+
+    if (startDate && endDate) {
+      const days = calculateWorkingDays(
+        dayjs.isDayjs(startDate) ? startDate : dayjs(startDate),
+        dayjs.isDayjs(endDate) ? endDate : dayjs(endDate)
+      );
+      form.setFieldsValue({ working_days: days });
+    }
+  }, [form]);
+
   // Handlers
   const handleFormSubmit = async (values: any) => {
     try {
@@ -164,6 +177,25 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
       logger.error('Error saving project', error);
     }
   };
+  const calculateWorkingDays = (startDate: dayjs.Dayjs | null, endDate: dayjs.Dayjs | null): number => {
+    if (!startDate || !endDate || !startDate.isValid() || !endDate.isValid() || startDate.isAfter(endDate)) {
+      return 0;
+    }
+  
+    let workingDays = 0;
+    let currentDate = startDate.clone().startOf('day');
+    const end = endDate.clone().startOf('day');
+  
+    while (currentDate.isBefore(end) || currentDate.isSame(end)) {
+      const dayOfWeek = currentDate.day();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        workingDays++;
+      } 
+      currentDate = currentDate.add(1, 'day');
+    }
+  
+    return workingDays;
+  };
 
   const handleVisibilityChange = useCallback(
     (visible: boolean) => {
@@ -174,6 +206,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             ...project,
             start_date: project.start_date ? dayjs(project.start_date) : null,
             end_date: project.end_date ? dayjs(project.end_date) : null,
+            working_days: startDate && endDate ? calculateWorkingDays(startDate, endDate) : project.working_days || 0,
           });
           setSelectedProjectManager(project.project_manager || null);
         }
@@ -346,20 +379,49 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
 
           <Form.Item name="date" layout="horizontal">
             <Flex gap={8}>
-              <Form.Item name="start_date" label={t('startDate')}>
+              <Form.Item
+                name="start_date"
+                label={t('startDate')}
+              >
                 <DatePicker
                   disabledDate={disabledStartDate}
                   disabled={!isProjectManager && !isOwnerorAdmin}
+                  onChange={(date) => {
+                    const endDate = form.getFieldValue('end_date');
+                    if (date && endDate) {
+                      const days = calculateWorkingDays(date, endDate);
+                      form.setFieldsValue({ working_days: days });
+                    }
+                  }}
                 />
               </Form.Item>
-              <Form.Item name="end_date" label={t('endDate')}>
+              <Form.Item
+                name="end_date"
+                label={t('endDate')}
+              >
                 <DatePicker
                   disabledDate={disabledEndDate}
                   disabled={!isProjectManager && !isOwnerorAdmin}
+                  onChange={(date) => {
+                    const startDate = form.getFieldValue('start_date');
+                    if (startDate && date) {
+                      const days = calculateWorkingDays(startDate, date);
+                      form.setFieldsValue({ working_days: days });
+                    }
+                  }}
                 />
               </Form.Item>
             </Flex>
           </Form.Item>
+          {/* <Form.Item
+            name="working_days"
+            label={t('estimateWorkingDays')}
+          >
+            <Input
+              type="number"
+              disabled // Make it read-only since it's calculated
+            />
+          </Form.Item> */}
 
           <Form.Item name="working_days" label={t('estimateWorkingDays')}>
             <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
