@@ -2,7 +2,7 @@ import { Button, Collapse, CollapseProps, Flex, Skeleton, Tooltip, Typography, U
 import React, { useEffect, useState, useRef } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import DescriptionEditor from './DescriptionEditor';
-import SubTaskTable from './SubTaskTable';
+import SubTaskTable from './subtask-table';
 import DependenciesTable from './dependencies-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import TaskDetailsForm from './TaskDetailsForm';

@@ -5,12 +5,13 @@ import { nanoid } from '@reduxjs/toolkit';
 import { TFunction } from 'i18next';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { colors } from '@/styles/colors';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ISubTask } from '@/types/tasks/subTask.types';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import Avatars from '@/components/avatars/avatars';
-import './subtaskTable.css';
+import './subtask-table.css';
 import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
 import { getUserSession } from '@/utils/session-helper';
 import { SocketEvents } from '@/shared/socket-events';
@@ -23,6 +24,11 @@ import {
 } from '@/features/tasks/tasks.slice';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
 import logger from '@/utils/errorLogger';
+import { 
+  setShowTaskDrawer, 
+  setSelectedTaskId, 
+  fetchTask 
+} from '@/features/task-drawer/task-drawer.slice';
 
 type SubTaskTableProps = {
   subTasks: ISubTask[];
@@ -42,6 +48,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
   const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const currentSession = getUserSession();
   const { projectView } = useTabSearchParam();
+  const dispatch = useAppDispatch();
 
   const createRequestBody = (taskName: string): ITaskCreateRequest | null => {
     if (!projectId || !currentSession) return null;
@@ -125,6 +132,22 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
     }
   };
 
+  const handleEditSubTask = (taskId: string) => {
+    if (!taskId || !projectId) return;
+    
+    // Close the current drawer and open the drawer for the selected sub task
+    dispatch(setShowTaskDrawer(false));
+    
+    // Small delay to ensure the current drawer is closed before opening the new one
+    setTimeout(() => {
+      dispatch(setSelectedTaskId(taskId));
+      dispatch(setShowTaskDrawer(true));
+      
+      // Fetch task data for the subtask
+      dispatch(fetchTask({ taskId, projectId }));
+    }, 100);
+  };
+
   const columns = useMemo(() => [
     {
       key: 'name',
@@ -161,11 +184,11 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
       width: 80,
       render: (record: IProjectTask) => (
         <Flex gap={8} align="center" className="action-buttons">
-          <Tooltip title={typeof t === 'function' ? t('subTaskTable.edit') : 'Edit'}>
+          <Tooltip title={typeof t === 'function' ? t('taskInfoTab.subTasks.edit') : 'Edit'}>
             <Button
               size="small"
               icon={<EditOutlined />}
-              onClick={() => console.log(record.id)}
+              onClick={() => record.id && handleEditSubTask(record.id)}
             />
           </Tooltip>
           <Popconfirm
