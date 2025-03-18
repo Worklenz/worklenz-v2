@@ -352,7 +352,7 @@ const ProjectViewBoard = () => {
     <Flex vertical gap={16}>
       <TaskListFilters position={'board'} />
 
-      <Skeleton active loading={loadingGroups}>
+      <Skeleton active loading={loadingGroups} className='mt-4 p-4'>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}

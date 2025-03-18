@@ -48,7 +48,7 @@ const ProjectViewTaskList = () => {
       {(taskGroups.length === 0 && !loadingGroups) ? (
         <Empty description="No tasks group found" />
       ) : (
-        <Skeleton active loading={loadingGroups} className='mt-4'>
+        <Skeleton active loading={loadingGroups} className='mt-4 p-4'>
           <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
         </Skeleton>
       )}
