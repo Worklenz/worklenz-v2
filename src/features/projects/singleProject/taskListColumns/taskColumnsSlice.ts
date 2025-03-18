@@ -4,6 +4,7 @@ import PhaseHeader from '../phase/PhaseHeader';
 import AddCustomColumnButton from '../../../../pages/projects/projectView/taskList/taskListTable/custom-columns/custom-column-modal/add-custom-column-button';
 
 export type CustomTableColumnsType = {
+  id?: string;
   key: string; // this key identify each column uniquely
   name: string; // this name show the name of the column. this name is used when custom column generated, show in fields filter
   columnHeader: ReactNode | null; // this column header used to render the actual column title

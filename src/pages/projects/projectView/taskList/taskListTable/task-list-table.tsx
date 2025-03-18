@@ -1615,7 +1615,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         document.body,
         'task-context-menu'
       )}
-      {createPortal(<CustomColumnModal />, document.body, 'custom-column-modal')}
+      {/* {createPortal(<CustomColumnModal />, document.body, 'custom-column-modal')} */}
     </div>
   );
 };
