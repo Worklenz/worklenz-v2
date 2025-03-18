@@ -206,7 +206,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             ...project,
             start_date: project.start_date ? dayjs(project.start_date) : null,
             end_date: project.end_date ? dayjs(project.end_date) : null,
-            working_days: startDate && endDate ? calculateWorkingDays(startDate, endDate) : project.working_days || 0,
+            working_days: form.getFieldValue('start_date') && form.getFieldValue('end_date') ? calculateWorkingDays(form.getFieldValue('start_date'), form.getFieldValue('end_date')) : project.working_days || 0,
           });
           setSelectedProjectManager(project.project_manager || null);
         }
