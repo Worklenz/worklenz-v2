@@ -37,5 +37,6 @@
   "asClient": "como cliente",
   "createClient": "Criar cliente",
   "searchInputPlaceholder": "Pesquise por nome ou email",
-  "hoursPerDayValidationMessage": "As horas por dia devem ser um número entre 1 e 24"
+  "hoursPerDayValidationMessage": "As horas por dia devem ser um número entre 1 e 24",
+  "noPermission": "Sem permissão"
 }
