@@ -1,6 +1,6 @@
 import { Card, Flex } from 'antd';
 import TimeReportPageHeader from '@/pages/reporting/timeReports/page-header/time-report-page-header';
-import MembersTimeSheet from '@/pages/reporting/timeReports/members-time-sheet/members-time-sheet';
+import MembersTimeSheet from '@/pages/reporting/time-reports/members-time-sheet/members-time-sheet';
 import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
