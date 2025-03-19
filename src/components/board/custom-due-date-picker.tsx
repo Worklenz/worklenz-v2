@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { DatePicker, Button, Flex } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
@@ -16,11 +16,12 @@ const CustomDueDatePicker = ({
   task: IProjectTask;
   onDateChange: (date: Dayjs | null) => void;
 }) => {
-  const {socket, connected} = useSocket();
+  const { socket } = useSocket();
   const [isDatePickerOpen, setIsDatePickerOpen] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null); // Add ref to container
 
   const dueDayjs = task?.end_date ? dayjs(task.end_date) : null;
-  
+
   const handleDateChange = (date: Dayjs | null) => {
     onDateChange(date);
     setIsDatePickerOpen(false);
@@ -41,57 +42,59 @@ const CustomDueDatePicker = ({
     }
   };
 
-  return task && task.end_date ? (
-    <DatePicker
-      value={dueDayjs}
-      format={'MMM DD, YYYY'}
-      onChange={handleDateChange}
-      variant="borderless"
-      suffixIcon={null}
-      style={{ textAlign: 'right', padding: 0, maxWidth: 100 }}
-      onClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-      }}
-    />
-  ) : (
-    <Flex gap={4} align="center" style={{ position: 'relative', width: 26, height: 26 }}>
-      <DatePicker
-        open={isDatePickerOpen}
-        value={dueDayjs}
-        format={'MMM DD, YYYY'}
-        onChange={handleDateChange}
-        style={{ opacity: 0, width: 0, height: 0, padding: 0 }}
-        popupStyle={{ paddingBlock: 12 }}
-        onBlur={() => setIsDatePickerOpen(false)}
-        onOpenChange={open => setIsDatePickerOpen(open)}
-        variant="borderless"
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
-      />
-      <Button
-        shape="circle"
-        type="dashed"
-        size="small"
-        style={{
-          background: 'transparent',
-          boxShadow: 'none',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: 26,
-          height: 26,
-        }}
-        onClick={e => {
-          e.stopPropagation();
-          e.preventDefault();
-          setIsDatePickerOpen(true);
-        }}
-        icon={<CalendarOutlined />}
-      />
-    </Flex>
+  // Stop propagation at the container level
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
+
+  return (
+    <div ref={containerRef} onClick={handleContainerClick}>
+      {task && task.end_date ? (
+        <DatePicker
+          value={dueDayjs}
+          format={'MMM DD, YYYY'}
+          onChange={handleDateChange}
+          variant="borderless"
+          suffixIcon={null}
+          style={{ textAlign: 'right', padding: 0, maxWidth: 100 }}
+          // Remove individual onClick handler since container handles it
+        />
+      ) : (
+        <Flex gap={4} align="center" style={{ position: 'relative', width: 26, height: 26 }}>
+          <DatePicker
+            open={isDatePickerOpen}
+            value={dueDayjs}
+            format={'MMM DD, YYYY'}
+            onChange={handleDateChange}
+            style={{ opacity: 0, width: 0, height: 0, padding: 0 }}
+            popupStyle={{ paddingBlock: 12 }}
+            onBlur={() => setIsDatePickerOpen(false)}
+            onOpenChange={open => setIsDatePickerOpen(open)}
+            variant="borderless"
+            // Remove individual onClick handler
+          />
+          <Button
+            shape="circle"
+            type="dashed"
+            size="small"
+            style={{
+              background: 'transparent',
+              boxShadow: 'none',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: 26,
+              height: 26,
+            }}
+            onClick={(e) => {
+              e.stopPropagation(); // Keep this as a backup
+              setIsDatePickerOpen(true);
+            }}
+            icon={<CalendarOutlined />}
+          />
+        </Flex>
+      )}
+    </div>
   );
 };
 
