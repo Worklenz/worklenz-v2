@@ -27,7 +27,7 @@ export const ProjectRateCell: React.FC<{
     if (record.id) {
       setIsFavorite(prev => !prev);
       await toggleFavoriteProject(record.id);
-      refetchProjects();
+      // refetchProjects();
     }
   }, [dispatch, record.id]);
 
