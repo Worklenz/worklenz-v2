@@ -1,4 +1,4 @@
-import { Flex, Input } from 'antd';
+import { Flex, Input, InputRef } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,7 @@ import {
   GROUP_BY_PHASE_VALUE,
   GROUP_BY_PRIORITY_VALUE,
   GROUP_BY_STATUS_VALUE,
+  updateSubtask,
 } from '@features/board/board-slice';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -18,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import logger from '@/utils/errorLogger';
 
 type BoardCreateSubtaskCardProps = {
   sectionId: string;
@@ -31,18 +33,20 @@ const BoardCreateSubtaskCard = ({
   setShowNewSubtaskCard,
 }: BoardCreateSubtaskCardProps) => {
   const { socket, connected } = useSocket();
+  const dispatch = useAppDispatch();
+
   const [creatingTask, setCreatingTask] = useState<boolean>(false);
   const [newSubtaskName, setNewSubtaskName] = useState<string>('');
+  const [isEnterKeyPressed, setIsEnterKeyPressed] = useState<boolean>(false);
 
   const cardRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const { t } = useTranslation('kanban-board');
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { projectId } = useParams();
   const currentSession = useAuthService().getCurrentSession();
-
-  const dispatch = useAppDispatch();
 
   const createRequestBody = (): ITaskCreateRequest | null => {
     if (!projectId || !currentSession) return null;
@@ -69,7 +73,8 @@ const BoardCreateSubtaskCard = ({
   };
 
   const handleAddSubtask = () => {
-    if (creatingTask || !projectId || !currentSession || newSubtaskName.trim() === '' || !connected) return;
+    if (creatingTask || !projectId || !currentSession || newSubtaskName.trim() === '' || !connected)
+      return;
 
     try {
       setCreatingTask(true);
@@ -78,13 +83,33 @@ const BoardCreateSubtaskCard = ({
 
       socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
+        dispatch(updateSubtask({ sectionId, subtask: task, mode: 'add' }));
         setCreatingTask(false);
-        console.log('task', task);
+        // Clear the input field after successful task creation
+        setNewSubtaskName('');
+        // Focus back to the input field for adding another subtask
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
       });
     } catch (error) {
-      console.error('Error adding task:', error);
+      logger.error('Error adding task:', error);
       setCreatingTask(false);
     }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setIsEnterKeyPressed(true);
+      handleAddSubtask();
+    }
+  };
+
+  const handleInputBlur = () => {
+    if (!isEnterKeyPressed && newSubtaskName.length > 0) {
+      handleAddSubtask();
+    }
+    setIsEnterKeyPressed(false);
   };
 
   const handleCancelNewCard = (e: React.FocusEvent<HTMLDivElement>) => {
@@ -111,11 +136,12 @@ const BoardCreateSubtaskCard = ({
       onBlur={handleCancelNewCard}
     >
       <Input
+        ref={inputRef}
         autoFocus
         value={newSubtaskName}
         onChange={e => setNewSubtaskName(e.target.value)}
-        onPressEnter={handleAddSubtask}
-        onBlur={newSubtaskName.length > 0 ? handleAddSubtask : () => null}
+        onKeyDown={handleKeyDown}
+        onBlur={handleInputBlur}
         placeholder={t('newSubtaskNamePlaceholder')}
         style={{
           width: '100%',
@@ -128,11 +154,3 @@ const BoardCreateSubtaskCard = ({
 };
 
 export default BoardCreateSubtaskCard;
-function setCreatingTask(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
-
-function onNewTaskReceived(arg0: IAddNewTask) {
-  throw new Error('Function not implemented.');
-}
-

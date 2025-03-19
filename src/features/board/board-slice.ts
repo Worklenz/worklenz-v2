@@ -428,6 +428,53 @@ const boardSlice = createSlice({
         }
       }
     },
+
+    updateSubtask: (state, action: PayloadAction<{ sectionId: string; subtask: IProjectTask, mode: 'add' | 'delete' }>) => {
+      const { sectionId, subtask } = action.payload;
+      const parentTaskId = subtask.parent_task_id;
+      
+      // Function to update a task with a new subtask
+      const updateTaskWithSubtask = (task: IProjectTask) => {
+        if (!task) return false;
+        
+        // Initialize sub_tasks array if it doesn't exist
+        if (!task.sub_tasks) {
+          task.sub_tasks = [];
+        }
+        
+        if (action.payload.mode === 'add') {
+          // Increment subtask count
+          task.sub_tasks_count = (task.sub_tasks_count || 0) + 1;
+          
+          // Add the subtask
+          task.sub_tasks.push({ ...subtask });
+        } else {
+          // Remove the subtask
+          task.sub_tasks = task.sub_tasks.filter(t => t.id !== subtask.id);
+          task.sub_tasks_count = (task.sub_tasks_count || 0) - 1;
+        }
+        return true;
+      };
+      
+      // First try to find the task in the specified section
+      if (sectionId) {
+        const section = state.taskGroups.find(sec => sec.id === sectionId);
+        if (section) {
+          const task = section.tasks.find(task => task.id === parentTaskId);
+          if (task && updateTaskWithSubtask(task)) {
+            return;
+          }
+        }
+      }
+      
+      // If section not found or task not in section, search all groups
+      for (const group of state.taskGroups) {
+        const task = group.tasks.find(task => task.id === parentTaskId);
+        if (task && updateTaskWithSubtask(task)) {
+          break;
+        }
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -443,8 +490,17 @@ const boardSlice = createSlice({
         state.loadingGroups = false;
         state.error = action.error.message || 'Failed to fetch task groups';
       })
-      .addCase(fetchBoardSubTasks.pending, state => {
+      .addCase(fetchBoardSubTasks.pending, (state, action) => {
         state.error = null;
+        // Find the task and set sub_tasks_loading to true
+        const taskId = action.meta.arg.taskId;
+        for (const group of state.taskGroups) {
+          const task = group.tasks.find(t => t.id === taskId);
+          if (task) {
+            task.sub_tasks_loading = true;
+            break;
+          }
+        }
       })
       .addCase(fetchBoardSubTasks.fulfilled, (state, action: PayloadAction<IProjectTask[]>) => {
         if (action.payload.length > 0) {
@@ -455,7 +511,18 @@ const boardSlice = createSlice({
               if (task) {
                 task.sub_tasks = action.payload;
                 task.show_sub_tasks = true;
+                task.sub_tasks_loading = false;
                 break;
+              }
+            }
+          }
+        } else {
+          // If no subtasks were returned, we still need to set loading to false
+          // We don't have the taskId from the payload, so we'll check all tasks
+          for (const group of state.taskGroups) {
+            for (const task of group.tasks) {
+              if (task.sub_tasks_loading) {
+                task.sub_tasks_loading = false;
               }
             }
           }
@@ -463,6 +530,15 @@ const boardSlice = createSlice({
       })
       .addCase(fetchBoardSubTasks.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to fetch sub tasks';
+        // Set loading to false on rejection
+        // We'll check all tasks for loading state
+        for (const group of state.taskGroups) {
+          for (const task of group.tasks) {
+            if (task.sub_tasks_loading) {
+              task.sub_tasks_loading = false;
+            }
+          }
+        }
       });
   },
 });
@@ -488,5 +564,6 @@ export const {
   setBoardGroupName,
   updateTaskAssignees,
   updateTaskEndDate,
+  updateSubtask,
 } = boardSlice.actions;
 export default boardSlice.reducer;
