@@ -4,7 +4,7 @@ import ProjectViewFiles from '@/pages/projects/projectView/files/project-view-fi
 import ProjectViewMembers from '@/pages/projects/projectView/members/project-view-members';
 import ProjectViewUpdates from '@/pages/projects/project-view-1/updates/project-view-updates';
 import ProjectViewTaskList from '@/pages/projects/projectView/taskList/project-view-task-list';
-import ProjectViewBoard from '@/pages/projects/projectView/board/ProjectViewBoard';
+import ProjectViewBoard from '@/pages/projects/projectView/board/project-view-board';
 
 // type of a tab items
 type TabItems = {
