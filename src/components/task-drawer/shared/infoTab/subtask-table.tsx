@@ -121,6 +121,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
     }
 
     addInstantTask(newTaskName);
+    // Don't turn off edit mode to allow adding another task immediately
   };
 
   const handleInputBlur = () => {
@@ -128,9 +129,21 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
       setIsEdit(false);
     } else {
       handleOnBlur();
-      setIsEdit(false);
+      // Keep isEdit true to maintain input field visibility
+      // The newTaskName will be reset to empty in addInstantTask
     }
   };
+
+  // Add a new useEffect to refocus the input field after task creation
+  useEffect(() => {
+    if (isEdit && !creatingTask && newTaskName === '') {
+      // Find and focus the input after task creation is complete
+      const inputElement = document.querySelector('.subtask-table-input') as HTMLInputElement;
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+  }, [isEdit, creatingTask, newTaskName]);
 
   const handleEditSubTask = (taskId: string) => {
     if (!taskId || !projectId) return;
@@ -147,6 +160,11 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
       dispatch(fetchTask({ taskId, projectId }));
     }, 100);
   };
+
+  const getSubTasksProgress = () => {
+    const ratio = taskFormViewModel?.task?.complete_ratio || 0;
+    return ratio == Infinity ? 0 : ratio;
+  }
 
   const columns = useMemo(() => [
     {
@@ -209,7 +227,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
 
   return (
     <Flex vertical gap={12}>
-      <Progress percent={Math.round((subTasks.filter(task => task.completed_at).length / subTasks.length) * 100)} />
+      {taskFormViewModel?.task?.sub_tasks && <Progress percent={getSubTasksProgress()} />}
 
       <Flex vertical gap={6}>
         {subTasks.length > 0 && (
@@ -245,6 +263,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
               onBlur={handleInputBlur}
               onPressEnter={handleOnBlur}
               size="small"
+              className="subtask-table-input"
             />
           ) : (
             <Input
