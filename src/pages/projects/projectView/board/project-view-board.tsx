@@ -43,7 +43,7 @@ const ProjectViewBoard = () => {
   const { trackMixpanelEvent } = useMixpanelTracking();
 
   const { projectId } = useAppSelector(state => state.projectReducer);
-  const { taskGroups, groupBy, loadingGroups, error } = useAppSelector(state => state.boardReducer);
+  const { taskGroups, groupBy, loadingGroups, search, archived } = useAppSelector(state => state.boardReducer);
   const { statusCategories, loading: loadingStatusCategories } = useAppSelector(
     state => state.taskStatusReducer
   );
@@ -58,7 +58,7 @@ const ProjectViewBoard = () => {
         dispatch(fetchBoardTaskGroups(projectId));
       }
     }
-  }, [dispatch, projectId, groupBy, projectView]);
+  }, [dispatch, projectId, groupBy, projectView, search, archived]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
