@@ -205,7 +205,7 @@ const CustomColumnModal = () => {
 
         // Make API request to create custom column using the service
         try {
-          await tasksCustomColumnsService.createCustomColumn(projectId || '', {
+          const res = await tasksCustomColumnsService.createCustomColumn(projectId || '', {
             name: value.fieldTitle,
             key: columnKey,
             field_type: value.fieldType,
@@ -214,10 +214,12 @@ const CustomColumnModal = () => {
             configuration
           });
 
-          // Add to local state
+          if (res.done) {
+            if (res.body.id) newColumn.id = res.body.id;
           dispatch(addCustomColumn(newColumn));
           dispatch(setCustomColumnModalAttributes({ modalType: 'create', columnId: null }));
           dispatch(toggleCustomColumnModalOpen(false));
+          }
         } catch (error) {
           logger.error('Error creating custom column:', error);
           message.error('Failed to create custom column');

@@ -36,6 +36,7 @@ import logger from '@/utils/errorLogger';
 
 // Components
 import EmptyListPlaceholder from '../../../../components/EmptyListPlaceholder';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 interface PaginationType {
   current: number;
@@ -55,6 +56,8 @@ const ProjectViewMembers = () => {
   const user = auth.getCurrentSession();
   const isOwnerOrAdmin = auth.isOwnerOrAdmin();
 
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+  
   // State
   const [isLoading, setIsLoading] = useState(false);
   const [members, setMembers] = useState<IProjectMembersViewModel>();
@@ -120,7 +123,7 @@ const ProjectViewMembers = () => {
   // Effects
   useEffect(() => {
     void getProjectMembers();
-  }, [projectId, pagination.current, pagination.pageSize, pagination.field, pagination.order]);
+  }, [refreshTimestamp, projectId, pagination.current, pagination.pageSize, pagination.field, pagination.order]);
 
   // Table Configuration
   const columns: TableProps['columns'] = [

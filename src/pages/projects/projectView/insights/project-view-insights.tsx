@@ -24,6 +24,7 @@ const ProjectViewInsights = () => {
   const { projectId } = useParams();
   const { t } = useTranslation('project-view-insights');
   const exportRef = useRef<HTMLDivElement>(null);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const dispatch = useAppDispatch();
   const [exportLoading, setExportLoading] = useState(false);
@@ -119,12 +120,19 @@ const ProjectViewInsights = () => {
     };
   };
 
+  useEffect(()=>{
+    if(projectId){
+      dispatch(setActiveSegment('Overview'));
+    }
+  },[refreshTimestamp])
+
   return (
     <Flex vertical gap={24}>
       <Flex align="center" justify="space-between">
         <Segmented
           options={['Overview', 'Members', 'Tasks']}
           defaultValue={activeSegment}
+          value={activeSegment}
           onChange={handleSegmentChange}
         />
 

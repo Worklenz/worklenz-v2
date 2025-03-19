@@ -16,7 +16,7 @@ import { ITaskFormViewModel, ITaskViewModel } from '@/types/tasks/task.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 
-import NotifyMemberSelector from './NotifyMemberSelector';
+import NotifyMemberSelector from './notify-member-selector';
 import TaskDrawerPhaseSelector from './details/task-drawer-phase-selector/task-drawer-phase-selector';
 import TaskDrawerKey from './details/task-drawer-key/task-drawer-key';
 import TaskDrawerLabels from './details/task-drawer-labels/task-drawer-labels';

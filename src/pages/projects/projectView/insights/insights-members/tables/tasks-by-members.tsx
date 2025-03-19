@@ -18,6 +18,8 @@ const TaskByMembersTable = () => {
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [memberList, setMemberList] = useState<ITeamMemberOverviewGetResponse[]>([]);
   const [loading, setLoading] = useState(false);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+
   const { t } = useTranslation('project-view-insights');
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -39,7 +41,7 @@ const TaskByMembersTable = () => {
 
   useEffect(() => {
     getProjectOverviewMembers();
-  }, [projectId]);
+  }, [projectId,refreshTimestamp]);
 
   // toggle members row expansions
   const toggleRowExpansion = (memberId: string) => {

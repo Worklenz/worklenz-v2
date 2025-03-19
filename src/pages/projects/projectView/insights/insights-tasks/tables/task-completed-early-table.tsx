@@ -7,6 +7,7 @@ import { IInsightTasks } from '@/types/project/projectInsights.types';
 import { colors } from '@/styles/colors';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
 import logger from '@/utils/errorLogger';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const TaskCompletedEarlyTable = ({
   projectId,
@@ -17,9 +18,12 @@ const TaskCompletedEarlyTable = ({
 }) => {
   const [earlyCompletedTaskList, setEarlyCompletedTaskList] = useState<IInsightTasks[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
+
 
   const getEarlyCompletedTasks = async () => {
     try {
+      setLoading(true);
       const res = await projectInsightsApiService.getTasksCompletedEarly(
         projectId,
         includeArchivedTasks
@@ -36,7 +40,7 @@ const TaskCompletedEarlyTable = ({
 
   useEffect(() => {
     getEarlyCompletedTasks();
-  }, [projectId, includeArchivedTasks]);
+  }, [projectId, includeArchivedTasks, refreshTimestamp]);
 
   const columns: TableProps['columns'] = [
     {

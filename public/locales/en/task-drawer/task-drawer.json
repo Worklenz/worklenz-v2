@@ -58,7 +58,9 @@
     "comments": {
       "title": "Comments",
       "addComment": "+ Add new comment"
-    }
+    },
+    "searchInputPlaceholder": "Search by name",
+    "pendingInvitation": "Pending Invitation"
   },
   "taskTimeLogTab": {
     "title": "Time Log",

@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Badge,
-  Dropdown,
-  Flex,
-  Tooltip,
-  Button,
-  InputRef,
-  CheckboxChangeEvent,
-} from 'antd/es';
+import { Badge, Dropdown, Flex, Tooltip, Button, InputRef, CheckboxChangeEvent } from 'antd/es';
 import {
   RetweetOutlined,
   TagsOutlined,
@@ -60,6 +52,7 @@ import logger from '@/utils/errorLogger';
 import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { useAuthService } from '@/hooks/useAuth';
+import CustomColumnModal from '@/pages/projects/projectView/taskList/taskListTable/custom-columns/custom-column-modal/custom-column-modal';
 
 interface ITaskAssignee {
   id: string;
@@ -344,7 +337,12 @@ const TaskListBulkActionsBar = () => {
       const body: IBulkTasksLabelsRequest = {
         tasks: selectedTaskIdsList,
         labels: selectedLabels,
-        text: selectedLabels.length > 0 ? null : createLabelText.trim() !== '' ? createLabelText.trim() : null,
+        text:
+          selectedLabels.length > 0
+            ? null
+            : createLabelText.trim() !== ''
+              ? createLabelText.trim()
+              : null,
       };
       const res = await taskListBulkActionsApiService.assignLabels(body, projectId);
       if (res.done) {
@@ -449,7 +447,10 @@ const TaskListBulkActionsBar = () => {
             </div>
           </Tooltip>
 
-          <Tooltip title={t('changeAssignees')} getPopupContainer={() => changeAssigneesRef.current!}>
+          <Tooltip
+            title={t('changeAssignees')}
+            getPopupContainer={() => changeAssigneesRef.current!}
+          >
             <div ref={changeAssigneesRef}>
               <Dropdown
                 dropdownRender={getAssigneesMenu}
@@ -470,7 +471,10 @@ const TaskListBulkActionsBar = () => {
             </div>
           </Tooltip>
 
-          <Tooltip title={archived ? t('unarchive') : t('archive')} getPopupContainer={() => archiveRef.current!}>
+          <Tooltip
+            title={archived ? t('unarchive') : t('archive')}
+            getPopupContainer={() => archiveRef.current!}
+          >
             <div ref={archiveRef}>
               <Button
                 icon={<InboxOutlined />}
@@ -510,7 +514,11 @@ const TaskListBulkActionsBar = () => {
                   ],
                 }}
               >
-                <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+                <Button
+                  icon={<MoreOutlined />}
+                  className="borderless-icon-btn"
+                  style={buttonStyle}
+                />
               </Dropdown>
             </div>
           </Tooltip>
@@ -538,11 +546,8 @@ const TaskListBulkActionsBar = () => {
           document.body,
           'create-task-template'
         )}
-        {createPortal(
-          <ConvertToSubtaskDrawer />,
-          document.body,
-          'convert-to-subtask-modal'
-        )}
+        {createPortal(<ConvertToSubtaskDrawer />, document.body, 'convert-to-subtask-modal')}
+        {createPortal(<CustomColumnModal />, document.body, 'custom-column-modal')}
       </Flex>
     </div>
   );

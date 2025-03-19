@@ -1494,6 +1494,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
   };
 
   const handleCustomColumnSettings = (columnKey: string) => {   
+    console.log('columnKey', columnKey);
     if (!columnKey) return;
     setEditColumnKey(columnKey);
     dispatch(setCustomColumnModalAttributes({modalType: 'edit', columnId: columnKey}));
@@ -1614,7 +1615,6 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         document.body,
         'task-context-menu'
       )}
-      {createPortal(<CustomColumnModal />, document.body, 'custom-column-modal')}
     </div>
   );
 };
