@@ -14,11 +14,17 @@ import { taskTimeLogsApiService } from '@/api/tasks/task-time-logs.api.service';
 
 interface TimeLogFormProps {
   onCancel: () => void;
+  onSubmitSuccess?: () => void;
   initialValues?: ITaskLogViewModel;
   mode?: 'create' | 'edit';
 }
 
-const TimeLogForm = ({ onCancel, initialValues, mode = 'create' }: TimeLogFormProps) => {
+const TimeLogForm = ({ 
+  onCancel, 
+  onSubmitSuccess,
+  initialValues, 
+  mode = 'create' 
+}: TimeLogFormProps) => {
   const currentSession = useAuthService().getCurrentSession();
   const { socket, connected } = useSocket();
   const [form] = Form.useForm();
@@ -83,7 +89,6 @@ const TimeLogForm = ({ onCancel, initialValues, mode = 'create' }: TimeLogFormPr
         }
       }
     );
-    console.log('session', session);
   };
 
   const mapToRequest = () => {
@@ -160,7 +165,13 @@ const TimeLogForm = ({ onCancel, initialValues, mode = 'create' }: TimeLogFormPr
         await taskTimeLogsApiService.create(requestBody);
       }
       console.log('Received values:', values);
-      onCancel();
+      
+      // Call onSubmitSuccess if provided, otherwise just cancel
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      } else {
+        onCancel();
+      }
     } catch (error) {
       console.error('Error saving time log:', error);
     }
@@ -181,7 +192,9 @@ const TimeLogForm = ({ onCancel, initialValues, mode = 'create' }: TimeLogFormPr
         position: 'relative',
         height: 'fit-content',
         justifySelf: 'flex-end',
-        paddingBlock: 24,
+        paddingTop: 16,
+        paddingBottom: 0,
+        overflow: 'visible'
       }}
     >
       <div
@@ -190,20 +203,20 @@ const TimeLogForm = ({ onCancel, initialValues, mode = 'create' }: TimeLogFormPr
           height: 1,
           position: 'absolute',
           top: 0,
-          width: '120%',
+          width: '100%',
           backgroundColor: themeWiseColor('#ebebeb', '#3a3a3a', themeMode),
         }}
       />
 
       <Form
         form={form}
-        style={{ width: '100%' }}
+        style={{ width: '100%', overflow: 'visible' }}
         layout="vertical"
         onFinish={onFinish}
         onValuesChange={(_, values) => setFormValues(values)}
       >
         <Form.Item style={{ marginBlockEnd: 0 }}>
-          <Flex gap={8}>
+          <Flex gap={8} wrap="wrap" style={{ width: '100%' }}>
             <Form.Item
               name="date"
               label="Date"
@@ -234,7 +247,7 @@ const TimeLogForm = ({ onCancel, initialValues, mode = 'create' }: TimeLogFormPr
           <Input.TextArea placeholder="Add a description" />
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item style={{ marginBlockEnd: 0 }}>
           <Flex gap={8}>
             <Button onClick={onCancel}>Cancel</Button>
             <Button
