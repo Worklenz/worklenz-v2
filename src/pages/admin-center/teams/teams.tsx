@@ -34,8 +34,7 @@ const Teams: React.FC = () => {
   const [teams, setTeams] = useState<IOrganizationTeam[]>([]);
   const [currentTeam, setCurrentTeam] = useState<IOrganizationTeam | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const dispatch = useAppDispatch();
+
   const [requestParams, setRequestParams] = useState<IRequestParams>({
     total: 0,
     index: 1,
@@ -103,8 +102,8 @@ const Teams: React.FC = () => {
               placeholder={t('placeholder')}
               suffix={<SearchOutlined />}
               type="text"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              value={requestParams.search ?? ''}
+              onChange={e => setRequestParams(prev => ({ ...prev, search: e.target.value }))}
             />
             <Button type="primary" onClick={() => setShowAddTeamDrawer(true)}>
               {t('addTeam')}
