@@ -9,6 +9,7 @@ import {
   Flex,
   Input,
   Segmented,
+  Skeleton,
   Table,
   TablePaginationConfig,
   Tooltip,
@@ -52,6 +53,7 @@ import { createPortal } from 'react-dom';
 
 const ProjectList: React.FC = () => {
   const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -85,6 +87,10 @@ const ProjectList: React.FC = () => {
   } = useGetProjectsQuery(requestParams);
 
   const filters = useMemo(() => Object.values(IProjectFilter), []);
+
+  useEffect(() => {
+    setIsLoading(loadingProjects || isFetchingProjects);
+  }, [loadingProjects, isFetchingProjects]);
 
   useEffect(() => {
     const filterIndex = getFilterIndex();
@@ -218,22 +224,25 @@ const ProjectList: React.FC = () => {
         }
       />
       <Card className="project-card">
-        <Table<IProjectViewModel>
-          columns={TableColumns({
-            navigate,
-            filteredInfo,
-          })}
-          dataSource={projectsData?.body?.data || []}
-          rowKey={record => record.id || ''}
-          loading={loadingProjects}
-          size="small"
-          onChange={handleTableChange}
-          pagination={paginationConfig}
-          locale={{ emptyText: <Empty description={t('noProjects')} /> }}
-          onRow={record => ({
-            onClick: () => navigateToProject(record.id, record.team_member_default_view), // Navigate to project on row click
-          })}
-        />
+        <Skeleton active loading={isLoading} className='mt-4 p-4'>
+          <Table<IProjectViewModel>
+            columns={TableColumns({
+              navigate,
+              filteredInfo,
+            })}
+            dataSource={projectsData?.body?.data || []}
+            rowKey={record => record.id || ''}
+            loading={loadingProjects}
+            size="small"
+            onChange={handleTableChange}
+            pagination={paginationConfig}
+            locale={{ emptyText: <Empty description={t('noProjects')} /> }}
+            onRow={record => ({
+              onClick: () => navigateToProject(record.id, record.team_member_default_view), // Navigate to project on row click
+            })}
+          />
+        </Skeleton>
+
       </Card>
 
       {createPortal(<ProjectDrawer onClose={handleDrawerClose} />, document.body, 'project-drawer')}
