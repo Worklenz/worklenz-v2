@@ -29,6 +29,7 @@ import {
   setSelectedTaskId, 
   fetchTask 
 } from '@/features/task-drawer/task-drawer.slice';
+import { updateSubtask } from '@/features/board/board-slice';
 
 type SubTaskTableProps = {
   subTasks: ISubTask[];
@@ -90,6 +91,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
         if (task.parent_task_id) {
           refreshSubTasks();
+          dispatch(updateSubtask({ sectionId: '', subtask: task, mode: 'add' }));
         }
       });
     } catch (error) {
@@ -105,10 +107,9 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
     if (!taskId) return;
 
     try {
-      const res = await tasksApiService.deleteTask(taskId);
-      if (res.done) {
-        refreshSubTasks();
-      }
+      await tasksApiService.deleteTask(taskId);
+      dispatch(updateSubtask({ sectionId: '', subtask: { id: taskId, parent_task_id: selectedTaskId || '' }, mode: 'delete' }));
+      refreshSubTasks();
     } catch (error) {
       logger.error('Error deleting subtask:', error);
     }
@@ -121,7 +122,6 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
     }
 
     addInstantTask(newTaskName);
-    // Don't turn off edit mode to allow adding another task immediately
   };
 
   const handleInputBlur = () => {
@@ -129,15 +129,11 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
       setIsEdit(false);
     } else {
       handleOnBlur();
-      // Keep isEdit true to maintain input field visibility
-      // The newTaskName will be reset to empty in addInstantTask
     }
   };
 
-  // Add a new useEffect to refocus the input field after task creation
   useEffect(() => {
     if (isEdit && !creatingTask && newTaskName === '') {
-      // Find and focus the input after task creation is complete
       const inputElement = document.querySelector('.subtask-table-input') as HTMLInputElement;
       if (inputElement) {
         inputElement.focus();
