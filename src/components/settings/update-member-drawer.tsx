@@ -12,7 +12,6 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAuthService } from '@/hooks/useAuth';
@@ -32,9 +31,10 @@ import { setUser } from '@/features/user/userSlice';
 
 type UpdateMemberDrawerProps = {
   selectedMemberId: string | null;
+  onRoleUpdate?: (memberId: string, newRoleName: string) => void; // Add callback prop
 };
 
-const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
+const UpdateMemberDrawer = ({ selectedMemberId, onRoleUpdate }: UpdateMemberDrawerProps) => {
   const { t } = useTranslation('settings/team-members');
   const dispatch = useAppDispatch();
   const auth = useAuthService();
@@ -105,6 +105,10 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
         setSelectedJobTitle(null);
         dispatch(toggleUpdateMemberDrawer());
 
+        // Update role_name in parent component
+        const newRoleName = values.access === 'admin' ? 'admin' : 'member';
+        onRoleUpdate?.(selectedMemberId, newRoleName);
+
         const authorizeResponse = await authApiService.verify();
         if (authorizeResponse.authenticated) {
           setSession(authorizeResponse.user);
@@ -155,7 +159,6 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
             >
               {teamMember?.name}
             </Typography.Text>
-
             <Typography.Text
               type="secondary"
               style={{
@@ -195,7 +198,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
             }))}
             suffixIcon={false}
             onChange={(value, option) => {
-              if ('label' in option) {
+              if (option && 'label' in option) {
                 form.setFieldsValue({ jobTitle: option.label || value });
               }
             }}
@@ -224,7 +227,6 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
             <Button type="primary" style={{ width: '100%' }} htmlType="submit">
               {t('updateButton')}
             </Button>
-
             <Button
               type="dashed"
               loading={resending}
@@ -234,7 +236,6 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
             >
               {t('resendInvitationButton')}
             </Button>
-
             <Flex vertical style={{ marginBlockStart: 8 }}>
               <Typography.Text
                 style={{
@@ -244,7 +245,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
               >
                 {t('addedText')}
                 <Tooltip title={formatDateTimeWithLocale(teamMember?.created_at || '')}>
-                  &nbsp;{calculateTimeDifference(teamMember?.created_at || '')}
+                   {calculateTimeDifference(teamMember?.created_at || '')}
                 </Tooltip>
               </Typography.Text>
               <Typography.Text
@@ -255,7 +256,7 @@ const UpdateMemberDrawer = ({ selectedMemberId }: UpdateMemberDrawerProps) => {
               >
                 {t('updatedText')}
                 <Tooltip title={formatDateTimeWithLocale(teamMember?.updated_at || '')}>
-                  &nbsp;{calculateTimeDifference(teamMember?.updated_at || '')}
+                   {calculateTimeDifference(teamMember?.updated_at || '')}
                 </Tooltip>
               </Typography.Text>
             </Flex>

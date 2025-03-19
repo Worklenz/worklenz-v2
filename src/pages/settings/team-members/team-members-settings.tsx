@@ -1,4 +1,3 @@
-// Ant Design
 import {
   DeleteOutlined,
   EditOutlined,
@@ -21,35 +20,28 @@ import {
   Typography,
 } from 'antd';
 import { createPortal } from 'react-dom';
-
-// React & Hooks
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-
-// Features & Components
+import { useSocket } from '@/socket/socketContext'; // Add socket hook
+import { SocketEvents } from '@/shared/socket-events'; // Add socket events
 import UpdateMemberDrawer from '@/components/settings/update-member-drawer';
 import {
   toggleInviteMemberDrawer,
   toggleUpdateMemberDrawer,
 } from '@features/settings/member/memberSlice';
-
-// Types
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
-
-// Constants & Services
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@/shared/constants';
 import { teamMembersApiService } from '@/api/team-members/teamMembers.api.service';
 import { colors } from '@/styles/colors';
+
 const TeamMembersSettings = () => {
-  // Hooks
   const { t } = useTranslation('settings/team-members');
   const dispatch = useAppDispatch();
-  useDocumentTitle('Team Members');
+  const { socket } = useSocket(); // Add socket
 
-  // State
   const [model, setModel] = useState<ITeamMembersViewModel>({ total: 0, data: [] });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +53,6 @@ const TeamMembersSettings = () => {
     order: 'asc',
   });
 
-  // API Functions
   const getTeamMembers = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -111,7 +102,16 @@ const TeamMembersSettings = () => {
     }
   };
 
-  // Event Handlers
+  // Callback to update role_name locally
+  const handleRoleUpdate = useCallback((memberId: string, newRoleName: string) => {
+    setModel(prevModel => ({
+      ...prevModel,
+      data: prevModel.data?.map(member =>
+        member.id === memberId ? { ...member, role_name: newRoleName } : member
+      ),
+    }));
+  }, []);
+
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
     getTeamMembers().finally(() => setIsLoading(false));
@@ -135,7 +135,21 @@ const TeamMembersSettings = () => {
     }));
   }, []);
 
-  // Utility Functions
+  // Socket listener for role updates (optional, for multi-client sync)
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRoleChange = (data: { memberId: string; role_name: string }) => {
+      handleRoleUpdate(data.memberId, data.role_name);
+    };
+
+    socket.on(SocketEvents.TEAM_MEMBER_ROLE_CHANGE.toString(), handleRoleChange);
+
+    return () => {
+      socket.off(SocketEvents.TEAM_MEMBER_ROLE_CHANGE.toString(), handleRoleChange);
+    };
+  }, [socket, handleRoleUpdate]);
+
   const getColor = useCallback((role: string | undefined) => {
     switch (role?.toLowerCase()) {
       case 'owner':
@@ -149,12 +163,10 @@ const TeamMembersSettings = () => {
     }
   }, []);
 
-  // Effects
   useEffect(() => {
     getTeamMembers();
   }, [getTeamMembers]);
 
-  // Table Configuration
   const columns: TableProps['columns'] = [
     {
       key: 'name',
@@ -178,7 +190,6 @@ const TeamMembersSettings = () => {
           <Avatar size={28} src={record.avatar_url} style={{ backgroundColor: record.color_code }}>
             {record.name?.charAt(0)}
           </Avatar>
-
           {record.name}
           {record.is_online && <Badge color={colors.limeGreen} />}
           {!record.active && (
@@ -257,7 +268,6 @@ const TeamMembersSettings = () => {
                 onClick={() => record.id && handleMemberClick(record.id)}
               />
             </Tooltip>
-
             <Tooltip title={record.active ? t('deactivateTooltip') : t('activateTooltip')}>
               <Popconfirm
                 title={t('confirmActivateTitle')}
@@ -269,7 +279,6 @@ const TeamMembersSettings = () => {
                 <Button size="small" icon={<UserSwitchOutlined />} />
               </Popconfirm>
             </Tooltip>
-
             <Tooltip title={t('deleteTooltip')}>
               <Popconfirm
                 title={t('confirmDeleteTitle')}
@@ -292,7 +301,6 @@ const TeamMembersSettings = () => {
         <Typography.Title level={4} style={{ marginBlockEnd: 0 }}>
           {model.total} {model.total !== 1 ? t('membersCountPlural') : t('memberCount')}
         </Typography.Title>
-
         <Flex gap={8} align="center" justify="flex-end" style={{ width: '100%', maxWidth: 400 }}>
           <Tooltip title={t('pinTooltip')}>
             <Button shape="circle" icon={<SyncOutlined />} onClick={handleRefresh} />
@@ -309,32 +317,34 @@ const TeamMembersSettings = () => {
           </Button>
         </Flex>
       </Flex>
-
       <Card style={{ width: '100%' }}>
-        {
-          <Table
-            columns={columns}
-            size="small"
-            dataSource={model.data}
-            rowKey={record => record.id}
-            onChange={handleTableChange}
-            loading={isLoading}
-            pagination={{
-              current: pagination.current,
-              pageSize: pagination.pageSize,
-              showSizeChanger: true,
-              defaultPageSize: DEFAULT_PAGE_SIZE,
-              pageSizeOptions: PAGE_SIZE_OPTIONS,
-              size: 'small',
-              total: model.total,
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-            }}
-            scroll={{ x: 'max-content' }}
-          />
-        }
+        <Table
+          columns={columns}
+          size="small"
+          dataSource={model.data}
+          rowKey={record => record.id}
+          onChange={handleTableChange}
+          loading={isLoading}
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            showSizeChanger: true,
+            defaultPageSize: DEFAULT_PAGE_SIZE,
+            pageSizeOptions: PAGE_SIZE_OPTIONS,
+            size: 'small',
+            total: model.total,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+          }}
+          scroll={{ x: 'max-content' }}
+        />
       </Card>
-
-      {createPortal(<UpdateMemberDrawer selectedMemberId={selectedMemberId} />, document.body)}
+      {createPortal(
+        <UpdateMemberDrawer
+          selectedMemberId={selectedMemberId}
+          onRoleUpdate={handleRoleUpdate} // Pass callback
+        />,
+        document.body
+      )}
     </div>
   );
 };
