@@ -48,6 +48,7 @@ import { updateTaskGroupColor } from '@/features/tasks/tasks.slice';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
 import { update } from 'lodash';
+import logger from '@/utils/errorLogger';
 
 interface BoardSectionCardHeaderProps {
   groupId: string;
@@ -81,7 +82,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
 
   const { editableSectionId, groupBy } = useAppSelector(state => state.boardReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
-  const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
+  const { statusCategories, status } = useAppSelector(state => state.taskStatusReducer);
 
   const { t } = useTranslation('kanban-board');
 
@@ -163,6 +164,27 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
     setIsEditable(false);
   };
 
+  const handleDeleteSection = async () => {
+    if (!projectId || !groupId) return;
+    try {
+      if (groupBy === IGroupBy.STATUS) {
+        const replacingStatusId = status?.[0]?.id;
+        if (!replacingStatusId) return;
+        const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
+        if (res.done) {
+          dispatch(deleteSection({ sectionId: groupId }));
+        }
+      } else if (groupBy === IGroupBy.PHASE) {
+        const res = await phasesApiService.deletePhaseOption(groupId, projectId);
+        if (res.done) {
+          dispatch(deleteSection({ sectionId: groupId }));
+        }
+      }
+    } catch (error) {
+      logger.error('Error deleting section', error);
+    }
+  };
+
   const items: MenuProps['items'] = [
     {
       key: '1',
@@ -198,7 +220,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
         ),
       })),
     },
-    {
+    groupBy !== IGroupBy.PRIORITY && {
       key: '3',
       label: (
         <Popconfirm
@@ -206,7 +228,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
           icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
           okText={t('deleteConfirmationOk')}
           cancelText={t('deleteConfirmationCancel')}
-          onConfirm={() => dispatch(deleteSection({ sectionId: groupId }))}
+          onConfirm={handleDeleteSection}
         >
           <Flex gap={8} align="center" style={{ width: '100%' }}>
             <DeleteOutlined />

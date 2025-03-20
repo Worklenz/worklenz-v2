@@ -55,7 +55,7 @@
     "react-timer-hook": "^3.0.8",
     "react-window": "^1.8.11",
     "socket.io-client": "^4.8.1",
-    "tinymce": "^7.5.1",
+    "tinymce": "^7.7.2",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
@@ -76,7 +76,7 @@
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "vite": "^6.1.1",
+    "vite": "^6.2.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.5"
   },
