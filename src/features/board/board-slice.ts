@@ -50,7 +50,7 @@ export const setCurrentBoardGroup = (groupBy: IGroupBy): void => {
   localStorage.setItem(LOCALSTORAGE_BOARD_GROUP_KEY, groupBy);
 };
 
-interface ITaskState {
+interface BoardState {
   search: string | null;
   archived: boolean;
   groupBy: IGroupBy;
@@ -75,7 +75,7 @@ interface ITaskState {
   editableSectionId: string | null;
 }
 
-const initialState: ITaskState = {
+const initialState: BoardState = {
   search: null,
   archived: false,
   groupBy: getCurrentGroupBoard().value as IGroupBy,
@@ -97,7 +97,7 @@ const initialState: ITaskState = {
   editableSectionId: null,
 };
 
-// async thunk for fetching members data
+// Async thunk for fetching members data
 export const fetchTaskData = createAsyncThunk('board/fetchTaskData', async (endpoint: string) => {
   const response = await fetch(endpoint);
   if (!response.ok) throw new Error(`Response error: ${response.status}`);
@@ -108,8 +108,65 @@ export const fetchBoardTaskGroups = createAsyncThunk(
   'board/fetchBoardTaskGroups',
   async (projectId: string, { rejectWithValue, getState }) => {
     try {
-      const state = getState() as { boardReducer: ITaskState };
+      const state = getState() as { boardReducer: BoardState };
       const { boardReducer } = state;
+
+      const selectedMembers = boardReducer.taskAssignees
+        .filter(member => member.selected)
+        .map(member => member.id)
+        .join(' ');
+
+      const selectedLabels = boardReducer.labels
+        .filter(label => label.selected)
+        .map(label => label.id)
+        .join(' ');
+
+      const config: ITaskListConfigV2 = {
+        id: projectId,
+        archived: boardReducer.archived,
+        group: boardReducer.groupBy,
+        field: boardReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+        order: '',
+        search: boardReducer.search || '',
+        statuses: '',
+        members: selectedMembers,
+        projects: '',
+        isSubtasksInclude: boardReducer.isSubtasksInclude,
+        labels: selectedLabels,
+        priorities: boardReducer.priorities.join(' '),
+      };
+
+      const response = await tasksApiService.getTaskList(config);
+      return response.body;
+    } catch (error) {
+      logger.error('Fetch Task Groups', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch task groups');
+    }
+  }
+);
+
+export const fetchBoardSubTasks = createAsyncThunk(
+  'board/fetchBoardSubTasks',
+  async (
+    { taskId, projectId }: { taskId: string; projectId: string },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState() as { boardReducer: BoardState };
+      const { boardReducer } = state;
+
+      // Check if the task is already expanded
+      const task = boardReducer.taskGroups
+        .flatMap(group => group.tasks)
+        .find(t => t.id === taskId);
+
+      if (task?.show_sub_tasks) {
+        // If already expanded, just return without fetching
+        return [];
+      }
 
       const selectedMembers = boardReducer.taskAssignees
         .filter(member => member.selected)
@@ -134,68 +191,10 @@ export const fetchBoardTaskGroups = createAsyncThunk(
         isSubtasksInclude: false,
         labels: selectedLabels,
         priorities: boardReducer.priorities.join(' '),
+        parent_task: taskId,
       };
 
       const response = await tasksApiService.getTaskList(config);
-      return response.body;
-    } catch (error) {
-      logger.error('Fetch Task Groups', error);
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue('Failed to fetch task groups');
-    }
-  }
-);
-
-export const fetchBoardSubTasks = createAsyncThunk(
-  'board/fetchBoardSubTasks',
-  async (
-    { taskId, projectId }: { taskId: string; projectId: string },
-    { rejectWithValue, getState, dispatch }
-  ) => {
-    const state = getState() as { taskReducer: ITaskState };
-    const { taskReducer } = state;
-
-    // Check if the task is already expanded
-    const task = taskReducer.taskGroups.flatMap(group => group.tasks).find(t => t.id === taskId);
-
-    if (task?.show_sub_tasks) {
-      // If already expanded, just return without fetching
-      return [];
-    }
-
-    const selectedMembers = taskReducer.taskAssignees
-      .filter(member => member.selected)
-      .map(member => member.id)
-      .join(' ');
-
-    const selectedLabels = taskReducer.labels
-      .filter(label => label.selected)
-      .map(label => label.id)
-      .join(' ');
-
-    const config: ITaskListConfigV2 = {
-      id: projectId,
-      archived: taskReducer.archived,
-      group: taskReducer.groupBy,
-      field: taskReducer.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
-      order: '',
-      search: taskReducer.search || '',
-      statuses: '',
-      members: selectedMembers,
-      projects: '',
-      isSubtasksInclude: false,
-      labels: selectedLabels,
-      priorities: taskReducer.priorities.join(' '),
-      parent_task: taskId,
-    };
-    try {
-      const response = await tasksApiService.getTaskList(config);
-      // Only expand if we actually fetched subtasks
-      if (response.body.length > 0) {
-        // dispatch(toggleTaskRowExpansion(taskId));
-      }
       return response.body;
     } catch (error) {
       logger.error('Fetch Sub Tasks', error);
@@ -207,13 +206,71 @@ export const fetchBoardSubTasks = createAsyncThunk(
   }
 );
 
+// Helper functions for common operations
+const findTaskInAllGroups = (
+  taskGroups: ITaskListGroup[], 
+  taskId: string
+): { task: IProjectTask; group: ITaskListGroup } | null => {
+  for (const group of taskGroups) {
+    const task = group.tasks.find(t => t.id === taskId);
+    if (task) return { task, group };
+    
+    // Check in subtasks
+    for (const parentTask of group.tasks) {
+      if (!parentTask.sub_tasks) continue;
+      const subtask = parentTask.sub_tasks.find(st => st.id === taskId);
+      if (subtask) return { task: subtask, group };
+    }
+  }
+  return null;
+};
+
+const findParentTaskInAllGroups = (
+  taskGroups: ITaskListGroup[],
+  parentTaskId: string
+): { task: IProjectTask; group: ITaskListGroup } | null => {
+  for (const group of taskGroups) {
+    const task = group.tasks.find(t => t.id === parentTaskId);
+    if (task) return { task, group };
+  }
+  return null;
+};
+
+const getTaskListConfig = (state: BoardState, projectId: string, parentTaskId?: string): ITaskListConfigV2 => {
+  const selectedMembers = state.taskAssignees
+    .filter(member => member.selected)
+    .map(member => member.id)
+    .join(' ');
+
+  const selectedLabels = state.labels
+    .filter(label => label.selected)
+    .map(label => label.id)
+    .join(' ');
+
+  return {
+    id: projectId,
+    archived: state.archived,
+    group: state.groupBy,
+    field: state.fields.map(field => `${field.key} ${field.sort_order}`).join(','),
+    order: '',
+    search: state.search || '',
+    statuses: '',
+    members: selectedMembers,
+    projects: '',
+    isSubtasksInclude: state.isSubtasksInclude,
+    labels: selectedLabels,
+    priorities: state.priorities.join(' '),
+    parent_task: parentTaskId,
+  };
+};
+
 const boardSlice = createSlice({
   name: 'boardReducer',
   initialState,
   reducers: {
-    setBoardGroupBy: (state, action: PayloadAction<ITaskState['groupBy']>) => {
-      console.log('action.payload', action.payload);
+    setBoardGroupBy: (state, action: PayloadAction<BoardState['groupBy']>) => {
       state.groupBy = action.payload;
+      setCurrentBoardGroup(action.payload);
     },
 
     addBoardSectionCard: (
@@ -234,22 +291,21 @@ const boardSlice = createSlice({
         tasks: [],
       };
       state.taskGroups.push(newSection as ITaskListGroup);
-
       state.editableSectionId = newSection.id;
     },
 
-    setEditableSection: (state, action) => {
+    setEditableSection: (state, action: PayloadAction<string | null>) => {
       state.editableSectionId = action.payload;
     },
 
-    addTaskCardToTheTop: (state, action: PayloadAction<{ sectionId: string; task: any }>) => {
+    addTaskCardToTheTop: (state, action: PayloadAction<{ sectionId: string; task: IProjectTask }>) => {
       const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         section.tasks.unshift(action.payload.task);
       }
     },
 
-    addTaskCardToTheBottom: (state, action: PayloadAction<{ sectionId: string; task: any }>) => {
+    addTaskCardToTheBottom: (state, action: PayloadAction<{ sectionId: string; task: IProjectTask }>) => {
       const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         section.tasks.push(action.payload.task);
@@ -258,23 +314,40 @@ const boardSlice = createSlice({
 
     addSubtask: (
       state,
-      action: PayloadAction<{ sectionId: string; taskId: string; subtask: any }>
+      action: PayloadAction<{ sectionId: string; taskId: string; subtask: IProjectTask }>
     ) => {
       const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
       if (section) {
-        const task = section.tasks.find((task: any) => task.id === action.payload.taskId);
+        const task = section.tasks.find(task => task.id === action.payload.taskId);
 
         if (task) {
-          task.sub_tasks?.push(action.payload.subtask);
-          task.sub_tasks_count = task.sub_tasks?.length || 0;
+          if (!task.sub_tasks) {
+            task.sub_tasks = [];
+          }
+          task.sub_tasks.push(action.payload.subtask);
+          task.sub_tasks_count = task.sub_tasks.length;
         }
       }
     },
 
     deleteBoardTask: (state, action: PayloadAction<{ sectionId: string; taskId: string }>) => {
-      const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
-      if (section) {
-        section.tasks = section.tasks.filter((task: any) => task.id !== action.payload.taskId);
+      const { sectionId, taskId } = action.payload;
+
+      if (sectionId) {
+        const section = state.taskGroups.find(sec => sec.id === sectionId);
+        if (section) {
+          section.tasks = section.tasks.filter(task => task.id !== taskId);
+          return;
+        }
+      } 
+
+      // If section not found or task not in section, search all groups
+      for (const group of state.taskGroups) {
+        const taskIndex = group.tasks.findIndex(task => task.id === taskId);
+        if (taskIndex !== -1) {
+          group.tasks.splice(taskIndex, 1);
+          break;
+        }
       }
     },
 
@@ -282,6 +355,10 @@ const boardSlice = createSlice({
       state.taskGroups = state.taskGroups.filter(
         section => section.id !== action.payload.sectionId
       );
+      
+      if (state.editableSectionId === action.payload.sectionId) {
+        state.editableSectionId = null;
+      }
     },
 
     updateBoardTaskAssignee: (
@@ -292,17 +369,18 @@ const boardSlice = createSlice({
         taskId: string;
       }>
     ) => {
-      const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
+      const { body, sectionId, taskId } = action.payload;
+      const section = state.taskGroups.find(sec => sec.id === sectionId);
       if (section) {
-        const task = section.tasks.find((task: any) => task.id === action.payload.taskId);
+        const task = section.tasks.find(task => task.id === taskId);
         if (task) {
-          task.assignees = action.payload.body.assignees;
-          task.names = action.payload.body.names;
+          task.assignees = body.assignees;
+          task.names = body.names;
         }
       }
     },
 
-    reorderTaskGroups: (state, action: PayloadAction<any[]>) => {
+    reorderTaskGroups: (state, action: PayloadAction<ITaskListGroup[]>) => {
       state.taskGroups = action.payload;
     },
 
@@ -329,7 +407,7 @@ const boardSlice = createSlice({
 
       // Get the task and remove it from source
       const task = { ...sourceGroup.tasks[taskIndex], status_id: targetGroupId };
-      sourceGroup.tasks = sourceGroup.tasks.filter(task => task.id !== taskId);
+      sourceGroup.tasks.splice(taskIndex, 1);
 
       // Insert task at the target position
       if (targetIndex >= 0 && targetIndex <= targetGroup.tasks.length) {
@@ -364,8 +442,12 @@ const boardSlice = createSlice({
       state.statuses = action.payload;
     },
 
-    setBoardSearch: (state, action: PayloadAction<string>) => {
+    setBoardSearch: (state, action: PayloadAction<string | null>) => {
       state.search = action.payload;
+    },
+
+    toggleSubtasksInclude: (state) => {
+      state.isSubtasksInclude = !state.isSubtasksInclude;
     },
 
     setBoardGroupName: (
@@ -378,12 +460,13 @@ const boardSlice = createSlice({
         categoryId: string;
       }>
     ) => {
-      const group = state.taskGroups.find(group => group.id === action.payload.groupId);
+      const { groupId, name, colorCode, colorCodeDark, categoryId } = action.payload;
+      const group = state.taskGroups.find(group => group.id === groupId);
       if (group) {
-        group.name = action.payload.name;
-        group.color_code = action.payload.colorCode;
-        group.color_code_dark = action.payload.colorCodeDark;
-        group.category_id = action.payload.categoryId;
+        group.name = name;
+        group.color_code = colorCode;
+        group.color_code_dark = colorCodeDark;
+        group.category_id = categoryId;
       }
     },
 
@@ -397,15 +480,28 @@ const boardSlice = createSlice({
       }>
     ) => {
       const { groupId, taskId, assignees, names } = action.payload;
+      
+      // Find the task in the specified group
       const group = state.taskGroups.find(group => group.id === groupId);
-      if (group) {
-        // Find the task or its subtask
-        const task =
-          group.tasks.find(task => task.id === taskId) ||
-          group.tasks.flatMap(task => task.sub_tasks || []).find(subtask => subtask.id === taskId);
-        if (task) {
-          task.assignees = assignees as ITaskAssignee[];
-          task.names = names as InlineMember[];
+      if (!group) return;
+      
+      // Try to find the task directly in the group
+      const task = group.tasks.find(task => task.id === taskId);
+      if (task) {
+        task.assignees = assignees as ITaskAssignee[];
+        task.names = names as InlineMember[];
+        return;
+      }
+      
+      // If not found, look in subtasks
+      for (const parentTask of group.tasks) {
+        if (!parentTask.sub_tasks) continue;
+        
+        const subtask = parentTask.sub_tasks.find(subtask => subtask.id === taskId);
+        if (subtask) {
+          subtask.assignees = assignees as ITaskAssignee[];
+          subtask.names = names as InlineMember[];
+          return;
         }
       }
     },
@@ -417,24 +513,29 @@ const boardSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-
-      for (const group of state.taskGroups) {
-        const existingTask =
-          group.tasks.find(t => t.id === task.id) ||
-          group.tasks.flatMap(t => t.sub_tasks || []).find(subtask => subtask.id === task.id);
-        if (existingTask) {
-          existingTask.end_date = task.end_date;
-          break;
-        }
+      
+      // Find the task and update it
+      const result = findTaskInAllGroups(state.taskGroups, task.id || '');
+      if (result) {
+        result.task.end_date = task.end_date;
       }
     },
 
-    updateSubtask: (state, action: PayloadAction<{ sectionId: string; subtask: IProjectTask, mode: 'add' | 'delete' }>) => {
-      const { sectionId, subtask } = action.payload;
+    updateSubtask: (
+      state, 
+      action: PayloadAction<{ 
+        sectionId: string; 
+        subtask: IProjectTask; 
+        mode: 'add' | 'delete' 
+      }>
+    ) => {
+      const { sectionId, subtask, mode } = action.payload;
       const parentTaskId = subtask.parent_task_id;
       
+      if (!parentTaskId) return;
+      
       // Function to update a task with a new subtask
-      const updateTaskWithSubtask = (task: IProjectTask) => {
+      const updateTaskWithSubtask = (task: IProjectTask): boolean => {
         if (!task) return false;
         
         // Initialize sub_tasks array if it doesn't exist
@@ -442,7 +543,7 @@ const boardSlice = createSlice({
           task.sub_tasks = [];
         }
         
-        if (action.payload.mode === 'add') {
+        if (mode === 'add') {
           // Increment subtask count
           task.sub_tasks_count = (task.sub_tasks_count || 0) + 1;
           
@@ -451,7 +552,7 @@ const boardSlice = createSlice({
         } else {
           // Remove the subtask
           task.sub_tasks = task.sub_tasks.filter(t => t.id !== subtask.id);
-          task.sub_tasks_count = (task.sub_tasks_count || 0) - 1;
+          task.sub_tasks_count = Math.max(0, (task.sub_tasks_count || 1) - 1);
         }
         return true;
       };
@@ -467,12 +568,19 @@ const boardSlice = createSlice({
         }
       }
       
-      // If section not found or task not in section, search all groups
-      for (const group of state.taskGroups) {
-        const task = group.tasks.find(task => task.id === parentTaskId);
-        if (task && updateTaskWithSubtask(task)) {
-          break;
-        }
+      // If not found in the specified section, try all groups
+      const result = findParentTaskInAllGroups(state.taskGroups, parentTaskId);
+      if (result) {
+        updateTaskWithSubtask(result.task);
+      }
+    },
+
+    toggleTaskExpansion: (state, action: PayloadAction<string>) => {
+      const taskId = action.payload;
+      const result = findTaskInAllGroups(state.taskGroups, taskId);
+      
+      if (result) {
+        result.task.show_sub_tasks = !result.task.show_sub_tasks;
       }
     },
   },
@@ -494,50 +602,41 @@ const boardSlice = createSlice({
         state.error = null;
         // Find the task and set sub_tasks_loading to true
         const taskId = action.meta.arg.taskId;
-        for (const group of state.taskGroups) {
-          const task = group.tasks.find(t => t.id === taskId);
-          if (task) {
-            task.sub_tasks_loading = true;
-            break;
-          }
+        const result = findTaskInAllGroups(state.taskGroups, taskId);
+        if (result) {
+          result.task.sub_tasks_loading = true;
         }
       })
       .addCase(fetchBoardSubTasks.fulfilled, (state, action: PayloadAction<IProjectTask[]>) => {
         if (action.payload.length > 0) {
           const taskId = action.payload[0].parent_task_id;
           if (taskId) {
-            for (const group of state.taskGroups) {
-              const task = group.tasks.find(t => t.id === taskId);
-              if (task) {
-                task.sub_tasks = action.payload;
-                task.show_sub_tasks = true;
-                task.sub_tasks_loading = false;
-                break;
-              }
+            const result = findTaskInAllGroups(state.taskGroups, taskId);
+            if (result) {
+              result.task.sub_tasks = action.payload;
+              result.task.show_sub_tasks = true;
+              result.task.sub_tasks_loading = false;
+              result.task.sub_tasks_count = action.payload.length;
             }
           }
         } else {
           // If no subtasks were returned, we still need to set loading to false
-          // We don't have the taskId from the payload, so we'll check all tasks
-          for (const group of state.taskGroups) {
-            for (const task of group.tasks) {
-              if (task.sub_tasks_loading) {
-                task.sub_tasks_loading = false;
-              }
-            }
+          const taskId = (action as any).meta?.arg?.taskId;
+          const result = findTaskInAllGroups(state.taskGroups, taskId);
+          if (result) {
+            result.task.sub_tasks_loading = false;
+            result.task.sub_tasks = [];
+            result.task.sub_tasks_count = 0;
           }
         }
       })
       .addCase(fetchBoardSubTasks.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to fetch sub tasks';
         // Set loading to false on rejection
-        // We'll check all tasks for loading state
-        for (const group of state.taskGroups) {
-          for (const task of group.tasks) {
-            if (task.sub_tasks_loading) {
-              task.sub_tasks_loading = false;
-            }
-          }
+        const taskId = action.meta.arg.taskId;
+        const result = findTaskInAllGroups(state.taskGroups, taskId);
+        if (result) {
+          result.task.sub_tasks_loading = false;
         }
       });
   },
@@ -565,5 +664,7 @@ export const {
   updateTaskAssignees,
   updateTaskEndDate,
   updateSubtask,
+  toggleSubtasksInclude,
+  toggleTaskExpansion,
 } = boardSlice.actions;
 export default boardSlice.reducer;
