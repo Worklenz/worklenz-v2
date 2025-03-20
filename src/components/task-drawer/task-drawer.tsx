@@ -18,12 +18,12 @@ import {
 import './task-drawer.css';
 import TaskDrawerHeader from './task-drawer-header/task-drawer-header';
 import TaskDrawerActivityLog from './shared/activity-log/task-drawer-activity-log';
-import TaskDrawerInfoTab from './shared/infoTab/TaskDrawerInfoTab';
-import TaskDrawerTimeLog from './shared/timeLog/task-drawer-time-log';
-import TimeLogForm from './shared/timeLog/time-log-form';
+import TaskDrawerInfoTab from './shared/info-tab/task-drawer-info-tab';
+import TaskDrawerTimeLog from './shared/time-log/task-drawer-time-log';
+import TimeLogForm from './shared/time-log/time-log-form';
 import { DEFAULT_TASK_NAME } from '@/shared/constants';
 import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
-import InfoTabFooter from './shared/infoTab/InfoTabFooter';
+import InfoTabFooter from './shared/info-tab/info-tab-footer';
 import { Flex } from 'antd';
 
 const TaskDrawer = () => {

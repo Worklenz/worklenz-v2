@@ -1,11 +1,11 @@
 import { Button, Collapse, CollapseProps, Flex, Skeleton, Tooltip, Typography, Upload } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
-import DescriptionEditor from './DescriptionEditor';
+import DescriptionEditor from './description-editor';
 import SubTaskTable from './subtask-table';
 import DependenciesTable from './dependencies-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import TaskDetailsForm from './TaskDetailsForm';
+import TaskDetailsForm from './task-details-form';
 import { fetchTask } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { TFunction } from 'i18next';
@@ -95,7 +95,8 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     paddingBlock: 0,
   };
 
-  const infoItems: CollapseProps['items'] = [
+  // Define all info items
+  const allInfoItems: CollapseProps['items'] = [
     {
       key: 'details',
       label: <Typography.Text strong>{t('taskInfoTab.details.title')}</Typography.Text>,
@@ -190,6 +191,11 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     },
   ];
 
+  // Filter out the 'subTasks' item if this task is a subtask
+  const infoItems = taskFormViewModel?.task?.parent_task_id 
+    ? allInfoItems.filter(item => item.key !== 'subTasks')
+    : allInfoItems;
+
   const fetchSubTasks = async () => {
     if (!selectedTaskId || loadingSubTasks) return;
     try {
@@ -275,7 +281,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
           defaultActiveKey={[
             'details',
             'description',
-            'subTasks',
+            ...(taskFormViewModel?.task?.parent_task_id ? [] : ['subTasks']),
             'dependencies',
             'attachments',
             'comments',

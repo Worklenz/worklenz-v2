@@ -15,6 +15,7 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
 import { deleteTask } from '@/features/tasks/tasks.slice';
+import { deleteBoardTask } from '@/features/board/board-slice';
 
 type TaskDrawerHeaderProps = {
   inputRef: React.RefObject<InputRef | null>;
@@ -53,6 +54,7 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
       dispatch(setShowTaskDrawer(false));
       dispatch(setSelectedTaskId(null));
       dispatch(deleteTask({ taskId: selectedTaskId }));
+      dispatch(deleteBoardTask({ sectionId: '', taskId: selectedTaskId }));
       
       // Reset the flag after a short delay
       setTimeout(() => {
