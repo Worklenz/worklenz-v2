@@ -47,7 +47,6 @@ import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import logger from '@/utils/errorLogger';
 import { setProjectData, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
-import useIsProjectManager from '@/hooks/useIsProjectManager';
 import { useAuthService } from '@/hooks/useAuth';
 
 const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
@@ -55,11 +54,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('project-drawer');
   const [form] = Form.useForm();
+  const currentSession = useAuthService().getCurrentSession();
 
   // Auth and permissions
-  const isProjectManager = useIsProjectManager();
+  // const isProjectManager = useIsProjectManager();
   const isOwnerorAdmin = useAuthService().isOwnerOrAdmin();
-  const isEditable = isProjectManager || isOwnerorAdmin;
 
   // State
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -83,6 +82,13 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const [deleteProject, { isLoading: isDeletingProject }] = useDeleteProjectMutation();
   const [updateProject, { isLoading: isUpdatingProject }] = useUpdateProjectMutation();
   const [createProject, { isLoading: isCreatingProject }] = useCreateProjectMutation();
+
+  const isProjectManager = () => {
+    if (!currentSession || !project || project.project_manager === null) return false;
+    return currentSession?.team_member_id === project?.project_manager?.id;
+  }
+
+  const isEditable = isProjectManager() || isOwnerorAdmin;
 
   // Memoized values
   const defaultFormValues = useMemo(
@@ -334,31 +340,31 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             editMode={editMode}
             project={project}
             form={form}
-            disabled={!isProjectManager && !isOwnerorAdmin}
+            disabled={!isEditable}
           />
           <ProjectStatusSection
             statuses={projectStatuses}
             form={form}
             t={t}
-            disabled={!isProjectManager && !isOwnerorAdmin}
+            disabled={!isEditable}
           />
           <ProjectHealthSection
             healths={projectHealths}
             form={form}
             t={t}
-            disabled={!isProjectManager && !isOwnerorAdmin}
+            disabled={!isEditable}
           />
           <ProjectCategorySection
             categories={projectCategories}
             form={form}
             t={t}
-            disabled={!isProjectManager && !isOwnerorAdmin}
+            disabled={!isEditable}
           />
 
           <Form.Item name="notes" label={t('notes')}>
             <Input.TextArea
               placeholder={t('enterNotes')}
-              disabled={!isProjectManager && !isOwnerorAdmin}
+              disabled={!isEditable}
             />
           </Form.Item>
 
@@ -368,14 +374,14 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             t={t}
             project={project}
             loadingClients={loadingClients}
-            disabled={!isProjectManager && !isOwnerorAdmin}
+            disabled={!isEditable}
           />
 
           <Form.Item name="project_manager" label={t('projectManager')} layout="horizontal">
             <ProjectManagerDropdown
               selectedProjectManager={selectedProjectManager}
               setSelectedProjectManager={setSelectedProjectManager}
-              disabled={!isProjectManager && !isOwnerorAdmin}
+              disabled={!isEditable}
             />
           </Form.Item>
 
@@ -387,7 +393,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               >
                 <DatePicker
                   disabledDate={disabledStartDate}
-                  disabled={!isProjectManager && !isOwnerorAdmin}
+                  disabled={!isEditable}
                   onChange={(date) => {
                     const endDate = form.getFieldValue('end_date');
                     if (date && endDate) {
@@ -403,7 +409,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               >
                 <DatePicker
                   disabledDate={disabledEndDate}
-                  disabled={!isProjectManager && !isOwnerorAdmin}
+                  disabled={!isEditable}
                   onChange={(date) => {
                     const startDate = form.getFieldValue('start_date');
                     if (startDate && date) {
@@ -426,10 +432,10 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           </Form.Item> */}
 
           <Form.Item name="working_days" label={t('estimateWorkingDays')}>
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+            <Input type="number" disabled={!isEditable} />
           </Form.Item>
           <Form.Item name="man_days" label={t('estimateManDays')}>
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+            <Input type="number" disabled={!isEditable} />
           </Form.Item>
           <Form.Item
             name="hours_per_day"
@@ -445,7 +451,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               },
             ]}
           >
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+            <Input type="number" disabled={!isEditable} />
           </Form.Item>
         </Form>
 
