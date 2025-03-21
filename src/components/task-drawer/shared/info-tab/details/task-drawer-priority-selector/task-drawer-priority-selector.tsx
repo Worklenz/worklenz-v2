@@ -9,6 +9,12 @@ import { ITaskPriority } from '@/types/tasks/taskPriority.types';
 import { DoubleLeftOutlined, MinusOutlined, PauseOutlined } from '@ant-design/icons';
 import { ITaskViewModel } from '@/types/tasks/task.types';
 import { useAuthService } from '@/hooks/useAuth';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
+import { setTaskPriority } from '@/features/task-drawer/task-drawer.slice';
+import { updateTaskPriority as updateBoardTaskPriority } from '@/features/board/board-slice';
+import { updateTaskPriority as updateTasksListTaskPriority } from '@/features/tasks/tasks.slice';
 
 type PriorityDropdownProps = {
   task: ITaskViewModel;
@@ -20,7 +26,9 @@ const PriorityDropdown = ({ task }: PriorityDropdownProps) => {
   const priorityList = useAppSelector(state => state.priorityReducer.priorities);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const currentSession = useAuthService().getCurrentSession();
-
+  const dispatch = useAppDispatch();
+  const { tab } = useTabSearchParam();
+  
   const handlePriorityChange = (priorityId: string) => {
     if (!task.id || !priorityId) return;
 
@@ -31,6 +39,18 @@ const PriorityDropdown = ({ task }: PriorityDropdownProps) => {
         priority_id: priorityId,
         team_id: currentSession?.team_id,
       })
+    );
+    socket?.once(
+      SocketEvents.TASK_PRIORITY_CHANGE.toString(),
+      (data: ITaskListPriorityChangeResponse) => {
+        dispatch(setTaskPriority(data));
+        if (tab === 'tasks-list') {
+          dispatch(updateTasksListTaskPriority(data));
+        }
+        if (tab === 'board') {
+          dispatch(updateBoardTaskPriority(data));
+        }
+      }
     );
   };
 
