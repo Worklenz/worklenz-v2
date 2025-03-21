@@ -1,6 +1,9 @@
+import { updateBoardTaskStatus } from '@/features/board/board-slice';
+import { setTaskStatus } from '@/features/task-drawer/task-drawer.slice';
 import { updateTaskStatus } from '@/features/tasks/tasks.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 import { SocketEvents } from '@/shared/socket-events';
 import { useSocket } from '@/socket/socketContext';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
@@ -19,6 +22,7 @@ const TaskDrawerStatusDropdown = ({ statuses, task, teamId }: TaskDrawerStatusDr
   const { socket, connected } = useSocket();
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { tab } = useTabSearchParam();
 
   const getTaskProgress = (taskId: string) => {
     socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), taskId);
@@ -36,7 +40,19 @@ const TaskDrawerStatusDropdown = ({ statuses, task, teamId }: TaskDrawerStatusDr
         team_id: teamId,
       })
     );
-    getTaskProgress(task.id);
+    socket?.once(
+      SocketEvents.TASK_STATUS_CHANGE.toString(),
+      (data: ITaskListStatusChangeResponse) => {
+        dispatch(setTaskStatus(data));
+        
+        if (tab === 'tasks-list') {
+          dispatch(updateTaskStatus(data));
+        }
+        if (tab === 'board') {
+          dispatch(updateBoardTaskStatus(data));
+        }
+      }
+    );
   };
 
   const options = useMemo(

@@ -184,7 +184,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       }
 
       dispatch(updateTaskStatus(response));
-      dispatch(setTaskStatus(response));
+      // dispatch(setTaskStatus(response));
       dispatch(deselectAll());
     };
 
