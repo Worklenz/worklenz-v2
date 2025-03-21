@@ -194,7 +194,7 @@ const UpdateMemberDrawer = ({ selectedMemberId, onRoleUpdate }: UpdateMemberDraw
             placeholder={t('jobTitlePlaceholder')}
             options={jobTitles.map(job => ({
               label: job.name,
-              value: job.id,
+              value: job.name,
             }))}
             suffixIcon={false}
             onChange={(value, option) => {
