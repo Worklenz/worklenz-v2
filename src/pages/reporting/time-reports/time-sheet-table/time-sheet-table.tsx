@@ -1,17 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { MemberLoggedTimeType, ProjectType } from '@/types/timeSheet/project.types';
+import { MemberLoggedTimeType } from '@/types/timeSheet/project.types';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { Progress } from 'antd';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import { reportingTimesheetApiService } from '@/api/reporting/reporting.timesheet.api.service';
+import { IAllocationProject } from '@/types/reporting/reporting-allocation.types';
 
 const TimeSheetTable: React.FC = () => {
-  const [projects, setProjects] = useState<ProjectType[]>([]);
+  const [projects, setProjects] = useState<IAllocationProject[]>([]);
   const [members, setMembers] = useState<MemberLoggedTimeType[]>([]);
+
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { teams } = useAppSelector(state => state.timeReportsOverviewReducer);
+  const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
+
   const { t } = useTranslation('time-report');
 
+  const fetchTimeSheetData = async () => {
+    const selectedTeams = teams.map(team => team.selected && team.id);
+
+    const body = {
+      teams: selectedTeams || [],
+      projects: projects.map(project => project.id) || [],
+      duration,
+      date_range: dateRange,
+      archived: false,
+      billable: false,
+    };
+    const response = await reportingTimesheetApiService.getTimeSheetData(body, false);
+    setProjects(response.data);
+  };
+
   useEffect(() => {
+    const selectedTeams = teams.filter(team => team.selected);
+
     const fetchProjectsData = async () => {
       try {
         const response = await fetch('/TimeSheet.json');
@@ -58,7 +81,7 @@ const TimeSheetTable: React.FC = () => {
         ></div>
         {members.map(member => (
           <div
-            key={member.memberId}
+            key={member.id}
             style={{
               minWidth: '100px',
               padding: '16px 6px',
@@ -68,7 +91,7 @@ const TimeSheetTable: React.FC = () => {
               fontWeight: '500',
             }}
           >
-            {member.memberName}
+            {member.name}
           </div>
         ))}
         <div
@@ -90,8 +113,8 @@ const TimeSheetTable: React.FC = () => {
       </div>
 
       {/* Rows for Each Project */}
-      {projects.map(project => (
-        <div key={project.projectId} style={{ display: 'flex', height: '77.6px' }}>
+      {projects.map((project, index) => (
+        <div key={index} style={{ display: 'flex', height: '77.6px' }}>
           <div
             style={{
               minWidth: '200px',
@@ -113,14 +136,11 @@ const TimeSheetTable: React.FC = () => {
 
           {/* Render Logged Time for Each Member */}
           {members.map(member => {
-            // Find the logged time for the current project and member
-            const memberLoggedTime = project.members.find(
-              projMember => projMember.memberId === member.memberId
-            )?.memberLoggedTime;
+
 
             return (
               <div
-                key={member.memberId}
+                key={member.id}
                 style={{
                   minWidth: '100px',
                   padding: '16px 6px',
@@ -131,7 +151,7 @@ const TimeSheetTable: React.FC = () => {
                   justifyContent: 'center',
                 }}
               >
-                {memberLoggedTime || '-'}
+                {member.total_time || '-'}
               </div>
             );
           })}
@@ -171,7 +191,7 @@ const TimeSheetTable: React.FC = () => {
         </div>
         {members.map(member => (
           <div
-            key={member.memberId}
+            key={member.id}
             style={{
               minWidth: '100px',
               padding: '16px 6px',

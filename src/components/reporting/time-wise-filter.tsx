@@ -6,18 +6,17 @@ import dayjs from 'dayjs';
 
 import { colors } from '@/styles/colors';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { durations } from '@/shared/constants';
+import { setDateRange, setDuration } from '@/features/reporting/reporting.slice';
 
-interface ITimeWiseFilterProps {
-  duration: string;
-  dateRange: string;
-  setDuration: (duration: string) => void;
-  setDateRange: (dateRange: string) => void;
-}
-
-const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITimeWiseFilterProps) => {
+const TimeWiseFilter = () => {
   const { t } = useTranslation('reporting-members');
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
+  const dispatch = useAppDispatch();
+  
+  // Get values from Redux store
+  const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>(
@@ -51,7 +50,7 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
     if (customRange) {
       setSelectedTimeFrame('customRange');
       setIsDropdownOpen(false);
-      setDateRange(`${customRange[0]}-${customRange[1]}`);
+      dispatch(setDateRange(`${customRange[0]}-${customRange[1]}`));
     }
   };
 
@@ -59,8 +58,8 @@ const TimeWiseFilter = ({ duration, dateRange, setDuration, setDateRange }: ITim
   const handleDurationSelect = (item: any) => {
     setSelectedTimeFrame(item.label);
     setCustomRange(null);
-    setDuration(item.key);
-    setDateRange(item.dates || '');
+    dispatch(setDuration(item.key));
+    dispatch(setDateRange(item.dates || ''));
     setIsDropdownOpen(false);
   };
 

@@ -5,6 +5,8 @@ interface ReportingState {
   selectedProjectIds: string[];
   selectedTeamIds: string[];
   showOverViewTeamDrawer: boolean;
+  duration: string;
+  dateRange: string;
 }
 
 const initialState: ReportingState = {
@@ -12,6 +14,8 @@ const initialState: ReportingState = {
   selectedProjectIds: [],
   selectedTeamIds: [],
   showOverViewTeamDrawer: false,
+  duration: 'lastSevenDays', // Default value
+  dateRange: '',
 };
 
 const reportingSlice = createSlice({
@@ -34,6 +38,12 @@ const reportingSlice = createSlice({
     toggleOverViewTeamDrawer: state => {
       state.showOverViewTeamDrawer = !state.showOverViewTeamDrawer;
     },
+    setDuration: (state, action: PayloadAction<string>) => {
+      state.duration = action.payload;
+    },
+    setDateRange: (state, action: PayloadAction<string>) => {
+      state.dateRange = action.payload;
+    },
   },
 });
 
@@ -43,6 +53,8 @@ export const {
   setSelectedTeams,
   clearSelections,
   toggleOverViewTeamDrawer,
+  setDuration,
+  setDateRange,
 } = reportingSlice.actions;
 
 export default reportingSlice.reducer;
