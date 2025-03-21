@@ -1,3 +1,6 @@
+import { setSelectOrDeselectAllProjects, setSelectOrDeselectProject } from '@/features/reporting/time-reports/time-reports-overview.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { CaretDownFilled } from '@ant-design/icons';
 import { Button, Checkbox, Divider, Dropdown, Input, MenuProps } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
@@ -5,33 +8,29 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const Projects: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const { t } = useTranslation('time-report');
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const allItems = [
-    { key: '1', label: 'Project 1' },
-    { key: '2', label: 'Project 2' },
-    { key: '3', label: 'Project 3' },
-  ];
+  const { projects, loadingProjects } = useAppSelector(state => state.timeReportsOverviewReducer);
 
   // Filter items based on search text
-  const filteredItems = allItems.filter(item =>
-    item.label.toLowerCase().includes(searchText.toLowerCase())
+  const filteredItems = projects.filter(item =>
+    item.name?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Handle checkbox change for individual items
   const handleCheckboxChange = (key: string, checked: boolean) => {
-    setCheckedList(prev => (checked ? [...prev, key] : prev.filter(item => item !== key)));
+    dispatch(setSelectOrDeselectProject({ id: key, selected: checked }));
   };
 
   // Handle "Select All" checkbox change
   const handleSelectAllChange = (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
     setSelectAll(isChecked);
-    setCheckedList(isChecked ? allItems.map(item => item.key) : []);
+    dispatch(setSelectOrDeselectAllProjects(isChecked));
   };
 
   // Dropdown items for the menu
@@ -58,19 +57,22 @@ const Projects: React.FC = () => {
           >
             {t('selectAll')}
           </Checkbox>
-          <Divider style={{ margin: '4px 0' }} />
         </div>
       ),
     },
+    {
+      key: 'divider',
+      type: 'divider',
+    },
     ...filteredItems.map(item => ({
-      key: item.key,
+      key: item.id,
       label: (
         <Checkbox
           onClick={e => e.stopPropagation()}
-          checked={checkedList.includes(item.key)}
-          onChange={e => handleCheckboxChange(item.key, e.target.checked)}
+          checked={item.selected}
+          onChange={e => handleCheckboxChange(item.id, e.target.checked)}
         >
-          {item.label}
+          {item.name}
         </Checkbox>
       ),
     })),

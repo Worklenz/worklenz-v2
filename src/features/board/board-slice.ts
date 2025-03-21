@@ -16,6 +16,8 @@ import { ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskLabel } from '@/types/label.type';
 import { ITeamMemberViewModel } from '../taskAttributes/taskMemberSlice';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
+import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -95,6 +97,53 @@ const initialState: BoardState = {
   priorities: [],
   members: [],
   editableSectionId: null,
+};
+
+const deleteTaskFromGroup = (
+  taskGroups: ITaskListGroup[],
+  task: IProjectTask,
+  groupId: string,
+  index: number | null = null
+): void => {
+  const group = taskGroups.find(g => g.id === groupId);
+  if (!group || !task.id) return;
+
+  if (task.is_sub_task) {
+    const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
+    if (parentTask) {
+      const subTaskIndex = parentTask.sub_tasks?.findIndex(t => t.id === task.id);
+      if (typeof subTaskIndex !== 'undefined' && subTaskIndex !== -1) {
+        parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
+        parentTask.sub_tasks?.splice(subTaskIndex, 1);
+      }
+    }
+  } else {
+    const taskIndex = index ?? group.tasks.findIndex(t => t.id === task.id);
+    if (taskIndex !== -1) {
+      group.tasks.splice(taskIndex, 1);
+    }
+  }
+};
+
+const addTaskToGroup = (
+  taskGroups: ITaskListGroup[],
+  task: IProjectTask,
+  groupId: string,
+  insert = false
+): void => {
+  const group = taskGroups.find(g => g.id === groupId);
+  if (!group || !task.id) return;
+
+  if (task.parent_task_id) {
+    const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
+    if (parentTask) {
+      parentTask.sub_tasks_count = (parentTask.sub_tasks_count || 0) + 1;
+      if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
+      parentTask.sub_tasks.push({ ...task });
+    }
+  } else {
+    insert ? group.tasks.push(task) : group.tasks.unshift(task);
+  }
 };
 
 // Async thunk for fetching members data
@@ -210,16 +259,16 @@ export const fetchBoardSubTasks = createAsyncThunk(
 const findTaskInAllGroups = (
   taskGroups: ITaskListGroup[], 
   taskId: string
-): { task: IProjectTask; group: ITaskListGroup } | null => {
+): { task: IProjectTask; group: ITaskListGroup; groupId: string } | null => {
   for (const group of taskGroups) {
     const task = group.tasks.find(t => t.id === taskId);
-    if (task) return { task, group };
+    if (task) return { task, group, groupId: group.id };
     
     // Check in subtasks
     for (const parentTask of group.tasks) {
       if (!parentTask.sub_tasks) continue;
       const subtask = parentTask.sub_tasks.find(st => st.id === taskId);
-      if (subtask) return { task: subtask, group };
+      if (subtask) return { task: subtask, group, groupId: group.id };
     }
   }
   return null;
@@ -583,6 +632,59 @@ const boardSlice = createSlice({
         result.task.show_sub_tasks = !result.task.show_sub_tasks;
       }
     },
+    updateBoardTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
+      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =
+        action.payload;
+
+      // Find the task in any group
+      const taskInfo = findTaskInAllGroups(state.taskGroups, id);
+      if (!taskInfo || !status_id) return;
+
+      const { task, groupId } = taskInfo;
+
+      // Update the task properties
+      task.status_color = color_code;
+      task.status_color_dark = color_code_dark;
+      task.complete_ratio = +complete_ratio;
+      task.status = status_id;
+      task.status_category = statusCategory;
+
+      // If grouped by status and not a subtask, move the task to the new status group
+      if (state.groupBy === GROUP_BY_STATUS_VALUE && !task.is_sub_task && groupId !== status_id) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+
+        // Add to new status group
+        addTaskToGroup(state.taskGroups, task, status_id, false);
+      }
+    },
+    updateTaskPriority: (state, action: PayloadAction<ITaskListPriorityChangeResponse>) => {
+      const { id, priority_id, color_code, color_code_dark } = action.payload;
+
+      // Find the task in any group
+      const taskInfo = findTaskInAllGroups(state.taskGroups, id);
+      if (!taskInfo || !priority_id) return;
+
+      const { task, groupId } = taskInfo;
+
+      // Update the task properties
+      task.priority = priority_id;
+      task.priority_color = color_code;
+      task.priority_color_dark = color_code_dark;
+
+      // If grouped by priority and not a subtask, move the task to the new priority group
+      if (
+        state.groupBy === GROUP_BY_PRIORITY_VALUE &&
+        !task.is_sub_task &&
+        groupId !== priority_id
+      ) {
+        // Remove from current group
+        deleteTaskFromGroup(state.taskGroups, task, groupId);
+
+        // Add to new priority group
+        addTaskToGroup(state.taskGroups, task, priority_id, false);
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -666,5 +768,7 @@ export const {
   updateSubtask,
   toggleSubtasksInclude,
   toggleTaskExpansion,
+  updateBoardTaskStatus,
+  updateTaskPriority,
 } = boardSlice.actions;
 export default boardSlice.reducer;

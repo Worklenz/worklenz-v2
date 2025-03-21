@@ -15,11 +15,11 @@ export const navRoutes: NavRoutesType[] = [
     path: '/worklenz/projects',
     adminOnly: false,
   },
-  {
-    name: 'schedule',
-    path: '/worklenz/schedule',
-    adminOnly: true,
-  },
+  // {
+  //   name: 'schedule',
+  //   path: '/worklenz/schedule',
+  //   adminOnly: true,
+  // },
   {
     name: 'reporting',
     path: '/worklenz/reporting/overview',

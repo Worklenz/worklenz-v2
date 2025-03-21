@@ -67,6 +67,8 @@ import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplate
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/project-reports-table-column-slice/project-reports-table-column-slice';
 import projectReportsReducer from '../features/reporting/projectReports/project-reports-slice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
+import timeReportsOverviewReducer from '@features/reporting/time-reports/time-reports-overview.slice';
+
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import teamMembersReducer from '@features/team-members/team-members.slice';
 import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
@@ -150,6 +152,7 @@ export const store = configureStore({
     membersReportsReducer: membersReportsReducer,
     roadmapReducer: roadmapReducer,
     groupByFilterDropdownReducer: groupByFilterDropdownReducer,
+    timeReportsOverviewReducer: timeReportsOverviewReducer,
   },
 });
 

@@ -15,7 +15,10 @@ import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
+
 const MembersTimeSheet: React.FC = () => {
+  const { t } = useTranslation('time-report');
+  
   const labels = jsonData.map(item => item.name);
   const dataValues = jsonData.map(item => {
     const loggedTimeInHours = parseFloat(item.logged_time) / 3600;
@@ -24,7 +27,6 @@ const MembersTimeSheet: React.FC = () => {
   const colors = jsonData.map(item => item.color_code);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { t } = useTranslation('time-report');
 
   // Chart data
   const data = {
