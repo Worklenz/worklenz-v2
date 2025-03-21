@@ -29,6 +29,8 @@ import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import { setTaskSubscribers } from '@/features/task-drawer/task-drawer.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { InlineMember } from '@/types/teamMembers/inlineMember.types';
 
 interface NotifyMemberSelectorProps {
   task: ITaskViewModel;
@@ -39,6 +41,7 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
   const { socket, connected } = useSocket();
   const currentSession = useAuthService().getCurrentSession();
   const dispatch = useAppDispatch();
+  const { tab } = useTabSearchParam();
 
   const membersInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -95,6 +98,12 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
         mode: checked ? 0 : 1,
       };
       socket?.emit(SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(), body);
+      socket?.once(
+            SocketEvents.TASK_SUBSCRIBERS_CHANGE.toString(),
+            (data: InlineMember[]) => {
+              dispatch(setTaskSubscribers(data));
+            }
+          );
     } catch (error) {
       logger.error('Error notifying member:', error);
     }
@@ -110,7 +119,6 @@ const NotifyMemberSelector = ({ task, t }: NotifyMemberSelectorProps) => {
           onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('taskInfoTab.searchInputPlaceholder')}
         />
-
         <List
           style={{ padding: 0, maxHeight: 250, overflow: 'auto' }}
           loading={teamMembersLoading}

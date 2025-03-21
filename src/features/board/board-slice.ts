@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   IGroupByOption,
+  ILabelsChangeResponse,
   ITaskListColumn,
   ITaskListConfigV2,
   ITaskListGroup,
@@ -257,13 +258,13 @@ export const fetchBoardSubTasks = createAsyncThunk(
 
 // Helper functions for common operations
 const findTaskInAllGroups = (
-  taskGroups: ITaskListGroup[], 
+  taskGroups: ITaskListGroup[],
   taskId: string
 ): { task: IProjectTask; group: ITaskListGroup; groupId: string } | null => {
   for (const group of taskGroups) {
     const task = group.tasks.find(t => t.id === taskId);
     if (task) return { task, group, groupId: group.id };
-    
+
     // Check in subtasks
     for (const parentTask of group.tasks) {
       if (!parentTask.sub_tasks) continue;
@@ -388,7 +389,7 @@ const boardSlice = createSlice({
           section.tasks = section.tasks.filter(task => task.id !== taskId);
           return;
         }
-      } 
+      }
 
       // If section not found or task not in section, search all groups
       for (const group of state.taskGroups) {
@@ -404,7 +405,7 @@ const boardSlice = createSlice({
       state.taskGroups = state.taskGroups.filter(
         section => section.id !== action.payload.sectionId
       );
-      
+
       if (state.editableSectionId === action.payload.sectionId) {
         state.editableSectionId = null;
       }
@@ -529,11 +530,11 @@ const boardSlice = createSlice({
       }>
     ) => {
       const { groupId, taskId, assignees, names } = action.payload;
-      
+
       // Find the task in the specified group
       const group = state.taskGroups.find(group => group.id === groupId);
       if (!group) return;
-      
+
       // Try to find the task directly in the group
       const task = group.tasks.find(task => task.id === taskId);
       if (task) {
@@ -541,11 +542,11 @@ const boardSlice = createSlice({
         task.names = names as InlineMember[];
         return;
       }
-      
+
       // If not found, look in subtasks
       for (const parentTask of group.tasks) {
         if (!parentTask.sub_tasks) continue;
-        
+
         const subtask = parentTask.sub_tasks.find(subtask => subtask.id === taskId);
         if (subtask) {
           subtask.assignees = assignees as ITaskAssignee[];
@@ -562,7 +563,7 @@ const boardSlice = createSlice({
       }>
     ) => {
       const { task } = action.payload;
-      
+
       // Find the task and update it
       const result = findTaskInAllGroups(state.taskGroups, task.id || '');
       if (result) {
@@ -571,31 +572,31 @@ const boardSlice = createSlice({
     },
 
     updateSubtask: (
-      state, 
-      action: PayloadAction<{ 
-        sectionId: string; 
-        subtask: IProjectTask; 
-        mode: 'add' | 'delete' 
+      state,
+      action: PayloadAction<{
+        sectionId: string;
+        subtask: IProjectTask;
+        mode: 'add' | 'delete'
       }>
     ) => {
       const { sectionId, subtask, mode } = action.payload;
       const parentTaskId = subtask.parent_task_id;
-      
+
       if (!parentTaskId) return;
-      
+
       // Function to update a task with a new subtask
       const updateTaskWithSubtask = (task: IProjectTask): boolean => {
         if (!task) return false;
-        
+
         // Initialize sub_tasks array if it doesn't exist
         if (!task.sub_tasks) {
           task.sub_tasks = [];
         }
-        
+
         if (mode === 'add') {
           // Increment subtask count
           task.sub_tasks_count = (task.sub_tasks_count || 0) + 1;
-          
+
           // Add the subtask
           task.sub_tasks.push({ ...subtask });
         } else {
@@ -605,7 +606,7 @@ const boardSlice = createSlice({
         }
         return true;
       };
-      
+
       // First try to find the task in the specified section
       if (sectionId) {
         const section = state.taskGroups.find(sec => sec.id === sectionId);
@@ -616,7 +617,7 @@ const boardSlice = createSlice({
           }
         }
       }
-      
+
       // If not found in the specified section, try all groups
       const result = findParentTaskInAllGroups(state.taskGroups, parentTaskId);
       if (result) {
@@ -627,7 +628,7 @@ const boardSlice = createSlice({
     toggleTaskExpansion: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
       const result = findTaskInAllGroups(state.taskGroups, taskId);
-      
+
       if (result) {
         result.task.show_sub_tasks = !result.task.show_sub_tasks;
       }
@@ -683,6 +684,22 @@ const boardSlice = createSlice({
 
         // Add to new priority group
         addTaskToGroup(state.taskGroups, task, priority_id, false);
+      }
+    },
+    updateBoardTaskLabel: (state, action: PayloadAction<ILabelsChangeResponse>) => {
+      const label = action.payload;
+      for (const group of state.taskGroups) {
+        // Find the task or its subtask
+        const task =
+          group.tasks.find(task => task.id === label.id) ||
+          group.tasks
+            .flatMap(task => task.sub_tasks || [])
+            .find(subtask => subtask.id === label.id);
+        if (task) {
+          task.labels = label.labels || [];
+          task.all_labels = label.all_labels || [];
+          break;
+        }
       }
     },
   },
@@ -770,5 +787,6 @@ export const {
   toggleTaskExpansion,
   updateBoardTaskStatus,
   updateTaskPriority,
+  updateBoardTaskLabel,
 } = boardSlice.actions;
 export default boardSlice.reducer;
