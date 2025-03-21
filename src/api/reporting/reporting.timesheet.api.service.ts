@@ -1,11 +1,13 @@
 import { API_BASE_URL } from '@/shared/constants';
 import { toQueryString } from '@/utils/toQueryString';
 import apiClient from '../api-client';
+import { IServerResponse } from '@/types/common.types';
+import { IAllocationViewModel } from '@/types/reporting/reporting-allocation.types';
 
 const rootUrl = `${API_BASE_URL}/reporting/allocation`;
 
 export const reportingTimesheetApiService = {
-  getTimeSheetData: async (body = {}, archived = false) => {
+  getTimeSheetData: async (body = {}, archived = false): Promise<IServerResponse<IAllocationViewModel>> => {
     const q = toQueryString({ archived });
     const response = await apiClient.post(`${rootUrl}/${q}`, body);
     return response.data;
