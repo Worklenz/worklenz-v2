@@ -23,6 +23,12 @@ import { useSocket } from '@/socket/socketContext';
 import { ITaskViewModel } from '@/types/tasks/task.types';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 import { TFunction } from 'i18next';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setTaskLabels } from '@/features/task-drawer/task-drawer.slice';
+import { updateTaskLabel } from '@/features/tasks/tasks.slice';
+import { updateBoardTaskLabel } from '@/features/board/board-slice';
+import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
 
 interface TaskDrawerLabelsProps {
   task: ITaskViewModel;
@@ -31,7 +37,7 @@ interface TaskDrawerLabelsProps {
 
 const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
   const { socket } = useSocket();
-
+  const dispatch = useAppDispatch();
   const labelInputRef = useRef<InputRef>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -40,7 +46,7 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
 
   const currentSession = useAuthService().getCurrentSession();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-
+  const { tab } = useTabSearchParam();
   const handleLabelChange = (label: ITaskLabel) => {
     try {
       const labelData = {
@@ -50,6 +56,18 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
         team_id: currentSession?.team_id,
       };
       socket?.emit(SocketEvents.TASK_LABELS_CHANGE.toString(), JSON.stringify(labelData));
+      socket?.once(
+        SocketEvents.TASK_LABELS_CHANGE.toString(),
+        (data: ILabelsChangeResponse) => {
+          dispatch(setTaskLabels(data));
+          if (tab === 'tasks-list') {
+            dispatch(updateTaskLabel(data));
+          }
+          if (tab === 'board') {
+            dispatch(updateBoardTaskLabel(data));
+          }
+        }
+      );
     } catch (error) {
       console.error('Error changing label:', error);
     }
