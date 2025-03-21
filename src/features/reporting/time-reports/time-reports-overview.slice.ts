@@ -16,6 +16,11 @@ interface ITimeReportsOverviewState {
 
   projects: ISelectableProject[];
   loadingProjects: boolean;
+
+  billable: {
+    billable: boolean;
+    nonBillable: boolean;
+  };
 }
 
 const initialState: ITimeReportsOverviewState = {
@@ -28,6 +33,11 @@ const initialState: ITimeReportsOverviewState = {
 
   projects: [],
   loadingProjects: false,
+
+  billable: {
+    billable: false,
+    nonBillable: false,
+  },
 };
 
 const selectedTeams = (state: ITimeReportsOverviewState) => {
@@ -117,6 +127,10 @@ const timeReportsOverviewSlice = createSlice({
         project.selected = action.payload;
       });
     },
+
+    setSelectOrDeselectBillable: (state, action) => {
+      state.billable = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchReportingTeams.fulfilled, (state, action) => {
@@ -172,5 +186,6 @@ export const {
   setSelectOrDeselectAllCategories,
   setSelectOrDeselectProject,
   setSelectOrDeselectAllProjects,
+  setSelectOrDeselectBillable,
 } = timeReportsOverviewSlice.actions;
 export default timeReportsOverviewSlice.reducer;

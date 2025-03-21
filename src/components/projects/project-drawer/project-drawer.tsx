@@ -181,19 +181,19 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     if (!startDate || !endDate || !startDate.isValid() || !endDate.isValid() || startDate.isAfter(endDate)) {
       return 0;
     }
-  
+
     let workingDays = 0;
     let currentDate = startDate.clone().startOf('day');
     const end = endDate.clone().startOf('day');
-  
+
     while (currentDate.isBefore(end) || currentDate.isSame(end)) {
       const dayOfWeek = currentDate.day();
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
         workingDays++;
-      } 
+      }
       currentDate = currentDate.add(1, 'day');
     }
-  
+
     return workingDays;
   };
 
@@ -300,14 +300,16 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             )}
           </Space>
           <Space>
-            <Button
-              type="primary"
-              onClick={() => form.submit()}
-              loading={isCreatingProject || isUpdatingProject}
-              disabled={!isFormValid}
-            >
-              {editMode ? t('update') : t('create')}
-            </Button>
+            {editMode && (isProjectManager || isOwnerorAdmin) && (
+              <Button
+                type="primary"
+                onClick={() => form.submit()}
+                loading={isCreatingProject || isUpdatingProject}
+                disabled={!isFormValid}
+              >
+                {editMode ? t('update') : t('create')}
+              </Button>
+            )}
           </Space>
         </Flex>
       }
