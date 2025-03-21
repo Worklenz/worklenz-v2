@@ -1,3 +1,5 @@
+import { MemberLoggedTimeType } from "../timeSheet/project.types";
+
 export interface IAllocationProject {
   name?: string;
   color_code?: string;
@@ -13,5 +15,5 @@ export interface IAllocationProject {
 
 export interface IAllocationViewModel {
   projects: Array<IAllocationProject>;
-  users: Array<{ name: string }>;
+  users: Array<MemberLoggedTimeType>;
 }

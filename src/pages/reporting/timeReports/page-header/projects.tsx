@@ -92,7 +92,7 @@ const Projects: React.FC = () => {
           }
         }}
       >
-        <Button>
+        <Button loading={loadingProjects}>
           {t('projects')} <CaretDownFilled />
         </Button>
       </Dropdown>

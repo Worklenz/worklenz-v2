@@ -93,7 +93,7 @@ const Categories: React.FC = () => {
           }
         }}
       >
-        <Button>
+        <Button loading={loadingCategories}>
           {t('categories')} <CaretDownFilled />
         </Button>
       </Dropdown>
