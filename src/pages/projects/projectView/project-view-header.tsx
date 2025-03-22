@@ -46,7 +46,7 @@ import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/members/projectMembersSlice';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
-import { fetchBoardTaskGroups } from '@/features/board/board-slice';
+import { addTaskCardToTheTop, fetchBoardTaskGroups } from '@/features/board/board-slice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -128,14 +128,17 @@ const ProjectViewHeader = () => {
       };
 
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
-        console.log('task', task);
         if (task.id) {
           dispatch(setSelectedTaskId(task.id));
           dispatch(setShowTaskDrawer(true));
 
           const groupId = groupBy === IGroupBy.PHASE ? UNMAPPED : getGroupIdByGroupedColumn(task);
           if (groupId) {
-            dispatch(addTask({ task, groupId }));
+            if (tab === 'board') {
+              dispatch(addTaskCardToTheTop({ sectionId: groupId, task }));
+            } else {
+              dispatch(addTask({ task, groupId }));
+            }
           }
         }
       });
