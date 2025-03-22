@@ -22,10 +22,10 @@ import {
 import { createPortal } from 'react-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { useSocket } from '@/socket/socketContext'; // Add socket hook
-import { SocketEvents } from '@/shared/socket-events'; // Add socket events
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useSocket } from '@/socket/socketContext';
+import { SocketEvents } from '@/shared/socket-events';
 import UpdateMemberDrawer from '@/components/settings/update-member-drawer';
 import {
   toggleInviteMemberDrawer,
@@ -40,7 +40,8 @@ import { colors } from '@/styles/colors';
 const TeamMembersSettings = () => {
   const { t } = useTranslation('settings/team-members');
   const dispatch = useAppDispatch();
-  const { socket } = useSocket(); // Add socket
+  const { socket } = useSocket();
+  const refreshTeamMembers = useAppSelector(state => state.memberReducer.refreshTeamMembers); // Listen to refresh flag
 
   const [model, setModel] = useState<ITeamMembersViewModel>({ total: 0, data: [] });
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -102,7 +103,6 @@ const TeamMembersSettings = () => {
     }
   };
 
-  // Callback to update role_name locally
   const handleRoleUpdate = useCallback((memberId: string, newRoleName: string) => {
     setModel(prevModel => ({
       ...prevModel,
@@ -130,25 +130,30 @@ const TeamMembersSettings = () => {
       ...prev,
       current: newPagination.current,
       pageSize: newPagination.pageSize,
-      field: sorter.field,
+      field: sorter.field || 'name',
       order: sorter.order === 'ascend' ? 'asc' : 'desc',
     }));
   }, []);
 
-  // Socket listener for role updates (optional, for multi-client sync)
   useEffect(() => {
-    if (!socket) return;
-
-    const handleRoleChange = (data: { memberId: string; role_name: string }) => {
-      handleRoleUpdate(data.memberId, data.role_name);
-    };
-
-    socket.on(SocketEvents.TEAM_MEMBER_ROLE_CHANGE.toString(), handleRoleChange);
-
-    return () => {
-      socket.off(SocketEvents.TEAM_MEMBER_ROLE_CHANGE.toString(), handleRoleChange);
-    };
+    if (socket) {
+      const handleRoleChange = (data: { memberId: string; role_name: string }) => {
+        handleRoleUpdate(data.memberId, data.role_name);
+      };
+      socket.on(SocketEvents.TEAM_MEMBER_ROLE_CHANGE.toString(), handleRoleChange);
+      return () => {
+        socket.off(SocketEvents.TEAM_MEMBER_ROLE_CHANGE.toString(), handleRoleChange);
+      };
+    }
   }, [socket, handleRoleUpdate]);
+
+  useEffect(() => {
+    handleRefresh();
+  }, [refreshTeamMembers, handleRefresh]);
+
+  useEffect(() => {
+    getTeamMembers();
+  }, [getTeamMembers]);
 
   const getColor = useCallback((role: string | undefined) => {
     switch (role?.toLowerCase()) {
@@ -162,10 +167,6 @@ const TeamMembersSettings = () => {
         return colors.darkGray;
     }
   }, []);
-
-  useEffect(() => {
-    getTeamMembers();
-  }, [getTeamMembers]);
 
   const columns: TableProps['columns'] = [
     {
@@ -341,7 +342,7 @@ const TeamMembersSettings = () => {
       {createPortal(
         <UpdateMemberDrawer
           selectedMemberId={selectedMemberId}
-          onRoleUpdate={handleRoleUpdate} // Pass callback
+          onRoleUpdate={handleRoleUpdate}
         />,
         document.body
       )}
