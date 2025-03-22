@@ -143,8 +143,9 @@ const InviteTeamMembers = () => {
         <Form.Item label={t('jobTitleLabel')} name="jobTitle">
           <AutoComplete
             options={jobTitles.map(job => ({
+              id:job.id,
               label: job.name,
-              value: job.id,
+              value: job.name,
             }))}
             allowClear
             onSearch={handleSearch}
