@@ -26,9 +26,10 @@ import { TFunction } from 'i18next';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setTaskLabels } from '@/features/task-drawer/task-drawer.slice';
-import { updateTaskLabel } from '@/features/tasks/tasks.slice';
-import { updateBoardTaskLabel } from '@/features/board/board-slice';
+import { setLabels, updateTaskLabel } from '@/features/tasks/tasks.slice';
+import { setBoardLabels, updateBoardTaskLabel } from '@/features/board/board-slice';
 import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
+import { ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 
 interface TaskDrawerLabelsProps {
   task: ITaskViewModel;
@@ -82,6 +83,18 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
       team_id: currentSession?.team_id,
     };
     socket?.emit(SocketEvents.CREATE_LABEL.toString(), JSON.stringify(labelData));
+    socket?.once(
+          SocketEvents.CREATE_LABEL.toString(),
+          (data: ILabelsChangeResponse) => {
+            dispatch(setTaskLabels(data));
+            if (tab === 'tasks-list') {
+              dispatch(updateTaskLabel(data));
+            }
+            if (tab === 'board') {
+              dispatch(updateBoardTaskLabel(data));
+            }
+          }
+        );
   };
 
   useEffect(() => {
@@ -105,56 +118,57 @@ const TaskDrawerLabels = ({ task, t }: TaskDrawerLabelsProps) => {
           onChange={e => setSearchQuery(e.currentTarget.value)}
           placeholder={t('taskInfoTab.labels.labelInputPlaceholder')}
           onKeyDown={e => {
-            const isLabel = filteredLabelData.findIndex(
-              label => label.name?.toLowerCase() === searchQuery.toLowerCase()
-            );
-            if (isLabel === -1) {
-              if (e.key === 'Enter') {
-                handleCreateLabel();
-              }
-            }
+        const isLabel = filteredLabelData.findIndex(
+          label => label.name?.toLowerCase() === searchQuery.toLowerCase()
+        );
+        if (isLabel === -1) {
+          if (e.key === 'Enter') {
+            handleCreateLabel();
+            setSearchQuery('');
+          }
+        }
           }}
         />
 
         <List style={{ padding: 0, maxHeight: 300, overflow: 'scroll' }}>
           {filteredLabelData.length ? (
-            filteredLabelData.map(label => (
-              <List.Item
-                className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
-                key={label.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  gap: 8,
-                  padding: '4px 8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-                onClick={() => handleLabelChange(label)}
-              >
-                <Checkbox
-                  id={label.id}
-                  checked={
-                    task?.labels
-                      ? task?.labels.some(existingLabel => existingLabel.id === label.id)
-                      : false
-                  }
-                  onChange={e => e.preventDefault()}
-                >
-                  <Flex gap={8}>
-                    <Badge color={label.color_code} />
-                    {label.name}
-                  </Flex>
-                </Checkbox>
-              </List.Item>
-            ))
-          ) : (
-            <Typography.Text
-              style={{ color: colors.lightGray }}
-              onClick={() => handleCreateLabel()}
+        filteredLabelData.map(label => (
+          <List.Item
+            className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
+            key={label.id}
+            style={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          gap: 8,
+          padding: '4px 8px',
+          border: 'none',
+          cursor: 'pointer',
+            }}
+            onClick={() => handleLabelChange(label)}
+          >
+            <Checkbox
+          id={label.id}
+          checked={
+            task?.labels
+              ? task?.labels.some(existingLabel => existingLabel.id === label.id)
+              : false
+          }
+          onChange={e => e.preventDefault()}
             >
-              {t('taskInfoTab.labels.labelsSelectorInputTip')}
-            </Typography.Text>
+          <Flex gap={8}>
+            <Badge color={label.color_code} />
+            {label.name}
+          </Flex>
+            </Checkbox>
+          </List.Item>
+        ))
+          ) : (
+        <Typography.Text
+          style={{ color: colors.lightGray }}
+          onClick={() => handleCreateLabel()}
+        >
+          {t('taskInfoTab.labels.labelsSelectorInputTip')}
+        </Typography.Text>
           )}
         </List>
       </Flex>

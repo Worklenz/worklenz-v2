@@ -189,7 +189,7 @@ const UpdateMemberDrawer = ({ selectedMemberId, onRoleUpdate }: UpdateMemberDraw
       >
         <Form.Item label={t('jobTitleLabel')} name="jobTitle">
           <Select
-            defaultValue={teamMember?.job_title_id}
+            defaultValue={teamMember?.job_title}
             size="middle"
             placeholder={t('jobTitlePlaceholder')}
             options={jobTitles.map(job => ({

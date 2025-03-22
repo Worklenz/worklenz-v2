@@ -11,6 +11,9 @@ import logger from '@/utils/errorLogger';
 
 import { getUserSession } from '@/utils/session-helper';
 import { ITaskViewModel } from '@/types/tasks/task.types';
+import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setStartDate, setTaskEndDate } from '@/features/task-drawer/task-drawer.slice';
 interface TaskDrawerDueDateProps {
   task: ITaskViewModel;
   t: TFunction;
@@ -20,7 +23,7 @@ interface TaskDrawerDueDateProps {
 const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
   const { socket } = useSocket();
   const [isShowStartDate, setIsShowStartDate] = useState(false);
-
+  const dispatch = useAppDispatch();
   // Date handling
   const startDayjs = task?.start_date ? dayjs(task.start_date) : null;
   const dueDayjs = task?.end_date ? dayjs(task.end_date) : null;
@@ -55,6 +58,13 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
             : Intl.DateTimeFormat().resolvedOptions().timeZone,
         })
       );
+      socket?.once(
+            SocketEvents.TASK_START_DATE_CHANGE.toString(),
+            (data: IProjectTask) => {
+              dispatch(setStartDate(data));
+              
+            }
+          );
     } catch (error) { 
       logger.error('Failed to update start date:', error);
     }
@@ -72,6 +82,13 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
             ? getUserSession()?.timezone_name
             : Intl.DateTimeFormat().resolvedOptions().timeZone,
         })
+      );
+      socket?.once(
+        SocketEvents.TASK_END_DATE_CHANGE.toString(),
+        (data: IProjectTask) => {
+          dispatch(setTaskEndDate(data));
+          
+        }
       );
     } catch (error) {
       logger.error('Failed to update due date:', error);
