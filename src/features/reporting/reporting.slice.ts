@@ -14,7 +14,7 @@ const initialState: ReportingState = {
   selectedProjectIds: [],
   selectedTeamIds: [],
   showOverViewTeamDrawer: false,
-  duration: 'lastSevenDays', // Default value
+  duration: 'LAST_WEEK', // Default value
   dateRange: '',
 };
 

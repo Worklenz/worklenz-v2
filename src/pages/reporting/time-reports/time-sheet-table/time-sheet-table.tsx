@@ -16,8 +16,11 @@ const TimeSheetTable: React.FC = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const {
     teams,
+    loadingTeams,
     categories,
+    loadingCategories,
     projects: filterProjects,
+    loadingProjects,
     billable,
   } = useAppSelector(state => state.timeReportsOverviewReducer);
   const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
@@ -56,7 +59,7 @@ const TimeSheetTable: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchTimeSheetData();
+    if (!loadingTeams && !loadingCategories && !loadingProjects) fetchTimeSheetData();
   }, [teams, duration, dateRange, filterProjects, categories, billable]);
 
   // Set theme variables

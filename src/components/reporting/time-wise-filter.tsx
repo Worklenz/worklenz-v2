@@ -63,6 +63,10 @@ const TimeWiseFilter = () => {
     setIsDropdownOpen(false);
   };
 
+  useEffect(() => {
+    dispatch(setDateRange(durations.find(item => item.key === duration)?.dates || ''));
+  }, [duration]);
+
   // custom dropdown content
   const timeWiseDropdownContent = (
     <Card
