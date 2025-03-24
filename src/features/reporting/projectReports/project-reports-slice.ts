@@ -65,6 +65,11 @@ export const updateProjectCategory = createAction<{
   category: IProjectCategory;
 }>('projectReports/updateProjectCategory');
 
+export const updateProjectStatus = createAction<{
+  projectId: string;
+  status: IProjectStatus;
+}>('projectReports/updateProjectStatus');
+
 const initialState: ProjectReportsState = {
   isProjectReportsDrawerOpen: false,
 
@@ -215,6 +220,16 @@ const projectReportsSlice = createSlice({
           state.projectList[projectIndex].category_id = category.id || null;
           state.projectList[projectIndex].category_name = category.name ?? '';
           state.projectList[projectIndex].category_color = category.color_code ?? '';
+        }
+      })
+      .addCase(updateProjectStatus, (state, action) => {
+        const { projectId, status } = action.payload;
+        const projectIndex = state.projectList.findIndex(project => project.id === projectId);
+        
+        if (projectIndex !== -1) {
+          state.projectList[projectIndex].status_id = status.id || '';
+          state.projectList[projectIndex].status_name = status.name ?? '';
+          state.projectList[projectIndex].status_color = status.color_code ?? '';
         }
       });
   },
