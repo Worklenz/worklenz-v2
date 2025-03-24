@@ -1,7 +1,7 @@
 import { AutoComplete, Button, Drawer, Flex, Form, message, Select, Spin, Typography } from 'antd';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleInviteMemberDrawer } from '../../../features/settings/member/memberSlice';
+import { toggleInviteMemberDrawer, triggerTeamMembersRefresh } from '../../../features/settings/member/memberSlice';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback } from 'react';
 import { jobTitlesApiService } from '@/api/settings/job-titles/job-titles.api.service';
@@ -64,6 +64,7 @@ const InviteTeamMembers = () => {
         form.resetFields();
         setEmails([]);
         setSelectedJobTitle(null);
+        dispatch(triggerTeamMembersRefresh()); // Trigger refresh in TeamMembersSettings
         dispatch(toggleInviteMemberDrawer());
       }
     } catch (error) {
@@ -143,7 +144,7 @@ const InviteTeamMembers = () => {
         <Form.Item label={t('jobTitleLabel')} name="jobTitle">
           <AutoComplete
             options={jobTitles.map(job => ({
-              id:job.id,
+              id: job.id,
               label: job.name,
               value: job.name,
             }))}

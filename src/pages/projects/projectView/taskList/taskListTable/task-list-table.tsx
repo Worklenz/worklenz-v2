@@ -42,7 +42,7 @@ import TaskListCreatedDateCell from './task-list-table-cells/task-list-created-d
 import TaskListLastUpdatedCell from './task-list-table-cells/task-list-last-updated-cell/task-list-last-updated-cell';
 import TaskListReporterCell from './task-list-table-cells/task-list-reporter-cell/task-list-reporter-cell';
 import TaskListDueTimeCell from './task-list-table-cells/task-list-due-time-cell/task-list-due-time-cell';
-import AssigneeSelector from '@/components/taskListCommon/assignee-selector/assignee-selector';
+
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { CustomFieldsTypes, setCustomColumnModalAttributes, toggleCustomColumnModalOpen } from '@/features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
 import { selectTaskIds, selectTasks } from '@/features/projects/bulkActions/bulkActionSlice';
@@ -152,7 +152,7 @@ const CustomCell = React.memo(({
   renderColumnContent: any;
   updateTaskCustomColumnValue: (taskId: string, columnKey: string, value: string) => void;
 }) => {
-  if (column.custom_column && column.key) {
+  if (column.custom_column && column.key && column.pinned) {
     return renderCustomColumnContent(
       column.custom_column_obj || {},
       column.custom_column_obj?.fieldType,
@@ -1538,7 +1538,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                         </Flex>
                       )}
                       {column.key !== 'PHASE' &&
-                        (column.custom_column ? (
+                        ((column.custom_column && column.pinned) ? (
                           <CustomColumnHeader
                             column={column}
                             onSettingsClick={() => handleCustomColumnSettings(column.id || '')}

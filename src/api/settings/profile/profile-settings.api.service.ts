@@ -58,9 +58,9 @@ export const profileSettingsApiService = {
   },
 
   changePassword: async (body: {
-    password: string;
+    new_password: string;
     confirm_password: string;
-    current_password: string;
+    password: string;
   }): Promise<IServerResponse<any>> => {
     const response = await apiClient.post<IServerResponse<any>>(
       `${API_BASE_URL}/change-password`,

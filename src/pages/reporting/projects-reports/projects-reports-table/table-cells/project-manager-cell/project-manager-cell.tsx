@@ -1,9 +1,10 @@
 import { Avatar, Flex, Typography } from 'antd';
-import React from 'react';
-import CustomAvatar from '../../../../../../components/CustomAvatar';
+import CustomAvatar from '@components/CustomAvatar';
+import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse.types';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 
 type ProjectMangerCellProps = {
-  manager: { avatar_url: string; name: string } | null;
+  manager: ITeamMemberViewModel;
 };
 
 const ProjectManagerCell = ({ manager }: ProjectMangerCellProps) => {
@@ -11,11 +12,7 @@ const ProjectManagerCell = ({ manager }: ProjectMangerCellProps) => {
     <div>
       {manager ? (
         <Flex gap={8} align="center">
-          {manager?.avatar_url ? (
-            <Avatar src={manager.avatar_url} />
-          ) : (
-            <CustomAvatar avatarName={manager.name} />
-          )}
+          <SingleAvatar name={manager.name} avatarUrl={manager.avatar_url} />
 
           <Typography.Text className="group-hover:text-[#1890ff]">{manager.name}</Typography.Text>
         </Flex>

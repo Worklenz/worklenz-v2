@@ -9,35 +9,38 @@ import { nanoid } from '@reduxjs/toolkit';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { addCategory } from '@features/settings/categories/categoriesSlice';
 import { themeWiseColor } from '@utils/themeWiseColor';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { IProjectCategory, IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
+import { setSelectedProjectCategory } from '@/features/reporting/projectReports/project-reports-slice';
 
 // Update the props interface to include projectId
 interface ProjectCategoryCellProps {
   id: string;
   name: string;
   color_code: string;
-  projectId: string;  // Add this line
+  projectId: string;
 }
 
-// Update the component parameters
 const ProjectCategoryCell = ({ id, name, color_code, projectId }: ProjectCategoryCellProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
   const categoryInputRef = useRef<InputRef>(null);
   const { socket, connected } = useSocket();
-  const [selectedCategory, setSelectedCategory] = useState<IProjectCategory>({ id, name, color_code });
+  const [selectedCategory, setSelectedCategory] = useState<IProjectCategory>({
+    id,
+    name,
+    color_code,
+  });
 
   // get categories list from the categories reducer
   const { projectCategories, loading: projectCategoriesLoading } = useAppSelector(
     state => state.projectCategoriesReducer
-  );  
+  );
   const themeMode = useAppSelector(state => state.themeReducer.mode);
- 
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // filter categories based on search query
   const filteredCategoriesData = useMemo(() => {
@@ -55,7 +58,7 @@ const ProjectCategoryCell = ({ id, name, color_code, projectId }: ProjectCategor
       </Typography.Text>
     ),
   }));
-
+      
   // handle category select
   const onClick: MenuProps['onClick'] = e => {
     const newCategory = filteredCategoriesData.find(category => category.id === e.key);
@@ -93,7 +96,7 @@ const ProjectCategoryCell = ({ id, name, color_code, projectId }: ProjectCategor
     {
       key: '1',
       label: (
-        <Card className="project-category-dropdown-card" bordered={false}>
+        <Card className="project-category-dropdown-card" variant="borderless">
           <Flex vertical gap={4}>
             <Input
               ref={categoryInputRef}

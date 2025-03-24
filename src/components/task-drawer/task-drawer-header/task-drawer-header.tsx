@@ -15,7 +15,7 @@ import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
 import { deleteTask } from '@/features/tasks/tasks.slice';
-import { deleteBoardTask } from '@/features/board/board-slice';
+import { deleteBoardTask, updateTaskName } from '@/features/board/board-slice';
 
 type TaskDrawerHeaderProps = {
   inputRef: React.RefObject<InputRef | null>;
@@ -78,6 +78,12 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
     },
   ];
 
+  const handleReceivedTaskNameChange = (data: { id: string; parent_task: string; name: string }) => {
+    if (data.id === selectedTaskId) {
+      dispatch(updateTaskName({ task: data }));
+    }
+  };
+
   const handleInputBlur = () => {
     if (
       !selectedTaskId ||
@@ -96,6 +102,9 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
         parent_task: taskFormViewModel?.task?.parent_task_id,
       })
     );
+    socket?.once(SocketEvents.TASK_NAME_CHANGE.toString(), (data: any) => {
+      handleReceivedTaskNameChange(data);
+    });
   };
 
   return (

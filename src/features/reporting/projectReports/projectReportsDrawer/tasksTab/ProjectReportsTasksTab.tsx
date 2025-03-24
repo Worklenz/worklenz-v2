@@ -71,6 +71,7 @@ const ProjectReportsTasksTab = ({ projectId = null }: ProjectReportsTasksTabProp
       <Flex vertical gap={12}>
         {filteredGroups.map(item => (
           <ProjectReportsTasksTable
+            key={item.id}
             tasksData={item.tasks}
             title={item.name}
             color={item.color_code}

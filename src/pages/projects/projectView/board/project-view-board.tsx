@@ -7,6 +7,7 @@ import {
   fetchBoardTaskGroups,
   reorderTaskGroups,
   moveTaskBetweenGroups,
+  IGroupBy,
 } from '@features/board/board-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
@@ -33,6 +34,7 @@ import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics
 import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
 import logger from '@/utils/errorLogger';
+import { tasksApiService } from '@/api/tasks/tasks.api.service';
 
 const ProjectViewBoard = () => {
   const dispatch = useAppDispatch();
@@ -41,14 +43,14 @@ const ProjectViewBoard = () => {
   const authService = useAuthService();
   const currentSession = authService.getCurrentSession();
   const { trackMixpanelEvent } = useMixpanelTracking();
-
+  const [ currentTaskIndex, setCurrentTaskIndex] = useState(-1);
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskGroups, groupBy, loadingGroups, search, archived } = useAppSelector(state => state.boardReducer);
   const { statusCategories, loading: loadingStatusCategories } = useAppSelector(
     state => state.taskStatusReducer
   );
   const [activeItem, setActiveItem] = useState<any>(null);
-  
+
   // Store the original source group ID when drag starts
   const originalSourceGroupIdRef = useRef<string | null>(null);
 
@@ -79,7 +81,7 @@ const ProjectViewBoard = () => {
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     setActiveItem(active.data.current);
-    
+    setCurrentTaskIndex(active.data.current?.sortable.index);
     // Store the original source group ID when drag starts
     if (active.data.current?.type === 'task') {
       originalSourceGroupIdRef.current = active.data.current.sectionId;
@@ -105,10 +107,10 @@ const ProjectViewBoard = () => {
       // If we're over a task, we want to insert at that position
       // If we're over a section, we want to append to the end
       const activeTaskId = active.data.current?.task.id;
-      
+
       // Use the original source group ID from ref instead of the potentially modified one
       const sourceGroupId = originalSourceGroupIdRef.current || active.data.current?.sectionId;
-      
+
       // Fix: Ensure we correctly identify the target group ID
       let targetGroupId;
       if (isOverTask) {
@@ -144,9 +146,20 @@ const ProjectViewBoard = () => {
     }
   };
 
+  const checkTaskDependencyStatus = async (taskId: string, statusId: string) => {
+    if (!taskId || !statusId) return false;
+    try {
+      const res = await tasksApiService.getTaskDependencyStatus(taskId, statusId);
+      return res.done ? res.body.can_continue : false;
+    } catch (error) {
+      logger.error('Error checking task dependency status:', error);
+      return false;
+    }
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-       
+
     if (!over || !projectId) {
       setActiveItem(null);
       originalSourceGroupIdRef.current = null; // Reset the ref
@@ -159,10 +172,10 @@ const ProjectViewBoard = () => {
     // Handle task dragging between columns
     if (isActiveTask) {
       const task = active.data.current?.task;
-      
+
       // Use the original source group ID from ref instead of the potentially modified one
       const sourceGroupId = originalSourceGroupIdRef.current || active.data.current?.sectionId;
-      
+
       // Fix: Ensure we correctly identify the target group ID
       let targetGroupId;
       if (over.data.current?.type === 'task') {
@@ -175,7 +188,7 @@ const ProjectViewBoard = () => {
         // Fallback to the over ID if type is not specified
         targetGroupId = over.id;
       }
-      
+
       // Find source and target groups
       const sourceGroup = taskGroups.find(group => group.id === sourceGroupId);
       const targetGroup = taskGroups.find(group => group.id === targetGroupId);
@@ -186,17 +199,38 @@ const ProjectViewBoard = () => {
         originalSourceGroupIdRef.current = null; // Reset the ref
         return;
       }
+      if (targetGroupId !== sourceGroupId) {
+        const canContinue = await checkTaskDependencyStatus(task.id, targetGroupId);
+        if (!canContinue) {
+          alertService.error(
+            'Task is not completed',
+            'Please complete the task dependencies before proceeding'
+          );
+          dispatch(
+            moveTaskBetweenGroups({
+              taskId: task.id,
+              sourceGroupId: targetGroupId, // Current group (where it was moved optimistically)
+              targetGroupId: sourceGroupId, // Move it back to the original source group
+              targetIndex: currentTaskIndex !== -1 ? currentTaskIndex : 0, // Original position or append to end
+            })
+          );
+  
+          setActiveItem(null);
+          originalSourceGroupIdRef.current = null;
+          return;
+        }
+      }
 
       // Find indices
       let fromIndex = sourceGroup.tasks.findIndex(t => t.id === task.id);
-      
+
       // Handle case where task is not found in source group (might have been moved already in UI)
       if (fromIndex === -1) {
         console.warn('Task not found in source group. Using task sort_order from task object.');
-        
+
         // Use the sort_order from the task object itself
         const fromSortOrder = task.sort_order;
-        
+
         // Calculate target index and position
         let toIndex = -1;
         if (over.data.current?.type === 'task') {
@@ -208,9 +242,9 @@ const ProjectViewBoard = () => {
         }
 
         // Calculate toPos similar to Angular implementation
-        const toPos = targetGroup.tasks[toIndex]?.sort_order || 
-                      targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || 
-                      -1;
+        const toPos = targetGroup.tasks[toIndex]?.sort_order ||
+          targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order ||
+          -1;
 
         // Prepare socket event payload
         const body = {
@@ -230,7 +264,7 @@ const ProjectViewBoard = () => {
         // Emit socket event
         if (socket) {
           socket.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), body);
-          
+
           // Set up listener for task progress update
           socket.once(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), () => {
             if (task.is_sub_task) {
@@ -243,12 +277,12 @@ const ProjectViewBoard = () => {
 
         // Track analytics event
         trackMixpanelEvent(evt_project_task_list_drag_and_move);
-        
+
         setActiveItem(null);
         originalSourceGroupIdRef.current = null; // Reset the ref
         return;
       }
-      
+
       // Calculate target index and position
       let toIndex = -1;
       if (over.data.current?.type === 'task') {
@@ -260,9 +294,9 @@ const ProjectViewBoard = () => {
       }
 
       // Calculate toPos similar to Angular implementation
-      const toPos = targetGroup.tasks[toIndex]?.sort_order || 
-                    targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order || 
-                    -1;
+      const toPos = targetGroup.tasks[toIndex]?.sort_order ||
+        targetGroup.tasks[targetGroup.tasks.length - 1]?.sort_order ||
+        -1;
 
       // Prepare socket event payload
       const body = {
@@ -280,7 +314,7 @@ const ProjectViewBoard = () => {
       // Emit socket event
       if (socket) {
         socket.emit(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), body);
-        
+
         // Set up listener for task progress update
         socket.once(SocketEvents.TASK_SORT_ORDER_CHANGE.toString(), () => {
           if (task.is_sub_task) {
@@ -296,29 +330,36 @@ const ProjectViewBoard = () => {
     }
     // Handle column reordering
     else if (isActiveSection) {
+      // Don't allow reordering if groupBy is phases
+      if (groupBy === IGroupBy.PHASE) {
+        setActiveItem(null);
+        originalSourceGroupIdRef.current = null;
+        return;
+      }
+
       const sectionId = active.id;
       const fromIndex = taskGroups.findIndex(group => group.id === sectionId);
       const toIndex = taskGroups.findIndex(group => group.id === over.id);
-      
+
       if (fromIndex !== -1 && toIndex !== -1) {
         // Create a new array with the reordered groups
         const reorderedGroups = [...taskGroups];
         const [movedGroup] = reorderedGroups.splice(fromIndex, 1);
         reorderedGroups.splice(toIndex, 0, movedGroup);
-        
+
         // Dispatch action to reorder columns with the new array
         dispatch(reorderTaskGroups(reorderedGroups));
-        
+
         // Prepare column order for API
         const columnOrder = reorderedGroups.map(group => group.id);
-        
+
         // Call API to update status order
         try {
           // Use the correct API endpoint based on the Angular code
           const requestBody: ITaskStatusCreateRequest = {
             status_order: columnOrder
           };
-          
+
           const response = await statusApiService.updateStatusOrder(requestBody, projectId);
           if (!response.done) {
             const revertedGroups = [...reorderedGroups];
