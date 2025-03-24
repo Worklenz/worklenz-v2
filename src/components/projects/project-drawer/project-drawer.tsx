@@ -300,7 +300,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             )}
           </Space>
           <Space>
-            {editMode && (isProjectManager || isOwnerorAdmin) && (
+            {(isProjectManager || isOwnerorAdmin) && (
               <Button
                 type="primary"
                 onClick={() => form.submit()}
