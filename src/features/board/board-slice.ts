@@ -556,6 +556,21 @@ const boardSlice = createSlice({
       }
     },
 
+    updateTaskName: (
+      state,
+      action: PayloadAction<{
+        task: IProjectTask;
+      }>
+    ) => {
+      const { task } = action.payload;
+
+      // Find the task and update it
+      const result = findTaskInAllGroups(state.taskGroups, task.id || '');
+      if (result) {
+        result.task.name = task.name;
+      }
+    },
+
     updateTaskEndDate: (
       state,
       action: PayloadAction<{
@@ -782,6 +797,7 @@ export const {
   setBoardGroupName,
   updateTaskAssignees,
   updateTaskEndDate,
+  updateTaskName,
   updateSubtask,
   toggleSubtasksInclude,
   toggleTaskExpansion,
