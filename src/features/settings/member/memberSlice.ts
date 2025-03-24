@@ -7,6 +7,7 @@ type MemberState = {
   membersList: MemberType[];
   isUpdateMemberDrawerOpen: boolean;
   isInviteMemberDrawerOpen: boolean;
+  refreshTeamMembers: boolean;
 };
 
 const initialState: MemberState = {
@@ -21,6 +22,7 @@ const initialState: MemberState = {
   membersList: [],
   isUpdateMemberDrawerOpen: false,
   isInviteMemberDrawerOpen: false,
+  refreshTeamMembers: false,
 };
 
 const memberSlice = createSlice({
@@ -37,8 +39,15 @@ const memberSlice = createSlice({
         ? (state.isUpdateMemberDrawerOpen = false)
         : (state.isUpdateMemberDrawerOpen = true);
     },
+    triggerTeamMembersRefresh(state) {
+      state.refreshTeamMembers = !state.refreshTeamMembers; // Toggle to trigger effect
+    },
   },
 });
 
-export const { toggleInviteMemberDrawer, toggleUpdateMemberDrawer } = memberSlice.actions;
+export const { 
+  toggleInviteMemberDrawer, 
+  toggleUpdateMemberDrawer,
+  triggerTeamMembersRefresh,
+} = memberSlice.actions;
 export default memberSlice.reducer;
