@@ -9,32 +9,37 @@ import { nanoid } from '@reduxjs/toolkit';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { addCategory } from '@features/settings/categories/categoriesSlice';
 import { themeWiseColor } from '@utils/themeWiseColor';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { IProjectCategory, IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
+import { setSelectedProjectCategory } from '@/features/reporting/projectReports/project-reports-slice';
 
 interface ProjectCategoryCellProps {
   id: string;
   name: string;
   color_code: string;
+  projectId: string;
 }
 
-const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps) => {
+const ProjectCategoryCell = ({ id, name, color_code, projectId }: ProjectCategoryCellProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
   const categoryInputRef = useRef<InputRef>(null);
   const { socket, connected } = useSocket();
-  const [selectedCategory, setSelectedCategory] = useState<IProjectCategory>({ id, name, color_code });
+  const [selectedCategory, setSelectedCategory] = useState<IProjectCategory>({
+    id,
+    name,
+    color_code,
+  });
 
   // get categories list from the categories reducer
   const { projectCategories, loading: projectCategoriesLoading } = useAppSelector(
     state => state.projectCategoriesReducer
-  );  
+  );
   const themeMode = useAppSelector(state => state.themeReducer.mode);
- 
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // filter categories based on search query
   const filteredCategoriesData = useMemo(() => {
@@ -52,16 +57,21 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
       </Typography.Text>
     ),
   }));
-
   // handle category select
-  const onClick: MenuProps['onClick'] = e => {
-    const newCategory = filteredCategoriesData.find(category => category.id === e.key);
-    if (newCategory) {
-      setSelectedCategory(newCategory);
-      if (connected && socket) {
-        socket.emit(SocketEvents.PROJECT_CATEGORY_CHANGE.toString(), newCategory);
-      }
-    }
+  const onClick: MenuProps['onClick'] = (e) => {
+
+    if (!e.key || !projectId || !connected || !socket) return;
+    const category = filteredCategoriesData.find(category => category.id === e.key);
+
+    setSelectedCategory(category);
+    socket?.emit(
+      SocketEvents.PROJECT_CATEGORY_CHANGE.toString(),
+      JSON.stringify({
+        project_id: projectId,
+        category_id: category?.id,
+        is_update: true,
+      })
+    );
   };
 
   //   function to handle add a new category
@@ -114,7 +124,9 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
   ];
 
   const handleCategoryChangeResponse = (data: IProjectCategory) => {
-    setSelectedCategory(data);
+    if (data.id === selectedCategory.id) {
+      dispatch(setSelectedProjectCategory(data));
+    }
   };
 
   const handleCategoryDropdownOpen = (open: boolean) => {

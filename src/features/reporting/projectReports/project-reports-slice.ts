@@ -186,6 +186,15 @@ const projectReportsSlice = createSlice({
     setSelectedProject: (state, action) => {
       state.selectedProject = action.payload;
     },
+    setSelectedProjectCategory: (state, action) => {
+      const category = action.payload;
+      const project = state.projectList.find(p => p.id === category.id);
+      if (project) {
+        project.category_id = category.id;
+        project.category_name = category.name;
+        project.category_color = category.color_code;
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -224,5 +233,6 @@ export const {
   setProjectStatus,
   setSelectedMember,
   setSelectedProject,
+  setSelectedProjectCategory,
 } = projectReportsSlice.actions;
 export default projectReportsSlice.reducer;
