@@ -30,7 +30,7 @@ import CustomTableTitle from '@/components/CustomTableTitle';
 import { IRPTProject } from '@/types/reporting/reporting.types';
 import ProjectReportsDrawer from '@/features/reporting/projectReports/projectReportsDrawer/ProjectReportsDrawer';
 import { PAGE_SIZE_OPTIONS } from '@/shared/constants';
-import './project-report-table.css';
+import './projects-reports-table.css';
 
 const ProjectsReportsTable = () => {
   const dispatch = useAppDispatch();

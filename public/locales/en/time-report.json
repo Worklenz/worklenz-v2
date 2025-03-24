@@ -34,5 +34,10 @@
   "manDays": "Man Days",
   "days": "Days",
   "estimatedDays": "Estimated Days",
-  "actualDays": "Actual Days"
+  "actualDays": "Actual Days",
+
+  "noCategories": "No categories found",
+  "noCategory": "No Category",
+  "noProjects": "No projects found",
+  "noTeams": "No teams found"
 }

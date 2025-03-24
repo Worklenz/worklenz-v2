@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MemberLoggedTimeType } from '@/types/timeSheet/project.types';
-import { ClockCircleOutlined } from '@ant-design/icons';
-import { Progress, Spin } from 'antd';
+import { Empty, Progress, Spin } from 'antd';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { reportingTimesheetApiService } from '@/api/reporting/reporting.timesheet.api.service';
@@ -22,6 +21,7 @@ const TimeSheetTable: React.FC = () => {
     projects: filterProjects,
     loadingProjects,
     billable,
+    archived,
   } = useAppSelector(state => state.timeReportsOverviewReducer);
   const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
 
@@ -36,17 +36,19 @@ const TimeSheetTable: React.FC = () => {
   const fetchTimeSheetData = async () => {
     try {
       setLoading(true);
-      const selectedTeams = teams.map(team => team.selected && team.id);
-
+      const selectedTeams = teams.filter(team => team.selected);
+      const selectedProjects = filterProjects.filter(project => project.selected);
+      const selectedCategories = categories.filter(category => category.selected);
       const body = {
-        teams: selectedTeams || [],
-        projects: filterProjects.map(project => project.id) || [],
+        teams: selectedTeams.map(t => t.id) as string[],
+        projects: selectedProjects.map(project => project.id) || [],
+        categories: selectedCategories.map(category => category.id) || [],
         duration,
         date_range: dateRange,
-        archived: false,
+        archived,
         billable,
       };
-      const response = await reportingTimesheetApiService.getTimeSheetData(body, false);
+      const response = await reportingTimesheetApiService.getTimeSheetData(body, archived);
       if (response.done) {
         setProjects(response.body.projects);
         setMembers(response.body.users);
@@ -60,7 +62,7 @@ const TimeSheetTable: React.FC = () => {
 
   useEffect(() => {
     if (!loadingTeams && !loadingCategories && !loadingProjects) fetchTimeSheetData();
-  }, [teams, duration, dateRange, filterProjects, categories, billable]);
+  }, [teams, duration, dateRange, filterProjects, categories, billable, archived]);
 
   // Set theme variables
   useEffect(() => {
@@ -83,70 +85,67 @@ const TimeSheetTable: React.FC = () => {
           maxWidth: 'calc(100vw - 225px)',
         }}
       >
+        {members.length == 0 && projects.length == 0 && (
+          <div className="no-data">
+            <Empty description="No data" />
+          </div>
+        )}
         {/* Columns */}
-        {
-          members && members.length > 0 ? (
-            <div className="header-row d-flex">
-              <div className="project-name"></div>
-              {members.map((item) => (
-                <div key={item.id} className="member-name f-500">
-                  {item.name}
-                </div>
-              ))}
-              <div className="total-time text-center">Total</div>
-            </div>
-          ) : null
-        }
+        {members && members.length > 0 ? (
+          <div className="header-row d-flex">
+            <div className="project-name"></div>
+            {members.map(item => (
+              <div key={item.id} className="member-name f-500">
+                {item.name}
+              </div>
+            ))}
+            <div className="total-time text-center">Total</div>
+          </div>
+        ) : null}
 
         {/* Rows */}
-        {
-          projects.length > 0 ? (
-            <>
-              {projects.map((item, index) => (
-                <div key={index} className="table-row_ d-flex">
-                  <div className="project-name">
-                    <span className="anticon" style={{ color: item.status_color_code }}>
-                      <i className={item.status_icon}></i>
-                    </span>
-                    <span className="ms-1">{item.name}</span>
-                    <div className="d-block">
-                      <Progress 
-                        percent={item.progress} 
-                        strokeColor={item.color_code}
-                        size="small"
-                      />
-                    </div>
+        {projects.length > 0 ? (
+          <>
+            {projects.map((item, index) => (
+              <div key={index} className="table-row_ d-flex">
+                <div className="project-name">
+                  <span className="anticon" style={{ color: item.status_color_code }}>
+                    <i className={item.status_icon}></i>
+                  </span>
+                  <span className="ms-1">{item.name}</span>
+                  <div className="d-block">
+                    <Progress percent={item.progress} strokeColor={item.color_code} size="small" />
                   </div>
-                  {item.time_logs?.map((log, index) => (
-                    <div 
-                      key={index} 
-                      className={`member-time ${isNumeric(log.time_logged) ? 'numeric' : ''}`}
-                    >
-                      {log.time_logged}
-                    </div>
-                  ))}
-                  <div className="total-time">{item.total}</div>
                 </div>
-              ))}
+                {item.time_logs?.map((log, index) => (
+                  <div
+                    key={index}
+                    className={`member-time ${isNumeric(log.time_logged) ? 'numeric' : ''}`}
+                  >
+                    {log.time_logged}
+                  </div>
+                ))}
+                <div className="total-time">{item.total}</div>
+              </div>
+            ))}
 
-              {/* total row */}
-              {members.length > 0 && (
-                <div className="table-row_ d-flex bottom-row">
-                  <div className="project-name bg-bold">Total</div>
-                  {members.map((item) => (
-                    <div 
-                      key={item.id} 
-                      className={`member-total-time bg-bold ${isNumeric(item.total_time) ? 'numeric' : ''}`}
-                    >
-                      {item.total_time}
-                    </div>
-                  ))}
-                  <div className="total-time"></div>
-                </div>
-              )}
-            </>
-          ) : null
-        }
+            {/* total row */}
+            {members.length > 0 && (
+              <div className="table-row_ d-flex bottom-row">
+                <div className="project-name bg-bold">Total</div>
+                {members.map(item => (
+                  <div
+                    key={item.id}
+                    className={`member-total-time bg-bold ${isNumeric(item.total_time) ? 'numeric' : ''}`}
+                  >
+                    {item.total_time}
+                  </div>
+                ))}
+                <div className="total-time"></div>
+              </div>
+            )}
+          </>
+        ) : null}
       </div>
     </Spin>
   );

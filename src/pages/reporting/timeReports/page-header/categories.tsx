@@ -1,7 +1,8 @@
+import { fetchReportingProjects, setNoCategory, setSelectOrDeselectAllCategories, setSelectOrDeselectCategory } from '@/features/reporting/time-reports/time-reports-overview.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { CaretDownFilled } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Dropdown, Input, MenuProps } from 'antd';
+import { Button, Card, Checkbox, Divider, Dropdown, Input, MenuProps } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,12 +10,11 @@ import { useTranslation } from 'react-i18next';
 const Categories: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const [checkedList, setCheckedList] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectAll, setSelectAll] = useState(true);
   const { t } = useTranslation('time-report');
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const { categories, loadingCategories } = useAppSelector(
+  const { categories, loadingCategories, noCategory } = useAppSelector(
     state => state.timeReportsOverviewReducer
   );
 
@@ -23,15 +23,24 @@ const Categories: React.FC = () => {
   );
 
   // Handle checkbox change for individual items
-  const handleCheckboxChange = (key: string, checked: boolean) => {
-    setCheckedList(prev => (checked ? [...prev, key] : prev.filter(item => item !== key)));
+  const handleCheckboxChange = async (key: string, checked: boolean) => {
+    await dispatch(setSelectOrDeselectCategory({ id: key, selected: checked }));
+    await dispatch(fetchReportingProjects());
   };
 
   // Handle "Select All" checkbox change
-  const handleSelectAllChange = (e: CheckboxChangeEvent) => {
+  const handleSelectAllChange = async (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
     setSelectAll(isChecked);
-    setCheckedList(isChecked ? filteredItems.map(item => item.id).filter((id): id is string => id !== undefined) : []);
+    await dispatch(setNoCategory(isChecked));
+    await dispatch(setSelectOrDeselectAllCategories(isChecked));
+    await dispatch(fetchReportingProjects());
+
+  };
+
+  const handleNoCategoryChange = async (checked: boolean) => {
+    await dispatch(setNoCategory(checked));
+    await dispatch(fetchReportingProjects());
   };
 
   // Dropdown items for the menu
@@ -47,36 +56,59 @@ const Categories: React.FC = () => {
         />
       ),
     },
-    {
-      key: 'selectAll',
-      label: (
-        <div>
+    ...(categories.length > 0
+      ? [
+          {
+            key: 'selectAll',
+            label: (
+              <div>
+                <Checkbox
+                  onClick={e => e.stopPropagation()}
+                  onChange={handleSelectAllChange}
+                  checked={selectAll}
+                >
+                  {t('selectAll')}
+                </Checkbox>
+              </div>
+            ),
+          },
+          {
+            key: 'divider',
+            type: 'divider' as const,
+          },
+        ]
+      : []),
+      {
+        key: 'noCategory',
+        label: (
           <Checkbox
             onClick={e => e.stopPropagation()}
-            onChange={handleSelectAllChange}
-            checked={selectAll}
+            checked={noCategory}
+            onChange={e => handleNoCategoryChange(e.target.checked)}
           >
-            {t('selectAll')}
+            {t('noCategory')}
           </Checkbox>
-        </div>
-      ),
-    },
-    {
-      key: 'divider',
-      type: 'divider',
-    },
-    ...filteredItems.map(item => ({
-      key: item.id,
-      label: (
-        <Checkbox
-          onClick={e => e.stopPropagation()}
-          checked={item.selected}
-          onChange={e => handleCheckboxChange(item.id, e.target.checked)}
-        >
-          {item.name}
-        </Checkbox>
-      ),
-    })),
+        ),
+      },
+    ...(filteredItems.length > 0
+      ? filteredItems.map(item => ({
+          key: item.id || '',
+          label: (
+            <Checkbox
+              onClick={e => e.stopPropagation()}
+              checked={item.selected}
+              onChange={e => handleCheckboxChange(item.id || '', e.target.checked)}
+            >
+              {item.name}
+            </Checkbox>
+          ),
+        }))
+      : [
+          {
+            key: 'empty',
+            label: t('noCategories'),
+          },
+        ]),
   ];
 
   return (

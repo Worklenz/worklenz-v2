@@ -6,7 +6,7 @@ interface ReportingState {
   selectedTeamIds: string[];
   showOverViewTeamDrawer: boolean;
   duration: string;
-  dateRange: string;
+  dateRange: string[];
 }
 
 const initialState: ReportingState = {
@@ -15,7 +15,7 @@ const initialState: ReportingState = {
   selectedTeamIds: [],
   showOverViewTeamDrawer: false,
   duration: 'LAST_WEEK', // Default value
-  dateRange: '',
+  dateRange: [],
 };
 
 const reportingSlice = createSlice({
@@ -41,7 +41,7 @@ const reportingSlice = createSlice({
     setDuration: (state, action: PayloadAction<string>) => {
       state.duration = action.payload;
     },
-    setDateRange: (state, action: PayloadAction<string>) => {
+    setDateRange: (state, action: PayloadAction<string[]>) => {
       state.dateRange = action.payload;
     },
   },
