@@ -2,7 +2,7 @@ import { Typography } from 'antd';
 import React from 'react';
 
 type ProjectUpdateCellProps = {
-  updates: { comment: string }[];
+  updates: string;
 };
 
 const ProjectUpdateCell = ({ updates }: ProjectUpdateCellProps) => {
@@ -12,7 +12,7 @@ const ProjectUpdateCell = ({ updates }: ProjectUpdateCellProps) => {
       ellipsis={{ expanded: false }}
       className="group-hover:text-[#1890ff]"
     >
-      {updates[0] ? updates[0]?.comment : '-'}
+      {updates}
     </Typography.Text>
   );
 };

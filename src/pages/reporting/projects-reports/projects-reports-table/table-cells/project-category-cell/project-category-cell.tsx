@@ -83,7 +83,7 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
     {
       key: '1',
       label: (
-        <Card className="project-category-dropdown-card" bordered={false}>
+        <Card className="project-category-dropdown-card" variant="borderless">
           <Flex vertical gap={4}>
             <Input
               ref={categoryInputRef}
