@@ -3,9 +3,14 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 
 const useIsProjectManager = () => {
   const currentSession = useAuthService().getCurrentSession();
-  const { project } = useAppSelector(state => state.projectReducer);
+  const { project: currentProject } = useAppSelector(state => state.projectReducer);
+  const { project: drawerProject } = useAppSelector(state => state.projectDrawerReducer);
   
-  return currentSession?.team_member_id === project?.project_manager?.id;
+  // Check if user is project manager for either the current project or drawer project
+  const isManagerOfCurrentProject = currentSession?.team_member_id === currentProject?.project_manager?.id;
+  const isManagerOfDrawerProject = currentSession?.team_member_id === drawerProject?.project_manager?.id;
+
+  return isManagerOfCurrentProject || isManagerOfDrawerProject;
 };
 
-export default useIsProjectManager; 
+export default useIsProjectManager;
