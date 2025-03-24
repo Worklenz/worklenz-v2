@@ -32,7 +32,7 @@ const ProjectDaysLeftAndOverdueCell = ({
                 </Typography.Text>
               ) : (
                 <Typography.Text style={{ cursor: 'pointer', color: colors.limeGreen }}>
-                  {daysLeft} {t('daysLeftText')}
+                  {daysLeft} {daysLeft === 1 ? t('dayLeftText') : t('daysLeftText')}
                 </Typography.Text>
               )}
             </>
