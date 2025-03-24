@@ -880,7 +880,6 @@ const taskSlice = createSlice({
       // Also add to columns array to maintain visibility
       state.columns.push({
         ...action.payload,
-        pinned: true // New columns are visible by default
       });
     },
 
@@ -1039,7 +1038,6 @@ const taskSlice = createSlice({
         const customColumns = (action.payload as { custom: any[] }).custom.map((col: any) => ({
           ...col,
           isCustom: true,
-          pinned: true // Default custom columns to visible
         }));
 
         // Merge columns
@@ -1085,10 +1083,8 @@ const taskSlice = createSlice({
         state.loadingColumns = false;
         state.customColumns = action.payload;
         // Add custom columns to the columns array
-        const customColumnsForVisibility = action.payload.map(col => ({
-          ...col,
-          pinned: true // Make custom columns visible by default
-        }));
+        console.log('action.payload', action.payload);
+        const customColumnsForVisibility = action.payload;
         state.columns = [...state.columns, ...customColumnsForVisibility];
       })
       .addCase(fetchCustomColumns.rejected, (state, action) => {

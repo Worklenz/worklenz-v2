@@ -57,6 +57,8 @@ const SignupPage = () => {
     return localStorage.getItem(WORKLENZ_REDIRECT_PROJ_KEY);
   };
 
+  const enableGoogleLogin = import.meta.env.VITE_ENABLE_GOOGLE_LOGIN === 'true' || false;
+
   useEffect(() => {
     trackMixpanelEvent(evt_signup_page_visit);
     const searchParams = new URLSearchParams(window.location.search);
@@ -299,22 +301,26 @@ const SignupPage = () => {
               {t('signupButton')}
             </Button>
 
-            <Typography.Text style={{ textAlign: 'center' }}>{t('orText')}</Typography.Text>
+            {enableGoogleLogin && (
+              <>
+                <Typography.Text style={{ textAlign: 'center' }}>{t('orText')}</Typography.Text>
 
-            <Button
-              block
-              type="default"
-              size="large"
-              onClick={onGoogleSignUpClick}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                borderRadius: 4,
-              }}
-            >
-              <img src={googleIcon} alt="google icon" style={{ maxWidth: 20, width: '100%' }} />
-              {t('signInWithGoogleButton')}
-            </Button>
+                <Button
+                  block
+                  type="default"
+                  size="large"
+                  onClick={onGoogleSignUpClick}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 4,
+                  }}
+                >
+                  <img src={googleIcon} alt="google icon" style={{ maxWidth: 20, width: '100%' }} />
+                  {t('signInWithGoogleButton')}
+                </Button>
+              </>
+            )}
           </Flex>
         </Form.Item>
 

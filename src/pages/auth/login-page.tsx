@@ -47,6 +47,8 @@ const LoginPage: React.FC = () => {
     projectId: '',
   });
 
+  const enableGoogleLogin = import.meta.env.VITE_ENABLE_GOOGLE_LOGIN === 'true' || false;
+
   useDocumentTitle('Login');
 
   const validationRules = {
@@ -215,18 +217,22 @@ const LoginPage: React.FC = () => {
               {t('loginButton')}
             </Button>
 
-            <Typography.Text style={{ textAlign: 'center' }}>{t('orText')}</Typography.Text>
+            {enableGoogleLogin && (
+              <>
+                <Typography.Text style={{ textAlign: 'center' }}>{t('orText')}</Typography.Text>
 
-            <Button
-              block
-              type="default"
-              size="large"
-              onClick={handleGoogleLogin}
-              style={styles.googleButton}
-            >
-              <img src={googleIcon} alt="Google" style={styles.googleIcon} />
-              {t('signInWithGoogleButton')}
-            </Button>
+                <Button
+                  block
+                  type="default"
+                  size="large"
+                  onClick={handleGoogleLogin}
+                  style={styles.googleButton}
+                >
+                  <img src={googleIcon} alt="Google" style={styles.googleIcon} />
+                  {t('signInWithGoogleButton')}
+                </Button>
+              </>
+            )}
           </Flex>
         </Form.Item>
 
