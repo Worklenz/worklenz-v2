@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Button, ConfigProvider, Flex, PaginationProps, Table, TableColumnsType } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { ExpandAltOutlined } from '@ant-design/icons';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import ProjectCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-cell/project-cell';
 import EstimatedVsActualCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/estimated-vs-actual-cell/estimated-vs-actual-cell';
 import TasksProgressCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/tasks-progress-cell/tasks-progress-cell';
@@ -18,10 +19,10 @@ import ProjectHealthCell from '@/pages/reporting/projects-reports/projects-repor
 import ProjectCategoryCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-category-cell/project-category-cell';
 import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-days-left-and-overdue-cell/project-days-left-and-overdue-cell';
 import ProjectUpdateCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-update-cell/project-update-cell';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   fetchProjectData,
   setIndex,
+  setOrder,
   setPageSize,
   toggleProjectReportsDrawer,
 } from '@/features/reporting/projectReports/project-reports-slice';
@@ -37,10 +38,14 @@ const ProjectsReportsTable = () => {
   const { t } = useTranslation('reporting-projects');
 
   const [selectedProject, setSelectedProject] = useState<IRPTProject | null>(null);
-  const { projectList, isLoading, total, index, pageSize } = useAppSelector(
-    state => state.projectReportsReducer
-  );
-  const {
+  
+  const { 
+    projectList, 
+    isLoading, 
+    total, 
+    index, 
+    pageSize, 
+    order,
     searchQuery,
     selectedProjectStatuses,
     selectedProjectHealths,
@@ -56,16 +61,17 @@ const ProjectsReportsTable = () => {
     dispatch(toggleProjectReportsDrawer());
   };
 
-  const columns: TableColumnsType = [
+  const columns: TableColumnsType = useMemo(() => [
     {
       key: 'name',
       title: <CustomTableTitle title={t('projectColumn')} />,
       width: 300,
-      onCell: record => {
-        return {
-          onClick: () => handleDrawerOpen(record as IRPTProject),
-        };
-      },
+      sorter: true,
+      defaultSortOrder: order === 'asc' ? 'ascend' : 'descend',
+      fixed: 'left' as const,
+      onCell: record => ({
+        onClick: () => handleDrawerOpen(record as IRPTProject),
+      }),
       render: record => (
         <Flex gap={16} align="center" justify="space-between">
           <ProjectCell
@@ -89,8 +95,6 @@ const ProjectsReportsTable = () => {
           </Button>
         </Flex>
       ),
-      sorter: true,
-      fixed: 'left' as const,
     },
     {
       key: 'estimatedVsActual',
@@ -158,7 +162,7 @@ const ProjectsReportsTable = () => {
     },
     {
       key: 'category',
-      title: <CustomTableTitle title="Category" />,
+      title: <CustomTableTitle title={t('categoryColumn')} />,
       render: (record: IRPTProject) => (
         <ProjectCategoryCell
           id={record.category_id || ''}
@@ -194,12 +198,16 @@ const ProjectsReportsTable = () => {
       render: record => <ProjectManagerCell manager={record.project_manager} />,
       width: 200,
     },
-  ];
+  ], [t, order]);
 
   // filter columns based on the `hidden` state from Redux
-  const visibleColumns = columns.filter(col => columnsVisibility[col.key as string]);
+  const visibleColumns = useMemo(() => 
+    columns.filter(col => columnsVisibility[col.key as string]), 
+    [columns, columnsVisibility]
+  );
 
   const handleTableChange = (pagination: PaginationProps, filters: any, sorter: any) => {
+    if (sorter.order) dispatch(setOrder(sorter.order));
     dispatch(setIndex(pagination.current));
     dispatch(setPageSize(pagination.pageSize));
   };
@@ -207,6 +215,8 @@ const ProjectsReportsTable = () => {
   useEffect(() => {
     if (!isLoading) dispatch(fetchProjectData());
   }, [
+    dispatch,
+    isLoading,
     searchQuery,
     selectedProjectStatuses,
     selectedProjectHealths,
@@ -215,19 +225,27 @@ const ProjectsReportsTable = () => {
     archived,
     index,
     pageSize,
+    order,
   ]);
 
-  return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Table: {
-            cellPaddingBlock: 12,
-            cellPaddingInline: 10,
-          },
+  const tableRowProps = useMemo(() => ({
+    style: { height: 56, cursor: 'pointer' },
+    className: 'group even:bg-[#4e4e4e10]',
+  }), []);
+
+  const tableConfig = useMemo(() => ({
+    theme: {
+      components: {
+        Table: {
+          cellPaddingBlock: 12,
+          cellPaddingInline: 10,
         },
-      }}
-    >
+      },
+    }
+  }), []);
+
+  return (
+    <ConfigProvider {...tableConfig}>
       <Table
         columns={visibleColumns}
         dataSource={projectList}
@@ -241,12 +259,7 @@ const ProjectsReportsTable = () => {
         scroll={{ x: 'max-content' }}
         loading={isLoading}
         onChange={handleTableChange}
-        onRow={record => {
-          return {
-            style: { height: 56, cursor: 'pointer' },
-            className: 'group even:bg-[#4e4e4e10]',
-          };
-        }}
+        onRow={() => tableRowProps}
       />
       {createPortal(<ProjectReportsDrawer selectedProject={selectedProject} />, document.body)}
     </ConfigProvider>
