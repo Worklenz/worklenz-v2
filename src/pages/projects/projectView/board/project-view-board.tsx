@@ -7,6 +7,7 @@ import {
   fetchBoardTaskGroups,
   reorderTaskGroups,
   moveTaskBetweenGroups,
+  IGroupBy,
 } from '@features/board/board-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
@@ -296,6 +297,13 @@ const ProjectViewBoard = () => {
     }
     // Handle column reordering
     else if (isActiveSection) {
+      // Don't allow reordering if groupBy is phases
+      if (groupBy === IGroupBy.PHASE) {
+        setActiveItem(null);
+        originalSourceGroupIdRef.current = null;
+        return;
+      }
+
       const sectionId = active.id;
       const fromIndex = taskGroups.findIndex(group => group.id === sectionId);
       const toIndex = taskGroups.findIndex(group => group.id === over.id);
