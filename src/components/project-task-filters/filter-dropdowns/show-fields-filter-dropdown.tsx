@@ -41,6 +41,7 @@ const ShowFieldsFilterDropdown = () => {
       });
       if (col.id) dispatch(updateCustomColumnPinned({ columnId: col.id, isVisible: !col.pinned }));
     } else {
+      console.log('column', column);
       await dispatch(updateColumnVisibility({ projectId, item: column }));
     }
   };
