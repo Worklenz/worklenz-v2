@@ -109,6 +109,7 @@ const MembersReportsTable = () => {
       <Table
         columns={columns}
         dataSource={membersList}
+        rowKey={record => record.id}
         pagination={{ showSizeChanger: true, defaultPageSize: 10, total: total }}
         scroll={{ x: 'max-content' }}
         loading={isLoading}

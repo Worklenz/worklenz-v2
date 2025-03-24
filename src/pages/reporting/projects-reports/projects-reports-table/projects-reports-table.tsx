@@ -38,13 +38,13 @@ const ProjectsReportsTable = () => {
   const { t } = useTranslation('reporting-projects');
 
   const [selectedProject, setSelectedProject] = useState<IRPTProject | null>(null);
-  
-  const { 
-    projectList, 
-    isLoading, 
-    total, 
-    index, 
-    pageSize, 
+
+  const {
+    projectList,
+    isLoading,
+    total,
+    index,
+    pageSize,
     order,
     searchQuery,
     selectedProjectStatuses,
@@ -61,148 +61,159 @@ const ProjectsReportsTable = () => {
     dispatch(toggleProjectReportsDrawer());
   };
 
-  const columns: TableColumnsType = useMemo(() => [
-    {
-      key: 'name',
-      title: <CustomTableTitle title={t('projectColumn')} />,
-      width: 300,
-      sorter: true,
-      defaultSortOrder: order === 'asc' ? 'ascend' : 'descend',
-      fixed: 'left' as const,
-      onCell: record => ({
-        onClick: () => handleDrawerOpen(record as IRPTProject),
-      }),
-      render: record => (
-        <Flex gap={16} align="center" justify="space-between">
-          <ProjectCell
-            projectId={record.id}
-            project={record.name}
-            projectColor={record.color_code}
-          />
+  const columns: TableColumnsType = useMemo(
+    () => [
+      {
+        key: 'name',
+        title: <CustomTableTitle title={t('projectColumn')} />,
+        width: 300,
+        sorter: true,
+        defaultSortOrder: order === 'asc' ? 'ascend' : 'descend',
+        fixed: 'left' as const,
+        onCell: record => ({
+          onClick: () => handleDrawerOpen(record as IRPTProject),
+        }),
+        render: record => (
+          <Flex gap={16} align="center" justify="space-between">
+            <ProjectCell
+              projectId={record.id}
+              project={record.name}
+              projectColor={record.color_code}
+            />
 
-          <Button
-            className="hidden group-hover:flex"
-            type="text"
-            style={{
-              backgroundColor: colors.transparent,
-              padding: 0,
-              height: 22,
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            {t('openButton')} <ExpandAltOutlined />
-          </Button>
-        </Flex>
-      ),
-    },
-    {
-      key: 'estimatedVsActual',
-      title: <CustomTableTitle title={t('estimatedVsActualColumn')} />,
-      render: record => (
-        <EstimatedVsActualCell
-          actualTime={record.actual_time || 0}
-          actualTimeString={record.actual_time_string}
-          estimatedTime={record.estimated_time * 60 || 0}
-          estimatedTimeString={record.estimated_time_string}
-        />
-      ),
-      width: 230,
-    },
-    {
-      key: 'tasksProgress',
-      title: <CustomTableTitle title={t('tasksProgressColumn')} />,
-      render: record => <TasksProgressCell tasksStat={record.tasks_stat} />,
-      width: 200,
-    },
-    {
-      key: 'lastActivity',
-      title: <CustomTableTitle title={t('lastActivityColumn')} />,
-      render: record => <LastActivityCell activity={record.last_activity?.last_activity_string} />,
-      width: 200,
-    },
-    {
-      key: 'status',
-      title: <CustomTableTitle title={t('statusColumn')} />,
-      render: record => (
-        <ProjectStatusCell currentStatus={record.status_id} projectId={record.id} />
-      ),
-      width: 200,
-    },
-    {
-      key: 'dates',
-      title: <CustomTableTitle title={t('datesColumn')} />,
-      render: record => (
-        <ProjectDatesCell
-          projectId={record.id}
-          startDate={record.start_date}
-          endDate={record.end_date}
-        />
-      ),
-      width: 275,
-    },
-    {
-      key: 'daysLeft',
-      title: <CustomTableTitle title={t('daysLeftColumn')} />,
-      render: record => <ProjectDaysLeftAndOverdueCell daysLeft={record.days_left} />,
-      width: 200,
-    },
-    {
-      key: 'projectHealth',
-      title: <CustomTableTitle title={t('projectHealthColumn')} />,
-      render: (record: IRPTProject) => (
-        <ProjectHealthCell
-          value={record.project_health}
-          label={record.health_name}
-          color={record.health_color}
-          projectId={record.id}
-        />
-      ),
-      width: 200,
-    },
-    {
-      key: 'category',
-      title: <CustomTableTitle title={t('categoryColumn')} />,
-      render: (record: IRPTProject) => (
-        <ProjectCategoryCell
-          id={record.category_id || ''}
-          name={record.category_name || ''}
-          color_code={record.category_color || ''}
-        />
-      ),
-      width: 200,
-    },
-    {
-      key: 'projectUpdate',
-      title: <CustomTableTitle title={t('projectUpdateColumn')} />,
-      render: record => <ProjectUpdateCell updates={record.update} />,
-      width: 200,
-    },
-    {
-      key: 'client',
-      title: <CustomTableTitle title={t('clientColumn')} />,
-      render: record => <ProjectClientCell client={record.client} />,
-      sorter: (a, b) => a.client.localeCompare(b.client),
-      width: 200,
-    },
-    {
-      key: 'team',
-      title: <CustomTableTitle title={t('teamColumn')} />,
-      render: record => <ProjectTeamCell team={record.team_name} />,
-      sorter: (a, b) => a.team_name.localeCompare(b.team_name),
-      width: 200,
-    },
-    {
-      key: 'projectManager',
-      title: <CustomTableTitle title={t('projectManagerColumn')} />,
-      render: record => <ProjectManagerCell manager={record.project_manager} />,
-      width: 200,
-    },
-  ], [t, order]);
+            <Button
+              className="hidden group-hover:flex"
+              type="text"
+              style={{
+                backgroundColor: colors.transparent,
+                padding: 0,
+                height: 22,
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              {t('openButton')} <ExpandAltOutlined />
+            </Button>
+          </Flex>
+        ),
+      },
+      {
+        key: 'estimatedVsActual',
+        title: <CustomTableTitle title={t('estimatedVsActualColumn')} />,
+        render: record => (
+          <EstimatedVsActualCell
+            actualTime={record.actual_time || 0}
+            actualTimeString={record.actual_time_string}
+            estimatedTime={record.estimated_time * 60 || 0}
+            estimatedTimeString={record.estimated_time_string}
+          />
+        ),
+        width: 230,
+      },
+      {
+        key: 'tasksProgress',
+        title: <CustomTableTitle title={t('tasksProgressColumn')} />,
+        render: record => <TasksProgressCell tasksStat={record.tasks_stat} />,
+        width: 200,
+      },
+      {
+        key: 'lastActivity',
+        title: <CustomTableTitle title={t('lastActivityColumn')} />,
+        render: record => (
+          <LastActivityCell activity={record.last_activity?.last_activity_string} />
+        ),
+        width: 200,
+      },
+      {
+        key: 'status',
+        title: <CustomTableTitle title={t('statusColumn')} />,
+        render: record => (
+          <ProjectStatusCell currentStatus={record.status_id} projectId={record.id} />
+        ),
+        width: 200,
+      },
+      {
+        key: 'dates',
+        title: <CustomTableTitle title={t('datesColumn')} />,
+        render: record => (
+          <ProjectDatesCell
+            projectId={record.id}
+            startDate={record.start_date}
+            endDate={record.end_date}
+          />
+        ),
+        width: 275,
+      },
+      {
+        key: 'daysLeft',
+        title: <CustomTableTitle title={t('daysLeftColumn')} />,
+        render: record => (
+          <ProjectDaysLeftAndOverdueCell
+            daysLeft={record.days_left}
+            isOverdue={record.is_overdue}
+            isToday={record.is_today}
+          />
+        ),
+        width: 200,
+      },
+      {
+        key: 'projectHealth',
+        title: <CustomTableTitle title={t('projectHealthColumn')} />,
+        render: (record: IRPTProject) => (
+          <ProjectHealthCell
+            value={record.project_health}
+            label={record.health_name}
+            color={record.health_color}
+            projectId={record.id}
+          />
+        ),
+        width: 200,
+      },
+      {
+        key: 'category',
+        title: <CustomTableTitle title={t('categoryColumn')} />,
+        render: (record: IRPTProject) => (
+          <ProjectCategoryCell
+            id={record.category_id || ''}
+            name={record.category_name || ''}
+            color_code={record.category_color || ''}
+          />
+        ),
+        width: 200,
+      },
+      {
+        key: 'projectUpdate',
+        title: <CustomTableTitle title={t('projectUpdateColumn')} />,
+        render: record => <ProjectUpdateCell updates={record.update} />,
+        width: 200,
+      },
+      {
+        key: 'client',
+        title: <CustomTableTitle title={t('clientColumn')} />,
+        render: record => <ProjectClientCell client={record.client} />,
+        sorter: (a, b) => a.client.localeCompare(b.client),
+        width: 200,
+      },
+      {
+        key: 'team',
+        title: <CustomTableTitle title={t('teamColumn')} />,
+        render: record => <ProjectTeamCell team={record.team_name} />,
+        sorter: (a, b) => a.team_name.localeCompare(b.team_name),
+        width: 200,
+      },
+      {
+        key: 'projectManager',
+        title: <CustomTableTitle title={t('projectManagerColumn')} />,
+        render: record => <ProjectManagerCell manager={record.project_manager} />,
+        width: 200,
+      },
+    ],
+    [t, order]
+  );
 
   // filter columns based on the `hidden` state from Redux
-  const visibleColumns = useMemo(() => 
-    columns.filter(col => columnsVisibility[col.key as string]), 
+  const visibleColumns = useMemo(
+    () => columns.filter(col => columnsVisibility[col.key as string]),
     [columns, columnsVisibility]
   );
 
@@ -216,7 +227,6 @@ const ProjectsReportsTable = () => {
     if (!isLoading) dispatch(fetchProjectData());
   }, [
     dispatch,
-    isLoading,
     searchQuery,
     selectedProjectStatuses,
     selectedProjectHealths,
@@ -228,21 +238,27 @@ const ProjectsReportsTable = () => {
     order,
   ]);
 
-  const tableRowProps = useMemo(() => ({
-    style: { height: 56, cursor: 'pointer' },
-    className: 'group even:bg-[#4e4e4e10]',
-  }), []);
+  const tableRowProps = useMemo(
+    () => ({
+      style: { height: 56, cursor: 'pointer' },
+      className: 'group even:bg-[#4e4e4e10]',
+    }),
+    []
+  );
 
-  const tableConfig = useMemo(() => ({
-    theme: {
-      components: {
-        Table: {
-          cellPaddingBlock: 12,
-          cellPaddingInline: 10,
+  const tableConfig = useMemo(
+    () => ({
+      theme: {
+        components: {
+          Table: {
+            cellPaddingBlock: 12,
+            cellPaddingInline: 10,
+          },
         },
       },
-    }
-  }), []);
+    }),
+    []
+  );
 
   return (
     <ConfigProvider {...tableConfig}>
@@ -259,6 +275,7 @@ const ProjectsReportsTable = () => {
         scroll={{ x: 'max-content' }}
         loading={isLoading}
         onChange={handleTableChange}
+        rowKey={record => record.id}
         onRow={() => tableRowProps}
       />
       {createPortal(<ProjectReportsDrawer selectedProject={selectedProject} />, document.body)}
