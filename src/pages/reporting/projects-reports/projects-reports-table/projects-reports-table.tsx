@@ -21,6 +21,7 @@ import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projects-reports/pr
 import ProjectUpdateCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-update-cell/project-update-cell';
 import {
   fetchProjectData,
+  setField,
   setIndex,
   setOrder,
   setPageSize,
@@ -46,6 +47,7 @@ const ProjectsReportsTable = () => {
     index,
     pageSize,
     order,
+    field,
     searchQuery,
     selectedProjectStatuses,
     selectedProjectHealths,
@@ -61,10 +63,11 @@ const ProjectsReportsTable = () => {
     dispatch(toggleProjectReportsDrawer());
   };
 
-  const columns: TableColumnsType = useMemo(
+  const columns: TableColumnsType<IRPTProject> = useMemo(
     () => [
       {
         key: 'name',
+        dataIndex: 'name',
         title: <CustomTableTitle title={t('projectColumn')} />,
         width: 300,
         sorter: true,
@@ -73,7 +76,7 @@ const ProjectsReportsTable = () => {
         onCell: record => ({
           onClick: () => handleDrawerOpen(record as IRPTProject),
         }),
-        render: record => (
+        render: (_, record: { id: string; name: string; color_code: string }) => (
           <Flex gap={16} align="center" justify="space-between">
             <ProjectCell
               projectId={record.id}
@@ -126,11 +129,14 @@ const ProjectsReportsTable = () => {
       },
       {
         key: 'status',
+        dataIndex: 'status_id',
+        defaultSortOrder: order === 'asc' ? 'ascend' : 'descend',
         title: <CustomTableTitle title={t('statusColumn')} />,
-        render: record => (
+        render: (_, record: IRPTProject) => (
           <ProjectStatusCell currentStatus={record.status_id} projectId={record.id} />
         ),
         width: 200,
+        sorter: true,
       },
       {
         key: 'dates',
@@ -158,8 +164,11 @@ const ProjectsReportsTable = () => {
       },
       {
         key: 'projectHealth',
+        dataIndex: 'project_health',
+        defaultSortOrder: order === 'asc' ? 'ascend' : 'descend',
         title: <CustomTableTitle title={t('projectHealthColumn')} />,
-        render: (record: IRPTProject) => (
+        sorter: true,
+        render: (_, record: IRPTProject) => (
           <ProjectHealthCell
             value={record.project_health}
             label={record.health_name}
@@ -172,7 +181,7 @@ const ProjectsReportsTable = () => {
       {
         key: 'category',
         title: <CustomTableTitle title={t('categoryColumn')} />,
-        render: (record: IRPTProject) => (
+        render: (_, record: IRPTProject) => (
           <ProjectCategoryCell
             id={record.category_id || ''}
             name={record.category_name || ''}
@@ -184,27 +193,35 @@ const ProjectsReportsTable = () => {
       {
         key: 'projectUpdate',
         title: <CustomTableTitle title={t('projectUpdateColumn')} />,
-        render: record => <ProjectUpdateCell updates={record.update} />,
+        render: (_, record: IRPTProject) =>
+          record.comment ? <ProjectUpdateCell updates={record.comment} /> : '-',
         width: 200,
       },
       {
         key: 'client',
+        dataIndex: 'client',
+        defaultSortOrder: order === 'asc' ? 'ascend' : 'descend',
         title: <CustomTableTitle title={t('clientColumn')} />,
-        render: record => <ProjectClientCell client={record.client} />,
-        sorter: (a, b) => a.client.localeCompare(b.client),
+        render: (_, record: IRPTProject) =>
+          record?.client ? <ProjectClientCell client={record.client} /> : '-',
+        sorter: true,
         width: 200,
       },
       {
         key: 'team',
+        dataIndex: 'team_name',
+        defaultSortOrder: order === 'asc' ? 'ascend' : 'descend',
         title: <CustomTableTitle title={t('teamColumn')} />,
-        render: record => <ProjectTeamCell team={record.team_name} />,
-        sorter: (a, b) => a.team_name.localeCompare(b.team_name),
+        render: (_, record: IRPTProject) =>
+          record.team_name ? <ProjectTeamCell team={record.team_name} /> : '-',
+        sorter: true,
         width: 200,
       },
       {
         key: 'projectManager',
         title: <CustomTableTitle title={t('projectManagerColumn')} />,
-        render: record => <ProjectManagerCell manager={record.project_manager} />,
+        render: (_, record: IRPTProject) =>
+          record.project_manager ? <ProjectManagerCell manager={record.project_manager} /> : '-',
         width: 200,
       },
     ],
@@ -219,6 +236,7 @@ const ProjectsReportsTable = () => {
 
   const handleTableChange = (pagination: PaginationProps, filters: any, sorter: any) => {
     if (sorter.order) dispatch(setOrder(sorter.order));
+    if (sorter.field) dispatch(setField(sorter.field));
     dispatch(setIndex(pagination.current));
     dispatch(setPageSize(pagination.pageSize));
   };
@@ -236,6 +254,7 @@ const ProjectsReportsTable = () => {
     index,
     pageSize,
     order,
+    field,
   ]);
 
   const tableRowProps = useMemo(
