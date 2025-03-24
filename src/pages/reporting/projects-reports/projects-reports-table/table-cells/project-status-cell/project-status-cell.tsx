@@ -21,6 +21,9 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
   const { socket } = useSocket();
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
 
+  // Find the matching status from projectStatuses
+  const currentStatusOption = projectStatuses.find(status => status.id === currentStatus);
+
   const statusOptions = [
     ...projectStatuses.map((status, index) => ({
       key: index,
@@ -86,6 +89,12 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
     };
   }, [socket]);
 
+  // Add debug logging for current status
+  useEffect(() => {
+    logger.info('Current status:', currentStatus);
+    logger.info('Available statuses:', projectStatuses);
+  }, [currentStatus, projectStatuses]);
+
   return (
     <ConfigProvider
       theme={{
@@ -99,7 +108,7 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
       <Select
         variant="borderless"
         options={statusOptions}
-        defaultValue={currentStatus}
+        value={currentStatusOption ? currentStatus : undefined}
         onChange={handleStatusChange}
       />
     </ConfigProvider>
