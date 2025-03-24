@@ -6,7 +6,7 @@ import { IProjectManager } from '@/types/project/projectManager.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IGetProjectsRequestBody, IRPTOverviewProject, IRPTOverviewProjectMember, IRPTProject } from '@/types/reporting/reporting.types';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, createAction } from '@reduxjs/toolkit';
 
 const filterIndex = () => {
   return +(getFromLocalStorage(FILTER_INDEX_KEY.toString()) || 0);
@@ -59,6 +59,11 @@ export const fetchProjectData = createAsyncThunk(
     return response.body;
   }
 );
+
+export const updateProjectCategory = createAction<{
+  projectId: string;
+  category: IProjectCategory;
+}>('projectReports/updateProjectCategory');
 
 const initialState: ProjectReportsState = {
   isProjectReportsDrawerOpen: false,
@@ -201,6 +206,16 @@ const projectReportsSlice = createSlice({
       .addCase(fetchProjectData.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Failed to fetch project data';
+      })
+      .addCase(updateProjectCategory, (state, action) => {
+        const { projectId, category } = action.payload;
+        const projectIndex = state.projectList.findIndex(project => project.id === projectId);
+        
+        if (projectIndex !== -1) {
+          state.projectList[projectIndex].category_id = category.id || null;
+          state.projectList[projectIndex].category_name = category.name ?? '';
+          state.projectList[projectIndex].category_color = category.color_code ?? '';
+        }
       });
   },
 });

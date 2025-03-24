@@ -164,6 +164,7 @@ const ProjectsReportsTable = () => {
           id={record.category_id || ''}
           name={record.category_name || ''}
           color_code={record.category_color || ''}
+          projectId={record.id}
         />
       ),
       width: 200,
