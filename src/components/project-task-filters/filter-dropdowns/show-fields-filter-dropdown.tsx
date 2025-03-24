@@ -7,7 +7,10 @@ import Space from 'antd/es/space';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleColumnVisibility, updateColumnVisibility, updateCustomColumnPinned } from '@/features/tasks/tasks.slice';
+import {
+  updateColumnVisibility,
+  updateCustomColumnPinned,
+} from '@/features/tasks/tasks.slice';
 import { ITaskListColumn } from '@/types/tasks/taskList.types';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
@@ -29,9 +32,8 @@ const ShowFieldsFilterDropdown = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const handleColumnVisibilityChange = async (col: ITaskListColumn) => {
-    console.log('col', col);
     if (!projectId) return;
-    const column = { ...col, is_visible: !col.pinned };
+    const column = { ...col, is_visible: !col.pinned, pinned: !col.pinned };
 
     if (col.custom_column) {
       socket?.emit(SocketEvents.CUSTOM_COLUMN_PINNED_CHANGE.toString(), {
@@ -39,9 +41,12 @@ const ShowFieldsFilterDropdown = () => {
         project_id: projectId,
         is_visible: !col.pinned,
       });
-      if (col.id) dispatch(updateCustomColumnPinned({ columnId: col.id, isVisible: !col.pinned }));
+      socket?.once(SocketEvents.CUSTOM_COLUMN_PINNED_CHANGE.toString(), (data: any) => {
+        if (col.id) {
+          dispatch(updateCustomColumnPinned({ columnId: col.id, isVisible: !col.pinned }));
+        }
+      });
     } else {
-      console.log('column', column);
       await dispatch(updateColumnVisibility({ projectId, item: column }));
     }
   };

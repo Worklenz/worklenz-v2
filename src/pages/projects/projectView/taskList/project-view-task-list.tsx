@@ -30,11 +30,11 @@ const ProjectViewTaskList = () => {
 
   useEffect(() => {
     if (projectId && groupBy) {
+      if (!loadingColumns) dispatch(fetchTaskListColumns(projectId));
+      if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
       if (!loadingGroups && projectView === 'list') {
         dispatch(fetchTaskGroups(projectId));
       }
-      if (!loadingColumns) dispatch(fetchTaskListColumns(projectId));
-      if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
     }
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());
