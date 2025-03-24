@@ -183,6 +183,7 @@ const ProjectsReportsTable = () => {
         title: <CustomTableTitle title={t('categoryColumn')} />,
         render: (_, record: IRPTProject) => (
           <ProjectCategoryCell
+            projectId={record.id}
             id={record.category_id || ''}
             name={record.category_name || ''}
             color_code={record.category_color || ''}
