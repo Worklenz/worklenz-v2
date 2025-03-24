@@ -35,6 +35,8 @@ import { ITaskPhase } from '@/types/tasks/taskPhase.types';
 import logger from '@/utils/errorLogger';
 import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
 import { updatePhaseLabel } from '@/features/project/project.slice';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 
 interface UpdateSortOrderBody {
   from_index: number;
@@ -45,6 +47,7 @@ interface UpdateSortOrderBody {
 
 const PhaseDrawer = () => {
   const { t } = useTranslation('phases-drawer');
+  const { tab } = useTabSearchParam();
   const isDrawerOpen = useAppSelector(state => state.phaseReducer.isPhaseDrawerOpen);
   const dispatch = useAppDispatch();
   const { projectId } = useParams();
@@ -62,13 +65,24 @@ const PhaseDrawer = () => {
     })
   );
 
+  const refreshTasks = async () => {
+    if (tab === 'tasks-list') {
+      await dispatch(fetchTaskGroups(projectId || ''));
+    } else if (tab === 'board') {
+      await dispatch(fetchBoardTaskGroups(projectId || ''));
+    }
+  };
+
   const handleAddOptions = async () => {
-    await dispatch(addPhaseOption({ projectId: projectId || '' }));
-    await dispatch(fetchPhasesByProjectId(projectId || ''));
-    await dispatch(fetchTaskGroups(projectId || ''));
+    if (!projectId) return;
+    
+    await dispatch(addPhaseOption({ projectId: projectId }));
+    await dispatch(fetchPhasesByProjectId(projectId));
+    await refreshTasks();
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
+    if (!projectId) return;
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -86,20 +100,20 @@ const PhaseDrawer = () => {
           from_index: oldIndex,
           to_index: newIndex,
           phases: newPhaseList,
-          project_id: projectId || '',
+          project_id: projectId,
         };
 
         // Update the sort order
         await dispatch(
           updatePhaseOrder({
-            projectId: projectId || '',
+            projectId: projectId,
             body,
           })
         ).unwrap();
-        await dispatch(fetchTaskGroups(projectId || ''));
+        await refreshTasks();
       } catch (error) {
         // If there's an error, revert back to the server state
-        dispatch(fetchPhasesByProjectId(projectId || ''));
+        dispatch(fetchPhasesByProjectId(projectId));
         logger.error('Error updating phase order', error);
       } finally {
         setSorting(false);

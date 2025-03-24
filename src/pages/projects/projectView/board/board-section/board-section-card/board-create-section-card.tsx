@@ -11,6 +11,8 @@ import { statusApiService } from '@/api/taskAttributes/status/status.api.service
 import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
 import { createStatus, fetchStatuses } from '@/features/taskAttributes/taskStatusSlice';
 import { ALPHA_CHANNEL } from '@/shared/constants';
+import logger from '@/utils/errorLogger';
+import { phasesApiService } from '@/api/taskAttributes/phases/phases.api.service';
 
 const BoardCreateSectionCard = () => {
   const { t } = useTranslation('kanban-board');
@@ -67,10 +69,9 @@ const BoardCreateSectionCard = () => {
           const response = await dispatch(createStatus({ body, currentProjectId: projectId })).unwrap();
           
           if (response.done && response.body) {
-            // Add the section to the board with the created status ID
             dispatch(
               addBoardSectionCard({
-                id: response.body.id || sectionId,
+                id: response.body.id as string,
                 name: sectionName,
                 colorCode: (response.body.color_code || todoCategory.color_code || '#d8d7d8') + ALPHA_CHANNEL,
                 colorCodeDark: '#989898',
@@ -83,16 +84,7 @@ const BoardCreateSectionCard = () => {
             dispatch(fetchStatuses(projectId));
           }
         } catch (error) {
-          console.error('Failed to create status:', error);
-          // Fallback to just adding a section card if status creation fails
-          dispatch(
-            addBoardSectionCard({
-              id: sectionId,
-              name: sectionName,
-              colorCode: '#d8d7d8',
-              colorCodeDark: '#989898',
-            })
-          );
+          logger.error('Failed to create status:', error);
         }
       } else {
         // Fallback if "To do" category not found
@@ -105,16 +97,22 @@ const BoardCreateSectionCard = () => {
           })
         );
       }
-    } else {
-      // For non-status grouping, just add a section card
-      dispatch(
-        addBoardSectionCard({
-          id: sectionId,
-          name: sectionName,
-          colorCode: '#d8d7d8',
-          colorCodeDark: '#989898',
-        })
-      );
+    } 
+
+    if (groupBy === IGroupBy.PHASE && projectId) {
+      const body = {
+        name: sectionName,
+        project_id: projectId,
+      };
+
+      try { 
+        const response = await phasesApiService.addPhaseOption(projectId);
+        if (response.done && response.body) {
+          dispatch(fetchBoardTaskGroups(projectId));
+        }
+      } catch (error) {
+        logger.error('Failed to create phase:', error);
+      }
     }
   };
 
