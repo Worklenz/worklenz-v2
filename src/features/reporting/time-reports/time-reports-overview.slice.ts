@@ -7,6 +7,8 @@ import {
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ITimeReportsOverviewState {
+  archived: boolean;
+
   teams: ISelectableTeam[];
   loadingTeams: boolean;
 
@@ -24,11 +26,13 @@ interface ITimeReportsOverviewState {
 }
 
 const initialState: ITimeReportsOverviewState = {
+  archived: false,
+
   teams: [],
   loadingTeams: false,
 
   categories: [],
-  noCategory: false,
+  noCategory: true,
   loadingCategories: false,
 
   projects: [],
@@ -131,6 +135,12 @@ const timeReportsOverviewSlice = createSlice({
     setSelectOrDeselectBillable: (state, action) => {
       state.billable = action.payload;
     },
+    setNoCategory: (state, action: PayloadAction<boolean>) => {
+      state.noCategory = action.payload;
+    },
+    setArchived: (state, action: PayloadAction<boolean>) => {
+      state.archived = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchReportingTeams.fulfilled, (state, action) => {
@@ -187,5 +197,7 @@ export const {
   setSelectOrDeselectProject,
   setSelectOrDeselectAllProjects,
   setSelectOrDeselectBillable,
+  setNoCategory,
+  setArchived,
 } = timeReportsOverviewSlice.actions;
 export default timeReportsOverviewSlice.reducer;

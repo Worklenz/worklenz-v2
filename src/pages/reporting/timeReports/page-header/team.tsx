@@ -8,7 +8,7 @@ import { reportingApiService } from '@/api/reporting/reporting.api.service';
 import logger from '@/utils/errorLogger';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchReportingProjects, fetchReportingTeams, setSelectOrDeselectAllTeams, setSelectOrDeselectTeam } from '@/features/reporting/time-reports/time-reports-overview.slice';
+import { fetchReportingCategories, fetchReportingProjects, fetchReportingTeams, setSelectOrDeselectAllTeams, setSelectOrDeselectTeam } from '@/features/reporting/time-reports/time-reports-overview.slice';
 
 const Team: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -24,14 +24,18 @@ const Team: React.FC = () => {
     item.name?.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const handleCheckboxChange = (key: string, checked: boolean) => {
+  const handleCheckboxChange = async (key: string, checked: boolean) => {
     dispatch(setSelectOrDeselectTeam({ id: key, selected: checked }));
+    await dispatch(fetchReportingCategories());
+    await dispatch(fetchReportingProjects());
   };
 
-  const handleSelectAllChange = (e: CheckboxChangeEvent) => {
+  const handleSelectAllChange = async (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
     setSelectAll(isChecked);
     dispatch(setSelectOrDeselectAllTeams(isChecked));
+    await dispatch(fetchReportingCategories());
+    await dispatch(fetchReportingProjects());
   };
 
   const menuItems: MenuProps['items'] = [
