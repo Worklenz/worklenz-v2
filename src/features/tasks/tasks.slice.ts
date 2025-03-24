@@ -965,7 +965,13 @@ const taskSlice = createSlice({
 
     updateCustomColumnPinned: (state, action: PayloadAction<{ columnId: string; isVisible: boolean }>) => {
       const { columnId, isVisible } = action.payload;
-      const column = state.customColumns.find(col => col.id === columnId);
+      const customColumn = state.customColumns.find(col => col.id === columnId);
+      const column = state.columns.find(col => col.id === columnId);
+
+      if (customColumn) {
+        customColumn.pinned = isVisible;
+      }
+
       if (column) {
         column.pinned = isVisible;
       }
@@ -1083,7 +1089,6 @@ const taskSlice = createSlice({
         state.loadingColumns = false;
         state.customColumns = action.payload;
         // Add custom columns to the columns array
-        console.log('action.payload', action.payload);
         const customColumnsForVisibility = action.payload;
         state.columns = [...state.columns, ...customColumnsForVisibility];
       })

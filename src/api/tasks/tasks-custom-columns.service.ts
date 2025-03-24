@@ -57,5 +57,13 @@ export const tasksCustomColumnsService = {
   deleteCustomColumn: async (columnId: string): Promise<IServerResponse<any>> => {
     const response = await apiClient.delete(`/api/v1/custom-columns/${columnId}`);
     return response.data;
+  },
+
+  updateCustomColumnVisibility: async (
+    projectId: string,
+    item: ITaskListColumn
+  ): Promise<IServerResponse<ITaskListColumn>> => {
+    const response = await apiClient.put(`/api/v1/custom-columns/project/${projectId}/columns`, item);
+    return response.data;
   }
 };

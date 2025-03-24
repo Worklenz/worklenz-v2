@@ -23,7 +23,7 @@ import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { setProject, setImportTaskTemplateDrawerOpen, setRefreshTimestamp } from '@features/project/project.slice';
-import { addTask, fetchTaskGroups, IGroupBy } from '@features/tasks/tasks.slice';
+import { addTask, fetchTaskGroups, fetchTaskListColumns, IGroupBy } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
 import { toggleSaveAsTemplateDrawer } from '@/features/projects/projectsSlice';
@@ -47,6 +47,7 @@ import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/mem
 import useIsProjectManager from '@/hooks/useIsProjectManager';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
 import { addTaskCardToTheTop, fetchBoardTaskGroups } from '@/features/board/board-slice';
+import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -71,6 +72,8 @@ const ProjectViewHeader = () => {
     if (!projectId) return;
     switch (tab) {
       case 'tasks-list':
+        dispatch(fetchTaskListColumns(projectId));
+        dispatch(fetchPhasesByProjectId(projectId))
         dispatch(fetchTaskGroups(projectId));
         break;
       case 'board':
