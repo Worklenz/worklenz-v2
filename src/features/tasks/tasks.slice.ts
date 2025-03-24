@@ -875,11 +875,11 @@ const taskSlice = createSlice({
     },
 
     addCustomColumn: (state, action: PayloadAction<ITaskListColumn>) => {
-      console.log('action.payload', action.payload);
       state.customColumns.push(action.payload);
       // Also add to columns array to maintain visibility
       state.columns.push({
         ...action.payload,
+        pinned: true // New columns are visible by default
       });
     },
 
