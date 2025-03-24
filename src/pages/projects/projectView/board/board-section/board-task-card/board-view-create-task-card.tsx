@@ -1,5 +1,5 @@
-import { Button, Flex, Input } from 'antd';
-import React, { useRef, useState } from 'react';
+import { Button, Flex, Input, InputRef } from 'antd';
+import React, { useRef, useState, useEffect } from 'react';
 import { Dayjs } from 'dayjs';
 import { nanoid } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
@@ -44,6 +44,18 @@ const BoardViewCreateTaskCard = ({
   const [creatingTask, setCreatingTask] = useState<boolean>(false);
 
   const cardRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<InputRef>(null);
+
+  const focusInput = () => {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  // Focus when component mounts or when showNewCard becomes true
+  useEffect(() => {
+    focusInput();
+  }, []);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const projectId = useAppSelector(state => state.projectReducer.projectId);
@@ -81,6 +93,7 @@ const BoardViewCreateTaskCard = ({
     setDueDate(null);
     setCreatingTask(false);
     setShowNewCard(true);
+    focusInput();
   };
 
   const handleAddTaskToTheTop = async () => {
@@ -198,7 +211,7 @@ const BoardViewCreateTaskCard = ({
       onBlur={handleCancelNewCard}
     >
       <Input
-        autoFocus
+        ref={inputRef}
         value={newTaskName}
         onChange={e => setNewTaskName(e.target.value)}
         onPressEnter={position === 'bottom' ? handleAddTaskToTheBottom : handleAddTaskToTheTop}
