@@ -39,8 +39,8 @@ const initialState: ITimeReportsOverviewState = {
   loadingProjects: false,
 
   billable: {
-    billable: false,
-    nonBillable: false,
+    billable: true,
+    nonBillable: true,
   },
 };
 
