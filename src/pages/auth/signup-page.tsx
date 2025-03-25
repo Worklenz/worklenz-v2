@@ -282,9 +282,18 @@ const SignupPage = () => {
 
         <Form.Item>
           <Typography.Paragraph style={{ fontSize: 14 }}>
-            {t('bySigningUpText')}
-            <Link to="/privacy-policy"> {t('privacyPolicyLink')}</Link> {t('andText')}
-            <Link to="/terms-of-use"> {t('termsOfUseLink')}</Link>.
+            {t('bySigningUpText')}{' '}
+            <a 
+              href="https://worklenz.com/privacy/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >{t('privacyPolicyLink')}</a>{' '}
+            {t('andText')}{' '}
+            <a 
+              href="https://worklenz.com/terms/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >{t('termsOfUseLink')}</a>.
           </Typography.Paragraph>
         </Form.Item>
 
