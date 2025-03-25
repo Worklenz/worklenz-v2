@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -29,11 +29,16 @@ const STROKE_WIDTH = 4;
 const MIN_HEIGHT = 'calc(100vh - 300px)';
 const SIDEBAR_WIDTH = 220;
 
-const ProjectTimeSheetChart: React.FC = () => {
+export interface ProjectTimeSheetChartRef {
+  exportChart: () => void;
+}
+
+const ProjectTimeSheetChart = forwardRef<ProjectTimeSheetChartRef>((_, ref) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('time-report');
   const [jsonData, setJsonData] = useState<IRPTTimeProject[]>([]);
   const [loading, setLoading] = useState(false);
+  const chartRef = React.useRef<ChartJS<'bar', string[], unknown>>(null);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const {
@@ -168,6 +173,39 @@ const ProjectTimeSheetChart: React.FC = () => {
     loadingCategories
   ]);
 
+  const exportChart = () => {
+    if (chartRef.current) {
+      // Get the canvas element
+      const canvas = chartRef.current.canvas;
+      
+      // Create a temporary canvas to draw with background
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (!tempCtx) return;
+
+      // Set dimensions
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+
+      // Fill background based on theme
+      tempCtx.fillStyle = themeMode === 'dark' ? '#1f1f1f' : '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+      // Draw the original chart on top
+      tempCtx.drawImage(canvas, 0, 0);
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = 'project-time-sheet.png';
+      link.href = tempCanvas.toDataURL('image/png');
+      link.click();
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    exportChart
+  }));
+
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -190,11 +228,17 @@ const ProjectTimeSheetChart: React.FC = () => {
           height: `${60 * data.labels.length}px`,
         }}
       >
-        <Bar data={data} options={options} />
+        <Bar 
+          data={data} 
+          options={options} 
+          ref={chartRef}
+        />
       </div>
       <ProjectTimeLogDrawer />
     </div>
   );
-};
+});
+
+ProjectTimeSheetChart.displayName = 'ProjectTimeSheetChart';
 
 export default ProjectTimeSheetChart;

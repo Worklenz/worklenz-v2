@@ -10,13 +10,20 @@ import { setArchived } from '@/features/reporting/time-reports/time-reports-over
 
 interface headerState {
   title: string;
-  export: () => void;
+  exportType: Array<{ key: string; label: string }>;
+  export: (key: string) => void;
 }
 
-const TimeReportingRightHeader: React.FC<headerState> = ({ title, export: exportFn }) => {
+const TimeReportingRightHeader: React.FC<headerState> = ({ title, exportType, export: exportFn }) => {
   const { t } = useTranslation('time-report');
   const dispatch = useAppDispatch();
   const { archived } = useAppSelector(state => state.timeReportsOverviewReducer);
+
+  const menuItems = exportType.map(item => ({
+    key: item.key,
+    label: item.label,
+    onClick: () => exportFn(item.key)
+  }));
 
   return (
     <CustomPageHeader
@@ -29,8 +36,8 @@ const TimeReportingRightHeader: React.FC<headerState> = ({ title, export: export
             </Checkbox>
           </Button>
           <TimeWiseFilter />
-          <Dropdown menu={{ items: [{ key: '1', label: 'Excel', onClick: exportFn }] }}>
-            <Button type="primary" icon={<DownOutlined />} iconPosition="end">
+            <Dropdown menu={{ items: menuItems }}>
+            <Button type="primary" icon={<DownOutlined />} iconPosition="end">  
               {t('export')}
             </Button>
           </Dropdown>

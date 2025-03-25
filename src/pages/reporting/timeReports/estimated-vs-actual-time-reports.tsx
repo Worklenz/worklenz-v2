@@ -1,20 +1,33 @@
 import { Card, Flex, Segmented } from 'antd';
 import TimeReportPageHeader from '@/pages/reporting/timeReports/page-header/time-report-page-header';
-import EstimatedVsActualTimeSheet from '@/pages/reporting/time-reports/estimated-vs-actual-time-sheet/estimated-vs-actual-time-sheet';
+import EstimatedVsActualTimeSheet, { EstimatedVsActualTimeSheetRef } from '@/pages/reporting/time-reports/estimated-vs-actual-time-sheet/estimated-vs-actual-time-sheet';
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const EstimatedVsActualTimeReports = () => {
   const { t } = useTranslation('time-report');
   const [type, setType] = useState<'workingDays' | 'manDays'>('workingDays');
+  const chartRef = useRef<EstimatedVsActualTimeSheetRef>(null);
 
   useDocumentTitle('Reporting - Allocation');
 
+  const handleExport = (type: string) => {
+    if (type === 'png') {
+      chartRef.current?.exportChart();
+    }
+  };
+
   return (
     <Flex vertical>
-      <TimeReportingRightHeader title={t('estimatedVsActual')} export={() => {}} />
+      <TimeReportingRightHeader
+        title={t('estimatedVsActual')}
+        exportType={[
+          { key: 'png', label: 'PNG' },
+        ]}
+        export={handleExport}
+      />
 
       <Card
         style={{ borderRadius: '4px' }}
@@ -42,7 +55,7 @@ const EstimatedVsActualTimeReports = () => {
           },
         }}
       >
-        <EstimatedVsActualTimeSheet type={type} />
+        <EstimatedVsActualTimeSheet type={type} ref={chartRef} />
       </Card>
     </Flex>
   );
