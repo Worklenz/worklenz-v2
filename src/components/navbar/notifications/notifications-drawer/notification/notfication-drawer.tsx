@@ -1,4 +1,4 @@
-import { Drawer, Empty, Segmented, Typography, Spin } from 'antd';
+import { Drawer, Empty, Segmented, Typography, Spin, Button, Flex } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -18,6 +18,13 @@ import logger from '@/utils/errorLogger';
 import NotificationItem from './notification-item';
 import InvitationItem from './invitation-item';
 import { notificationsApiService } from '@/api/notifications/notifications.api.service';
+import { profileSettingsApiService } from '@/api/settings/profile/profile-settings.api.service';
+import { INotificationSettings } from '@/types/settings/notifications.types';
+import { toQueryString } from '@/utils/toQueryString';
+import { showNotification } from './push-notification-template';
+import { teamsApiService } from '@/api/teams/teams.api.service';
+
+const HTML_TAG_REGEXP = /<[^>]*>/g;
 
 const NotificationDrawer = () => {
   const { isDrawerOpen, notificationType, notifications, invitations } = useAppSelector(
@@ -26,23 +33,81 @@ const NotificationDrawer = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('navbar');
   const { socket, connected } = useSocket();
+  const [notificationsSettings, setNotificationsSettings] = useState<INotificationSettings>({});
+  const [showBrowserPush, setShowBrowserPush] = useState(false);
 
   const notificationCount = notifications?.length || 0;
-
   const [isLoading, setIsLoading] = useState(false);
 
+  const isPushEnabled = () => {
+    return notificationsSettings.popup_notifications_enabled && showBrowserPush;
+  };
+
+  const createPush = (message: string, title: string, teamId: string | null, url?: string) => {
+    if (Notification.permission === 'granted' && showBrowserPush) {
+      const img = 'https://worklenz.com/assets/icons/icon-128x128.png';
+      const notification = new Notification(title, {
+        body: message.replace(HTML_TAG_REGEXP, ''),
+        icon: img,
+        badge: img,
+      });
+
+      notification.onclick = async event => {
+        if (url) {
+          window.focus();
+
+          if (teamId) {
+            await teamsApiService.setActiveTeam(teamId);
+          }
+
+          window.location.href = url;
+        }
+      };
+    }
+  };
+
   const handleInvitationsUpdate = (data: ITeamInvitationViewModel[]) => {
-    logger.info('Invitations updated', data);
     dispatch(fetchInvitations());
   };
 
-  const handleNotificationsUpdate = (data: IWorklenzNotification[]) => {
-    logger.info('Notifications updated', data);
+  const handleNotificationsUpdate = async (notification: IWorklenzNotification) => {
     dispatch(fetchNotifications(notificationType));
+    dispatch(fetchInvitations());
+
+    if (isPushEnabled()) {
+      const title = notification.team ? `${notification.team} | Worklenz` : 'Worklenz';
+      let url = notification.url;
+      if (url && notification.params && Object.keys(notification.params).length) {
+        const q = toQueryString(notification.params);
+        url += q;
+      }
+
+      createPush(notification.message, title, notification.team_id, url);
+    }
+
+    // Show notification using the template
+    showNotification(notification);
   };
 
-  const handleTeamInvitationsUpdate = (data: ITeamInvitationViewModel[]) => {
-    logger.info('Team invitations updated', data);
+  const handleTeamInvitationsUpdate = async (data: ITeamInvitationViewModel) => {
+    const notification: IWorklenzNotification = {
+      id: data.id || '',
+      team: data.team_name || '',
+      team_id: data.team_id || '',
+      message: `You have been invited to join ${data.team_name || 'a team'}`,
+    };
+
+    if (isPushEnabled()) {
+      createPush(
+        notification.message,
+        notification.team || 'Worklenz',
+        notification.team_id || null
+      );
+    }
+
+    // Show notification using the template
+    showNotification(notification);
+    dispatch(fetchInvitations());
   };
 
   const askPushPermission = () => {
@@ -50,9 +115,12 @@ const NotificationDrawer = () => {
       if (Notification.permission !== 'granted') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
+            setShowBrowserPush(true);
             logger.info('Permission granted');
           }
         });
+      } else if (Notification.permission === 'granted') {
+        setShowBrowserPush(true);
       }
     } else {
       logger.error('This browser does not support notification permission.');
@@ -70,10 +138,32 @@ const NotificationDrawer = () => {
     }
   };
 
+  const fetchNotificationsSettings = async () => {
+    try {
+      setIsLoading(true);
+      const res = await profileSettingsApiService.getNotificationSettings();
+      if (res.done) {
+        setNotificationsSettings(res.body);
+      }
+    } catch (error) {
+      logger.error('Error fetching notifications settings', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    await notificationsApiService.readAllNotifications();
+    dispatch(fetchNotifications(notificationType));
+    dispatch(fetchInvitations());
+  };
+
   useEffect(() => {
     socket?.on(SocketEvents.INVITATIONS_UPDATE.toString(), handleInvitationsUpdate);
     socket?.on(SocketEvents.NOTIFICATIONS_UPDATE.toString(), handleNotificationsUpdate);
     socket?.on(SocketEvents.TEAM_MEMBER_REMOVED.toString(), handleTeamInvitationsUpdate);
+    fetchNotificationsSettings();
+    askPushPermission();
 
     return () => {
       socket?.removeListener(SocketEvents.INVITATIONS_UPDATE.toString(), handleInvitationsUpdate);
@@ -90,7 +180,6 @@ const NotificationDrawer = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    askPushPermission();
     dispatch(fetchInvitations());
     if (notificationType) {
       dispatch(fetchNotifications(notificationType)).finally(() => setIsLoading(false));
@@ -111,16 +200,22 @@ const NotificationDrawer = () => {
       onClose={() => dispatch(toggleDrawer())}
       width={400}
     >
-      <Segmented<string>
-        options={['Unread', 'Read']}
-        defaultValue={NOTIFICATION_OPTION_UNREAD}
-        onChange={(value: string) => {
-          if (value === NOTIFICATION_OPTION_UNREAD)
-            dispatch(setNotificationType(NOTIFICATION_OPTION_UNREAD));
-          if (value === NOTIFICATION_OPTION_READ)
-            dispatch(setNotificationType(NOTIFICATION_OPTION_READ));
-        }}
-      />
+      <Flex justify="space-between" align="center">
+        <Segmented<string>
+          options={['Unread', 'Read']}
+          defaultValue={NOTIFICATION_OPTION_UNREAD}
+          onChange={(value: string) => {
+            if (value === NOTIFICATION_OPTION_UNREAD)
+              dispatch(setNotificationType(NOTIFICATION_OPTION_UNREAD));
+            if (value === NOTIFICATION_OPTION_READ)
+              dispatch(setNotificationType(NOTIFICATION_OPTION_READ));
+          }}
+        />
+
+        <Button type="link" onClick={handleMarkAllAsRead}>
+          {t('notificationsDrawer.markAsRead')}
+        </Button>
+      </Flex>
 
       {isLoading && (
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
@@ -146,7 +241,7 @@ const NotificationDrawer = () => {
               key={notification.id}
               notification={notification}
               isUnreadNotifications={notificationType === NOTIFICATION_OPTION_UNREAD}
-              markNotificationAsRead={(id) => Promise.resolve(markNotificationAsRead(id))}
+              markNotificationAsRead={id => Promise.resolve(markNotificationAsRead(id))}
             />
           ))}
         </div>

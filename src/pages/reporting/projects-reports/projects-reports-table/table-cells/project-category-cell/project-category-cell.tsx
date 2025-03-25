@@ -9,32 +9,38 @@ import { nanoid } from '@reduxjs/toolkit';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { addCategory } from '@features/settings/categories/categoriesSlice';
 import { themeWiseColor } from '@utils/themeWiseColor';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { IProjectCategory, IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
+import { setSelectedProjectCategory } from '@/features/reporting/projectReports/project-reports-slice';
 
+// Update the props interface to include projectId
 interface ProjectCategoryCellProps {
   id: string;
   name: string;
   color_code: string;
+  projectId: string;
 }
 
-const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps) => {
+const ProjectCategoryCell = ({ id, name, color_code, projectId }: ProjectCategoryCellProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
   const categoryInputRef = useRef<InputRef>(null);
   const { socket, connected } = useSocket();
-  const [selectedCategory, setSelectedCategory] = useState<IProjectCategory>({ id, name, color_code });
+  const [selectedCategory, setSelectedCategory] = useState<IProjectCategory>({
+    id,
+    name,
+    color_code,
+  });
 
   // get categories list from the categories reducer
   const { projectCategories, loading: projectCategoriesLoading } = useAppSelector(
     state => state.projectCategoriesReducer
-  );  
+  );
   const themeMode = useAppSelector(state => state.themeReducer.mode);
- 
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // filter categories based on search query
   const filteredCategoriesData = useMemo(() => {
@@ -52,15 +58,22 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
       </Typography.Text>
     ),
   }));
-
+      
   // handle category select
   const onClick: MenuProps['onClick'] = e => {
     const newCategory = filteredCategoriesData.find(category => category.id === e.key);
-    if (newCategory) {
+    if (newCategory && connected && socket) {
+      // Update local state immediately
       setSelectedCategory(newCategory);
-      if (connected && socket) {
-        socket.emit(SocketEvents.PROJECT_CATEGORY_CHANGE.toString(), newCategory);
-      }
+      
+      // Emit socket event
+      socket.emit(
+        SocketEvents.PROJECT_CATEGORY_CHANGE.toString(),
+        JSON.stringify({
+          project_id: projectId,
+          category_id: newCategory.id
+        })
+      );
     }
   };
 
@@ -83,7 +96,7 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
     {
       key: '1',
       label: (
-        <Card className="project-category-dropdown-card" bordered={false}>
+        <Card className="project-category-dropdown-card" variant="borderless">
           <Flex vertical gap={4}>
             <Input
               ref={categoryInputRef}
@@ -113,8 +126,23 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
     },
   ];
 
-  const handleCategoryChangeResponse = (data: IProjectCategory) => {
-    setSelectedCategory(data);
+  // Update the socket response handler
+  const handleCategoryChangeResponse = (data: any) => {
+    try {
+      const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+      if (parsedData && parsedData.project_id === projectId) {
+        // Update local state
+        setSelectedCategory(parsedData.category);
+        
+        // Update redux store
+        dispatch(updateProjectCategory({
+          projectId: parsedData.project_id,
+          category: parsedData.category
+        }));
+      }
+    } catch (error) {
+      console.error('Error handling category change response:', error);
+    }
   };
 
   const handleCategoryDropdownOpen = (open: boolean) => {
@@ -130,10 +158,7 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
       socket.on(SocketEvents.PROJECT_CATEGORY_CHANGE.toString(), handleCategoryChangeResponse);
 
       return () => {
-        socket.removeListener(
-          SocketEvents.PROJECT_CATEGORY_CHANGE.toString(),
-          handleCategoryChangeResponse
-        );
+        socket.off(SocketEvents.PROJECT_CATEGORY_CHANGE.toString(), handleCategoryChangeResponse);
       };
     }
   }, [connected, socket]);
@@ -171,5 +196,11 @@ const ProjectCategoryCell = ({ id, name, color_code }: ProjectCategoryCellProps)
     </Dropdown>
   );
 };
+
+// Action creator for updating project category
+const updateProjectCategory = (payload: { projectId: string; category: IProjectCategory }) => ({
+  type: 'projects/updateCategory',
+  payload
+});
 
 export default ProjectCategoryCell;

@@ -10,24 +10,37 @@ import {
   Legend,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { useAppDispatch } from '../../../../hooks/useAppDispatch';
+import {
+  setLabelAndToggleDrawer,
+} from '../../../../features/timeReport/projects/timeLogSlice';
+import ProjectTimeLogDrawer from '../../../../features/timeReport/projects/ProjectTimeLogDrawer';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { reportingTimesheetApiService } from '@/api/reporting/reporting.timesheet.api.service';
-import { IRPTTimeMember } from '@/types/reporting/reporting.types';
+import { IRPTTimeProject } from '@/types/reporting/reporting.types';
+import { Spin } from 'antd';
 import logger from '@/utils/errorLogger';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
-export interface MembersTimeSheetRef {
+const BAR_THICKNESS = 40;
+const STROKE_WIDTH = 4;
+const MIN_HEIGHT = 'calc(100vh - 300px)';
+const SIDEBAR_WIDTH = 220;
+
+export interface ProjectTimeSheetChartRef {
   exportChart: () => void;
 }
 
-const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
-  const { t } = useTranslation('time-report');
+const ProjectTimeSheetChart = forwardRef<ProjectTimeSheetChartRef>((_, ref) => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation('time-report');
+  const [jsonData, setJsonData] = useState<IRPTTimeProject[]>([]);
+  const [loading, setLoading] = useState(false);
   const chartRef = React.useRef<ChartJS<'bar', string[], unknown>>(null);
 
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   const {
     teams,
     loadingTeams,
@@ -40,32 +53,30 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
   } = useAppSelector(state => state.timeReportsOverviewReducer);
   const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
 
-  const [loading, setLoading] = useState(false);
-  const [jsonData, setJsonData] = useState<IRPTTimeMember[]>([]);
-
-  const labels = jsonData?.map(item => item.name);
-  const dataValues = jsonData?.map(item => {
-    const loggedTimeInHours = parseFloat(item.logged_time || '0') / 3600;
-    return loggedTimeInHours.toFixed(2);
-  });
-  const colors = jsonData?.map(item => item.color_code);
-
-  const themeMode = useAppSelector(state => state.themeReducer.mode);
-
-  // Chart data
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: t('loggedTime'),
-        data: dataValues,
-        backgroundColor: colors,
-        barThickness: 40,
-      },
-    ],
+  const handleBarClick = (event: any, elements: any) => {
+    if (elements.length > 0) {
+      const elementIndex = elements[0].index;
+      const label = jsonData[elementIndex];
+      if (label) {
+        dispatch(setLabelAndToggleDrawer(label));
+      }
+    }
   };
 
-  // Chart options
+  const data = {
+    labels: Array.isArray(jsonData) ? jsonData.map(item => item?.name || '') : [],
+    datasets: [{
+      label: t('loggedTime'),
+      data: Array.isArray(jsonData) ? jsonData.map(item => {
+        const loggedTime = item?.logged_time || '0';
+        const loggedTimeInHours = parseFloat(loggedTime) / 3600;
+        return loggedTimeInHours.toFixed(2);
+      }) : [],
+      backgroundColor: Array.isArray(jsonData) ? jsonData.map(item => item?.color_code || '#000000') : [],
+      barThickness: BAR_THICKNESS,
+    }],
+  };
+
   const options = {
     maintainAspectRatio: false,
     plugins: {
@@ -75,7 +86,7 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
         align: 'right' as const,
         offset: 20,
         textStrokeColor: 'black',
-        textStrokeWidth: 4,
+        textStrokeWidth: STROKE_WIDTH,
       },
       legend: {
         display: false,
@@ -103,7 +114,7 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
       y: {
         title: {
           display: true,
-          text: t('member'),
+          text: t('projects'),
           align: 'end' as const,
           font: {
             family: 'Helvetica',
@@ -115,12 +126,11 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
         },
       },
     },
+    // onClick: handleBarClick,
   };
 
   const fetchChartData = async () => {
     try {
-      setLoading(true);
-      
       const selectedTeams = teams.filter(team => team.selected);
       const selectedProjects = filterProjects.filter(project => project.selected);
       const selectedCategories = categories.filter(category => category.selected);
@@ -134,20 +144,34 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
         billable,
       };
 
-      const res = await reportingTimesheetApiService.getMemberTimeSheets(body, archived);
+      const res = await reportingTimesheetApiService.getProjectTimeSheets(body, archived);
       if (res.done) {
         setJsonData(res.body || []);
       }
     } catch (error) {
       logger.error('Error fetching chart data:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchChartData();
-  }, [dispatch, duration, dateRange, billable, archived, teams, filterProjects, categories]);
+    if (!loadingTeams && !loadingProjects && !loadingCategories) {
+      setLoading(true);
+      fetchChartData().finally(() => {
+        setLoading(false);
+      });
+    }
+  }, [
+    teams,
+    filterProjects,
+    categories,
+    duration,
+    dateRange,
+    billable,
+    archived,
+    loadingTeams,
+    loadingProjects,
+    loadingCategories
+  ]);
 
   const exportChart = () => {
     if (chartRef.current) {
@@ -172,7 +196,7 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
 
       // Create download link
       const link = document.createElement('a');
-      link.download = 'members-time-sheet.png';
+      link.download = 'project-time-sheet.png';
       link.href = tempCanvas.toDataURL('image/png');
       link.click();
     }
@@ -182,22 +206,39 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
     exportChart
   }));
 
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Spin />
+      </div>
+    );
+  }
+
+  if (!jsonData.length) {
+    return <div>{t('noData')}</div>;
+  }
+
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       <div
         style={{
-          maxWidth: 'calc(100vw - 220px)',
+          maxWidth: `calc(100vw - ${SIDEBAR_WIDTH}px)`,
           minWidth: 'calc(100vw - 260px)',
-          minHeight: 'calc(100vh - 300px)',
+          minHeight: MIN_HEIGHT,
           height: `${60 * data.labels.length}px`,
         }}
       >
-        <Bar data={data} options={options} ref={chartRef} />
+        <Bar 
+          data={data} 
+          options={options} 
+          ref={chartRef}
+        />
       </div>
+      <ProjectTimeLogDrawer />
     </div>
   );
 });
 
-MembersTimeSheet.displayName = 'MembersTimeSheet';
+ProjectTimeSheetChart.displayName = 'ProjectTimeSheetChart';
 
-export default MembersTimeSheet;
+export default ProjectTimeSheetChart;

@@ -312,8 +312,8 @@ const BoardViewTaskCard = ({ task, sectionId }: IBoardViewTaskCardProps) => {
             {renderLabels}
           </Flex>
 
-          <Tooltip title={` ${task?.completed_count} / ${task?.sub_tasks_count ?? 0 + 1}`}>
-            <Progress type="circle" percent={task?.progress} size={26} />
+          <Tooltip title={` ${task?.completed_count} / ${task?.total_tasks_count}`}>
+            <Progress type="circle" percent={task?.complete_ratio } size={26} strokeWidth={(task.complete_ratio || 0) >= 100 ? 9 : 7} />
           </Tooltip>
         </Flex>
 

@@ -66,6 +66,7 @@ import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 import { ALPHA_CHANNEL } from '@/shared/constants';
+import { checkTaskDependencyStatus } from '@/utils/check-task-dependency-status';
 
 interface TaskGroupWrapperProps {
   taskGroups: ITaskListGroup[];
@@ -370,18 +371,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       (draggedElement as HTMLElement).style.transition = 'transform 0.2s ease';
     }
   }, []);
-
-  const checkTaskDependencyStatus = async (taskId: string, statusId: string) => {
-    if (!taskId || !statusId) return false;
-    try {
-      const res = await tasksApiService.getTaskDependencyStatus(taskId, statusId);
-      return res.done ? res.body.can_continue : false;
-    } catch (error) {
-      logger.error('Error checking task dependency status:', error);
-      return false;
-    }
-  };
-
+  
   const handleDragEnd = useCallback(
     async ({ active, over }: DragEndEvent) => {
       setActiveId(null);

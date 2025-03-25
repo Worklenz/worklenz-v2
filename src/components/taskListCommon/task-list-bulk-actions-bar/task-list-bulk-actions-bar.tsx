@@ -53,6 +53,8 @@ import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-sub
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { useAuthService } from '@/hooks/useAuth';
 import CustomColumnModal from '@/pages/projects/projectView/taskList/taskListTable/custom-columns/custom-column-modal/custom-column-modal';
+import { checkTaskDependencyStatus } from '@/utils/check-task-dependency-status';
+import alertService from '@/services/alerts/alertService';
 
 interface ITaskAssignee {
   id: string;
@@ -117,6 +119,7 @@ const TaskListBulkActionsBar = () => {
     if (!status.id || !projectId) return;
     try {
       setLoading(true);
+
       const body: IBulkTasksStatusChangeRequest = {
         tasks: selectedTaskIdsList,
         status_id: status.id,
@@ -126,6 +129,17 @@ const TaskListBulkActionsBar = () => {
         trackMixpanelEvent(evt_project_task_list_bulk_change_status);
         dispatch(deselectAll());
         dispatch(fetchTaskGroups(projectId));
+      }
+      for (const it of selectedTaskIdsList) {
+        if (!status.id) return;
+        const canContinue = await checkTaskDependencyStatus(it, status.id);
+        if (!canContinue) {
+          alertService.warning(
+        'Incomplete Dependencies!',
+        'Some tasks were not updated. Please ensure all dependent tasks are completed before proceeding.'
+          );
+          return;
+        }
       }
     } catch (error) {
       logger.error('Error changing status:', error);

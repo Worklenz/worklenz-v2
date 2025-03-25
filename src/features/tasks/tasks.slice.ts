@@ -875,7 +875,6 @@ const taskSlice = createSlice({
     },
 
     addCustomColumn: (state, action: PayloadAction<ITaskListColumn>) => {
-      console.log('action.payload', action.payload);
       state.customColumns.push(action.payload);
       // Also add to columns array to maintain visibility
       state.columns.push({
@@ -966,7 +965,13 @@ const taskSlice = createSlice({
 
     updateCustomColumnPinned: (state, action: PayloadAction<{ columnId: string; isVisible: boolean }>) => {
       const { columnId, isVisible } = action.payload;
-      const column = state.customColumns.find(col => col.id === columnId);
+      const customColumn = state.customColumns.find(col => col.id === columnId);
+      const column = state.columns.find(col => col.id === columnId);
+
+      if (customColumn) {
+        customColumn.pinned = isVisible;
+      }
+
       if (column) {
         column.pinned = isVisible;
       }
@@ -1039,7 +1044,6 @@ const taskSlice = createSlice({
         const customColumns = (action.payload as { custom: any[] }).custom.map((col: any) => ({
           ...col,
           isCustom: true,
-          pinned: true // Default custom columns to visible
         }));
 
         // Merge columns
@@ -1085,10 +1089,7 @@ const taskSlice = createSlice({
         state.loadingColumns = false;
         state.customColumns = action.payload;
         // Add custom columns to the columns array
-        const customColumnsForVisibility = action.payload.map(col => ({
-          ...col,
-          pinned: true // Make custom columns visible by default
-        }));
+        const customColumnsForVisibility = action.payload;
         state.columns = [...state.columns, ...customColumnsForVisibility];
       })
       .addCase(fetchCustomColumns.rejected, (state, action) => {

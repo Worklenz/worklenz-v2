@@ -398,12 +398,14 @@ export interface IRPTTimeProject {
   value?: number;
   estimated_value?: number;
   end_date?: string;
+  logged_time?: string;
 }
 
 export interface IRPTTimeMember {
   name: string;
   value?: number;
   color_code: string;
+  logged_time?: string;
 }
 
 export interface IMemberTaskStatGroupResonse {

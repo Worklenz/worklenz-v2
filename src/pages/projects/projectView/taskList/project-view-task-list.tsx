@@ -11,12 +11,12 @@ import { fetchTaskGroups, fetchTaskListColumns } from '@/features/tasks/tasks.sl
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
 import { Empty } from 'antd';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
-  const [searchParams] = useSearchParams();
-  const tab = searchParams.get('tab');
-  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
+  const { projectView } = useTabSearchParam();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskGroups, loadingGroups, groupBy, archived, fields, search } = useAppSelector(
@@ -29,12 +29,21 @@ const ProjectViewTaskList = () => {
   const { loadingColumns } = useAppSelector(state => state.taskReducer);
 
   useEffect(() => {
+    // Set default view to list if projectView is not list or board
+    if (projectView !== 'list' && projectView !== 'board') {
+      searchParams.set('tab', 'tasks-list');
+      searchParams.set('pinned_tab', 'tasks-list');
+      setSearchParams(searchParams);
+    }
+  }, [projectView, searchParams, setSearchParams]);
+
+  useEffect(() => {
     if (projectId && groupBy) {
+      if (!loadingColumns) dispatch(fetchTaskListColumns(projectId));
+      if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
       if (!loadingGroups && projectView === 'list') {
         dispatch(fetchTaskGroups(projectId));
       }
-      if (!loadingColumns) dispatch(fetchTaskListColumns(projectId));
-      if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
     }
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());

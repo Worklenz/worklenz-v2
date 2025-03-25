@@ -23,7 +23,7 @@ const TimeWiseFilter = () => {
     durations.find(item => item.key === duration)?.label || 'lastSevenDaysText',
   );
   const [customRange, setCustomRange] = useState<[string, string] | null>(
-    dateRange ? [dateRange.split('-')[0], dateRange.split('-')[1]] : null,
+    dateRange.length === 2 ? [dateRange[0], dateRange[1]] : null,
   );
 
   // Format customRange for display
@@ -50,7 +50,7 @@ const TimeWiseFilter = () => {
     if (customRange) {
       setSelectedTimeFrame('customRange');
       setIsDropdownOpen(false);
-      dispatch(setDateRange(`${customRange[0]}-${customRange[1]}`));
+      dispatch(setDateRange([customRange[0], customRange[1]]));
     }
   };
 
@@ -59,9 +59,24 @@ const TimeWiseFilter = () => {
     setSelectedTimeFrame(item.label);
     setCustomRange(null);
     dispatch(setDuration(item.key));
-    dispatch(setDateRange(item.dates || ''));
+    if (item.dates) {
+      const [startDate, endDate] = item.dates.split(' - ');
+      dispatch(setDateRange([startDate, endDate]));
+    } else {
+      dispatch(setDateRange([]));
+    }
     setIsDropdownOpen(false);
   };
+
+  useEffect(() => {
+    const selectedDuration = durations.find(item => item.key === duration);
+    if (selectedDuration?.dates) {
+      const [startDate, endDate] = selectedDuration.dates.split(' - ');
+      dispatch(setDateRange([startDate, endDate]));
+    } else {
+      dispatch(setDateRange([]));
+    }
+  }, [duration]);
 
   // custom dropdown content
   const timeWiseDropdownContent = (
