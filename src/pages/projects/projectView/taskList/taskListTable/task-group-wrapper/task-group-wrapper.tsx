@@ -520,6 +520,71 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
     ]
   );
 
+  const handleDragOver = useCallback(
+    ({ active, over }: DragEndEvent) => {
+      if (!over) return;
+
+      const activeGroupId = active.data.current?.groupId;
+      const overGroupId = over.data.current?.groupId;
+      const activeTaskId = active.id;
+      const overTaskId = over.id;
+
+      const sourceGroup = taskGroups.find(g => g.id === activeGroupId);
+      const targetGroup = taskGroups.find(g => g.id === overGroupId);
+
+      if (!sourceGroup || !targetGroup) return;
+
+      const fromIndex = sourceGroup.tasks.findIndex(t => t.id === activeTaskId);
+      const toIndex = targetGroup.tasks.findIndex(t => t.id === overTaskId);
+
+      if (fromIndex === -1 || toIndex === -1) return;
+
+      // Create a deep clone of the task to avoid reference issues
+      const task = JSON.parse(JSON.stringify(sourceGroup.tasks[fromIndex]));
+
+      // Update Redux state
+      if (activeGroupId === overGroupId) {
+        // Same group - move within array
+        const updatedTasks = [...sourceGroup.tasks];
+        updatedTasks.splice(fromIndex, 1);
+        updatedTasks.splice(toIndex, 0, task);
+
+        dispatch({
+          type: 'taskReducer/reorderTasks',
+          payload: {
+            activeGroupId,
+            overGroupId,
+            fromIndex,
+            toIndex,
+            task,
+            updatedSourceTasks: updatedTasks,
+            updatedTargetTasks: updatedTasks,
+          },
+        });
+      } else {
+        // Different groups - transfer between arrays
+        const updatedSourceTasks = sourceGroup.tasks.filter((_, i) => i !== fromIndex);
+        const updatedTargetTasks = [...targetGroup.tasks];
+
+        updatedTargetTasks.splice(toIndex, 0, task);
+
+        dispatch({
+          type: 'taskReducer/reorderTasks',
+          payload: {
+            activeGroupId,
+            overGroupId,
+            fromIndex,
+            toIndex,
+            task,
+            updatedSourceTasks,
+            updatedTargetTasks,
+          },
+        });
+      }
+    },
+    [taskGroups, dispatch]
+  );
+
   // Add CSS styles for drag and drop animations
   useIsomorphicLayoutEffect(() => {
     const style = document.createElement('style');
@@ -560,6 +625,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       collisionDetection={pointerWithin}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
     >
       <Flex gap={24} vertical>
         {taskGroups?.map(taskGroup => (
