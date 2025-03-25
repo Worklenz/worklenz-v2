@@ -62,8 +62,14 @@ const TimeWiseFilter = () => {
     if (item.dates) {
       const [startDate, endDate] = item.dates.split(' - ');
       dispatch(setDateRange([startDate, endDate]));
+    } else if (item.key === 'YESTERDAY') {
+      const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY');
+      dispatch(setDateRange([yesterday, yesterday]));
     } else {
-      dispatch(setDateRange([]));
+      // For ALL_TIME or any other case without specific dates, use a default range
+      const defaultStartDate = dayjs().subtract(1, 'year').format('MMM DD, YYYY');
+      const defaultEndDate = dayjs().format('MMM DD, YYYY');
+      dispatch(setDateRange([defaultStartDate, defaultEndDate]));
     }
     setIsDropdownOpen(false);
   };
@@ -71,8 +77,13 @@ const TimeWiseFilter = () => {
   useEffect(() => {
     const selectedDuration = durations.find(item => item.key === duration);
     if (selectedDuration?.dates) {
-      const [startDate, endDate] = selectedDuration.dates.split(' - ');
-      dispatch(setDateRange([startDate, endDate]));
+      if (duration === 'YESTERDAY') {
+        const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+        dispatch(setDateRange([yesterday, yesterday]));
+      } else {
+        const [startDate, endDate] = selectedDuration.dates.split(' - ');
+        dispatch(setDateRange([startDate, endDate]));
+      }
     } else {
       dispatch(setDateRange([]));
     }

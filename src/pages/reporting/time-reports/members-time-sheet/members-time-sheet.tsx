@@ -43,12 +43,12 @@ const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
   const [loading, setLoading] = useState(false);
   const [jsonData, setJsonData] = useState<IRPTTimeMember[]>([]);
 
-  const labels = jsonData?.map(item => item.name);
-  const dataValues = jsonData?.map(item => {
+  const labels = Array.isArray(jsonData) ? jsonData.map(item => item.name) : [];
+  const dataValues = Array.isArray(jsonData) ? jsonData.map(item => {
     const loggedTimeInHours = parseFloat(item.logged_time || '0') / 3600;
     return loggedTimeInHours.toFixed(2);
-  });
-  const colors = jsonData?.map(item => item.color_code);
+  }) : [];
+  const colors = Array.isArray(jsonData) ? jsonData.map(item => item.color_code) : [];
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
