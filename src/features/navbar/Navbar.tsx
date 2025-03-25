@@ -23,6 +23,7 @@ import { useAuthService } from '@/hooks/useAuth';
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+  const currentSession = useAuthService().getCurrentSession();
 
   const location = useLocation();
   const { isDesktop, isMobile, isTablet } = useResponsive();
@@ -38,7 +39,7 @@ const Navbar = () => {
   const navlinkItems = useMemo(
     () =>
       navRoutesList
-        .filter((route) => !route.adminOnly || isOwnerOrAdmin)
+        .filter(route => !route.adminOnly || isOwnerOrAdmin)
         .map((route, index) => ({
           key: route.path.split('/').pop() || index,
           label: (
@@ -95,7 +96,9 @@ const Navbar = () => {
           <ConfigProvider wave={{ disabled: true }}>
             {isDesktop && (
               <Flex gap={20} align="center">
-                {isOwnerOrAdmin && <UpgradePlanButton />}
+                {isOwnerOrAdmin && currentSession?.subscription_type === 'SELF_HOSTED' && (
+                  <UpgradePlanButton />
+                )}
                 {isOwnerOrAdmin && <InviteButton />}
                 <Flex align="center">
                   <SwitchTeamButton />

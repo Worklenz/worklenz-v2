@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Dropdown, Flex, Space, Typography } from 'antd';
+import { Button, Card, Checkbox, Dropdown, Flex, Skeleton, Space, Typography } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import MembersReportsTable from './members-reports-table/members-reports-table';
 import TimeWiseFilter from '@/components/reporting/time-wise-filter';
@@ -9,11 +9,15 @@ import CustomSearchbar from '@components/CustomSearchbar';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import CustomPageHeader from '../page-header/custom-page-header';
 import {
+  fetchMembersData,
   setArchived,
+  setDuration,
+  setDateRange,
   setSearchQuery,
 } from '@/features/reporting/membersReports/membersReportsSlice';
 import { useAuthService } from '@/hooks/useAuth';
 import { reportingExportApiService } from '@/api/reporting/reporting-export.api.service';
+import { useEffect } from 'react';
 
 const MembersReports = () => {
   const { t } = useTranslation('reporting-members');
@@ -31,6 +35,11 @@ const MembersReports = () => {
     if (!currentSession?.team_name) return;
     reportingExportApiService.exportMembers(currentSession.team_name, duration, dateRange, archived);
   };
+
+  useEffect(() => {
+    dispatch(setDuration(duration));
+    dispatch(setDateRange(dateRange));
+  }, [dateRange, duration]);
 
   return (
     <Flex vertical>
