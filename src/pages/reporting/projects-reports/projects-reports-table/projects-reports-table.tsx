@@ -21,6 +21,7 @@ import ProjectDaysLeftAndOverdueCell from '@/pages/reporting/projects-reports/pr
 import ProjectUpdateCell from '@/pages/reporting/projects-reports/projects-reports-table/table-cells/project-update-cell/project-update-cell';
 import {
   fetchProjectData,
+  resetProjectReports,
   setField,
   setIndex,
   setOrder,
@@ -33,12 +34,16 @@ import { IRPTProject } from '@/types/reporting/reporting.types';
 import ProjectReportsDrawer from '@/features/reporting/projectReports/projectReportsDrawer/ProjectReportsDrawer';
 import { PAGE_SIZE_OPTIONS } from '@/shared/constants';
 import './projects-reports-table.css';
+import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
 
 const ProjectsReportsTable = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects');
 
   const [selectedProject, setSelectedProject] = useState<IRPTProject | null>(null);
+  const { projectStatuses, loading: projectStatusesLoading } = useAppSelector(
+    state => state.projectStatusesReducer
+  );
 
   const {
     projectList,
@@ -244,6 +249,7 @@ const ProjectsReportsTable = () => {
 
   useEffect(() => {
     if (!isLoading) dispatch(fetchProjectData());
+    if (projectStatuses.length === 0 && !projectStatusesLoading) dispatch(fetchProjectStatuses());
   }, [
     dispatch,
     searchQuery,
@@ -257,6 +263,12 @@ const ProjectsReportsTable = () => {
     order,
     field,
   ]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetProjectReports());
+    };
+  }, []);
 
   const tableRowProps = useMemo(
     () => ({

@@ -1,6 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
-import React from 'react';
 
 type CustomSearchbarProps = {
   placeholderText: string;

@@ -39,7 +39,7 @@ const OverviewTeamInfoDrawer = ({ team }: OverviewTeamInfoDrawerProps) => {
               <Typography.Text style={{ fontSize: 16 }}>{team.name}</Typography.Text>
             </Flex>
 
-            <Dropdown
+            {/* <Dropdown
               menu={{
                 items: [
                   { key: '1', label: t('projectsButton') },
@@ -50,7 +50,7 @@ const OverviewTeamInfoDrawer = ({ team }: OverviewTeamInfoDrawerProps) => {
               <Button type="primary" icon={<DownOutlined />} iconPosition="end">
                 {t('exportButton')}
               </Button>
-            </Dropdown>
+            </Dropdown> */}
           </Flex>
         )
       }
