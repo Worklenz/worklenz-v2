@@ -9,6 +9,9 @@ import { DoubleRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { getTeamMembers } from '@/features/team-members/team-members.slice';
+import { setProjectId } from '@/features/project/project.slice';
 
 type ProjectReportsTasksTableProps = {
   tasksData: any[];
@@ -32,11 +35,14 @@ const ProjectReportsTasksTable = ({
 
   useEffect(()=>{
     dispatch(fetchPriorities());
+    dispatch(fetchLabels());
+    dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
   },[dispatch])
 
   // function to handle task drawer open
-  const handleUpdateTaskDrawer = async(id: string) => {
+  const handleUpdateTaskDrawer = (id: string) => {
     if (!id && !projectId) return;
+    dispatch(setProjectId(projectId));
     dispatch(fetchPhasesByProjectId(projectId));
     dispatch(fetchTask({ taskId: id, projectId: projectId }));
     dispatch(setShowTaskDrawer(true));
