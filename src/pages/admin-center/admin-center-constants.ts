@@ -50,11 +50,11 @@ export const adminCenterItems: AdminCenterMenuItems[] = [
     icon: React.createElement(ProfileOutlined),
     element: React.createElement(Projects),
   },
-  {
-    key: 'billing',
-    name: 'billing',
-    endpoint: 'billing',
-    icon: React.createElement(CreditCardOutlined),
-    element: React.createElement(Billing),
-  },
+  // {
+  //   key: 'billing',
+  //   name: 'billing',
+  //   endpoint: 'billing',
+  //   icon: React.createElement(CreditCardOutlined),
+  //   element: React.createElement(Billing),
+  // },
 ];
