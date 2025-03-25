@@ -174,6 +174,7 @@ const UpdateMemberDrawer = ({ selectedMemberId, onRoleUpdate }: UpdateMemberDraw
       open={isDrawerOpen}
       onClose={() => {
         dispatch(toggleUpdateMemberDrawer());
+        setTeamMember(null);
         form.resetFields();
       }}
       afterOpenChange={afterOpenChange}
