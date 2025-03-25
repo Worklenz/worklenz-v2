@@ -14,21 +14,21 @@ const TimeWiseFilter = () => {
   const { t } = useTranslation('reporting-members');
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
   const dispatch = useAppDispatch();
-  
+
   // Get values from Redux store
   const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>(
-    durations.find(item => item.key === duration)?.label || 'lastSevenDaysText',
+    durations.find(item => item.key === duration)?.label || 'lastSevenDaysText'
   );
   const [customRange, setCustomRange] = useState<[string, string] | null>(
-    dateRange.length === 2 ? [dateRange[0], dateRange[1]] : null,
+    dateRange.length === 2 ? [dateRange[0], dateRange[1]] : null
   );
 
   // Format customRange for display
   const getDisplayLabel = () => {
-    const f = "YY-MM-DD";
+    const f = 'YY-MM-DD';
     if (customRange && customRange.length === 2) {
       return `${dayjs(customRange[0]).format(f)} - ${dayjs(customRange[1]).format(f)}`;
     }
@@ -59,16 +59,16 @@ const TimeWiseFilter = () => {
     setSelectedTimeFrame(item.label);
     setCustomRange(null);
     dispatch(setDuration(item.key));
-    if (item.dates) {
+    if (item.key === 'YESTERDAY') {
+      const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+      dispatch(setDateRange([yesterday, yesterday]));
+    } else if (item.dates) {
       const [startDate, endDate] = item.dates.split(' - ');
       dispatch(setDateRange([startDate, endDate]));
-    } else if (item.key === 'YESTERDAY') {
-      const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY');
-      dispatch(setDateRange([yesterday, yesterday]));
     } else {
       // For ALL_TIME or any other case without specific dates, use a default range
-      const defaultStartDate = dayjs().subtract(1, 'year').format('MMM DD, YYYY');
-      const defaultEndDate = dayjs().format('MMM DD, YYYY');
+      const defaultStartDate = dayjs().subtract(1, 'year').format('YYYY-MM-DD');
+      const defaultEndDate = dayjs().format('YYYY-MM-DD');
       dispatch(setDateRange([defaultStartDate, defaultEndDate]));
     }
     setIsDropdownOpen(false);

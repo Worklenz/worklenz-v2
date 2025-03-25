@@ -25,4 +25,6 @@ export interface ILocalSession extends IUserType {
   team_member_id?: string;
   alerts?: Array<IWorklenzAlert>;
   is_expired?: boolean;
+  subscription_status?: string;
+  subscription_type?: string;
 }

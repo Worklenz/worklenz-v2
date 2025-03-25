@@ -46,7 +46,7 @@ const initialState: MembersReportsState = {
 
 export const fetchMembersData = createAsyncThunk(
   'membersReports/fetchMembersData',
-  async (_, { getState }) => {
+  async ({ duration, dateRange }: { duration: string; dateRange: string[] }, { getState }) => {
     const state = (getState() as any).membersReportsReducer;
     const body = {
       index: state.index,
@@ -55,8 +55,8 @@ export const fetchMembersData = createAsyncThunk(
       order: state.order,
       search: state.searchQuery,
       archived: state.archived,
-      duration: state.duration,
-      dateRange: state.dateRange,
+      duration: duration || state.duration,
+      dateRange: dateRange || state.dateRange,
     };
     const response = await reportingMembersApiService.getMembers(body);
     return response.body;
