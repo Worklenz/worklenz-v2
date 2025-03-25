@@ -108,6 +108,7 @@ const projectReportsSlice = createSlice({
     },
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
+      state.index = 1;
     },
     setSelectedProjectStatuses: (state, action) => {
       const status = action.payload;
@@ -205,6 +206,19 @@ const projectReportsSlice = createSlice({
         project.category_color = category.color_code;
       }
     },
+    resetProjectReports: state => {
+      state.projectList = [];
+      state.total = 0;
+      state.isLoading = false;
+      state.error = null;
+      state.index = 1;
+      state.pageSize = 10;
+      state.field = 'name';
+      state.order = 'asc';
+      state.searchQuery = '';
+      state.filterIndex = filterIndex();
+      state.archived = false;
+    },
   },
   extraReducers: builder => {
     builder
@@ -264,5 +278,6 @@ export const {
   setSelectedMember,
   setSelectedProject,
   setSelectedProjectCategory,
+  resetProjectReports,
 } = projectReportsSlice.actions;
 export default projectReportsSlice.reducer;
