@@ -162,24 +162,24 @@ const ProjectView = () => {
         items={tabMenuItems}
         tabBarStyle={{ paddingInline: 0 }}
         destroyInactiveTabPane={true}
-        tabBarExtraContent={
-          <div>
-            <span style={{ position: 'relative', top: '-10px' }}>
-              <Tooltip title="Members who are active on this project will be displayed here.">
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </span>
-            <span
-              style={{
-                position: 'relative',
-                right: '20px',
-                top: '10px',
-              }}
-            >
-              <Badge status="success" dot className="profile-badge" />
-            </span>
-          </div>
-        }
+        // tabBarExtraContent={
+          // <div>
+          //   <span style={{ position: 'relative', top: '-10px' }}>
+          //     <Tooltip title="Members who are active on this project will be displayed here.">
+          //       <QuestionCircleOutlined />
+          //     </Tooltip>
+          //   </span>
+          //   <span
+          //     style={{
+          //       position: 'relative',
+          //       right: '20px',
+          //       top: '10px',
+          //     }}
+          //   >
+          //     <Badge status="success" dot className="profile-badge" />
+          //   </span>
+          // </div>
+        // }
       />
 
       {createPortal(<ProjectMemberDrawer />, document.body, 'project-member-drawer')}
