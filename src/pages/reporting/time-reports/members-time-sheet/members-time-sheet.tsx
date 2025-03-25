@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -19,9 +19,14 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
-const MembersTimeSheet: React.FC = () => {
+export interface MembersTimeSheetRef {
+  exportChart: () => void;
+}
+
+const MembersTimeSheet = forwardRef<MembersTimeSheetRef>((_, ref) => {
   const { t } = useTranslation('time-report');
   const dispatch = useAppDispatch();
+  const chartRef = React.useRef<ChartJS<'bar', string[], unknown>>(null);
 
   const {
     teams,
@@ -144,6 +149,39 @@ const MembersTimeSheet: React.FC = () => {
     fetchChartData();
   }, [dispatch, duration, dateRange, billable, archived, teams, filterProjects, categories]);
 
+  const exportChart = () => {
+    if (chartRef.current) {
+      // Get the canvas element
+      const canvas = chartRef.current.canvas;
+      
+      // Create a temporary canvas to draw with background
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (!tempCtx) return;
+
+      // Set dimensions
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+
+      // Fill background based on theme
+      tempCtx.fillStyle = themeMode === 'dark' ? '#1f1f1f' : '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+      // Draw the original chart on top
+      tempCtx.drawImage(canvas, 0, 0);
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = 'members-time-sheet.png';
+      link.href = tempCanvas.toDataURL('image/png');
+      link.click();
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    exportChart
+  }));
+
   return (
     <div style={{ position: 'relative' }}>
       <div
@@ -154,10 +192,12 @@ const MembersTimeSheet: React.FC = () => {
           height: `${60 * data.labels.length}px`,
         }}
       >
-        <Bar data={data} options={options} />
+        <Bar data={data} options={options} ref={chartRef} />
       </div>
     </div>
   );
-};
+});
+
+MembersTimeSheet.displayName = 'MembersTimeSheet';
 
 export default MembersTimeSheet;

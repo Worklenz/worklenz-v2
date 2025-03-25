@@ -48,7 +48,11 @@ const OverviewTimeReports: React.FC = () => {
 
   return (
     <Flex vertical>
-      <TimeReportingRightHeader title={t('timeSheet')} export={exportFn} />
+      <TimeReportingRightHeader
+        title={t('timeSheet')}
+        exportType={[{ key: 'excel', label: 'Excel' }]}
+        export={exportFn}
+      />
 
       <div>
         <TimeReportPageHeader />

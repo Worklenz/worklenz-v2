@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   BarElement,
@@ -29,12 +29,16 @@ enum IToggleOptions {
   'MAN_DAYS'
 }
 
+export interface EstimatedVsActualTimeSheetRef {
+  exportChart: () => void;
+}
+
 interface IEstimatedVsActualTimeSheetProps {
   type: 'workingDays' | 'manDays';
 }
 
-const EstimatedVsActualTimeSheet: React.FC<IEstimatedVsActualTimeSheetProps> = ({ type }) => {
-  const chartRef = useRef<any>(null);
+const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEstimatedVsActualTimeSheetProps>(({ type }, ref) => {
+  const chartRef = useRef<ChartJS<'bar', string[], unknown>>(null);
   const exportChartRef = useRef<any>(null);
   
   // State for filters and data
@@ -217,6 +221,40 @@ const EstimatedVsActualTimeSheet: React.FC<IEstimatedVsActualTimeSheetProps> = (
     noCategory
   ]);
 
+  const exportChart = () => {
+    if (chartRef.current) {
+      // Get the canvas element
+      const canvas = chartRef.current.canvas;
+      
+      // Create a temporary canvas to draw with background
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (!tempCtx) return;
+
+      // Set dimensions
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+
+      // Fill background based on theme
+      const themeMode = useAppSelector(state => state.themeReducer.mode);
+      tempCtx.fillStyle = themeMode === 'dark' ? '#1f1f1f' : '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+      // Draw the original chart on top
+      tempCtx.drawImage(canvas, 0, 0);
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = 'estimated-vs-actual-time-sheet.png';
+      link.href = tempCanvas.toDataURL('image/png');
+      link.click();
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    exportChart
+  }));
+
   return (
     <div style={{ position: 'relative' }}>
      
@@ -246,6 +284,8 @@ const EstimatedVsActualTimeSheet: React.FC<IEstimatedVsActualTimeSheetProps> = (
       </div>
     </div>
   );
-};
+});
+
+EstimatedVsActualTimeSheet.displayName = 'EstimatedVsActualTimeSheet';
 
 export default EstimatedVsActualTimeSheet;
