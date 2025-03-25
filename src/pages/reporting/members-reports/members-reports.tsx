@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Dropdown, Flex, Skeleton, Space, Typography } from 'antd';
+import { Button, Card, Checkbox, Dropdown, Flex, Space, Typography } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import MembersReportsTable from './members-reports-table/members-reports-table';
 import TimeWiseFilter from '@/components/reporting/time-wise-filter';
@@ -9,24 +9,27 @@ import CustomSearchbar from '@components/CustomSearchbar';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import CustomPageHeader from '../page-header/custom-page-header';
 import {
-  fetchMembersData,
   setArchived,
-  setDuration,
-  setDateRange,
   setSearchQuery,
 } from '@/features/reporting/membersReports/membersReportsSlice';
+import { useAuthService } from '@/hooks/useAuth';
+import { reportingExportApiService } from '@/api/reporting/reporting-export.api.service';
 
 const MembersReports = () => {
   const { t } = useTranslation('reporting-members');
   const dispatch = useAppDispatch();
   useDocumentTitle('Reporting - Members');
+  const currentSession = useAuthService().getCurrentSession();
 
-  const { archived, searchQuery, duration, dateRange } = useAppSelector(
+  const { archived, searchQuery } = useAppSelector(
     state => state.membersReportsReducer,
   );
+  const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
+
 
   const handleExport = () => {
-    console.log('export');
+    if (!currentSession?.team_name) return;
+    reportingExportApiService.exportMembers(currentSession.team_name, duration, dateRange, archived);
   };
 
   return (
