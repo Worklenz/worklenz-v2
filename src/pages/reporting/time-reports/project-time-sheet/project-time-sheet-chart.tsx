@@ -19,7 +19,7 @@ import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { reportingTimesheetApiService } from '@/api/reporting/reporting.timesheet.api.service';
 import { IRPTTimeProject } from '@/types/reporting/reporting.types';
-import { Spin } from 'antd';
+import { Empty, Spin } from 'antd';
 import logger from '@/utils/errorLogger';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
@@ -212,10 +212,6 @@ const ProjectTimeSheetChart = forwardRef<ProjectTimeSheetChartRef>((_, ref) => {
         <Spin />
       </div>
     );
-  }
-
-  if (!jsonData.length) {
-    return <div>{t('noData')}</div>;
   }
 
   return (
