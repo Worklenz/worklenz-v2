@@ -8,6 +8,7 @@ import {
   LinearScale,
   Title,
   Tooltip,
+  ChartData,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { IRPTTimeProject } from '@/types/reporting/reporting.types';
@@ -38,8 +39,7 @@ interface IEstimatedVsActualTimeSheetProps {
 }
 
 const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEstimatedVsActualTimeSheetProps>(({ type }, ref) => {
-  const chartRef = useRef<ChartJS<'bar', string[], unknown>>(null);
-  const exportChartRef = useRef<any>(null);
+  const chartRef = useRef<any>(null);
   
   // State for filters and data
   const [jsonData, setJsonData] = useState<IRPTTimeProject[]>([]);
@@ -47,6 +47,8 @@ const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEs
 
   const [chartHeight, setChartHeight] = useState(600);
   const [chartWidth, setChartWidth] = useState(1080);
+  
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
   
   const {
     teams,
@@ -66,8 +68,14 @@ const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEs
 
   // Add type checking before mapping
   const labels = Array.isArray(jsonData) ? jsonData.map(item => item.name) : [];
-  const actualDays = Array.isArray(jsonData) ? jsonData.map(item => item.value) : [];
-  const estimatedDays = Array.isArray(jsonData) ? jsonData.map(item => item.estimated_value) : [];
+  const actualDays = Array.isArray(jsonData) ? jsonData.map(item => {
+    const value = item.value ? parseFloat(item.value) : 0;
+    return (isNaN(value) ? 0 : value).toString();
+  }) : [];
+  const estimatedDays = Array.isArray(jsonData) ? jsonData.map(item => {
+    const value = item.estimated_value ? parseFloat(item.estimated_value) : 0;
+    return (isNaN(value) ? 0 : value).toString();
+  }) : [];
 
   // Format date helper
   const formatDate = (date: Date): string => {
@@ -222,21 +230,26 @@ const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEs
   ]);
 
   const exportChart = () => {
+    console.log('Export function called');
+    console.log('Chart ref:', chartRef.current);
     if (chartRef.current) {
       // Get the canvas element
       const canvas = chartRef.current.canvas;
+      console.log('Canvas:', canvas);
       
       // Create a temporary canvas to draw with background
       const tempCanvas = document.createElement('canvas');
       const tempCtx = tempCanvas.getContext('2d');
-      if (!tempCtx) return;
+      if (!tempCtx) {
+        console.error('Failed to get canvas context');
+        return;
+      }
 
       // Set dimensions
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
 
       // Fill background based on theme
-      const themeMode = useAppSelector(state => state.themeReducer.mode);
       tempCtx.fillStyle = themeMode === 'dark' ? '#1f1f1f' : '#ffffff';
       tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
@@ -248,6 +261,8 @@ const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEs
       link.download = 'estimated-vs-actual-time-sheet.png';
       link.href = tempCanvas.toDataURL('image/png');
       link.click();
+    } else {
+      console.error('Chart ref is null');
     }
   };
 

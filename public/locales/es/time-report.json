@@ -39,5 +39,6 @@
   "noCategories": "No se encontraron categorías",
   "noCategory": "No Categoría",
   "noProjects": "No se encontraron proyectos",
-  "noTeams": "No se encontraron equipos"
+  "noTeams": "No se encontraron equipos",
+  "noData": "No se encontraron datos"
 }
