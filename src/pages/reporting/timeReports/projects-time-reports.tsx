@@ -1,9 +1,9 @@
 import { Card, Flex } from 'antd';
 import TimeReportPageHeader from '@/pages/reporting/timeReports/page-header/time-report-page-header';
-import ProjectTimeSheetChart from '@/pages/reporting/timeReports/project-time-sheet/project-time-sheet-chart';
-import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
+import ProjectTimeSheetChart from '@/pages/reporting/time-reports/project-time-sheet/project-time-sheet-chart';
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
+import TimeReportingRightHeader from './timeReportingRightHeader/TimeReportingRightHeader';
 
 const ProjectsTimeReports = () => {
   const { t } = useTranslation('time-report');
@@ -12,7 +12,7 @@ const ProjectsTimeReports = () => {
 
   return (
     <Flex vertical>
-      <TimeReportingRightHeader title={t('projectsTimeSheet')} />
+      <TimeReportingRightHeader title={t('projectsTimeSheet')} export={() => {}} />
 
       <Card
         style={{ borderRadius: '4px' }}

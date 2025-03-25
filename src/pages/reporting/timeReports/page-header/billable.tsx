@@ -10,9 +10,7 @@ const Billable: React.FC = () => {
   const { t } = useTranslation('time-report');
   const dispatch = useAppDispatch();
 
-  const { billable } = useAppSelector(
-    state => state.timeReportsOverviewReducer
-  );
+  const { billable } = useAppSelector(state => state.timeReportsOverviewReducer);
 
   // Dropdown items for the menu
   const menuItems: MenuProps['items'] = [
@@ -20,14 +18,14 @@ const Billable: React.FC = () => {
       key: 'search',
       label: <Checkbox checked={billable.billable}>{t('billable')}</Checkbox>,
       onClick: () => {
-        dispatch(setSelectOrDeselectBillable({...billable, billable: !billable.billable}));
+        dispatch(setSelectOrDeselectBillable({ ...billable, billable: !billable.billable }));
       },
     },
     {
       key: 'selectAll',
       label: <Checkbox checked={billable.nonBillable}>{t('nonBillable')}</Checkbox>,
       onClick: () => {
-        dispatch(setSelectOrDeselectBillable({...billable, nonBillable: !billable.nonBillable}));
+        dispatch(setSelectOrDeselectBillable({ ...billable, nonBillable: !billable.nonBillable }));
       },
     },
   ];

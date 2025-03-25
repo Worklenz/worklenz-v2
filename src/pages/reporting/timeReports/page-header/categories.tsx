@@ -2,7 +2,7 @@ import { fetchReportingProjects, setNoCategory, setSelectOrDeselectAllCategories
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { CaretDownFilled } from '@ant-design/icons';
-import { Button, Card, Checkbox, Divider, Dropdown, Input, MenuProps } from 'antd';
+import { Button, Card, Checkbox, Divider, Dropdown, Input, theme } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ const Categories: React.FC = () => {
   const { categories, loadingCategories, noCategory } = useAppSelector(
     state => state.timeReportsOverviewReducer
   );
+  const { token } = theme.useToken();
 
   const filteredItems = categories.filter(item =>
     item.name?.toLowerCase().includes(searchText.toLowerCase())
@@ -43,25 +44,32 @@ const Categories: React.FC = () => {
     await dispatch(fetchReportingProjects());
   };
 
-  // Dropdown items for the menu
-  const menuItems: MenuProps['items'] = [
-    {
-      key: 'search',
-      label: (
-        <Input
-          onClick={e => e.stopPropagation()}
-          placeholder={t('searchByCategory')}
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-        />
-      ),
-    },
-    ...(categories.length > 0
-      ? [
-          {
-            key: 'selectAll',
-            label: (
-              <div>
+  return (
+    <div>
+      <Dropdown
+        menu={undefined}
+        placement="bottomLeft"
+        trigger={['click']}
+        dropdownRender={() => (
+          <div style={{ 
+            background: token.colorBgContainer,
+            borderRadius: token.borderRadius,
+            boxShadow: token.boxShadow,
+            padding: '4px 0',
+            maxHeight: '330px',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{ padding: '8px', flexShrink: 0 }}>
+              <Input
+                onClick={e => e.stopPropagation()}
+                placeholder={t('searchByCategory')}
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+              />
+            </div>
+            {categories.length > 0 && (
+              <div style={{ padding: '0 12px', flexShrink: 0 }}>
                 <Checkbox
                   onClick={e => e.stopPropagation()}
                   onChange={handleSelectAllChange}
@@ -70,54 +78,47 @@ const Categories: React.FC = () => {
                   {t('selectAll')}
                 </Checkbox>
               </div>
-            ),
-          },
-          {
-            key: 'divider',
-            type: 'divider' as const,
-          },
-        ]
-      : []),
-      {
-        key: 'noCategory',
-        label: (
-          <Checkbox
-            onClick={e => e.stopPropagation()}
-            checked={noCategory}
-            onChange={e => handleNoCategoryChange(e.target.checked)}
-          >
-            {t('noCategory')}
-          </Checkbox>
-        ),
-      },
-    ...(filteredItems.length > 0
-      ? filteredItems.map(item => ({
-          key: item.id || '',
-          label: (
-            <Checkbox
-              onClick={e => e.stopPropagation()}
-              checked={item.selected}
-              onChange={e => handleCheckboxChange(item.id || '', e.target.checked)}
-            >
-              {item.name}
-            </Checkbox>
-          ),
-        }))
-      : [
-          {
-            key: 'empty',
-            label: t('noCategories'),
-          },
-        ]),
-  ];
-
-  return (
-    <div>
-      <Dropdown
-        menu={{ items: menuItems }}
-        placement="bottomLeft"
-        trigger={['click']}
-        overlayStyle={{ maxHeight: '330px', overflowY: 'auto' }}
+            )}
+            <div style={{ padding: '8px 12px 4px 12px', flexShrink: 0 }}>
+              <Checkbox
+                onClick={e => e.stopPropagation()}
+                checked={noCategory}
+                onChange={e => handleNoCategoryChange(e.target.checked)}
+              >
+                {t('noCategory')}
+              </Checkbox>
+            </div>
+            <Divider style={{ margin: '4px 0', flexShrink: 0 }} />
+            <div style={{ 
+              overflowY: 'auto',
+              flex: 1
+            }}>
+              {filteredItems.length > 0 ? (
+                filteredItems.map(item => (
+                  <div 
+                    key={item.id}
+                    style={{ 
+                      padding: '8px 12px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Checkbox
+                      onClick={e => e.stopPropagation()}
+                      checked={item.selected}
+                      onChange={e => handleCheckboxChange(item.id || '', e.target.checked)}
+                    >
+                      {item.name}
+                    </Checkbox>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '8px 12px' }}>
+                  {t('noCategories')}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         onOpenChange={visible => {
           setDropdownVisible(visible);
           if (!visible) {

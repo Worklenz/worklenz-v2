@@ -41,12 +41,7 @@ const MembersReports = () => {
               </Checkbox>
             </Button>
 
-            <TimeWiseFilter
-              setDuration={duration => dispatch(setDuration(duration))}
-              setDateRange={dateRange => dispatch(setDateRange(dateRange))}
-              duration={duration}
-              dateRange={dateRange}
-            />
+            <TimeWiseFilter />
 
             <Dropdown
               menu={{ items: [{ key: '1', label: t('excelButton') }], onClick: handleExport }}
