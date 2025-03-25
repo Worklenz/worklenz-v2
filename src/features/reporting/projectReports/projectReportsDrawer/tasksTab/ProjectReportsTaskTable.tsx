@@ -1,18 +1,21 @@
 import { Badge, Collapse, Flex, Table, TableColumnsType, Tag, Typography } from 'antd';
-import React from 'react';
+import { useEffect } from 'react';
 import CustomTableTitle from '@/components/CustomTableTitle';
 import { colors } from '@/styles/colors';
 import dayjs from 'dayjs';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import { setShowTaskDrawer, fetchTask  } from '@/features/task-drawer/task-drawer.slice';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
+import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
 
 type ProjectReportsTasksTableProps = {
   tasksData: any[];
   title: string;
   color: string;
   type: string;
+  projectId: string;
 };
 
 const ProjectReportsTasksTable = ({
@@ -20,16 +23,22 @@ const ProjectReportsTasksTable = ({
   title,
   color,
   type,
+  projectId,
 }: ProjectReportsTasksTableProps) => {
   // localization
   const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 
+  useEffect(()=>{
+    dispatch(fetchPriorities());
+  },[dispatch])
+
   // function to handle task drawer open
-  const handleUpdateTaskDrawer = (id: string) => {
-    if (!id) return;
-    dispatch(setSelectedTaskId(id));
+  const handleUpdateTaskDrawer = async(id: string) => {
+    if (!id && !projectId) return;
+    dispatch(fetchPhasesByProjectId(projectId));
+    dispatch(fetchTask({ taskId: id, projectId: projectId }));
     dispatch(setShowTaskDrawer(true));
   };
 
