@@ -131,13 +131,19 @@ const TaskListBulkActionsBar = () => {
         dispatch(fetchTaskGroups(projectId));
       }
       for (const it of selectedTaskIdsList) {
-        if (!status.id) return;
         const canContinue = await checkTaskDependencyStatus(it, status.id);
         if (!canContinue) {
-          alertService.warning(
-        'Incomplete Dependencies!',
-        'Some tasks were not updated. Please ensure all dependent tasks are completed before proceeding.'
-          );
+          if (selectedTaskIdsList.length > 1) {
+            alertService.warning(
+              'Incomplete Dependencies!',
+              'Some tasks were not updated. Please ensure all dependent tasks are completed before proceeding.'
+            );
+          } else {
+            alertService.error(
+              'Task is not completed',
+              'Please complete the task dependencies before proceeding'
+            );
+          }
           return;
         }
       }
