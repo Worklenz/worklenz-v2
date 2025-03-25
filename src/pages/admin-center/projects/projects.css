@@ -4,7 +4,7 @@
   justify-content: center;
 }
 
-.project-table-row:hover .project-name,
+.project-table-row:hover .project-names,
 .project-table-row:hover .project-team,
 .project-table-row:hover .project-member-count,
 .project-table-row:hover .project-created-at {

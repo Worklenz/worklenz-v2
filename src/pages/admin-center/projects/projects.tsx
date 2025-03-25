@@ -86,7 +86,7 @@ const Projects: React.FC = () => {
       key: 'projectName',
       render: (record: IOrganizationProject) => (
         <Typography.Text
-          className="project-name"
+          className="project-names"
           style={{ fontSize: `${isTablet ? '14px' : '10px'}` }}
         >
           {record.name}

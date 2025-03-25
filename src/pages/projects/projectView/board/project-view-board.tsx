@@ -35,6 +35,7 @@ import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-reque
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
 import logger from '@/utils/errorLogger';
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
+import { checkTaskDependencyStatus } from '@/utils/check-task-dependency-status';
 
 const ProjectViewBoard = () => {
   const dispatch = useAppDispatch();
@@ -143,17 +144,6 @@ const ProjectViewBoard = () => {
           targetIndex,
         })
       );
-    }
-  };
-
-  const checkTaskDependencyStatus = async (taskId: string, statusId: string) => {
-    if (!taskId || !statusId) return false;
-    try {
-      const res = await tasksApiService.getTaskDependencyStatus(taskId, statusId);
-      return res.done ? res.body.can_continue : false;
-    } catch (error) {
-      logger.error('Error checking task dependency status:', error);
-      return false;
     }
   };
 
