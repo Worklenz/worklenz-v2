@@ -6,30 +6,24 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import OverviewReportsMembersTable from './reporting-overview-members-table';
 import { IRPTMember } from '@/types/reporting/reporting.types';
+import { reportingApiService } from '@/api/reporting/reporting.api.service';
 
 type OverviewReportsMembersTabProps = { teamsId?: string | null };
 
 const OverviewReportsMembersTab = ({ teamsId = null }: OverviewReportsMembersTabProps) => {
   const { t } = useTranslation('reporting-overview-drawer');
 
-  const [searchQuery, setSearhQuery] = useState<string>('');
-  const [membersList, setMembersList] = useState<IRPTMember[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // used useMemo hook for re render the list when searching
-  const filteredMembersData = useMemo(() => {
-    return membersList.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
-  }, [searchQuery, membersList]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   return (
     <Flex vertical gap={24}>
       <CustomSearchbar
         placeholderText={t('searchByNameInputPlaceholder')}
         searchQuery={searchQuery}
-        setSearchQuery={setSearhQuery}
+        setSearchQuery={setSearchQuery}
       />
 
-      {isLoading ? <Skeleton /> : <OverviewReportsMembersTable membersList={filteredMembersData} />}
+      {<OverviewReportsMembersTable teamsId={teamsId} searchQuery={searchQuery} />}
     </Flex>
   );
 };
