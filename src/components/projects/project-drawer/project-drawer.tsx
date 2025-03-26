@@ -166,6 +166,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           navigate(`/worklenz/projects/${response.data.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
         }
         refetchProjects();
+        window.location.reload(); // Refresh the page
       } else {
         notification.error({ message: response?.data?.message });
         logger.error(
@@ -241,6 +242,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         dispatch(toggleProjectDrawer());
         navigate('/worklenz/projects');
         refetchProjects();
+        window.location.reload(); // Refresh the page
       } else {
         notification.error({ message: res?.data?.message });
         logger.error('Error deleting project', res?.data?.message);
