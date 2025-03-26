@@ -46,7 +46,7 @@ import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import logger from '@/utils/errorLogger';
-import { setProjectData, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
+import { setProjectData, toggleProjectDrawer, setProjectId as setDrawerProjectId } from '@/features/project/project-drawer.slice';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
 import { useAuthService } from '@/hooks/useAuth';
 
@@ -55,12 +55,9 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('project-drawer');
   const [form] = Form.useForm();
-
-  // Auth and permissions
-  const isProjectManager = useIsProjectManager();
-  const isOwnerorAdmin = useAuthService().isOwnerOrAdmin();
-  const isEditable = isProjectManager || isOwnerorAdmin;
-
+  const [loading, setLoading] = useState<boolean>(true);
+  const currentSession = useAuthService().getCurrentSession();
+  
   // State
   const [editMode, setEditMode] = useState<boolean>(false);
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
@@ -99,6 +96,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     }),
     [project, projectStatuses, projectHealths]
   );
+
+  // Auth and permissions
+  const isProjectManager = currentSession?.team_member_id == selectedProjectManager?.id;
+  const isOwnerorAdmin = useAuthService().isOwnerOrAdmin();
+  const isEditable = isProjectManager || isOwnerorAdmin;
 
   // Effects
   useEffect(() => {
@@ -166,6 +168,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           navigate(`/worklenz/projects/${response.data.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
         }
         refetchProjects();
+        window.location.reload(); // Refresh the page
       } else {
         notification.error({ message: response?.data?.message });
         logger.error(
@@ -209,6 +212,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             working_days: form.getFieldValue('start_date') && form.getFieldValue('end_date') ? calculateWorkingDays(form.getFieldValue('start_date'), form.getFieldValue('end_date')) : project.working_days || 0,
           });
           setSelectedProjectManager(project.project_manager || null);
+          setLoading(false);
         }
       } else {
         resetForm();
@@ -224,8 +228,12 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   }, [form]);
 
   const handleDrawerClose = useCallback(() => {
+    setLoading(true);
     resetForm();
-    setTimeout(() => dispatch(toggleProjectDrawer()), 300);
+    dispatch(setProjectData({} as IProjectViewModel));
+    dispatch(setProjectId(null));
+    dispatch(setDrawerProjectId(null));
+    dispatch(toggleProjectDrawer());
     onClose();
   }, [resetForm, dispatch, onClose]);
 
@@ -241,6 +249,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         dispatch(toggleProjectDrawer());
         navigate('/worklenz/projects');
         refetchProjects();
+        window.location.reload(); // Refresh the page
       } else {
         notification.error({ message: res?.data?.message });
         logger.error('Error deleting project', res?.data?.message);
@@ -273,6 +282,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <Drawer
+      loading={loading}
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
           {projectId ? t('editProject') : t('createProject')}

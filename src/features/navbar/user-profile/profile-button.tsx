@@ -22,11 +22,7 @@ interface ProfileButtonProps {
 const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
   const { t } = useTranslation('navbar');
   const authService = useAuthService();
-  const [currentSession, setCurrentSession] = useState(authService.getCurrentSession());
-  
-  useEffect(() => {
-    setCurrentSession(authService.getCurrentSession());
-  }, [currentSession?.name, authService]);
+  const currentSession = useAppSelector((state: RootState) => state.userReducer);
   
   const role = getRole();
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
