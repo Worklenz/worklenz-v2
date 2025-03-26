@@ -1,7 +1,6 @@
 import { InputRef } from 'antd/es/input';
 import Card from 'antd/es/card';
 import Checkbox from 'antd/es/checkbox';
-import Divider from 'antd/es/divider';
 import Dropdown from 'antd/es/dropdown';
 import Empty from 'antd/es/empty';
 import Flex from 'antd/es/flex';
@@ -9,42 +8,40 @@ import Input from 'antd/es/input';
 import List from 'antd/es/list';
 import Typography from 'antd/es/typography';
 import Button from 'antd/es/button';
-
 import { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/members/projectMembersSlice';
-import { colors } from '@/styles/colors';
-import { PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITeamMembersViewModel } from '@/types/teamMembers/teamMembersViewModel.types';
-import { sortByBooleanField, sortBySelection, sortTeamMembers } from '@/utils/sort-team-members';
+import { sortTeamMembers } from '@/utils/sort-team-members';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { ITaskViewModel } from '@/types/tasks/task.types';
-
+import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
+import { setTaskAssignee } from '@/features/task-drawer/task-drawer.slice';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { updateTaskAssignees as updateBoardTaskAssignees } from '@/features/board/board-slice';
+import { updateTaskAssignees as updateTasksListTaskAssignees } from '@/features/tasks/tasks.slice';
 interface TaskDrawerAssigneeSelectorProps {
   task: ITaskViewModel;
 }
 
 const TaskDrawerAssigneeSelector = ({ task }: TaskDrawerAssigneeSelectorProps) => {
   const membersInputRef = useRef<InputRef>(null);
-
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [teamMembers, setTeamMembers] = useState<ITeamMembersViewModel>({ data: [], total: 0 });
   const { projectId } = useAppSelector(state => state.projectReducer);
   const currentSession = useAuthService().getCurrentSession();
   const { socket } = useSocket();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-
   const { t } = useTranslation('task-list-table');
+  const { tab } = useTabSearchParam();
 
   const dispatch = useAppDispatch();
-
   const members = useAppSelector(state => state.teamMembersReducer.teamMembers);
 
   const filteredMembersData = useMemo(() => {
@@ -87,6 +84,18 @@ const TaskDrawerAssigneeSelector = ({ task }: TaskDrawerAssigneeSelectorProps) =
       };
 
       socket?.emit(SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(), JSON.stringify(body));
+      socket?.once(
+            SocketEvents.QUICK_ASSIGNEES_UPDATE.toString(),
+            (data: ITaskAssigneesUpdateResponse) => {
+              dispatch(setTaskAssignee(data));
+              // if (tab === 'tasks-list') {
+              //   dispatch(updateTasksListTaskAssignees(data));
+              // }
+              // if (tab === 'board') {
+              //   dispatch(updateBoardTaskAssignees(data));
+              // }
+            }
+          );
     } catch (error) {
       console.error('Error updating assignee:', error);
     }
