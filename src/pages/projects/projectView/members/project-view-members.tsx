@@ -65,7 +65,7 @@ const ProjectViewMembers = () => {
     current: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     field: 'name',
-    order: 'desc',
+    order: 'ascend',
     total: 0,
     pageSizeOptions: ['5', '10', '15', '20', '50', '100'],
     size: 'small',
@@ -120,6 +120,18 @@ const ProjectViewMembers = () => {
     return Math.floor((completed / total) * 100);
   };
 
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    setPagination({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      field: sorter.field || pagination.field,
+      order: sorter.order || pagination.order,
+      total: pagination.total,
+      pageSizeOptions: pagination.pageSizeOptions,
+      size: pagination.size,
+    });
+  };
+
   // Effects
   useEffect(() => {
     void getProjectMembers();
@@ -130,8 +142,11 @@ const ProjectViewMembers = () => {
     {
       key: 'memberName',
       title: t('nameColumn'),
+      dataIndex: 'name',
       sorter: true,
-      render: (record: IProjectMemberViewModel) => (
+      sortOrder: pagination.order === 'ascend' && pagination.field === 'name' ? 'ascend' : 
+                 pagination.order === 'descend' && pagination.field === 'name' ? 'descend' : null,
+      render: (_,record: IProjectMemberViewModel) => (
         <Flex gap={8} align="center">
           <Avatar size={28} src={record.avatar_url}>
             {record.name?.charAt(0)}
@@ -143,19 +158,24 @@ const ProjectViewMembers = () => {
     {
       key: 'jobTitle',
       title: t('jobTitleColumn'),
-      sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle),
-      width: 120,
-      render: (record: IProjectMemberViewModel) => (
+      dataIndex: 'job_title',
+      sorter: true,
+      sortOrder: pagination.order === 'ascend' && pagination.field === 'job_title' ? 'ascend' : 
+                 pagination.order === 'descend' && pagination.field === 'job_title' ? 'descend' : null,
+      render: (_, record: IProjectMemberViewModel) => (
         <Typography.Text style={{ marginInlineStart: 12 }}>
-          {record.job_title || '-'}
+          {record?.job_title || '-'}
         </Typography.Text>
       ),
     },
     {
       key: 'email',
       title: t('emailColumn'),
-      sorter: (a, b) => a.email.localeCompare(b.email),
-      render: (record: IProjectMemberViewModel) => (
+      dataIndex: 'email',
+      sorter: true,
+      sortOrder: pagination.order === 'ascend' && pagination.field === 'email' ? 'ascend' : 
+                 pagination.order === 'descend' && pagination.field === 'email' ? 'descend' : null,
+      render: (_, record: IProjectMemberViewModel) => (
         <Typography.Text>{record.email}</Typography.Text>
       ),
     },
@@ -163,7 +183,7 @@ const ProjectViewMembers = () => {
       key: 'tasks',
       title: t('tasksColumn'),
       width: 90,
-      render: (record: IProjectMemberViewModel) => (
+      render: (_, record: IProjectMemberViewModel) => (
         <Typography.Text style={{ marginInlineStart: 12 }}>
           {`${record.completed_tasks_count}/${record.all_tasks_count}`}
         </Typography.Text>
@@ -172,7 +192,7 @@ const ProjectViewMembers = () => {
     {
       key: 'taskProgress',
       title: t('taskProgressColumn'),
-      render: (record: IProjectMemberViewModel) => (
+      render: (_, record: IProjectMemberViewModel) => (
         <Progress
           percent={calculateProgressPercent(record.completed_tasks_count, record.all_tasks_count)}
         />
@@ -181,8 +201,11 @@ const ProjectViewMembers = () => {
     {
       key: 'access',
       title: t('accessColumn'),
-      sorter: (a, b) => a.access.localeCompare(b.access),
-      render: (record: IProjectMemberViewModel) => (
+      dataIndex: 'access',
+      sorter: true,
+      sortOrder: pagination.order === 'ascend' && pagination.field === 'access' ? 'ascend' : 
+                 pagination.order === 'descend' && pagination.field === 'access' ? 'descend' : null,
+      render: (_, record: IProjectMemberViewModel) => (
         <Typography.Text style={{ textTransform: 'capitalize' }}>{record.access}</Typography.Text>
       ),
     },
@@ -249,6 +272,7 @@ const ProjectViewMembers = () => {
             showSizeChanger: true,
             defaultPageSize: 20,
           }}
+          onChange={handleTableChange}
           onRow={record => ({
             style: {
               cursor: 'pointer',
