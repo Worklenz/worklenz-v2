@@ -29,7 +29,7 @@ import { fetchTaskAssignees, updateTaskAssignees } from '@/features/tasks/tasks.
 import { ITaskAssigneesUpdateResponse } from '@/types/tasks/task-assignee-update-response';
 import { SocketEvents } from '@/shared/socket-events';
 import logger from '@/utils/errorLogger';
-import TaskListTable from '../taskListTable/task-list-table';
+import TaskListTable from '../task-list-table/task-list-table';
 import Collapsible from '@/components/collapsible/collapsible';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';

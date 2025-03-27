@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CustomTableColumnsType } from '../taskListColumns/taskColumnsSlice';
 import { LabelType } from '../../../../types/label.type';
-import { SelectionType } from '../../../../pages/projects/projectView/taskList/taskListTable/custom-columns/custom-column-modal/selection-type-column/selection-type-column';
+import { SelectionType } from '../../../../pages/projects/projectView/taskList/task-list-table/custom-columns/custom-column-modal/selection-type-column/selection-type-column';
 
 export type CustomFieldsTypes =
   | 'people'
