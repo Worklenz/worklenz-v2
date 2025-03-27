@@ -19,17 +19,30 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { getJSONFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
 import { useAuthService } from '@/hooks/useAuth';
+import { authApiService } from '@/api/auth/auth.api.service';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
-  const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+  // const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const currentSession = useAuthService().getCurrentSession();
 
   const location = useLocation();
   const { isDesktop, isMobile, isTablet } = useResponsive();
   const { t } = useTranslation('navbar');
-
+  const authService = useAuthService();
   const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(navRoutes);
+  const [isOwnerOrAdmin, setIsOwnerOrAdmin] = useState<boolean>(authService.isOwnerOrAdmin());
+
+  useEffect(() => {
+    authApiService.verify().then(authorizeResponse => {
+        if (authorizeResponse.authenticated) {
+          authService.setCurrentSession(authorizeResponse.user);
+          setIsOwnerOrAdmin(!!(authorizeResponse.user.is_admin || authorizeResponse.user.owner));
+        }
+      }).catch(error => {
+        console.error('Error during authorization', error);
+      });
+  }, []);
 
   useEffect(() => {
     const storedNavRoutesList: NavRoutesType[] = getJSONFromLocalStorage('navRoutes') || navRoutes;
