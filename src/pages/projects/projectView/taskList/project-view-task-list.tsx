@@ -4,7 +4,7 @@ import Skeleton from 'antd/es/skeleton';
 import { useSearchParams } from 'react-router-dom';
 
 import TaskListFilters from './task-list-filters/task-list-filters';
-import TaskGroupWrapper from './taskListTable/task-group-wrapper/task-group-wrapper';
+import TaskGroupWrapper from './task-list-table/task-group-wrapper/task-group-wrapper';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchTaskGroups, fetchTaskListColumns } from '@/features/tasks/tasks.slice';

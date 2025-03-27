@@ -152,7 +152,6 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
 
       const res = await phasesApiService.updateNameOfPhase(groupId, body as ITaskPhase, projectId);
       if (res.done) {
-        console.log('res', res.body);
         trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Phase' });
         // dispatch(fetchPhasesByProjectId(projectId));
       }
@@ -257,7 +256,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
         align="center"
         style={{ cursor: 'pointer' }}
         onClick={() => {
-          if (isProjectManager || isOwnerOrAdmin) setIsEditable(true);
+          if ((isProjectManager || isOwnerOrAdmin) && name !== 'Unmapped') setIsEditable(true);
         }}
       >
         <Flex
@@ -318,7 +317,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
           <PlusOutlined />
         </Button>
 
-        {(isOwnerOrAdmin || isProjectManager) && (
+        {(isOwnerOrAdmin || isProjectManager) && name !== 'Unmapped' && (
           <Dropdown
             overlayClassName="todo-threedot-dropdown"
             trigger={['click']}

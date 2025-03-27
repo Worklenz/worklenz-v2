@@ -59,7 +59,7 @@ import {
 } from '@/features/task-drawer/task-drawer.slice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 
-import TaskListTableWrapper from '@/pages/projects/projectView/taskList/taskListTable/TaskListTableWrapper';
+import TaskListTableWrapper from '@/pages/projects/projectView/taskList/task-list-table/task-list-table-wrapper/task-list-table-wrapper';
 import TaskListBulkActionsBar from '@/components/taskListCommon/task-list-bulk-actions-bar/task-list-bulk-actions-bar';
 import TaskTemplateDrawer from '@/components/task-templates/task-template-drawer';
 

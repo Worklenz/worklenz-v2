@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import React, { ReactNode } from 'react';
 import PhaseHeader from '../phase/PhaseHeader';
-import AddCustomColumnButton from '../../../../pages/projects/projectView/taskList/taskListTable/custom-columns/custom-column-modal/add-custom-column-button';
+import AddCustomColumnButton from '../../../../pages/projects/projectView/taskList/task-list-table/custom-columns/custom-column-modal/add-custom-column-button';
 
 export type CustomTableColumnsType = {
   id?: string;

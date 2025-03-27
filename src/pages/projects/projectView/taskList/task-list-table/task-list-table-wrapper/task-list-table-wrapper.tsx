@@ -13,8 +13,8 @@ import { MenuProps } from 'antd/es/menu';
 
 import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
-import './taskListTableWrapper.css';
-import TaskListTable from './task-list-table';
+import './task-list-table-wrapper.css';
+import TaskListTable from '../task-list-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/collapsible/collapsible';
@@ -211,7 +211,7 @@ const TaskListTableWrapper = ({
               icon={<RightOutlined rotate={isExpanded ? 90 : 0} />}
               onClick={handlToggleExpand}
             >
-              {showRenameInput ? (
+              {(showRenameInput && name !== 'Unmapped' )? (
                 <Input
                   size="small"
                   value={tableName}
@@ -234,7 +234,7 @@ const TaskListTableWrapper = ({
                 </Typography.Text>
               )}
             </Button>
-            {groupBy !== IGroupBy.PRIORITY && !showRenameInput && isEditable && (
+            {groupBy !== IGroupBy.PRIORITY && !showRenameInput && isEditable && name !== 'Unmapped' && (
               <Dropdown menu={{ items }}>
                 <Button
                   icon={<EllipsisOutlined />}
