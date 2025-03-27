@@ -130,7 +130,6 @@ const ProjectViewMembers = () => {
       pageSizeOptions: pagination.pageSizeOptions,
       size: pagination.size,
     });
-    void getProjectMembers();
   };
 
   // Effects
