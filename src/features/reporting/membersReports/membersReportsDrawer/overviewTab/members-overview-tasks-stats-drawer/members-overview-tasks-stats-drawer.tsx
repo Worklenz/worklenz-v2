@@ -3,18 +3,19 @@ import React, { useMemo, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import { toggleMembersOverviewProjectsStatsDrawer } from '../../../membersReportsSlice';
+import { toggleMembersOverviewTasksStatsDrawer } from '../../../membersReportsSlice';
 import { fetchData } from '@/utils/fetchData';
-import MembersOverviewProjectsStatsTable from './MembersOverviewProjectsStatsTable';
+import MembersOverviewTasksStatsTable from './members-overview-tasks-stats-table';
 
-type MembersOverviewProjectsStatsDrawerProps = {
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
+
+type MembersOverviewTasksStatsDrawerProps = {
   memberId: string | null;
 };
 
-const MembersOverviewProjectsStatsDrawer = ({
-  memberId,
-}: MembersOverviewProjectsStatsDrawerProps) => {
-  const [projectsData, setprojectsData] = useState<any[]>([]);
+const MembersOverviewTasksStatsDrawer = ({ memberId }: MembersOverviewTasksStatsDrawerProps) => {
+  const [tasksData, setTasksData] = useState<any[]>([]);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   // localization
   const { t } = useTranslation('reporting-members-drawer');
@@ -23,7 +24,7 @@ const MembersOverviewProjectsStatsDrawer = ({
 
   // get drawer open state from the member reports reducer
   const isDrawerOpen = useAppSelector(
-    state => state.membersReportsReducer.isMembersOverviewProjectsStatsDrawerOpen
+    state => state.membersReportsReducer.isMembersOverviewTasksStatsDrawerOpen
   );
   const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
@@ -32,12 +33,12 @@ const MembersOverviewProjectsStatsDrawer = ({
 
   // function to handle drawer close
   const handleClose = () => {
-    dispatch(toggleMembersOverviewProjectsStatsDrawer());
+    dispatch(toggleMembersOverviewTasksStatsDrawer());
   };
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
-    fetchData('/reportingMockData/membersReports/projectsStatsOverview.json', setprojectsData);
+    fetchData('/reportingMockData/membersReports/tasksStatsOverview.json', setTasksData);
   }, []);
 
   return (
@@ -49,14 +50,25 @@ const MembersOverviewProjectsStatsDrawer = ({
         selectedMember && (
           <Typography.Text>
             {selectedMember.name}
-            {t('projectsStatsOverviewDrawerTitle')}
+            {t('tasksStatsOverviewDrawerTitle')}
           </Typography.Text>
         )
       }
     >
-      <MembersOverviewProjectsStatsTable projectList={projectsData} />
+      {tasksData &&
+        tasksData.map(item => (
+          <MembersOverviewTasksStatsTable
+            key={item.id}
+            title={item.name}
+            color={item.color_code}
+            tasksData={item.tasks}
+            setSeletedTaskId={setSelectedTaskId}
+          />
+        ))}
+
+      <TaskDrawer />
     </Drawer>
   );
 };
 
-export default MembersOverviewProjectsStatsDrawer;
+export default MembersOverviewTasksStatsDrawer;

@@ -3,10 +3,10 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleMembersReportsDrawer } from '../membersReportsSlice';
 import { DownOutlined } from '@ant-design/icons';
-import MembersReportsDrawerTabs from './MembersReportsDrawerTabs';
+import MembersReportsDrawerTabs from './members-reports-drawer-tabs';
 import { useTranslation } from 'react-i18next';
-import MembersOverviewTasksStatsDrawer from './overviewTab/membersOverviewTasksStatsDrawer/MembersOverviewTasksStatsDrawer';
-import MembersOverviewProjectsStatsDrawer from './overviewTab/membersOverviewProjectsStatsDrawer/MembersOverviewProjectsStatsDrawer';
+import MembersOverviewTasksStatsDrawer from './overviewTab/members-overview-tasks-stats-drawer/members-overview-tasks-stats-drawer';
+import MembersOverviewProjectsStatsDrawer from './overviewTab/members-overview-projects-stats-drawer/members-overview-projects-stats-drawer';
 import TimeWiseFilter from '@/components/reporting/time-wise-filter';
 
 type MembersReportsDrawerProps = {
@@ -18,9 +18,7 @@ const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
 
   const dispatch = useAppDispatch();
 
-  const isDrawerOpen = useAppSelector(
-    state => state.membersReportsReducer.isMembersReportsDrawerOpen
-  );
+  const isDrawerOpen = useAppSelector(state => state.membersReportsReducer.isMembersReportsDrawerOpen);
   const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
   const selectedMember = membersList?.find(member => member.id === memberId);
@@ -34,6 +32,7 @@ const MembersReportsDrawer = ({ memberId }: MembersReportsDrawerProps) => {
       open={isDrawerOpen}
       onClose={handleClose}
       width={900}
+      destroyOnClose
       title={
         selectedMember && (
           <Flex align="center" justify="space-between">
