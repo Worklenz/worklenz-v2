@@ -6,6 +6,7 @@ import { IProjectsViewModel } from '@/types/project/projectsViewModel.types';
 import { IServerResponse } from '@/types/common.types';
 import { IProjectMembersViewModel } from '@/types/projectMember.types';
 import { getCsrfToken } from '../api-client';
+import { toQueryString } from '@/utils/toQueryString';
 
 const rootUrl = '/projects';
 
@@ -69,7 +70,7 @@ export const projectsApi = createApi({
       { id: string; project: IProjectViewModel }
     >({
       query: ({ id, project }) => ({
-        url: `${rootUrl}/${id}`,
+        url: `${rootUrl}/${id}${toQueryString({ current_project_id: id })}`,
         method: 'PUT',
         body: project,
       }),
