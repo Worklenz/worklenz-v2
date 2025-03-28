@@ -3,19 +3,19 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import CustomTableTitle from '@/components/CustomTableTitle';
 import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 
 type MembersReportsTasksTableProps = {
   tasksData: any[];
-  setSelectedTaskId: (id: string) => void;
+  loading: boolean;
 };
 
 const MembersReportsTasksTable = ({
   tasksData,
-  setSelectedTaskId,
+  loading,
 }: MembersReportsTasksTableProps) => {
   // localization
   const { t } = useTranslation('reporting-members-drawer');
@@ -24,7 +24,7 @@ const MembersReportsTasksTable = ({
 
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
-    setSelectedTaskId(id);
+    dispatch(setSelectedTaskId(id));
     dispatch(setShowTaskDrawer(true));
   };
 
@@ -129,6 +129,8 @@ const MembersReportsTasksTable = ({
       columns={columns}
       dataSource={tasksData}
       scroll={{ x: 'max-content' }}
+      rowKey={record => record.id}
+      loading={loading}
       onRow={record => {
         return {
           style: { height: 38, cursor: 'pointer' },

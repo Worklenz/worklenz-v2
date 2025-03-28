@@ -56,9 +56,9 @@ const MembersOverviewTasksStatsDrawer = ({ memberId }: MembersOverviewTasksStats
       }
     >
       {tasksData &&
-        tasksData.map(item => (
+        tasksData.map((item, index) => (
           <MembersOverviewTasksStatsTable
-            key={item.id}
+            key={index}
             title={item.name}
             color={item.color_code}
             tasksData={item.tasks}

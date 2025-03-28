@@ -66,8 +66,8 @@ const MembersReportsProjectGraph = ({ model, loading }: MembersReportsProjectGra
           </Flex>
 
           {/* project-specific tasks */}
-          {model?.chart.map(item => (
-            <AntTooltip title={`${item.name} (${item.y})`}>
+          {model?.chart.map((item, index) => (
+            <AntTooltip key={index} title={`${item.name} (${item.y})`}>
               <Flex key={item.name} gap={4} align="center" style={{ maxWidth: 120 }}>
                 <Badge color={item.color} />
                 <Typography.Text ellipsis>{item.name}</Typography.Text>({item.y})

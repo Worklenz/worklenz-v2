@@ -1,10 +1,14 @@
 import { Flex } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import CustomSearchbar from '../../../../../components/CustomSearchbar';
 import { fetchData } from '@/utils/fetchData';
 import MembersReportsTasksTable from './MembersReportsTasksTable';
 import ProjectFilter from './ProjectFilter';
 import { useTranslation } from 'react-i18next';
+import { useAuthService } from '@/hooks/useAuth';
+import { reportingApiService } from '@/api/reporting/reporting.api.service';
+import { IRPTOverviewProject } from '@/types/reporting/reporting.types';
+import { useAppSelector } from '@/hooks/useAppSelector';
 
 const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
@@ -13,31 +17,69 @@ type MembersReportsTasksTabProps = {
 };
 
 const MembersReportsTasksTab = ({ memberId }: MembersReportsTasksTabProps) => {
-  const [searchQuery, setSearhQuery] = useState<string>('');
-
-  //   save task list
-  const [tasksList, setTasksList] = useState<any[]>([]);
-
-  // this state for open task drawer
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-
-  // localization
   const { t } = useTranslation('reporting-members-drawer');
+  const currentSession = useAuthService().getCurrentSession();
 
-  // useMemo for memoizing the fetch functions
-  useMemo(() => {
-    fetchData('/reportingMockData/membersReports/tasksList.json', setTasksList);
-  }, []);
+  const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
+  const { archived } = useAppSelector(state => state.membersReportsReducer);
 
-  // project list
-  const projectsList = tasksList.map(task => ({
-    projectId: task.project_id as string,
-    project: task.project_name as string,
-  }));
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [tasksList, setTasksList] = useState<any[]>([]);
+  const [loadingTasks, setLoadingTasks] = useState<boolean>(false);
+  const [projectsList, setProjectsList] = useState<IRPTOverviewProject[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState<boolean>(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
-  const uniqueProjects = Array.from(
-    new Map(projectsList.map(project => [project.projectId, project])).values()
-  );
+  const filteredTasks = useMemo(() => {
+    return tasksList.filter(task => task.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [tasksList, searchQuery]);
+
+  const fetchProjects = async () => {
+    if (!currentSession?.team_id) return;
+    try {
+      setLoadingProjects(true);
+      const response = await reportingApiService.getOverviewProjectsByTeam(currentSession.team_id);
+      if (response.done) {
+        setProjectsList(response.body);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const fetchTasks = async () => {
+    if (!currentSession?.team_id || !memberId) return;
+    try {
+      setLoadingTasks(true);
+      const additionalBody = {
+        duration: duration,
+        date_range: dateRange,
+        only_single_member: true,
+        archived,
+      };
+      const response = await reportingApiService.getTasksByMember(
+        memberId,
+        selectedProjectId,
+        false,
+        null,
+        additionalBody
+      );
+      if (response.done) {
+        setTasksList(response.body);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingTasks(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+    fetchTasks();
+  }, [selectedProjectId, duration, dateRange]);
 
   return (
     <Flex vertical gap={24}>
@@ -45,13 +87,17 @@ const MembersReportsTasksTab = ({ memberId }: MembersReportsTasksTabProps) => {
         <CustomSearchbar
           placeholderText={t('searchByNameInputPlaceholder')}
           searchQuery={searchQuery}
-          setSearchQuery={setSearhQuery}
+          setSearchQuery={setSearchQuery}
         />
 
-        <ProjectFilter projectList={uniqueProjects} />
+        <ProjectFilter
+          projectList={projectsList}
+          loading={loadingProjects}
+          onSelect={value => setSelectedProjectId(value)}
+        />
       </Flex>
 
-      <MembersReportsTasksTable tasksData={tasksList} setSelectedTaskId={setSelectedTaskId} />
+      <MembersReportsTasksTable tasksData={filteredTasks} loading={loadingTasks} />
 
       <TaskDrawer />
     </Flex>
