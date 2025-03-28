@@ -8,6 +8,8 @@ import TasksProgressCell from './tablesCells/tasksProgressCell/TasksProgressCell
 import MemberCell from './tablesCells/memberCell/MemberCell';
 import { fetchMembersData, toggleMembersReportsDrawer } from '@/features/reporting/membersReports/membersReportsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import MembersReportsDrawer from '@/features/reporting/membersReports/membersReportsDrawer/members-reports-drawer';
+import { createPortal } from 'react-dom';
 
 const MembersReportsTable = () => {
   const { t } = useTranslation('reporting-members');
@@ -122,7 +124,7 @@ const MembersReportsTable = () => {
         }}
       />
 
-      {/* <MembersReportsDrawer memberId={selectedId} /> */}
+      {createPortal(<MembersReportsDrawer memberId={selectedId} />, document.body)}
     </ConfigProvider>
   );
 };

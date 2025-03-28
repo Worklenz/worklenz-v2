@@ -3,19 +3,18 @@ import React, { useMemo, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import { toggleMembersOverviewTasksStatsDrawer } from '../../../membersReportsSlice';
+import { toggleMembersOverviewProjectsStatsDrawer } from '../../../membersReportsSlice';
 import { fetchData } from '@/utils/fetchData';
-import MembersOverviewTasksStatsTable from './MembersOverviewTasksStatsTable';
+import MembersOverviewProjectsStatsTable from './members-overview-projects-stats-table';
 
-const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
-
-type MembersOverviewTasksStatsDrawerProps = {
+type MembersOverviewProjectsStatsDrawerProps = {
   memberId: string | null;
 };
 
-const MembersOverviewTasksStatsDrawer = ({ memberId }: MembersOverviewTasksStatsDrawerProps) => {
-  const [tasksData, setTasksData] = useState<any[]>([]);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+const MembersOverviewProjectsStatsDrawer = ({
+  memberId,
+}: MembersOverviewProjectsStatsDrawerProps) => {
+  const [projectsData, setprojectsData] = useState<any[]>([]);
 
   // localization
   const { t } = useTranslation('reporting-members-drawer');
@@ -24,7 +23,7 @@ const MembersOverviewTasksStatsDrawer = ({ memberId }: MembersOverviewTasksStats
 
   // get drawer open state from the member reports reducer
   const isDrawerOpen = useAppSelector(
-    state => state.membersReportsReducer.isMembersOverviewTasksStatsDrawerOpen
+    state => state.membersReportsReducer.isMembersOverviewProjectsStatsDrawerOpen
   );
   const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
@@ -33,12 +32,12 @@ const MembersOverviewTasksStatsDrawer = ({ memberId }: MembersOverviewTasksStats
 
   // function to handle drawer close
   const handleClose = () => {
-    dispatch(toggleMembersOverviewTasksStatsDrawer());
+    dispatch(toggleMembersOverviewProjectsStatsDrawer());
   };
 
   // useMemo for memoizing the fetch functions
   useMemo(() => {
-    fetchData('/reportingMockData/membersReports/tasksStatsOverview.json', setTasksData);
+    fetchData('/reportingMockData/membersReports/projectsStatsOverview.json', setprojectsData);
   }, []);
 
   return (
@@ -50,24 +49,14 @@ const MembersOverviewTasksStatsDrawer = ({ memberId }: MembersOverviewTasksStats
         selectedMember && (
           <Typography.Text>
             {selectedMember.name}
-            {t('tasksStatsOverviewDrawerTitle')}
+            {t('projectsStatsOverviewDrawerTitle')}
           </Typography.Text>
         )
       }
     >
-      {tasksData &&
-        tasksData.map(item => (
-          <MembersOverviewTasksStatsTable
-            title={item.name}
-            color={item.color_code}
-            tasksData={item.tasks}
-            setSeletedTaskId={setSelectedTaskId}
-          />
-        ))}
-
-      <TaskDrawer />
+      <MembersOverviewProjectsStatsTable projectList={projectsData} />
     </Drawer>
   );
 };
 
-export default MembersOverviewTasksStatsDrawer;
+export default MembersOverviewProjectsStatsDrawer;

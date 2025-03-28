@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { toggleTaskDrawer } from '@/features/tasks/tasks.slice';
+import { setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
 type MembersOverviewTasksStatsTableProps = {
   tasksData: any[];
@@ -28,7 +28,7 @@ const MembersOverviewTasksStatsTable = ({
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
     setSeletedTaskId(id);
-    dispatch(toggleTaskDrawer());
+    dispatch(setShowTaskDrawer(true));
   };
 
   const columns: TableColumnsType = [

@@ -2,8 +2,8 @@ import { Tabs } from 'antd';
 import { TabsProps } from 'antd/lib';
 import React from 'react';
 import MembersReportsOverviewTab from './overviewTab/MembersReportsOverviewTab';
-import MembersReportsTimeLogsTab from './timeLogTab/MembersReportsTimeLogsTab';
-import MembersReportsActivityLogsTab from './activityLogTab/MembersReportsActivityLogsTab';
+import MembersReportsTimeLogsTab from './time-log-tab/members-reports-time-logs-tab';
+import MembersReportsActivityLogsTab from './activity-log-tab/members-reports-activity-logs-tab';
 import MembersReportsTasksTab from './taskTab/MembersReportsTasksTab';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
@@ -53,6 +53,7 @@ const MembersReportsDrawerTabs = ({ memberId = null }: MembersReportsDrawerProps
       type="card"
       items={tabItems}
       activeKey={activeTab}
+      destroyInactiveTabPane
       onTabClick={key => dispatch(setMemberReportingDrawerActiveTab(key as TabsType))}
     />
   );
