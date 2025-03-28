@@ -13,8 +13,14 @@ import {
   toggleMembersOverviewProjectsStatsDrawer,
 } from '../../membersReportsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { IRPTOverviewMemberStats } from '@/types/reporting/reporting.types';
 
-const MembersReportsStatCard = () => {
+interface StatCardProps {
+  statsModel: IRPTOverviewMemberStats | undefined;
+  loading: boolean;
+}
+
+const MembersReportsStatCard = ({ statsModel, loading }: StatCardProps) => {
   // localization
   const { t } = useTranslation('reporting-members-drawer');
 
@@ -48,62 +54,54 @@ const MembersReportsStatCard = () => {
     {
       name: 'projects',
       icon: <FileExcelOutlined style={{ fontSize: 24, color: '#f6ce69' }} />,
-      value: '4',
+      value: statsModel?.projects.toString() || '0',
       onClick: handleMembersOverviewProjectsStatsDrawerToggle,
     },
     {
       name: 'totalTasks',
       icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#70eded' }} />,
-      value: '20',
+      value: statsModel?.total_tasks.toString() || '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'assignedTasks',
       icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7590c9' }} />,
-      value: '0',
+      value: statsModel?.assigned.toString() || '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'completedTasks',
       icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#75c997' }} />,
-      value: '0',
+      value: statsModel?.completed.toString() || '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'ongoingTasks',
-      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#7cb5ec' }} />,
-      value: '0',
+      icon: <ClockCircleOutlined style={{ fontSize: 24, color: '#7cb5ec' }} />,
+      value: statsModel?.ongoing.toString() || '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'overdueTasks',
-      icon: <ExclamationCircleOutlined style={{ fontSize: 24, color: '#eb6363' }} />,
-      value: '4',
+      icon: <ClockCircleOutlined style={{ fontSize: 24, color: '#eb6363' }} />,
+      value: statsModel?.overdue.toString() || '0',
       onClick: handleMembersOverviewTasksStatsDrawerToggle,
     },
     {
       name: 'loggedHours',
       icon: <ClockCircleOutlined style={{ fontSize: 24, color: '#75c997' }} />,
-      value: '0h 0m',
+      value: statsModel?.total_logged.toString() || '0',
       onClick: handleNavigateTimeLogsTab,
     },
   ];
 
   return (
-    <Card style={{ width: '100%' }}>
-      <Flex vertical gap={16} style={{ padding: '12px 24px' }}>
-        {statItems.map(item => (
-          <Flex gap={12} align="center">
+    <Card style={{ width: '100%' }} loading={loading}>
+      <Flex vertical gap={8} style={{ padding: '12px 24px' }}>
+        {statItems.map((item, index) => (
+          <Flex key={index} gap={12} align="center">
             {item.icon}
-            <Button
-              type="link"
-              onClick={item.onClick}
-              className={
-                themeMode === 'dark'
-                  ? 'text-[#ffffffd9] hover:text-[#1890FF]'
-                  : 'text-[#181818] hover:text-[#1890ff]'
-              }
-            >
+            <Button type="text" onClick={item.onClick}>
               {item.value} {t(`${item.name}Text`)}
             </Button>
           </Flex>

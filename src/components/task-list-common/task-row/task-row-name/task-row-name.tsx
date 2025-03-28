@@ -41,7 +41,8 @@ const TaskRowName = React.memo(
     );
 
     const handleSelectTask = useCallback(() => {
-      setSelectedTaskId(task.id || '');
+      if (!task.id) return;
+      setSelectedTaskId(task.id);
       dispatch(setShowTaskDrawer(true));
     }, [dispatch, setSelectedTaskId, task.id]);
 

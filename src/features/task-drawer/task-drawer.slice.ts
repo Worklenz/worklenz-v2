@@ -1,9 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createAction } from '@reduxjs/toolkit';
 
 import { tasksApiService } from '@/api/tasks/tasks.api.service';
 import { ITaskFormViewModel } from '@/types/tasks/task.types';
-import { ITaskLabel } from '@/types/tasks/taskLabel.types';
 import { ITaskListStatusChangeResponse } from '@/types/tasks/task-list-status.types';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
