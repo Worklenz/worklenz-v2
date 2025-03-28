@@ -36,7 +36,8 @@
   "inProgressText": "In Progress",
   "completedText": "Completed",
   "continuousText": "Continuous",
-
+  "todayText": "Today",
+  "yesterdayText": "Yesterday",
   "daysLeftText": "days left",
   "dayLeftText": "day left",
   "daysOverdueText": "days overdue",

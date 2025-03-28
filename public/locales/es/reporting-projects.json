@@ -40,7 +40,8 @@
   "daysLeftText": "días restantes",
   "dayLeftText": "día restante",
   "daysOverdueText": "días de retraso",
-
+  "todayText": "Hoy",
+  "yesterdayText": "Ayer",
   "notSetText": "No Establecido",
   "needsAttentionText": "Necesita Atención",
   "atRiskText": "En Riesgo",
