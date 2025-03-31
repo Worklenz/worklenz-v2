@@ -20,6 +20,7 @@ import { getJSONFromLocalStorage } from '@/utils/localStorageFunctions';
 import { navRoutes, NavRoutesType } from './navRoutes';
 import { useAuthService } from '@/hooks/useAuth';
 import { authApiService } from '@/api/auth/auth.api.service';
+import { ISUBSCRIPTION_TYPE } from '@/shared/constants';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
@@ -32,6 +33,7 @@ const Navbar = () => {
   const authService = useAuthService();
   const [navRoutesList, setNavRoutesList] = useState<NavRoutesType[]>(navRoutes);
   const [isOwnerOrAdmin, setIsOwnerOrAdmin] = useState<boolean>(authService.isOwnerOrAdmin());
+  const showUpgradeTypes = [ISUBSCRIPTION_TYPE.TRIAL]
 
   useEffect(() => {
     authApiService.verify().then(authorizeResponse => {
@@ -109,7 +111,7 @@ const Navbar = () => {
           <ConfigProvider wave={{ disabled: true }}>
             {isDesktop && (
               <Flex gap={20} align="center">
-                {isOwnerOrAdmin && currentSession?.subscription_type === 'SELF_HOSTED' && (
+                {isOwnerOrAdmin && showUpgradeTypes.includes(currentSession?.subscription_type as ISUBSCRIPTION_TYPE) && (
                   <UpgradePlanButton />
                 )}
                 {isOwnerOrAdmin && <InviteButton />}
