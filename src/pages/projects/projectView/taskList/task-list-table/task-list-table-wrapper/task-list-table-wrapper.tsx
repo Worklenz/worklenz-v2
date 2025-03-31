@@ -97,7 +97,6 @@ const TaskListTableWrapper = ({
       category_id: categoryId,
     };
     const res = await statusApiService.updateStatus(tableId, body, projectId);
-    console.log(res);
     if (res.done) {
       setCurrentCategory(categoryId); // Update local state immediately
       trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Status' });
