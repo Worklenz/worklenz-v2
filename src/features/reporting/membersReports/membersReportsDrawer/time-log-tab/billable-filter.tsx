@@ -3,7 +3,12 @@ import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const BillableFilter = () => {
+interface BillableFilterProps {
+  billable: { billable: boolean; nonBillable: boolean };
+  onBillableChange: (value: { billable: boolean; nonBillable: boolean }) => void;
+}
+
+const BillableFilter = ({ billable, onBillableChange }: BillableFilterProps) => {
   // state to track dropdown open status
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -37,7 +42,14 @@ const BillableFilter = () => {
             }}
           >
             <Space>
-              <Checkbox id={item.key} />
+              <Checkbox 
+                id={item.key} 
+                checked={billable[item.key as keyof typeof billable]} 
+                onChange={() => onBillableChange({ 
+                  ...billable, 
+                  [item.key as keyof typeof billable]: !billable[item.key as keyof typeof billable] 
+                })} 
+              />
               {t(`${item.key}Text`)}
             </Space>
           </List.Item>
