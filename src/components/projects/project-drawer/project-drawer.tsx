@@ -282,7 +282,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <Drawer
-      loading={loading}
+      // loading={loading}
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
           {projectId ? t('editProject') : t('createProject')}
