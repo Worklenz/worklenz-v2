@@ -140,6 +140,18 @@ const CurrentPlanDetails = () => {
     );
   };
 
+  const calculateMonthDays = (startDate: string, endDate: string): string => {
+    const start: Date = new Date(startDate);
+    const end: Date = new Date(endDate);
+  
+    const diffInMilliseconds: number = Math.abs(end.getTime() - start.getTime());
+    const days: number = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+    const months: number = Math.floor(days / 30);
+    const remainingDays: number = days % 30;
+  
+    return `${months} ${months > 1 ? "months" : "month"} ${remainingDays} ${remainingDays !== 1 ? "days" : "day"}`;
+  }
+
   const renderTrialDetails = () => {
     const checkIfTrialExpired = () => {
       if (!billingInfo?.trial_expire_date) return false;
@@ -200,6 +212,12 @@ const CurrentPlanDetails = () => {
     );
   };
 
+  const renderCreditSubscriptionInfo = () => {
+    return <Flex vertical>
+      <Typography.Text strong>Credit Plan</Typography.Text>
+    </Flex>
+  };  
+
   return (
     <Card
       style={{ height: '100%' }}
@@ -224,6 +242,7 @@ const CurrentPlanDetails = () => {
           {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.TRIAL && renderTrialDetails()}
           {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.FREE && renderFreePlan()}
           {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.PADDLE && renderPaddleSubscriptionInfo()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.CREDIT && renderCreditSubscriptionInfo()}
         </div>
 
         {shouldShowRedeemButton() && (
