@@ -58,14 +58,10 @@ const DeleteStatusDrawer: React.FC = () => {
     };
 
     const setReplacingStatus = (value: string) => {
-        console.log('setReplacingStatus', value);
         setCurrentStatus(value);
     };
     const moveAndDelete = async () => {
         const groupId = selectedForDelete?.id;
-        console.log('groupId', groupId);
-        console.log('currentStatus', currentStatus);
-        console.log('projectId', projectId);
         if (!projectId || !currentStatus || !groupId) return;
         setDeletingStatus(true);
         try {
