@@ -19,6 +19,7 @@ import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { tabItems } from '@/lib/project/project-view-constants';
 
+const DeleteStatusDrawer = React.lazy(()=> import('@/components/project-task-filters/delete-status-drawer/delete-status-drawer'));
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
   () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
@@ -186,6 +187,7 @@ const ProjectView = () => {
       {createPortal(<PhaseDrawer />, document.body, 'phase-drawer')}
       {createPortal(<StatusDrawer />, document.body, 'status-drawer')}
       {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
+      {createPortal(<DeleteStatusDrawer />, document.body, 'delete-status-drawer')}
     </div>
   );
 };
