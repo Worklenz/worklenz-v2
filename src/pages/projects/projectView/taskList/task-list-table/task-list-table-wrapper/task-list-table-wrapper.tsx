@@ -16,7 +16,7 @@ import TaskListTable from '../task-list-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/collapsible/collapsible';
-import { IGroupBy, updateTaskGroupColor } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, fetchTaskListColumns, IGroupBy, updateTaskGroupColor } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
@@ -99,6 +99,9 @@ const TaskListTableWrapper = ({
     const res = await statusApiService.updateStatus(tableId, body, projectId);
     if (res.done) {
       setCurrentCategory(categoryId); // Update local state immediately
+      dispatch(fetchTaskListColumns(projectId));
+      dispatch(fetchPhasesByProjectId(projectId));
+      dispatch(fetchTaskGroups(projectId));
       trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Status' });
       if (res.body.color_code) {
         dispatch(
