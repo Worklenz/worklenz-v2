@@ -47,5 +47,6 @@
   "goodText": "Bom",
 
   "setCategoryText": "Definir Categoria",
-  "searchByNameInputPlaceholder": "Pesquisar por nome"
+  "searchByNameInputPlaceholder": "Pesquisar por nome",
+  "todayText": "Hoje"
 }

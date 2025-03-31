@@ -47,5 +47,6 @@
   "goodText": "Good",
 
   "setCategoryText": "Set Category",
-  "searchByNameInputPlaceholder": "Search by name"
+  "searchByNameInputPlaceholder": "Search by name",
+  "todayText": "Today"
 }
