@@ -35,7 +35,7 @@ export interface EstimatedVsActualTimeSheetRef {
 }
 
 interface IEstimatedVsActualTimeSheetProps {
-  type: 'workingDays' | 'manDays';
+  type: string;
 }
 
 const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEstimatedVsActualTimeSheetProps>(({ type }, ref) => {
@@ -183,7 +183,7 @@ const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEs
       const selectedCategories = categories.filter(category => category.selected);
 
       const body = {
-        type: type === 'workingDays' ? 'WORKING_DAYS' : 'MAN_DAYS',
+        type: type === 'WORKING_DAYS' ? 'WORKING_DAYS' : 'MAN_DAYS',
         teams: selectedTeams.map(t => t.id),
         categories: selectedCategories.map(c => c.id),
         selectNoCategory: noCategory,
@@ -192,10 +192,8 @@ const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEs
         date_range: dateRange,
         billable
       };
-
       const res = await reportingTimesheetApiService.getProjectEstimatedVsActual(body, archived);
       if (res.done) {
-        console.log('API Response body:', res.body);
         // Ensure res.body is an array before setting it
         const dataArray = Array.isArray(res.body) ? res.body : [];
         setJsonData(dataArray);
@@ -230,12 +228,9 @@ const EstimatedVsActualTimeSheet = forwardRef<EstimatedVsActualTimeSheetRef, IEs
   ]);
 
   const exportChart = () => {
-    console.log('Export function called');
-    console.log('Chart ref:', chartRef.current);
     if (chartRef.current) {
       // Get the canvas element
       const canvas = chartRef.current.canvas;
-      console.log('Canvas:', canvas);
       
       // Create a temporary canvas to draw with background
       const tempCanvas = document.createElement('canvas');

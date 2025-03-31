@@ -206,13 +206,13 @@ const ProjectTimeSheetChart = forwardRef<ProjectTimeSheetChartRef>((_, ref) => {
     exportChart
   }));
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <Spin />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+  //       <Spin />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>

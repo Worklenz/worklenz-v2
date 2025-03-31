@@ -26,9 +26,9 @@ const ShowFieldsFilterDropdown = () => {
   const { projectId, project } = useAppSelector(state => state.projectReducer);
 
   const visibilityChangableColumnList = columnList.filter(
-    column => column.key !== 'selector' && column.key !== 'task' && column.key !== 'customColumn'
+    column => column.key !== 'selector' && column.key !== 'TASK' && column.key !== 'customColumn'
   );
-
+  
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const handleColumnVisibilityChange = async (col: ITaskListColumn) => {

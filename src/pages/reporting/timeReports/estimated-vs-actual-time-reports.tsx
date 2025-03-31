@@ -8,7 +8,7 @@ import { useState, useRef } from 'react';
 
 const EstimatedVsActualTimeReports = () => {
   const { t } = useTranslation('time-report');
-  const [type, setType] = useState<'workingDays' | 'manDays'>('workingDays');
+  const [type, setType] = useState('WORKING_DAYS');
   const chartRef = useRef<EstimatedVsActualTimeSheetRef>(null);
 
   useDocumentTitle('Reporting - Allocation');
@@ -42,8 +42,14 @@ const EstimatedVsActualTimeReports = () => {
             <TimeReportPageHeader />
             <Segmented
               style={{ fontWeight: 500 }}
-              options={[t('workingDays'), t('manDays')]}
-              onChange={value => setType(value as 'workingDays' | 'manDays')}
+              options={[{
+                label: t('workingDays'),
+                value: 'WORKING_DAYS',
+              }, {
+                label: t('manDays'),
+                value: 'MAN_DAYS',
+              }]}
+              onChange={value => setType(value)}
             />
           </div>
         }
