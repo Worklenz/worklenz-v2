@@ -54,27 +54,20 @@ export const LicenseExpiryGuard = ({ children }: GuardProps) => {
 
   // Don't check or redirect if we're already on the license-expired page
   if (isLicenseExpiredRoute) {
-    console.log('Already on license expired page, skipping redirect check');
     return <>{children}</>;
   }
 
   // Check if trial is expired more than 7 days or if is_expired flag is set
-  const isLicenseExpiredMoreThan7Days = () => {
-    console.log('Current session:', currentSession);
-    
+  const isLicenseExpiredMoreThan7Days = () => {   
     // Quick bail if no session data is available
     if (!currentSession) {
-      console.log('No current session data available');
       return false;
     }
     
     // Check is_expired flag first
-    if (currentSession.is_expired) {
-      console.log('License is marked as expired in session');
-      
+    if (currentSession.is_expired) {      
       // If no trial_expire_date exists but is_expired is true, defer to backend check
       if (!currentSession.trial_expire_date) {
-        console.log('No trial expiry date but is_expired is true - assuming system-determined expiration');
         return true;
       }
       
@@ -84,12 +77,6 @@ export const LicenseExpiryGuard = ({ children }: GuardProps) => {
       const diffTime = today.getTime() - expiryDate.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-      console.log('License check for expired license:', {
-        today: today.toISOString(),
-        expiryDate: expiryDate.toISOString(),
-        diffDays
-      });
-      
       // Redirect if more than 7 days past expiration
       return diffDays > 7;
     }
@@ -98,39 +85,21 @@ export const LicenseExpiryGuard = ({ children }: GuardProps) => {
     if (currentSession.trial_expire_date) {
       const today = new Date();
       const expiryDate = new Date(currentSession.trial_expire_date);
-      
-      console.log('License check for trial_expire_date:', {
-        today: today.toISOString(),
-        expiryDate: expiryDate.toISOString(),
-        trialExpireDate: currentSession.trial_expire_date
-      });
-      
+
       const diffTime = today.getTime() - expiryDate.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      console.log(`Days since expiration: ${diffDays}`);
       
       // If expired more than 7 days, redirect
       return diffDays > 7;
     }
     
     // No expiration data found
-    console.log('No expiration data found in session');
     return false;
   };
 
   // Add this explicit check and log the result
   const shouldRedirect = isAuthenticated && isLicenseExpiredMoreThan7Days() && !isAdminCenterRoute;
-  console.log('License redirection check:', {
-    isAuthenticated,
-    isExpiredMoreThan7Days: isLicenseExpiredMoreThan7Days(),
-    isAdminCenterRoute,
-    shouldRedirect,
-    path: location.pathname
-  });
-
   if (shouldRedirect) {
-    console.log('Redirecting to license expired page');
     return <Navigate to="/worklenz/license-expired" replace />;
   }
 
@@ -173,7 +142,6 @@ const wrapRoutes = (
 
 // Static license expired component that doesn't rely on translations or authentication
 const StaticLicenseExpired = () => {
-  console.log('Static license expired component rendering');
   
   return (
     <div style={{ 

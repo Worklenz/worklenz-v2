@@ -87,6 +87,7 @@ const RedeemCodeDrawer: React.FC = () => {
               style={{ width: '100%' }}
               htmlType="submit"
               disabled={redeemCode.length !== 10}
+              loading={isLoading}
             >
               {t('redeemSubmit')}
             </Button>

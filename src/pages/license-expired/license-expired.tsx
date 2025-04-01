@@ -5,8 +5,6 @@ import { useAuthService } from '@/hooks/useAuth';
 
 // Simple license expired page that doesn't trigger verification
 const LicenseExpired = () => {
-  console.log('*** LICENSE EXPIRED COMPONENT RENDERING ***');
-  
   const navigate = useNavigate();
   const { t } = useTranslation('license-expired');
   const authService = useAuthService();
@@ -15,8 +13,6 @@ const LicenseExpired = () => {
   const fallbackTitle = "Your Worklenz trial has expired!";
   const fallbackSubtitle = "Please upgrade now.";
   const fallbackButton = "Upgrade now";
-
-  console.log('License expired page - rendering content');
 
   return (
     <div style={{ 

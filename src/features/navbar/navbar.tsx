@@ -21,6 +21,7 @@ import { navRoutes, NavRoutesType } from './navRoutes';
 import { useAuthService } from '@/hooks/useAuth';
 import { authApiService } from '@/api/auth/auth.api.service';
 import { ISUBSCRIPTION_TYPE } from '@/shared/constants';
+import logger from '@/utils/errorLogger';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
@@ -42,7 +43,7 @@ const Navbar = () => {
           setIsOwnerOrAdmin(!!(authorizeResponse.user.is_admin || authorizeResponse.user.owner));
         }
       }).catch(error => {
-        console.error('Error during authorization', error);
+        logger.error('Error during authorization', error);
       });
   }, []);
 
