@@ -1,4 +1,6 @@
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import { fetchStorageInfo } from '@/features/admin-center/admin-center.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { SUBSCRIPTION_STATUS } from '@/shared/constants';
 import { IBillingAccountStorage } from '@/types/admin-center/admin-center.types';
@@ -13,21 +15,10 @@ interface IAccountStorageProps {
 
 const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
   const { t } = useTranslation('admin-center/current-bill');
-  const [storage, setStorage] = useState<IBillingAccountStorage>({});
+  const dispatch = useAppDispatch();
   const [subscriptionType, setSubscriptionType] = useState<string>(SUBSCRIPTION_STATUS.TRIALING);
 
-  const { loadingBillingInfo, billingInfo } = useAppSelector(state => state.adminCenterReducer);
-
-  const fetchStorage = async () => {
-    try {
-      const res = await adminCenterApiService.getAccountStorage();
-      if (res.done) {
-        setStorage(res.body);
-      }
-    } catch (error) {
-      logger.error('Error fetching storage info:', error);
-    }
-  };
+  const { loadingBillingInfo, billingInfo, storageInfo } = useAppSelector(state => state.adminCenterReducer);
 
   const formatBytes = useMemo(
     () =>
@@ -47,7 +38,7 @@ const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
   );
 
   useEffect(() => {
-    fetchStorage();
+    dispatch(fetchStorageInfo());
   }, []);
 
   useEffect(() => {
@@ -90,10 +81,10 @@ const AccountStorage = ({ themeMode }: IAccountStorageProps) => {
           }}
         >
           <Typography.Text>
-            {t('used')} <strong>{formatBytes(storage.used, 1)}</strong>
+            {t('used')} <strong>{formatBytes(storageInfo?.used ?? 0, 1)}</strong>
           </Typography.Text>
           <Typography.Text>
-            {t('remaining')} <strong>{formatBytes(storage.remaining, 1)}</strong>
+            {t('remaining')} <strong>{formatBytes(storageInfo?.remaining ?? 0, 1)}</strong>
           </Typography.Text>
         </div>
       </div>
