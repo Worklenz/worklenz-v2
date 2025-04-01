@@ -96,5 +96,6 @@
   "cancelPlan": "Cancelar Plan",
 
   "perMonthPerUser": "por usuario / mes",
-  "viewInvoice": "Ver Factura"
+  "viewInvoice": "Ver Factura",
+  "switchToFreePlan": "Cambiar al Plan Gratuito"
 }
