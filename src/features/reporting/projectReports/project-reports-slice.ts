@@ -111,13 +111,7 @@ const projectReportsSlice = createSlice({
       state.index = 1;
     },
     setSelectedProjectStatuses: (state, action) => {
-      const status = action.payload;
-      const index = state.selectedProjectStatuses.findIndex(s => s.id === status.id);
-      if (index >= 0) {
-        state.selectedProjectStatuses.splice(index, 1);
-      } else {
-        state.selectedProjectStatuses.push(status);
-      }
+      state.selectedProjectStatuses = action.payload;
     },
     setSelectedProjectHealths: (state, action) => {
       const health = action.payload;

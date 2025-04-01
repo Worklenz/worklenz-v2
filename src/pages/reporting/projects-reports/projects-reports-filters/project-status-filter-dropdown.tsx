@@ -1,29 +1,52 @@
 import { fetchProjectStatuses } from '@/features/projects/lookups/projectStatuses/projectStatusesSlice';
-import { setSelectedProjectStatuses } from '@/features/reporting/projectReports/project-reports-slice';
+import { fetchProjectData, setSelectedProjectStatuses } from '@/features/reporting/projectReports/project-reports-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { CaretDownFilled } from '@ant-design/icons';
 import { Button, Card, Checkbox, Dropdown, List, Space } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { debounce } from 'lodash';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const ProjectStatusFilterDropdown = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('reporting-projects-filters');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [selectedStatuses, setSelectedStatuses] = useState<IProjectStatus[]>([]);
   const { projectStatuses, loading: projectStatusesLoading } = useAppSelector(
     state => state.projectStatusesReducer
   );
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
+  const { selectedProjectStatuses } = useAppSelector(state => state.projectReportsReducer);
 
+  useEffect(() => {
+    setSelectedStatuses(selectedProjectStatuses);
+  }, [selectedProjectStatuses]);
   useEffect(() => {
     if (!projectStatusesLoading) dispatch(fetchProjectStatuses());
   }, [dispatch]);
 
+  const debouncedUpdate = useCallback(
+    debounce((statuses: IProjectStatus[]) => {
+      dispatch(setSelectedProjectStatuses(statuses));
+      dispatch(fetchProjectData()); 
+    }, 300),
+    [dispatch]
+  );
+
   const handleProjectStatusClick = (status: IProjectStatus) => {
-    dispatch(setSelectedProjectStatuses(status));
+    const isSelected = selectedStatuses.some(s => s.id === status.id);
+    let updatedStatuses: IProjectStatus[];
+
+    if (isSelected) {
+      updatedStatuses = selectedStatuses.filter(s => s.id !== status.id);
+    } else {
+      updatedStatuses = [...selectedStatuses, status];
+    }
+
+    setSelectedStatuses(updatedStatuses); 
+    debouncedUpdate(updatedStatuses);
   };
 
   // custom dropdown content
