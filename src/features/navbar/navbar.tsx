@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Col, ConfigProvider, Flex, Menu, MenuProps } from 'antd';
+import { Col, ConfigProvider, Flex, Menu, MenuProps, Alert } from 'antd';
 import { createPortal } from 'react-dom';
 
 import InviteTeamMembers from '../../components/common/invite-team-members/invite-team-members';
@@ -24,8 +24,8 @@ import { ISUBSCRIPTION_TYPE } from '@/shared/constants';
 
 const Navbar = () => {
   const [current, setCurrent] = useState<string>('home');
-  // const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const currentSession = useAuthService().getCurrentSession();
+  const [daysUntilExpiry, setDaysUntilExpiry] = useState<number | null>(null);
 
   const location = useLocation();
   const { isDesktop, isMobile, isTablet } = useResponsive();
@@ -50,6 +50,16 @@ const Navbar = () => {
     const storedNavRoutesList: NavRoutesType[] = getJSONFromLocalStorage('navRoutes') || navRoutes;
     setNavRoutesList(storedNavRoutesList);
   }, []);
+
+  useEffect(() => {
+    if (currentSession?.trial_expire_date) {
+      const today = new Date();
+      const expiryDate = new Date(currentSession.trial_expire_date);
+      const diffTime = expiryDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      setDaysUntilExpiry(diffDays);
+    }
+  }, [currentSession?.trial_expire_date]);
 
   const navlinkItems = useMemo(
     () =>
@@ -83,67 +93,86 @@ const Navbar = () => {
       style={{
         width: '100%',
         display: 'flex',
+        flexDirection: 'column',
         paddingInline: isDesktop ? 48 : 24,
         gap: 12,
         alignItems: 'center',
         justifyContent: 'space-between',
       }}
     >
-      {/* logo */}
-      <NavbarLogo />
-
+      {daysUntilExpiry !== null && daysUntilExpiry <= 7 && daysUntilExpiry > 0 && (
+        <Alert
+          message={`Your license will expire in ${daysUntilExpiry} days`}
+          type="warning"
+          showIcon
+          style={{ width: '100%', marginTop: 12 }}
+        />
+      )}
       <Flex
-        align="center"
-        justify={isDesktop ? 'space-between' : 'flex-end'}
-        style={{ width: '100%' }}
+        style={{
+          width: '100%',
+          display: 'flex',
+          gap: 12,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
       >
-        {/* navlinks menu  */}
-        {isDesktop && (
-          <Menu
-            selectedKeys={[current]}
-            mode="horizontal"
-            style={{
-              flex: 10,
-              maxWidth: 720,
-              minWidth: 0,
-              border: 'none',
-            }}
-            items={navlinkItems}
-          />
-        )}
+        {/* logo */}
+        <NavbarLogo />
 
-        <Flex gap={20} align="center">
-          <ConfigProvider wave={{ disabled: true }}>
-            {isDesktop && (
-              <Flex gap={20} align="center">
-                {isOwnerOrAdmin && showUpgradeTypes.includes(currentSession?.subscription_type as ISUBSCRIPTION_TYPE) && (
-                  <UpgradePlanButton />
-                )}
-                {isOwnerOrAdmin && <InviteButton />}
-                <Flex align="center">
+        <Flex
+          align="center"
+          justify={isDesktop ? 'space-between' : 'flex-end'}
+          style={{ width: '100%' }}
+        >
+          {/* navlinks menu  */}
+          {isDesktop && (
+            <Menu
+              selectedKeys={[current]}
+              mode="horizontal"
+              style={{
+                flex: 10,
+                maxWidth: 720,
+                minWidth: 0,
+                border: 'none',
+              }}
+              items={navlinkItems}
+            />
+          )}
+
+          <Flex gap={20} align="center">
+            <ConfigProvider wave={{ disabled: true }}>
+              {isDesktop && (
+                <Flex gap={20} align="center">
+                  {isOwnerOrAdmin && showUpgradeTypes.includes(currentSession?.subscription_type as ISUBSCRIPTION_TYPE) && (
+                    <UpgradePlanButton />
+                  )}
+                  {isOwnerOrAdmin && <InviteButton />}
+                  <Flex align="center">
+                    <SwitchTeamButton />
+                    <NotificationButton />
+                    <HelpButton />
+                    <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
+                  </Flex>
+                </Flex>
+              )}
+              {isTablet && !isDesktop && (
+                <Flex gap={12} align="center">
                   <SwitchTeamButton />
                   <NotificationButton />
-                  <HelpButton />
                   <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
+                  <MobileMenuButton />
                 </Flex>
-              </Flex>
-            )}
-            {isTablet && !isDesktop && (
-              <Flex gap={12} align="center">
-                <SwitchTeamButton />
-                <NotificationButton />
-                <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
-                <MobileMenuButton />
-              </Flex>
-            )}
-            {isMobile && (
-              <Flex gap={12} align="center">
-                <NotificationButton />
-                <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
-                <MobileMenuButton />
-              </Flex>
-            )}
-          </ConfigProvider>
+              )}
+              {isMobile && (
+                <Flex gap={12} align="center">
+                  <NotificationButton />
+                  <ProfileButton isOwnerOrAdmin={isOwnerOrAdmin} />
+                  <MobileMenuButton />
+                </Flex>
+              )}
+            </ConfigProvider>
+          </Flex>
         </Flex>
       </Flex>
 
