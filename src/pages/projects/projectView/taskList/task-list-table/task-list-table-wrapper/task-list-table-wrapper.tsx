@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Add useEffect import
 import { useTranslation } from 'react-i18next';
-import { useDroppable } from '@dnd-kit/core'; // Add this import
-
+import { useDroppable } from '@dnd-kit/core';
 import Flex from 'antd/es/flex';
 import Badge from 'antd/es/badge';
 import Button from 'antd/es/button';
@@ -10,7 +9,6 @@ import Dropdown from 'antd/es/dropdown';
 import Input from 'antd/es/input';
 import Typography from 'antd/es/typography';
 import { MenuProps } from 'antd/es/menu';
-
 import { EditOutlined, EllipsisOutlined, RetweetOutlined, RightOutlined } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
 import './task-list-table-wrapper.css';
@@ -18,7 +16,7 @@ import TaskListTable from '../task-list-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/collapsible/collapsible';
-import { IGroupBy, updateTaskGroupColor } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, fetchTaskListColumns, IGroupBy, updateTaskGroupColor } from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
@@ -65,16 +63,19 @@ const TaskListTableWrapper = ({
 
   const { t } = useTranslation('task-list-table');
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
-  const { projectId, project } = useAppSelector(state => state.projectReducer);
+  const { projectId } = useAppSelector(state => state.projectReducer);
 
-  // Add useDroppable hook
   const { setNodeRef, isOver } = useDroppable({
     id: tableId,
-    data: { groupId: tableId }, // Pass groupId for handleDragEnd
+    data: { groupId: tableId },
   });
 
+  // Sync currentCategory with statusCategory prop when it changes
+  useEffect(() => {
+    setCurrentCategory(statusCategory);
+  }, [statusCategory]);
+
   const handlToggleExpand = (e: React.MouseEvent) => {
-    // Don't toggle if we're renaming or if the click came from the input
     if (isRenaming || showRenameInput) {
       e.stopPropagation();
       return;
@@ -83,7 +84,6 @@ const TaskListTableWrapper = ({
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Stop propagation for space key to prevent collapse/expand
     if (e.key === ' ') {
       e.stopPropagation();
     }
@@ -98,6 +98,10 @@ const TaskListTableWrapper = ({
     };
     const res = await statusApiService.updateStatus(tableId, body, projectId);
     if (res.done) {
+      setCurrentCategory(categoryId); // Update local state immediately
+      dispatch(fetchTaskListColumns(projectId));
+      dispatch(fetchPhasesByProjectId(projectId));
+      dispatch(fetchTaskGroups(projectId));
       trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Status' });
       if (res.body.color_code) {
         dispatch(
@@ -148,9 +152,8 @@ const TaskListTableWrapper = ({
   };
 
   const handleCategoryChange = async (categoryId: string) => {
-    setCurrentCategory(categoryId);
     trackMixpanelEvent(evt_project_board_column_setting_click, { 'Change category': 'Status' });
-    await updateStatus(categoryId);
+    await updateStatus(categoryId); // Update backend and Redux store
   };
 
   const items: MenuProps['items'] = [
@@ -170,7 +173,7 @@ const TaskListTableWrapper = ({
           <Flex
             gap={8}
             onClick={() => status.id && handleCategoryChange(status.id)}
-            style={statusCategory === status.id ? { fontWeight: 700 } : {}}
+            style={currentCategory === status.id ? { fontWeight: 700 } : {}} // Use currentCategory here
           >
             <Badge color={status.color_code} />
             {status.name}
@@ -182,11 +185,8 @@ const TaskListTableWrapper = ({
 
   const isEditable = isOwnerOrAdmin || isProjectManager;
 
-  // Original JSX wrapped in a droppable div
   return (
-    <div
-      ref={setNodeRef} // Attach droppable ref here
-    >
+    <div ref={setNodeRef}>
       <ConfigProvider
         wave={{ disabled: true }}
         theme={{
@@ -211,7 +211,7 @@ const TaskListTableWrapper = ({
               icon={<RightOutlined rotate={isExpanded ? 90 : 0} />}
               onClick={handlToggleExpand}
             >
-              {(showRenameInput && name !== 'Unmapped' )? (
+              {(showRenameInput && name !== 'Unmapped') ? (
                 <Input
                   size="small"
                   value={tableName}
