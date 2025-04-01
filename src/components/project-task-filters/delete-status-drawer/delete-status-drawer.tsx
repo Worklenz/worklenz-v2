@@ -35,7 +35,7 @@ const DeleteStatusDrawer: React.FC = () => {
         state => state.deleteStatusReducer.isDeleteStatusDrawerOpen
     );
     const { isDeleteStatusDrawerOpen, status: selectedForDelete } = useSelector(
-        (state) => state.deleteStatusReducer // Adjust this based on how you named it in your root reducer
+        (state) => state.deleteStatusReducer
     );
     const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
     const { projectId } = useAppSelector(state => state.projectReducer);
