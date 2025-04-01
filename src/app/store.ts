@@ -23,6 +23,7 @@ import projectViewTaskListColumnsReducer from '@features/projects/singleProject/
 import phaseReducer from '@/features/projects/singleProject/phase/phases.slice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
+import deleteStatusReducer from '@features/projects/status/DeleteStatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
 import projectInsightsReducer from '@features/projects/insights/project-insights.slice';
 import taskListCustomColumnsReducer from '@features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
@@ -39,7 +40,7 @@ import taskReducer from '@features/tasks/tasks.slice';
 import createCardReducer from '@/features/board/create-card.slice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
-import taskStatusReducer from '@features/taskAttributes/taskStatusSlice';
+import taskStatusReducer, { deleteStatus } from '@features/taskAttributes/taskStatusSlice';
 import taskDrawerReducer from '@features/task-drawer/task-drawer.slice';
 
 // Settings & Management
@@ -106,6 +107,7 @@ export const store = configureStore({
     phaseReducer: phaseReducer,
     updatesReducer: updatesReducer,
     statusReducer: statusReducer,
+    deleteStatusReducer: deleteStatusReducer,
     bulkActionReducer: bulkActionReducer,
     projectInsightsReducer: projectInsightsReducer,
     taskListCustomColumnsReducer: taskListCustomColumnsReducer,

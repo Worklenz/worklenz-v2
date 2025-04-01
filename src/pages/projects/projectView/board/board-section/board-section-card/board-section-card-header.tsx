@@ -49,6 +49,8 @@ import { ALPHA_CHANNEL } from '@/shared/constants';
 import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
 import { update } from 'lodash';
 import logger from '@/utils/errorLogger';
+import { toggleDrawer } from '@/features/projects/status/StatusSlice';
+import { deleteStatusToggleDrawer, seletedStatusCategory } from '@/features/projects/status/DeleteStatusSlice';
 
 interface BoardSectionCardHeaderProps {
   groupId: string;
@@ -165,23 +167,26 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
 
   const handleDeleteSection = async () => {
     if (!projectId || !groupId) return;
-    try {
-      if (groupBy === IGroupBy.STATUS) {
-        const replacingStatusId = status?.[0]?.id;
-        if (!replacingStatusId) return;
-        const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
-        if (res.done) {
-          dispatch(deleteSection({ sectionId: groupId }));
-        }
-      } else if (groupBy === IGroupBy.PHASE) {
-        const res = await phasesApiService.deletePhaseOption(groupId, projectId);
-        if (res.done) {
-          dispatch(deleteSection({ sectionId: groupId }));
-        }
-      }
-    } catch (error) {
-      logger.error('Error deleting section', error);
-    }
+    dispatch(seletedStatusCategory({ id: groupId, name: name, category_id: categoryId ?? '' }));
+    dispatch(deleteStatusToggleDrawer());
+    
+    // try {
+    //   if (groupBy === IGroupBy.STATUS) {
+    //     const replacingStatusId = status?.[0]?.id;
+    //     if (!replacingStatusId) return;
+    //     const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
+    //     if (res.done) {
+    //       dispatch(deleteSection({ sectionId: groupId }));
+    //     }
+    //   } else if (groupBy === IGroupBy.PHASE) {
+    //     const res = await phasesApiService.deletePhaseOption(groupId, projectId);
+    //     if (res.done) {
+    //       dispatch(deleteSection({ sectionId: groupId }));
+    //     }
+    //   }
+    // } catch (error) {
+    //   logger.error('Error deleting section', error);
+    // }
   };
 
   const items: MenuProps['items'] = [
