@@ -54,7 +54,12 @@ const Navbar = () => {
   const navlinkItems = useMemo(
     () =>
       navRoutesList
-        .filter(route => !route.adminOnly || isOwnerOrAdmin)
+        .filter(route => {
+          if (!route.freePlanFeature && currentSession?.subscription_type === ISUBSCRIPTION_TYPE.FREE) return false;
+          if (route.adminOnly && !isOwnerOrAdmin) return false;       
+          
+          return true;
+        })
         .map((route, index) => ({
           key: route.path.split('/').pop() || index,
           label: (
@@ -63,7 +68,7 @@ const Navbar = () => {
             </Link>
           ),
         })),
-    [navRoutesList, t, isOwnerOrAdmin]
+    [navRoutesList, t, isOwnerOrAdmin, currentSession?.subscription_type]
   );
 
   useEffect(() => {
