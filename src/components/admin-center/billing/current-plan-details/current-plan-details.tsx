@@ -140,24 +140,37 @@ const CurrentPlanDetails = () => {
     );
   };
 
-  const calculateMonthDays = (startDate: string, endDate: string): string => {
-    const start: Date = new Date(startDate);
-    const end: Date = new Date(endDate);
-  
-    const diffInMilliseconds: number = Math.abs(end.getTime() - start.getTime());
-    const days: number = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
-    const months: number = Math.floor(days / 30);
-    const remainingDays: number = days % 30;
-  
-    return `${months} ${months > 1 ? "months" : "month"} ${remainingDays} ${remainingDays !== 1 ? "days" : "day"}`;
-  }
-
   const renderTrialDetails = () => {
     const checkIfTrialExpired = () => {
       if (!billingInfo?.trial_expire_date) return false;
       const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set to start of day for comparison
       const trialExpireDate = new Date(billingInfo.trial_expire_date);
+      trialExpireDate.setHours(0, 0, 0, 0); // Set to start of day for comparison
       return today > trialExpireDate;
+    };
+
+    const getExpirationMessage = (expireDate: string) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set to start of day for comparison
+      
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const expDate = new Date(expireDate);
+      expDate.setHours(0, 0, 0, 0); // Set to start of day for comparison
+      
+      if (expDate.getTime() === today.getTime()) {
+        return t('expirestoday', 'today');
+      } else if (expDate.getTime() === tomorrow.getTime()) {
+        return t('expirestomorrow', 'tomorrow');
+      } else if (expDate < today) {
+        const diffTime = Math.abs(today.getTime() - expDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return t('expiredDaysAgo', '{{days}} days ago', { days: diffDays });
+      } else {
+        return calculateTimeGap(expireDate);
+      }
     };
 
     const isExpired = checkIfTrialExpired();
@@ -171,9 +184,14 @@ const CurrentPlanDetails = () => {
         </Typography.Text>
         <Tooltip title={formatDate(new Date(trialExpireDate))}>
           <Typography.Text>
-            {t(isExpired ? 'trialExpired' : 'trialInProgress', {
-              trial_expire_string: calculateTimeGap(trialExpireDate),
-            })}
+            {isExpired 
+              ? t('trialExpired', {
+                  trial_expire_string: getExpirationMessage(trialExpireDate)
+                })
+              : t('trialInProgress', {
+                  trial_expire_string: getExpirationMessage(trialExpireDate)
+                })
+            }
           </Typography.Text>
         </Tooltip>
       </Flex>
