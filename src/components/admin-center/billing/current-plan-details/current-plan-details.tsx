@@ -241,7 +241,7 @@ const CurrentPlanDetails = () => {
       <Typography.Text strong>Custom Plan</Typography.Text>
       <Typography.Text>Your plan is valid till {billingInfo?.valid_till_date}</Typography.Text>
     </Flex>
-  };
+  }; 
 
   return (
     <Card

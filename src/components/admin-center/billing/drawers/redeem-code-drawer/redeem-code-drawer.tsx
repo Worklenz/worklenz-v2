@@ -5,6 +5,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   fetchBillingInfo,
+  fetchStorageInfo,
   toggleRedeemCodeDrawer,
 } from '@features/admin-center/admin-center.slice';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
@@ -36,6 +37,7 @@ const RedeemCodeDrawer: React.FC = () => {
         }
         dispatch(toggleRedeemCodeDrawer());
         dispatch(fetchBillingInfo());
+        dispatch(fetchStorageInfo());
       }
     } catch (error) {
       logger.error('Error redeeming code', error);
