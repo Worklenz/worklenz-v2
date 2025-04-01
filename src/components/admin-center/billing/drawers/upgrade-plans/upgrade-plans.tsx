@@ -15,6 +15,9 @@ import { useAuthService } from '@/hooks/useAuth';
 import { fetchBillingInfo, toggleUpgradeModal } from '@/features/admin-center/admin-center.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { billingApiService } from '@/api/admin-center/billing.api.service';
+import { authApiService } from '@/api/auth/auth.api.service';
+import { setUser } from '@/features/user/userSlice';
+import { setSession } from '@/utils/session-helper';
 
 declare const Paddle: any;
 
@@ -73,6 +76,12 @@ const UpgradePlans = () => {
       if (res.done) {
         dispatch(fetchBillingInfo());
         dispatch(toggleUpgradeModal());
+        const authorizeResponse = await authApiService.verify();
+        if (authorizeResponse.authenticated) {
+          setSession(authorizeResponse.user);
+          dispatch(setUser(authorizeResponse.user));
+          window.location.href = '/worklenz/admin-center/billing';
+        }
       }
     } catch (error) {
       logger.error('Error switching to free plan', error);
