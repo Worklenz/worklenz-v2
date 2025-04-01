@@ -45,12 +45,20 @@ const mainRoutes: RouteObject[] = [
         path: `settings/project-templates/edit/:templateId/:templateName`,
         element: <ProjectTemplateEditView />,
       },
-      { path: 'license-expired', element: <LicenseExpired /> },
       { path: 'unauthorized', element: <Unauthorized /> },
       ...settingsRoutes,
       ...adminCenterRoutes,
     ],
   },
 ];
+
+// License expired route should be separate to avoid being wrapped in LicenseExpiryGuard
+export const licenseExpiredRoute: RouteObject = {
+  path: '/worklenz',
+  element: <MainLayout />,
+  children: [
+    { path: 'license-expired', element: <LicenseExpired /> }
+  ]
+};
 
 export default mainRoutes;

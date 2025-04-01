@@ -98,5 +98,9 @@
 
   "perMonthPerUser": "per user/month",
   "viewInvoice": "View Invoice",
-  "switchToFreePlan": "Switch to Free Plan"
+  "switchToFreePlan": "Switch to Free Plan",
+  
+  "expirestoday": "today",
+  "expirestomorrow": "tomorrow",
+  "expiredDaysAgo": "{{days}} days ago"
 }

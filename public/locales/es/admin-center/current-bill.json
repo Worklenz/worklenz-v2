@@ -97,5 +97,9 @@
 
   "perMonthPerUser": "por usuario / mes",
   "viewInvoice": "Ver Factura",
-  "switchToFreePlan": "Cambiar al Plan Gratuito"
+  "switchToFreePlan": "Cambiar a Plan Gratuito",
+  
+  "expirestoday": "hoy",
+  "expirestomorrow": "mañana",
+  "expiredDaysAgo": "hace {{days}} días"
 }

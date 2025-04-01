@@ -11,6 +11,9 @@ import { toggleUpgradeModal, fetchBillingInfo } from '@features/admin-center/adm
 import { useAuthService } from '@/hooks/useAuth';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import logger from '@/utils/errorLogger';
+import { setSession } from '@/utils/session-helper';
+import { authApiService } from '@/api/auth/auth.api.service';
+import { setUser } from '@/features/user/userSlice';
 
 const UpgradePlansLKR: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -129,6 +132,12 @@ const UpgradePlansLKR: React.FC = () => {
       if (res.done) {
         dispatch(fetchBillingInfo());
         dispatch(toggleUpgradeModal());
+        const authorizeResponse = await authApiService.verify();
+        if (authorizeResponse.authenticated) {
+          setSession(authorizeResponse.user);
+          dispatch(setUser(authorizeResponse.user));
+          window.location.href = '/worklenz/admin-center/billing';
+        }
       }
     } catch (error) {
       logger.error('Error switching to free plan', error);
@@ -152,23 +161,19 @@ const UpgradePlansLKR: React.FC = () => {
       )}
 
       <Row>
-        {renderPlanCard(
-          1,
-          t('freePlan'),
-          0.0,
-          t('freeSubtitle'),
-          t('freeUsers'),
-          ['freeText01', 'freeText02', 'freeText03']
-        )}
+        {renderPlanCard(1, t('freePlan'), 0.0, t('freeSubtitle'), t('freeUsers'), [
+          'freeText01',
+          'freeText02',
+          'freeText03',
+        ])}
 
-        {renderPlanCard(
-          2,
-          t('startup'),
-          4990,
-          t('startupSubtitle'),
-          t('startupUsers'),
-          ['startupText01', 'startupText02', 'startupText03', 'startupText04', 'startupText05']
-        )}
+        {renderPlanCard(2, t('startup'), 4990, t('startupSubtitle'), t('startupUsers'), [
+          'startupText01',
+          'startupText02',
+          'startupText03',
+          'startupText04',
+          'startupText05',
+        ])}
 
         {renderPlanCard(
           3,
@@ -180,23 +185,18 @@ const UpgradePlansLKR: React.FC = () => {
           t('tag')
         )}
 
-        {renderPlanCard(
-          4,
-          t('enterprise'),
-          250,
-          t('businessSubtitle'),
-          t('enterpriseUsers'),
-          ['startupText01', 'startupText02', 'startupText03', 'startupText04', 'startupText05']
-        )}
+        {renderPlanCard(4, t('enterprise'), 250, t('businessSubtitle'), t('enterpriseUsers'), [
+          'startupText01',
+          'startupText02',
+          'startupText03',
+          'startupText04',
+          'startupText05',
+        ])}
       </Row>
 
       {selectedPlan === 1 ? (
         <Row justify="center" style={{ marginTop: '1.5rem' }}>
-          <Button 
-            type="primary" 
-            loading={switchingToFreePlan}
-            onClick={switchToFreePlan}
-          >
+          <Button type="primary" loading={switchingToFreePlan} onClick={switchToFreePlan}>
             {t('switchToFreePlan')}
           </Button>
         </Row>
@@ -217,12 +217,7 @@ const UpgradePlansLKR: React.FC = () => {
                 label={t('footerLabel')}
                 rules={[{ required: true }]}
               >
-                <Input
-                  type="number"
-                  placeholder="07xxxxxxxx"
-                  maxLength={10}
-                  minLength={10}
-                />
+                <Input type="number" placeholder="07xxxxxxxx" maxLength={10} minLength={10} />
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit">
