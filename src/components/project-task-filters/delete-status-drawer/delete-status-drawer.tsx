@@ -3,22 +3,18 @@ import { useTranslation } from 'react-i18next';
 import Form from 'antd/es/form';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleDrawer } from '@/features/projects/status/StatusSlice';
-import { createStatus, fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
+import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
-import { evt_project_board_create_status } from '@/shared/worklenz-analytics-events';
 import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
 import { fetchBoardTaskGroups } from '@/features/board/board-slice';
-import { deleteStatusToggleDrawer, seletedStatusCategory } from '@/features/projects/status/DeleteStatusSlice';
+import { deleteStatusToggleDrawer } from '@/features/projects/status/DeleteStatusSlice';
 import { Drawer, Alert, Card, Select, Button, Typography, Badge } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import {
   deleteSection,
   IGroupBy,
-  setBoardGroupName,
-  setEditableSection,
 } from '@features/board/board-slice';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
 import { phasesApiService } from '@/api/taskAttributes/phases/phases.api.service';
