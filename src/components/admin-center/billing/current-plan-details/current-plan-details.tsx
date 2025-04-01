@@ -236,6 +236,13 @@ const CurrentPlanDetails = () => {
     </Flex>
   };  
 
+  const renderCustomSubscriptionInfo = () => {
+    return <Flex vertical>
+      <Typography.Text strong>Custom Plan</Typography.Text>
+      <Typography.Text>Your plan is valid till {billingInfo?.valid_till_date}</Typography.Text>
+    </Flex>
+  };
+
   return (
     <Card
       style={{ height: '100%' }}
@@ -261,6 +268,7 @@ const CurrentPlanDetails = () => {
           {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.FREE && renderFreePlan()}
           {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.PADDLE && renderPaddleSubscriptionInfo()}
           {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.CREDIT && renderCreditSubscriptionInfo()}
+          {billingInfo?.subscription_type === ISUBSCRIPTION_TYPE.CUSTOM && renderCustomSubscriptionInfo()}
         </div>
 
         {shouldShowRedeemButton() && (
