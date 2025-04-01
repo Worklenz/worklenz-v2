@@ -86,7 +86,17 @@ const SignupPage = () => {
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      if (script && script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+      
+      const recaptchaElements = document.getElementsByClassName('grecaptcha-badge');
+      while (recaptchaElements.length > 0) {
+        const element = recaptchaElements[0];
+        if (element.parentNode) {
+          element.parentNode.removeChild(element);
+        }
+      }
     };
   }, []);
 

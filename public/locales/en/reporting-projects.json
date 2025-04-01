@@ -41,11 +41,12 @@
   "dayLeftText": "day left",
   "daysOverdueText": "days overdue",
 
-  "notSetText": "NotSet",
+  "notSetText": "Not Set",
   "needsAttentionText": "Needs Attention",
   "atRiskText": "At Risk",
   "goodText": "Good",
 
   "setCategoryText": "Set Category",
-  "searchByNameInputPlaceholder": "Search by name"
+  "searchByNameInputPlaceholder": "Search by name",
+  "todayText": "Today"
 }

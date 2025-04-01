@@ -18,6 +18,8 @@ import { fetchBillingInfo, fetchFreePlanSettings } from '@/features/admin-center
 import RedeemCodeDrawer from './drawers/redeem-code-drawer/redeem-code-drawer';
 import CurrentPlanDetails from './current-plan-details/current-plan-details';
 import AccountStorage from './account-storage/account-storage';
+import { useAuthService } from '@/hooks/useAuth';
+import { ISUBSCRIPTION_TYPE } from '@/shared/constants';
 
 const CurrentBill: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +28,7 @@ const CurrentBill: React.FC = () => {
   const { isUpgradeModalOpen } = useAppSelector(state => state.adminCenterReducer);
   const isTablet = useMediaQuery({ query: '(min-width: 1025px)' });
   const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const currentSession = useAuthService().getCurrentSession();
 
   useEffect(() => {
     dispatch(fetchBillingInfo());
@@ -130,7 +133,7 @@ const CurrentBill: React.FC = () => {
       ) : (
         renderMobileView()
       )}
-      {renderChargesAndInvoices()}
+      {currentSession?.subscription_type === ISUBSCRIPTION_TYPE.PADDLE && renderChargesAndInvoices()}
     </div>
   );
 };

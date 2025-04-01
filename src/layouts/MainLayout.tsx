@@ -1,6 +1,6 @@
 import { Col, ConfigProvider, Layout } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
-import Navbar from '../features/navbar/Navbar';
+import Navbar from '../features/navbar/navbar';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { useMediaQuery } from 'react-responsive';
 import { colors } from '../styles/colors';

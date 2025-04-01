@@ -9,6 +9,7 @@ import { useAuthService } from '@/hooks/useAuth';
 import { AuthenticatedLayout } from '@/layouts/AuthenticatedLayout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import NotFoundPage from '@/pages/404-page/404-page';
+import { ISUBSCRIPTION_TYPE } from '@/shared/constants';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -28,13 +29,15 @@ export const AuthGuard = ({ children }: GuardProps) => {
 export const AdminGuard = ({ children }: GuardProps) => {
   const isAuthenticated = useAuthService().isAuthenticated();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+  const currentSession = useAuthService().getCurrentSession();
+  const isFreePlan = currentSession?.subscription_type === ISUBSCRIPTION_TYPE.FREE;
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  if (!isOwnerOrAdmin) {
+  if (!isOwnerOrAdmin || isFreePlan) {
     return <Navigate to="/worklenz/unauthorized" replace />;
   }
 

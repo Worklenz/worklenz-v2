@@ -7,7 +7,10 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { timeZoneCurrencyMap } from '@/utils/timeZoneCurrencyMap';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { toggleUpgradeModal } from '@features/admin-center/admin-center.slice';
+import { toggleUpgradeModal, fetchBillingInfo } from '@features/admin-center/admin-center.slice';
+import { useAuthService } from '@/hooks/useAuth';
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import logger from '@/utils/errorLogger';
 
 const UpgradePlansLKR: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +19,8 @@ const UpgradePlansLKR: React.FC = () => {
   const { t } = useTranslation('admin-center/current-bill');
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const userCurrency = timeZoneCurrencyMap[userTimeZone] || 'USD';
+  const [switchingToFreePlan, setSwitchingToFreePlan] = useState(false);
+  const currentSession = useAuthService().getCurrentSession();
 
   const cardStyles = {
     title: {
@@ -114,17 +119,37 @@ const UpgradePlansLKR: React.FC = () => {
     </Col>
   );
 
+  const switchToFreePlan = async () => {
+    const teamId = currentSession?.team_id;
+    if (!teamId) return;
+
+    try {
+      setSwitchingToFreePlan(true);
+      const res = await adminCenterApiService.switchToFreePlan(teamId);
+      if (res.done) {
+        dispatch(fetchBillingInfo());
+        dispatch(toggleUpgradeModal());
+      }
+    } catch (error) {
+      logger.error('Error switching to free plan', error);
+    } finally {
+      setSwitchingToFreePlan(false);
+    }
+  };
+
   return (
     <div className="upgrade-plans" style={{ marginTop: '1.5rem', textAlign: 'center' }}>
       <Typography.Title level={2}>{t('modalTitle')}</Typography.Title>
 
-      <Row justify="center">
-        <Form initialValues={{ seats: 15 }} onValuesChange={handleSeatsChange}>
-          <Form.Item name="seats" label={t('seatLabel')}>
-            <Input type="number" min={15} step={5} />
-          </Form.Item>
-        </Form>
-      </Row>
+      {selectedPlan !== 1 && (
+        <Row justify="center">
+          <Form initialValues={{ seats: 15 }} onValuesChange={handleSeatsChange}>
+            <Form.Item name="seats" label={t('seatLabel')}>
+              <Input type="number" min={15} step={5} />
+            </Form.Item>
+          </Form>
+        </Row>
+      )}
 
       <Row>
         {renderPlanCard(
@@ -165,38 +190,49 @@ const UpgradePlansLKR: React.FC = () => {
         )}
       </Row>
 
-      <div
-        style={{
-          backgroundColor: themeMode === 'dark' ? '#141414' : '#e2e3e5',
-          padding: '1rem',
-          marginTop: '1.5rem',
-        }}
-      >
-        <Typography.Title level={4}>{t('footerTitle')}</Typography.Title>
-
-        <Form onFinish={handleSubmit}>
-          <Row justify="center" style={{ height: '32px' }}>
-            <Form.Item
-              style={{ margin: '0 24px 0 0' }}
-              name="contactNumber"
-              label={t('footerLabel')}
-              rules={[{ required: true }]}
-            >
-              <Input
-                type="number"
-                placeholder="07xxxxxxxx"
-                maxLength={10}
-                minLength={10}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                {t('footerButton')}
-              </Button>
-            </Form.Item>
-          </Row>
-        </Form>
-      </div>
+      {selectedPlan === 1 ? (
+        <Row justify="center" style={{ marginTop: '1.5rem' }}>
+          <Button 
+            type="primary" 
+            loading={switchingToFreePlan}
+            onClick={switchToFreePlan}
+          >
+            {t('switchToFreePlan')}
+          </Button>
+        </Row>
+      ) : (
+        <div
+          style={{
+            backgroundColor: themeMode === 'dark' ? '#141414' : '#e2e3e5',
+            padding: '1rem',
+            marginTop: '1.5rem',
+          }}
+        >
+          <Typography.Title level={4}>{t('footerTitle')}</Typography.Title>
+          <Form onFinish={handleSubmit}>
+            <Row justify="center" style={{ height: '32px' }}>
+              <Form.Item
+                style={{ margin: '0 24px 0 0' }}
+                name="contactNumber"
+                label={t('footerLabel')}
+                rules={[{ required: true }]}
+              >
+                <Input
+                  type="number"
+                  placeholder="07xxxxxxxx"
+                  maxLength={10}
+                  minLength={10}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  {t('footerButton')}
+                </Button>
+              </Form.Item>
+            </Row>
+          </Form>
+        </div>
+      )}
     </div>
   );
 };
