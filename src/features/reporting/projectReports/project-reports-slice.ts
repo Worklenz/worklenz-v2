@@ -114,13 +114,7 @@ const projectReportsSlice = createSlice({
       state.selectedProjectStatuses = action.payload;
     },
     setSelectedProjectHealths: (state, action) => {
-      const health = action.payload;
-      const index = state.selectedProjectHealths.findIndex(h => h.id === health.id);
-      if (index >= 0) {
-        state.selectedProjectHealths.splice(index, 1);
-      } else {
-        state.selectedProjectHealths.push(health);
-      }
+      state.selectedProjectHealths = action.payload;
     },
     setSelectedProjectCategories: (state, action) => {
       const category = action.payload;
