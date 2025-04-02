@@ -220,10 +220,13 @@ const TasksList: React.FC = React.memo(() => {
           dataSource={data?.body.tasks}
           rowKey={record => record.id || ''}
           columns={columns as TableProps<IMyTask>['columns']}
-          pagination={false}
           size="middle"
           rowClassName={() => 'custom-row-height'}
           loading={homeTasksFetching}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+          }}
         />
       )}
     </Card>
