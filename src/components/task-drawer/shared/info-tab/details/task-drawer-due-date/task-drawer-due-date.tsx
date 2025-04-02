@@ -96,7 +96,7 @@ const TaskDrawerDueDate = ({ task, t, form }: TaskDrawerDueDateProps) => {
   };
 
   return (
-    <Form.Item name="dueDate" label="Due Date">
+    <Form.Item name="dueDate" label={t('taskInfoTab.details.due-date')}>
       <Flex align="center" gap={8}>
         {isShowStartDate && (
           <>
