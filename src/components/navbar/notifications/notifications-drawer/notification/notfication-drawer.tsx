@@ -23,7 +23,11 @@ import { INotificationSettings } from '@/types/settings/notifications.types';
 import { toQueryString } from '@/utils/toQueryString';
 import { showNotification } from './push-notification-template';
 import { teamsApiService } from '@/api/teams/teams.api.service';
-
+import { verifyAuthentication } from '@/features/auth/authSlice';
+import { getUserSession } from '@/utils/session-helper';
+import { setUser } from '@/features/user/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { createAuthService } from '@/services/auth/auth.service';
 const HTML_TAG_REGEXP = /<[^>]*>/g;
 
 const NotificationDrawer = () => {
@@ -42,6 +46,9 @@ const NotificationDrawer = () => {
   const isPushEnabled = () => {
     return notificationsSettings.popup_notifications_enabled && showBrowserPush;
   };
+
+  const navigate = useNavigate();
+  const authService = createAuthService(navigate);
 
   const createPush = (message: string, title: string, teamId: string | null, url?: string) => {
     if (Notification.permission === 'granted' && showBrowserPush) {
@@ -135,6 +142,37 @@ const NotificationDrawer = () => {
     if (res.done) {
       dispatch(fetchNotifications(notificationType));
       dispatch(fetchInvitations());
+    }
+  };
+  const handleVerifyAuth = async () => {
+    const result = await dispatch(verifyAuthentication()).unwrap();
+    if (result.authenticated) {
+      dispatch(setUser(result.user));
+      authService.setCurrentSession(result.user);
+    }
+  };
+
+  const goToUrl = async (event: React.MouseEvent, notification: IWorklenzNotification) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (notification.url) {
+      dispatch(toggleDrawer());
+      setIsLoading(true);
+      try {
+        const currentSession = getUserSession();
+        if (currentSession?.team_id && notification.team_id !== currentSession.team_id) {
+          await handleVerifyAuth();
+        }
+        if (notification.project && notification.task_id) {
+          navigate(`${notification.url}${toQueryString({task: notification.params?.task, tab: notification.params?.tab})}`);
+        }
+
+      } catch (error) {
+        console.error('Error navigating to URL:', error);
+      } finally {
+        setIsLoading(false);
+      }
+
     }
   };
 
@@ -242,6 +280,7 @@ const NotificationDrawer = () => {
               notification={notification}
               isUnreadNotifications={notificationType === NOTIFICATION_OPTION_UNREAD}
               markNotificationAsRead={id => Promise.resolve(markNotificationAsRead(id))}
+              goToUrl={goToUrl}
             />
           ))}
         </div>
