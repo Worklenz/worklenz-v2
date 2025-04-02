@@ -23,6 +23,7 @@ import { formatDate } from '@/utils/timeUtils';
 import UpgradePlansLKR from '../drawers/upgrade-plans-lkr/upgrade-plans-lkr';
 import UpgradePlans from '../drawers/upgrade-plans/upgrade-plans';
 import { ISUBSCRIPTION_TYPE, SUBSCRIPTION_STATUS } from '@/shared/constants';
+import { billingApiService } from '@/api/admin-center/billing.api.service';
 
 const CurrentPlanDetails = () => {
   const dispatch = useAppDispatch();
@@ -82,7 +83,7 @@ const CurrentPlanDetails = () => {
     try {
       setAddingSeats(true);
       const totalSeats = Number(selectedSeatCount) + (billingInfo?.total_seats || 0);
-      const res = await adminCenterApiService.addMoreSeats(totalSeats);
+      const res = await billingApiService.purchaseMoreSeats(totalSeats);
       if (res.done) {
         setIsMoreSeatsModalVisible(false);
         dispatch(fetchBillingInfo());

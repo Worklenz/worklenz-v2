@@ -11,6 +11,7 @@ import {
   TableProps,
   Tooltip,
   Typography,
+  Pagination,
 } from 'antd';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +41,9 @@ const TasksList: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
 
   const [viewOptions, setViewOptions] = useState<'List' | 'Calendar'>('List');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
+  const [isPaginationChange, setIsPaginationChange] = useState<boolean>(false);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
@@ -48,7 +52,9 @@ const TasksList: React.FC = React.memo(() => {
     isFetching: homeTasksFetching,
     refetch,
     isLoading,
-  } = useGetMyTasksQuery(homeTasksConfig);
+  } = useGetMyTasksQuery(homeTasksConfig, {
+    skip: isPaginationChange
+  });
 
   const { t } = useTranslation('home');
   const { model } = useAppSelector(state => state.homePageReducer);
@@ -159,6 +165,16 @@ const TasksList: React.FC = React.memo(() => {
     dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: value }));
   };
 
+  const handlePageChange = (page: number) => {
+    setIsPaginationChange(true);
+    setCurrentPage(page);
+    
+    // Restore normal data fetching after pagination change
+    setTimeout(() => {
+      setIsPaginationChange(false);
+    }, 100);
+  };
+
   return (
     <Card
       title={
@@ -215,19 +231,28 @@ const TasksList: React.FC = React.memo(() => {
           text=" No tasks to show."
         />
       ) : (
-        <Table
-          className="custom-two-colors-row-table"
-          dataSource={data?.body.tasks}
-          rowKey={record => record.id || ''}
-          columns={columns as TableProps<IMyTask>['columns']}
-          size="middle"
-          rowClassName={() => 'custom-row-height'}
-          loading={homeTasksFetching}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: false,
-          }}
-        />
+        <>
+          <Table
+            className="custom-two-colors-row-table"
+            dataSource={data?.body.tasks ? data.body.tasks.slice((currentPage - 1) * pageSize, currentPage * pageSize) : []}
+            rowKey={record => record.id || ''}
+            columns={columns as TableProps<IMyTask>['columns']}
+            size="middle"
+            rowClassName={() => 'custom-row-height'}
+            loading={homeTasksFetching && !isPaginationChange}
+            pagination={false}
+          />
+          
+          <div style={{ marginTop: 16, textAlign: 'right', display: 'flex', justifyContent: 'flex-end' }}>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={data?.body.total || 0}
+              onChange={handlePageChange}
+              showSizeChanger={false}
+            />
+          </div>
+        </>
       )}
     </Card>
   );
