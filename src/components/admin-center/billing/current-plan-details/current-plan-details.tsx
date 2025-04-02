@@ -7,7 +7,7 @@ import {
 } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import logger from '@/utils/errorLogger';
-import { Button, Card, Flex, Modal, Space, Tooltip, Typography, Statistic, Select, Form } from 'antd/es';
+import { Button, Card, Flex, Modal, Space, Tooltip, Typography, Statistic, Select, Form, Row, Col } from 'antd/es';
 import RedeemCodeDrawer from '../drawers/redeem-code-drawer/redeem-code-drawer';
 import {
   fetchBillingInfo,
@@ -122,6 +122,12 @@ const CurrentPlanDetails = () => {
 
   const showResumePlanButton = () => {
     return checkSubscriptionStatus([SUBSCRIPTION_STATUS.PAUSED]);
+  };
+
+  const shouldShowAddSeats = () => {
+    if (!billingInfo) return false;
+    return billingInfo.subscription_type === ISUBSCRIPTION_TYPE.PADDLE && 
+           billingInfo.status === SUBSCRIPTION_STATUS.ACTIVE;
   };
 
   const renderExtra = () => {
@@ -265,20 +271,36 @@ const CurrentPlanDetails = () => {
             &nbsp;{t('perMonthPerUser')}
           </Typography.Text>
         </Flex>
-        {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE && billingInfo?.total_seats && (
-          <Flex gap="middle" align="center" style={{ marginTop: '16px' }}>
-            <Statistic title={t('totalSeats')} value={billingInfo.total_seats} />
-            <Button 
-              type="primary" 
-              size="small" 
-              icon={<PlusOutlined />} 
-              loading={addingSeats}
-              onClick={handleAddMoreSeats}
-            >
-              {t('addMoreSeats')}
-            </Button>
-            <Statistic title={t('availableSeats')} value={calculateRemainingSeats()} />
-          </Flex>
+        
+        {shouldShowAddSeats() && billingInfo?.total_seats && (
+          <div style={{ marginTop: '16px' }}>
+            <Row gutter={16} align="middle">
+              <Col span={6}>
+                <Statistic 
+                  title={t('totalSeats')} 
+                  value={billingInfo.total_seats} 
+                  valueStyle={{ fontSize: '24px', fontWeight: 'bold' }}
+                />
+              </Col>
+              <Col span={8}>
+                <Button 
+                  type="primary" 
+                  icon={<PlusOutlined />} 
+                  onClick={handleAddMoreSeats}
+                  style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}
+                >
+                  {t('addMoreSeats')}
+                </Button>
+              </Col>
+              <Col span={6}>
+                <Statistic 
+                  title={t('availableSeats')} 
+                  value={calculateRemainingSeats()} 
+                  valueStyle={{ fontSize: '24px', fontWeight: 'bold' }}
+                />
+              </Col>
+            </Row>
+          </div>
         )}
       </Flex>
     );
@@ -354,28 +376,31 @@ const CurrentPlanDetails = () => {
           onCancel={() => setIsMoreSeatsModalVisible(false)}
           footer={null}
           width={500}
+          centered
         >
-          <Flex vertical gap="middle">
-            <Typography.Title level={4}>
+          <Flex vertical gap="middle" style={{ marginTop: '8px' }}>
+            <Typography.Paragraph style={{ fontSize: '16px', margin: '0 0 16px 0', fontWeight: 500 }}>
               To continue, you'll need to purchase additional seats.
-            </Typography.Title>
-            <Typography.Paragraph>
-              You currently have <Typography.Text strong>{billingInfo?.total_seats}</Typography.Text> seats available.
             </Typography.Paragraph>
-            <Typography.Paragraph>
+            
+            <Typography.Paragraph style={{ margin: '0 0 16px 0' }}>
+              You currently have {billingInfo?.total_seats} seats available.
+            </Typography.Paragraph>
+            
+            <Typography.Paragraph style={{ margin: '0 0 24px 0' }}>
               Please select the number of additional seats to purchase.
             </Typography.Paragraph>
             
-            <Form layout="horizontal" labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
-              <Form.Item label="Seats" required>
-                <Select
-                  value={selectedSeatCount}
-                  onChange={setSelectedSeatCount}
-                  options={seatCountOptions}
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-            </Form>
+            <div style={{ marginBottom: '24px' }}>
+              <span style={{ color: '#ff4d4f', marginRight: '4px' }}>*</span>
+              <span style={{ marginRight: '8px' }}>Seats:</span>
+              <Select
+                value={selectedSeatCount}
+                onChange={setSelectedSeatCount}
+                options={seatCountOptions}
+                style={{ width: '300px' }}
+              />
+            </div>
             
             <Flex justify="end">
               {selectedSeatCount.toString() !== '100+' ? (
@@ -383,13 +408,19 @@ const CurrentPlanDetails = () => {
                   type="primary" 
                   loading={addingSeats}
                   onClick={handlePurchaseMoreSeats}
+                  style={{ 
+                    minWidth: '100px', 
+                    backgroundColor: '#1890ff',
+                    borderColor: '#1890ff',
+                    borderRadius: '2px'
+                  }}
                 >
                   Purchase
                 </Button>
               ) : (
                 <Button 
                   type="primary" 
-                  size="large"
+                  size="middle"
                 >
                   Contact sales
                 </Button>
