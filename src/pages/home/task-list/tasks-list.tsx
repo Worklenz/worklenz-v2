@@ -43,17 +43,20 @@ const TasksList: React.FC = React.memo(() => {
   const [viewOptions, setViewOptions] = useState<'List' | 'Calendar'>('List');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize] = useState<number>(10);
-  const [isPaginationChange, setIsPaginationChange] = useState<boolean>(false);
+  const [skipAutoRefetch, setSkipAutoRefetch] = useState<boolean>(false);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
   const {
     data,
     isFetching: homeTasksFetching,
-    refetch,
+    refetch: originalRefetch,
     isLoading,
   } = useGetMyTasksQuery(homeTasksConfig, {
-    skip: isPaginationChange
+    skip: skipAutoRefetch,
+    refetchOnMountOrArgChange: false,
+    refetchOnReconnect: false,
+    refetchOnFocus: false
   });
 
   const { t } = useTranslation('home');
@@ -165,14 +168,14 @@ const TasksList: React.FC = React.memo(() => {
     dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: value }));
   };
 
+  const refetch = useCallback(() => {
+    setSkipAutoRefetch(false);
+    originalRefetch();
+  }, [originalRefetch]);
+
   const handlePageChange = (page: number) => {
-    setIsPaginationChange(true);
+    setSkipAutoRefetch(true);
     setCurrentPage(page);
-    
-    // Restore normal data fetching after pagination change
-    setTimeout(() => {
-      setIsPaginationChange(false);
-    }, 100);
   };
 
   return (
@@ -239,7 +242,7 @@ const TasksList: React.FC = React.memo(() => {
             columns={columns as TableProps<IMyTask>['columns']}
             size="middle"
             rowClassName={() => 'custom-row-height'}
-            loading={homeTasksFetching && !isPaginationChange}
+            loading={homeTasksFetching && !skipAutoRefetch}
             pagination={false}
           />
           
