@@ -77,9 +77,10 @@ const TasksList: React.FC = React.memo(() => {
   );
 
   const handleSegmentChange = (value: 'List' | 'Calendar') => {
+    setSkipAutoRefetch(false);
     setViewOptions(value);
     dispatch(setHomeTasksConfig({ ...homeTasksConfig, is_calendar_view: value === 'Calendar' }));
-    refetch();
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -96,16 +97,35 @@ const TasksList: React.FC = React.memo(() => {
     dispatch(setHomeTasksConfig({ ...homeTasksConfig, selected_task_id: task.id || '' }));
   }, [dispatch, setSelectedTaskId, setShowTaskDrawer, fetchTask, homeTasksConfig]);
 
+  const refetch = useCallback(() => {
+    setSkipAutoRefetch(false);
+    originalRefetch();
+  }, [originalRefetch]);
+
+  const handlePageChange = (page: number) => {
+    setSkipAutoRefetch(true);
+    setCurrentPage(page);
+  };
+
   const columns: TableProps<IMyTask>['columns'] = useMemo(
     () => [
       {
         key: 'name',
-        title: t('tasks.name'),
+        title: (
+          <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+            <span>{t('tasks.name')}</span>
+          </Flex>
+        ),
         width: '400px',
         render: (_, record) => (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Tooltip title={record.name}>
-              <Typography.Text>{record.name}</Typography.Text>
+              <Typography.Text
+                ellipsis={{ tooltip: true }}
+                style={{ maxWidth: 300 }}
+              >
+                {record.name}
+              </Typography.Text>
             </Tooltip>
             <div className="row-action-button">
               <Tooltip title={'Click open task form'}>
@@ -161,22 +181,28 @@ const TasksList: React.FC = React.memo(() => {
         ),
       },
     ],
-    [t]
+    [t, data?.body?.total, currentPage, pageSize, handlePageChange]
   );
 
   const handleTaskModeChange = (value: number) => {
-    dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: value }));
-  };
-
-  const refetch = useCallback(() => {
     setSkipAutoRefetch(false);
-    originalRefetch();
-  }, [originalRefetch]);
-
-  const handlePageChange = (page: number) => {
-    setSkipAutoRefetch(true);
-    setCurrentPage(page);
+    dispatch(setHomeTasksConfig({ ...homeTasksConfig, tasks_group_by: value }));
+    setCurrentPage(1);
   };
+
+  // Add effect to handle task config changes
+  useEffect(() => {
+    // Only refetch if we're not skipping auto refetch
+    if (!skipAutoRefetch) {
+      originalRefetch();
+    }
+  }, [homeTasksConfig, skipAutoRefetch, originalRefetch]);
+
+  useEffect(() => {
+    dispatch(fetchLabels());
+    dispatch(fetchPriorities());
+    dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
+  }, [dispatch]);
 
   return (
     <Card
