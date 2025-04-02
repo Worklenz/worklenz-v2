@@ -8,7 +8,7 @@ import InviteTeamMembers from '../../components/common/invite-team-members/invit
 import HelpButton from './help/HelpButton';
 import InviteButton from './invite/InviteButton';
 import MobileMenuButton from './mobileMenu/MobileMenuButton';
-import NavbarLogo from './NavbarLogo';
+import NavbarLogo from './navbar-logo';
 import NotificationButton from '../../components/navbar/notifications/notifications-drawer/notification/notification-button';
 import ProfileButton from './user-profile/profile-button';
 import SwitchTeamButton from './switchTeam/SwitchTeamButton';
