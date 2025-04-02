@@ -109,7 +109,7 @@ const ProjectReportsTasksTable = ({
       title: <CustomTableTitle title={t('dueDateColumn')} />,
       render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.due_date ? `${dayjs(record.due_date).format('MMM DD, YYYY')}` : '-'}
+          {record.end_date ? `${dayjs(record.end_date).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,
@@ -119,7 +119,7 @@ const ProjectReportsTasksTable = ({
       title: <CustomTableTitle title={t('completedOnColumn')} />,
       render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.completed_date ? `${dayjs(record.completed_date).format('MMM DD, YYYY')}` : '-'}
+          {record.completed_at ? `${dayjs(record.completed_at).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,
