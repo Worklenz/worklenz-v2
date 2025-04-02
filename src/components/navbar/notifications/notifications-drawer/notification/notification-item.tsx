@@ -2,7 +2,7 @@ import { IWorklenzNotification } from '@/types/notifications/notifications.types
 import { BankOutlined } from '@ant-design/icons';
 import { Button, Tag, Typography, theme } from 'antd';
 import DOMPurify from 'dompurify';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { fromNow } from '@/utils/dateUtils';
 import './notification-item.css';
 
@@ -12,7 +12,7 @@ interface NotificationItemProps {
   notification: IWorklenzNotification;
   isUnreadNotifications?: boolean;
   markNotificationAsRead?: (id: string) => Promise<void>;
-  goToUrl?: (url: string) => void;
+  goToUrl?: (e: React.MouseEvent, notification: IWorklenzNotification) => Promise<void>;
 }
 
 const NotificationItem = ({
@@ -23,17 +23,14 @@ const NotificationItem = ({
 }: NotificationItemProps) => {
   const { token } = theme.useToken();
   const [loading, setLoading] = useState(false);
-
   const isDarkMode =
     token.colorBgContainer === '#141414' ||
     token.colorBgContainer.includes('dark') ||
     document.documentElement.getAttribute('data-theme') === 'dark';
 
-  const handleNotificationClick = (e: React.MouseEvent) => {
-    if (notification.url) {
-      e.preventDefault();
-      goToUrl?.(notification.url);
-    }
+  const handleNotificationClick = async (e: React.MouseEvent) => {
+    await goToUrl?.(e, notification);
+    await markNotificationAsRead?.(notification.id);
   };
 
   const handleMarkAsRead = async (e: React.MouseEvent) => {

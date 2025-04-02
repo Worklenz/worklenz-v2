@@ -18,8 +18,9 @@ import { resetBoardData } from '@/features/board/board-slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { deselectAll } from '@/features/projects/bulkActions/bulkActionSlice';
 import { tabItems } from '@/lib/project/project-view-constants';
+import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 
-const DeleteStatusDrawer = React.lazy(()=> import('@/components/project-task-filters/delete-status-drawer/delete-status-drawer'));
+const DeleteStatusDrawer = React.lazy(() => import('@/components/project-task-filters/delete-status-drawer/delete-status-drawer'));
 const PhaseDrawer = React.lazy(() => import('@features/projects/singleProject/phase/PhaseDrawer'));
 const StatusDrawer = React.lazy(
   () => import('@/components/project-task-filters/create-status-drawer/create-status-drawer')
@@ -40,6 +41,7 @@ const ProjectView = () => {
   useDocumentTitle(selectedProject?.name || 'Project View');
   const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || tabItems[0].key);
   const [pinnedTab, setPinnedTab] = useState<string>(searchParams.get('pinned_tab') || '');
+  const [taskid, setTaskId] = useState<string>(searchParams.get('task') || '');
 
   useEffect(() => {
     if (projectId) {
@@ -53,7 +55,11 @@ const ProjectView = () => {
         dispatch(fetchLabels());
       });
     }
-  }, [dispatch, navigate, projectId]);
+    if (taskid) {
+      dispatch(setSelectedTaskId(taskid || ''));
+      dispatch(setShowTaskDrawer(true));
+    }
+  }, [dispatch, navigate, projectId, taskid]);
 
   const pinToDefaultTab = async (itemKey: string) => {
     if (!itemKey || !projectId) return;
@@ -76,9 +82,10 @@ const ProjectView = () => {
 
       navigate({
         pathname: `/worklenz/projects/${projectId}`,
-        search: new URLSearchParams({ 
+        search: new URLSearchParams({
           tab: activeTab,
-          pinned_tab: itemKey }).toString(),
+          pinned_tab: itemKey
+        }).toString(),
       });
     }
   };
@@ -163,24 +170,24 @@ const ProjectView = () => {
         items={tabMenuItems}
         tabBarStyle={{ paddingInline: 0 }}
         destroyInactiveTabPane={true}
-        // tabBarExtraContent={
-          // <div>
-          //   <span style={{ position: 'relative', top: '-10px' }}>
-          //     <Tooltip title="Members who are active on this project will be displayed here.">
-          //       <QuestionCircleOutlined />
-          //     </Tooltip>
-          //   </span>
-          //   <span
-          //     style={{
-          //       position: 'relative',
-          //       right: '20px',
-          //       top: '10px',
-          //     }}
-          //   >
-          //     <Badge status="success" dot className="profile-badge" />
-          //   </span>
-          // </div>
-        // }
+      // tabBarExtraContent={
+      // <div>
+      //   <span style={{ position: 'relative', top: '-10px' }}>
+      //     <Tooltip title="Members who are active on this project will be displayed here.">
+      //       <QuestionCircleOutlined />
+      //     </Tooltip>
+      //   </span>
+      //   <span
+      //     style={{
+      //       position: 'relative',
+      //       right: '20px',
+      //       top: '10px',
+      //     }}
+      //   >
+      //     <Badge status="success" dot className="profile-badge" />
+      //   </span>
+      // </div>
+      // }
       />
 
       {createPortal(<ProjectMemberDrawer />, document.body, 'project-member-drawer')}
