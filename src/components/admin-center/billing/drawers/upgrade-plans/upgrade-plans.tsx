@@ -116,6 +116,9 @@ const UpgradePlans = () => {
         message.success('Subscription updated successfully!');
         dispatch(fetchBillingInfo());
         dispatch(toggleUpgradeModal());
+        if (window.Paddle) {
+          window.Paddle.Checkout.close();
+        }
         break;
       case 'Checkout.Close':
         setSwitchingToPaddlePlan(false);
