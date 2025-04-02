@@ -502,14 +502,28 @@ const NumberFieldCell: React.FC<{
   updateValue: (taskId: string, columnKey: string, value: string) => void;
 }> = ({ value, task, columnKey, columnObj, updateValue }) => {
   const initialNumberValue = value !== undefined ? Number(value) : undefined;
-  const [localValue, setLocalValue] = useState<string>(
+  // This stores the raw input value for display during editing
+  const [inputValue, setInputValue] = useState<string>(
     initialNumberValue !== undefined ? 
       initialNumberValue.toString() : 
       ''
   );
+  // This stores the formatted value for display when not editing
+  const [formattedValue, setFormattedValue] = useState<string>(
+    initialNumberValue !== undefined && !isNaN(initialNumberValue) ? 
+      formatNumberWithDecimals(initialNumberValue, columnObj?.decimals || 0) : 
+      ''
+  );
+  // Track if input is being edited
+  const [isEditing, setIsEditing] = useState(false);
   
   // Track if this is the initial render to avoid unnecessary updates
   const isInitialMount = useRef(true);
+  
+  // Function to format number with specified decimals
+  function formatNumberWithDecimals(num: number, decimals: number): string {
+    return num.toFixed(decimals);
+  }
   
   useEffect(() => {
     // Skip the first render to avoid unnecessary updates
@@ -518,40 +532,64 @@ const NumberFieldCell: React.FC<{
       return;
     }
     
-    // Update local value when the prop value changes (from external sources)
+    // Update values when the prop value changes (from external sources)
     if (value !== undefined && value !== null) {
       const numValue = Number(value);
       if (!isNaN(numValue)) {
-        setLocalValue(numValue.toString());
+        setInputValue(numValue.toString());
+        setFormattedValue(formatNumberWithDecimals(numValue, columnObj?.decimals || 0));
       }
     } else {
-      setLocalValue('');
+      setInputValue('');
+      setFormattedValue('');
     }
-  }, [value]);
+  }, [value, columnObj?.decimals]);
   
-  const handleLocalChange = (value: string) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    
     // Validate input to allow only numeric values
     // Allow: empty string, numbers, one decimal point, and minus sign at the beginning
-    const isValidInput = /^-?\d*\.?\d*$/.test(value);
+    const isValidInput = /^-?\d*\.?\d*$/.test(newValue);
     
-    if (!isValidInput && value !== '') {
+    if (!isValidInput && newValue !== '') {
       return; // Reject invalid input
     }
     
-    // Only update local state on keystroke
-    setLocalValue(value);
+    // Only update the input value during editing, not the formatted value
+    setInputValue(newValue);
   };
   
-  const commitValueChange = () => {
-    // Only commit the value to the server when the user completes their input
-    if (task.id) {
-      // Store as a number (or empty string if invalid)
-      const numValue = localValue.trim() === '' ? '' : localValue;
-      updateValue(
-        task.id,
-        columnKey,
-        numValue
-      );
+  const handleInputFocus = () => {
+    setIsEditing(true);
+  };
+  
+  const formatAndCommitValue = () => {
+    setIsEditing(false);
+    
+    // Don't format empty values
+    if (inputValue.trim() === '') {
+      setFormattedValue('');
+      if (task.id) {
+        updateValue(task.id, columnKey, '');
+      }
+      return;
+    }
+    
+    // Parse the input value
+    const numValue = parseFloat(inputValue);
+    
+    // Format the value with decimals
+    if (!isNaN(numValue)) {
+      const decimals = columnObj?.decimals || 0;
+      const formatted = formatNumberWithDecimals(numValue, decimals);
+      setFormattedValue(formatted);
+      setInputValue(numValue.toString()); // Keep the raw value without trailing zeros
+      
+      // Update the value in the task
+      if (task.id) {
+        updateValue(task.id, columnKey, numValue.toString());
+      }
     }
   };
 
@@ -560,22 +598,26 @@ const NumberFieldCell: React.FC<{
   const label = columnObj?.label || '';
   const labelPosition = columnObj?.labelPosition || 'left';
   
-  // Format the display value based on number type
+  // Determine which value to display based on editing state
+  const displayValue = isEditing ? inputValue : formattedValue;
+  
+  // For percentage type, add % symbol when not editing
   const getDisplayValue = () => {
-    if (localValue === '') return '';
-    const num = Number(localValue);
-    if (isNaN(num)) return localValue;
+    if (displayValue === '') return '';
     
-    switch (numberType) {
-      case 'formatted':
-      case 'withLabel':
-        return num.toFixed(decimals);
-      case 'percentage':
-        return `${num.toFixed(decimals)}%`;
-      case 'unformatted':
-      default:
-        return localValue;
+    if (numberType === 'percentage' && !isEditing) {
+      return `${displayValue}%`;
     }
+    
+    return displayValue;
+  };
+
+  // Common input styles with right alignment for numbers
+  const commonInputStyle = {
+    padding: 0,
+    border: 'none',
+    background: 'transparent',
+    textAlign: 'right' as const, // Add right alignment for all number inputs
   };
 
   switch (numberType) {
@@ -583,10 +625,11 @@ const NumberFieldCell: React.FC<{
       return (
         <Input
           value={getDisplayValue()}
-          onChange={(e) => handleLocalChange(e.target.value)}
-          onBlur={commitValueChange}
-          onPressEnter={commitValueChange}
-          style={{ padding: 0, border: 'none', background: 'transparent' }}
+          onChange={handleInputChange}
+          onFocus={handleInputFocus}
+          onBlur={formatAndCommitValue}
+          onPressEnter={formatAndCommitValue}
+          style={commonInputStyle}
           onKeyDown={(e) => {
             // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
             if (
@@ -617,18 +660,18 @@ const NumberFieldCell: React.FC<{
       );
     case 'withLabel':
       return (
-        <Flex gap={4} align="center" justify="flex-start">
+        <Flex gap={4} align="center" justify={labelPosition === 'left' ? 'flex-end' : 'flex-start'}>
           {labelPosition === 'left' && label}
           <Input
             value={getDisplayValue()}
-            onChange={(e) => handleLocalChange(e.target.value)}
-            onBlur={commitValueChange}
-            onPressEnter={commitValueChange}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={formatAndCommitValue}
+            onPressEnter={formatAndCommitValue}
             style={{
-              padding: 0,
-              border: 'none',
-              background: 'transparent',
+              ...commonInputStyle,
               width: '100%',
+              textAlign: labelPosition === 'right' ? 'right' : 'left' as const,
             }}
             onKeyDown={(e) => {
               // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
@@ -663,11 +706,22 @@ const NumberFieldCell: React.FC<{
     case 'unformatted':
       return (
         <Input
-          value={localValue}
-          onChange={(e) => handleLocalChange(e.target.value)}
-          onBlur={commitValueChange}
-          onPressEnter={commitValueChange}
-          style={{ padding: 0, border: 'none', background: 'transparent' }}
+          value={inputValue} // Always use raw input value for unformatted type
+          onChange={handleInputChange}
+          onFocus={() => setIsEditing(true)}
+          onBlur={() => {
+            setIsEditing(false);
+            if (task.id && inputValue.trim() !== '') {
+              updateValue(task.id, columnKey, inputValue);
+            }
+          }}
+          onPressEnter={() => {
+            setIsEditing(false);
+            if (task.id && inputValue.trim() !== '') {
+              updateValue(task.id, columnKey, inputValue);
+            }
+          }}
+          style={commonInputStyle}
           onKeyDown={(e) => {
             // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
             if (
@@ -703,11 +757,12 @@ const NumberFieldCell: React.FC<{
           onChange={(e) => {
             // Remove the % sign if present
             const value = e.target.value.replace('%', '');
-            handleLocalChange(value);
+            handleInputChange({ ...e, target: { ...e.target, value } } as React.ChangeEvent<HTMLInputElement>);
           }}
-          onBlur={commitValueChange}
-          onPressEnter={commitValueChange}
-          style={{ padding: 0, border: 'none', background: 'transparent' }}
+          onFocus={handleInputFocus}
+          onBlur={formatAndCommitValue}
+          onPressEnter={formatAndCommitValue}
+          style={commonInputStyle}
           onKeyDown={(e) => {
             // Allow: backspace, delete, tab, escape, enter, decimal point
             if (
@@ -1186,7 +1241,6 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       // Emit socket event to update the custom column value
       if (socket) {
         socket.emit(SocketEvents.TASK_CUSTOM_COLUMN_UPDATE.toString(), JSON.stringify(body));
-        console.log('Socket event emitted:', SocketEvents.TASK_CUSTOM_COLUMN_UPDATE.toString(), body);
       } else {
         console.warn('Socket not connected, unable to emit TASK_CUSTOM_COLUMN_UPDATE event');
       }
