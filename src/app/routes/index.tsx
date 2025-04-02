@@ -82,7 +82,7 @@ export const LicenseExpiryGuard = ({ children }: GuardProps) => {
     }
     
     // If not marked as expired but has trial_expire_date, do a date check
-    if (currentSession.trial_expire_date) {
+    if (currentSession.subscription_type === ISUBSCRIPTION_TYPE.TRIAL && currentSession.trial_expire_date) {
       const today = new Date();
       const expiryDate = new Date(currentSession.trial_expire_date);
 
