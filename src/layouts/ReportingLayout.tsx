@@ -1,5 +1,5 @@
 import { Col, ConfigProvider, Layout } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../features/navbar/navbar';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { colors } from '../styles/colors';
@@ -8,8 +8,13 @@ import ReportingSider from '../pages/reporting/sidebar/reporting-sider';
 import { Outlet, useNavigate } from 'react-router-dom';
 import ReportingCollapsedButton from '../pages/reporting/sidebar/reporting-collapsed-button';
 import { useAuthService } from '@/hooks/useAuth';
+import { reportingApiService } from '@/api/reporting/reporting.api.service';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setCurrentOrganization } from '@/features/reporting/reporting.slice';
+import logger from '@/utils/errorLogger';
 
 const ReportingLayout = () => {
+  const dispatch = useAppDispatch();
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -27,6 +32,21 @@ const ReportingLayout = () => {
   const handleCollapsedToggler = () => {
     setIsCollapsed(prev => !prev);
   };
+
+  const fetchCurrentOrganization = async () => {
+    try {
+      const response = await reportingApiService.getInfo();
+      if (response.done) {
+        dispatch(setCurrentOrganization(response.body?.organization_name));
+      }
+    } catch (error) {
+      logger.error('Error fetching current organization', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentOrganization();
+  }, []);
 
   return (
     <ConfigProvider

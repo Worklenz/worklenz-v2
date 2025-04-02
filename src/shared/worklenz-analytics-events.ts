@@ -153,6 +153,7 @@ export const evt_billing_configuration = 'billing_configuration';
 export const evt_billing_view_plans_modal = 'billing_view_plans_modal';
 export const evt_billing_pause_plan = 'billing_pause_plan';
 export const evt_billing_resume_plan = 'billing_resume_plan';
+export const evt_billing_add_more_seats = 'billing_add_more_seats';
 
 // Admin Center
 export const evt_admin_center_teams_visit = 'admin_center_teams_visit';

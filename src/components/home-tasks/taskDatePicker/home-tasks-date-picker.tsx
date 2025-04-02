@@ -6,7 +6,7 @@ import calendar from 'dayjs/plugin/calendar';
 import { SocketEvents } from '@/shared/socket-events';
 import type { Dayjs } from 'dayjs';
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useGetMyTasksQuery } from "@/api/home-page/home-page.api.service";
 import { getUserSession } from "@/utils/session-helper";
@@ -22,17 +22,25 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
     const { socket, connected } = useSocket();
     const { t } = useTranslation('home');
     const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
-    const { refetch } = useGetMyTasksQuery(homeTasksConfig);
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(record.end_date ? dayjs(record.end_date) : null);
+    const { refetch } = useGetMyTasksQuery(homeTasksConfig, {
+        skip: true // Skip automatic queries entirely
+    });
+    
+    // Use useMemo to avoid re-renders when record.end_date is the same
+    const initialDate = useMemo(() => 
+        record.end_date ? dayjs(record.end_date) : null
+    , [record.end_date]);
+    
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(initialDate);
+
+    // Update selected date when record changes
+    useEffect(() => {
+        setSelectedDate(initialDate);
+    }, [initialDate]);
 
     const handleChangeReceived = (value: any) => {
         refetch();
     };
-
-    useEffect(() => {
-        setSelectedDate(record.end_date ? dayjs(record.end_date) : null);
-        refetch();
-    }, [record.end_date, homeTasksConfig]);
 
     useEffect(() => {
         socket?.on(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
@@ -41,7 +49,7 @@ const HomeTasksDatePicker = ({ record }: HomeTasksDatePickerProps) => {
             socket?.removeListener(SocketEvents.TASK_END_DATE_CHANGE.toString(), handleChangeReceived);
             socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleChangeReceived);
         };
-    }, [record.end_date, connected]);
+    }, [connected]);
 
     const handleEndDateChanged = (value: Dayjs | null, task: IProjectTask) => {
         setSelectedDate(value);

@@ -3,10 +3,11 @@ import { adminCenterApiService } from '@/api/admin-center/admin-center.api.servi
 import {
   evt_billing_pause_plan,
   evt_billing_resume_plan,
+  evt_billing_add_more_seats,
 } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import logger from '@/utils/errorLogger';
-import { Button, Card, Flex, Modal, Space, Tooltip, Typography } from 'antd/es';
+import { Button, Card, Flex, Modal, Space, Tooltip, Typography, Statistic, Select, Form, Row, Col } from 'antd/es';
 import RedeemCodeDrawer from '../drawers/redeem-code-drawer/redeem-code-drawer';
 import {
   fetchBillingInfo,
@@ -16,12 +17,13 @@ import {
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import { WarningTwoTone } from '@ant-design/icons';
+import { WarningTwoTone, PlusOutlined } from '@ant-design/icons';
 import { calculateTimeGap } from '@/utils/calculate-time-gap';
 import { formatDate } from '@/utils/timeUtils';
 import UpgradePlansLKR from '../drawers/upgrade-plans-lkr/upgrade-plans-lkr';
 import UpgradePlans from '../drawers/upgrade-plans/upgrade-plans';
 import { ISUBSCRIPTION_TYPE, SUBSCRIPTION_STATUS } from '@/shared/constants';
+import { billingApiService } from '@/api/admin-center/billing.api.service';
 
 const CurrentPlanDetails = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +32,9 @@ const CurrentPlanDetails = () => {
 
   const [pausingPlan, setPausingPlan] = useState(false);
   const [cancellingPlan, setCancellingPlan] = useState(false);
+  const [addingSeats, setAddingSeats] = useState(false);
+  const [isMoreSeatsModalVisible, setIsMoreSeatsModalVisible] = useState(false);
+  const [selectedSeatCount, setSelectedSeatCount] = useState<number | string>(5);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { loadingBillingInfo, billingInfo, freePlanSettings, isUpgradeModalOpen } = useAppSelector(
@@ -37,6 +42,11 @@ const CurrentPlanDetails = () => {
   );
 
   const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  type SeatOption = { label: string; value: number | string };
+  const seatCountOptions: SeatOption[] = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90]
+    .map(value => ({ label: value.toString(), value }));
+  seatCountOptions.push({ label: '100+', value: '100+' });
 
   const handleSubscriptionAction = async (action: 'pause' | 'resume') => {
     const isResume = action === 'resume';
@@ -55,12 +65,42 @@ const CurrentPlanDetails = () => {
           dispatch(fetchBillingInfo());
           trackMixpanelEvent(eventType);
         }, 8000);
+        return; // Exit function to prevent finally block from executing
       }
     } catch (error) {
       logger.error(`Error ${action}ing subscription`, error);
-    } finally {
-      setLoadingState(false);
+      setLoadingState(false); // Only set to false on error
     }
+  };
+
+  const handleAddMoreSeats = () => {
+    setIsMoreSeatsModalVisible(true);
+  };
+
+  const handlePurchaseMoreSeats = async () => {
+    if (selectedSeatCount.toString() === '100+' || !billingInfo?.total_seats) return;
+
+    try {
+      setAddingSeats(true);
+      const totalSeats = Number(selectedSeatCount) + (billingInfo?.total_seats || 0);
+      const res = await billingApiService.purchaseMoreSeats(totalSeats);
+      if (res.done) {
+        setIsMoreSeatsModalVisible(false);
+        dispatch(fetchBillingInfo());
+        trackMixpanelEvent(evt_billing_add_more_seats);
+      }
+    } catch (error) {
+      logger.error('Error adding more seats', error);
+    } finally {
+      setAddingSeats(false);
+    }
+  };
+
+  const calculateRemainingSeats = () => {
+    if (billingInfo?.total_seats && billingInfo?.total_used) {
+      return billingInfo.total_seats - billingInfo.total_used;
+    }
+    return 0;
   };
 
   const checkSubscriptionStatus = (allowedStatuses: any[]) => {
@@ -83,6 +123,12 @@ const CurrentPlanDetails = () => {
 
   const showResumePlanButton = () => {
     return checkSubscriptionStatus([SUBSCRIPTION_STATUS.PAUSED]);
+  };
+
+  const shouldShowAddSeats = () => {
+    if (!billingInfo) return false;
+    return billingInfo.subscription_type === ISUBSCRIPTION_TYPE.PADDLE && 
+           billingInfo.status === SUBSCRIPTION_STATUS.ACTIVE;
   };
 
   const renderExtra = () => {
@@ -226,6 +272,37 @@ const CurrentPlanDetails = () => {
             &nbsp;{t('perMonthPerUser')}
           </Typography.Text>
         </Flex>
+        
+        {shouldShowAddSeats() && billingInfo?.total_seats && (
+          <div style={{ marginTop: '16px' }}>
+            <Row gutter={16} align="middle">
+              <Col span={6}>
+                <Statistic 
+                  title={t('totalSeats')} 
+                  value={billingInfo.total_seats} 
+                  valueStyle={{ fontSize: '24px', fontWeight: 'bold' }}
+                />
+              </Col>
+              <Col span={8}>
+                <Button 
+                  type="primary" 
+                  icon={<PlusOutlined />} 
+                  onClick={handleAddMoreSeats}
+                  style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}
+                >
+                  {t('addMoreSeats')}
+                </Button>
+              </Col>
+              <Col span={6}>
+                <Statistic 
+                  title={t('availableSeats')} 
+                  value={calculateRemainingSeats()} 
+                  valueStyle={{ fontSize: '24px', fontWeight: 'bold' }}
+                />
+              </Col>
+            </Row>
+          </div>
+        )}
       </Flex>
     );
   };
@@ -292,6 +369,65 @@ const CurrentPlanDetails = () => {
           cancelButtonProps={{ hidden: true }}
         >
           {browserTimeZone === 'Asia/Colombo' ? <UpgradePlansLKR /> : <UpgradePlans />}
+        </Modal>
+        
+        <Modal
+          title={t('addMoreSeats')}
+          open={isMoreSeatsModalVisible}
+          onCancel={() => setIsMoreSeatsModalVisible(false)}
+          footer={null}
+          width={500}
+          centered
+        >
+          <Flex vertical gap="middle" style={{ marginTop: '8px' }}>
+            <Typography.Paragraph style={{ fontSize: '16px', margin: '0 0 16px 0', fontWeight: 500 }}>
+              To continue, you'll need to purchase additional seats.
+            </Typography.Paragraph>
+            
+            <Typography.Paragraph style={{ margin: '0 0 16px 0' }}>
+              You currently have {billingInfo?.total_seats} seats available.
+            </Typography.Paragraph>
+            
+            <Typography.Paragraph style={{ margin: '0 0 24px 0' }}>
+              Please select the number of additional seats to purchase.
+            </Typography.Paragraph>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <span style={{ color: '#ff4d4f', marginRight: '4px' }}>*</span>
+              <span style={{ marginRight: '8px' }}>Seats:</span>
+              <Select
+                value={selectedSeatCount}
+                onChange={setSelectedSeatCount}
+                options={seatCountOptions}
+                style={{ width: '300px' }}
+              />
+            </div>
+            
+            <Flex justify="end">
+              {selectedSeatCount.toString() !== '100+' ? (
+                <Button 
+                  type="primary" 
+                  loading={addingSeats}
+                  onClick={handlePurchaseMoreSeats}
+                  style={{ 
+                    minWidth: '100px', 
+                    backgroundColor: '#1890ff',
+                    borderColor: '#1890ff',
+                    borderRadius: '2px'
+                  }}
+                >
+                  Purchase
+                </Button>
+              ) : (
+                <Button 
+                  type="primary" 
+                  size="middle"
+                >
+                  Contact sales
+                </Button>
+              )}
+            </Flex>
+          </Flex>
         </Modal>
       </Flex>
     </Card>

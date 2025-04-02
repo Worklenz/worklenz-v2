@@ -22,7 +22,9 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
   const { homeTasksConfig } = useAppSelector(state => state.homePageReducer);
   const {
       refetch
-    } = useGetMyTasksQuery(homeTasksConfig);
+    } = useGetMyTasksQuery(homeTasksConfig, {
+      skip: true // Skip automatic queries entirely
+    });
 
   const [selectedStatus, setSelectedStatus] = useState<ITaskStatus | undefined>(undefined);
 
@@ -51,7 +53,10 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
         status_category: response.statusCategory,
       };
       setSelectedStatus(updatedTask);
-      refetch();
+      // Only refetch when there's an actual status change
+      if (response.status_id !== task.status_id) {
+        refetch();
+      }
     }
   };
 
@@ -70,7 +75,7 @@ const HomeTasksStatusDropdown = ({ task, teamId }: HomeTasksStatusDropdownProps)
     return () => {
       socket?.removeListener(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
     };
-  }, [task.status_id, connected]);
+  }, [connected]);
 
   const options = useMemo(
     () =>
