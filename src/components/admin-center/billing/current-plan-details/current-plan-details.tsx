@@ -3,10 +3,11 @@ import { adminCenterApiService } from '@/api/admin-center/admin-center.api.servi
 import {
   evt_billing_pause_plan,
   evt_billing_resume_plan,
+  evt_billing_add_more_seats,
 } from '@/shared/worklenz-analytics-events';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import logger from '@/utils/errorLogger';
-import { Button, Card, Flex, Modal, Space, Tooltip, Typography } from 'antd/es';
+import { Button, Card, Flex, Modal, Space, Tooltip, Typography, Statistic, Select, Form } from 'antd/es';
 import RedeemCodeDrawer from '../drawers/redeem-code-drawer/redeem-code-drawer';
 import {
   fetchBillingInfo,
@@ -16,7 +17,7 @@ import {
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
-import { WarningTwoTone } from '@ant-design/icons';
+import { WarningTwoTone, PlusOutlined } from '@ant-design/icons';
 import { calculateTimeGap } from '@/utils/calculate-time-gap';
 import { formatDate } from '@/utils/timeUtils';
 import UpgradePlansLKR from '../drawers/upgrade-plans-lkr/upgrade-plans-lkr';
@@ -30,6 +31,9 @@ const CurrentPlanDetails = () => {
 
   const [pausingPlan, setPausingPlan] = useState(false);
   const [cancellingPlan, setCancellingPlan] = useState(false);
+  const [addingSeats, setAddingSeats] = useState(false);
+  const [isMoreSeatsModalVisible, setIsMoreSeatsModalVisible] = useState(false);
+  const [selectedSeatCount, setSelectedSeatCount] = useState<number | string>(5);
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const { loadingBillingInfo, billingInfo, freePlanSettings, isUpgradeModalOpen } = useAppSelector(
@@ -37,6 +41,11 @@ const CurrentPlanDetails = () => {
   );
 
   const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  type SeatOption = { label: string; value: number | string };
+  const seatCountOptions: SeatOption[] = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90]
+    .map(value => ({ label: value.toString(), value }));
+  seatCountOptions.push({ label: '100+', value: '100+' });
 
   const handleSubscriptionAction = async (action: 'pause' | 'resume') => {
     const isResume = action === 'resume';
@@ -61,6 +70,36 @@ const CurrentPlanDetails = () => {
       logger.error(`Error ${action}ing subscription`, error);
       setLoadingState(false); // Only set to false on error
     }
+  };
+
+  const handleAddMoreSeats = () => {
+    setIsMoreSeatsModalVisible(true);
+  };
+
+  const handlePurchaseMoreSeats = async () => {
+    if (selectedSeatCount.toString() === '100+' || !billingInfo?.total_seats) return;
+
+    try {
+      setAddingSeats(true);
+      const totalSeats = Number(selectedSeatCount) + (billingInfo?.total_seats || 0);
+      const res = await adminCenterApiService.addMoreSeats(totalSeats);
+      if (res.done) {
+        setIsMoreSeatsModalVisible(false);
+        dispatch(fetchBillingInfo());
+        trackMixpanelEvent(evt_billing_add_more_seats);
+      }
+    } catch (error) {
+      logger.error('Error adding more seats', error);
+    } finally {
+      setAddingSeats(false);
+    }
+  };
+
+  const calculateRemainingSeats = () => {
+    if (billingInfo?.total_seats && billingInfo?.total_used) {
+      return billingInfo.total_seats - billingInfo.total_used;
+    }
+    return 0;
   };
 
   const checkSubscriptionStatus = (allowedStatuses: any[]) => {
@@ -226,6 +265,21 @@ const CurrentPlanDetails = () => {
             &nbsp;{t('perMonthPerUser')}
           </Typography.Text>
         </Flex>
+        {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE && billingInfo?.total_seats && (
+          <Flex gap="middle" align="center" style={{ marginTop: '16px' }}>
+            <Statistic title={t('totalSeats')} value={billingInfo.total_seats} />
+            <Button 
+              type="primary" 
+              size="small" 
+              icon={<PlusOutlined />} 
+              loading={addingSeats}
+              onClick={handleAddMoreSeats}
+            >
+              {t('addMoreSeats')}
+            </Button>
+            <Statistic title={t('availableSeats')} value={calculateRemainingSeats()} />
+          </Flex>
+        )}
       </Flex>
     );
   };
@@ -292,6 +346,56 @@ const CurrentPlanDetails = () => {
           cancelButtonProps={{ hidden: true }}
         >
           {browserTimeZone === 'Asia/Colombo' ? <UpgradePlansLKR /> : <UpgradePlans />}
+        </Modal>
+        
+        <Modal
+          title={t('addMoreSeats')}
+          open={isMoreSeatsModalVisible}
+          onCancel={() => setIsMoreSeatsModalVisible(false)}
+          footer={null}
+          width={500}
+        >
+          <Flex vertical gap="middle">
+            <Typography.Title level={4}>
+              To continue, you'll need to purchase additional seats.
+            </Typography.Title>
+            <Typography.Paragraph>
+              You currently have <Typography.Text strong>{billingInfo?.total_seats}</Typography.Text> seats available.
+            </Typography.Paragraph>
+            <Typography.Paragraph>
+              Please select the number of additional seats to purchase.
+            </Typography.Paragraph>
+            
+            <Form layout="horizontal" labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
+              <Form.Item label="Seats" required>
+                <Select
+                  value={selectedSeatCount}
+                  onChange={setSelectedSeatCount}
+                  options={seatCountOptions}
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            </Form>
+            
+            <Flex justify="end">
+              {selectedSeatCount.toString() !== '100+' ? (
+                <Button 
+                  type="primary" 
+                  loading={addingSeats}
+                  onClick={handlePurchaseMoreSeats}
+                >
+                  Purchase
+                </Button>
+              ) : (
+                <Button 
+                  type="primary" 
+                  size="large"
+                >
+                  Contact sales
+                </Button>
+              )}
+            </Flex>
+          </Flex>
         </Modal>
       </Flex>
     </Card>

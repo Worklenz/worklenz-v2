@@ -232,6 +232,11 @@ export const adminCenterApiService = {
     return response.data;
   },
 
+  async addMoreSeats(seatCount: number): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
+    const response = await apiClient.post<IServerResponse<any>>(`${rootUrl}/billing/purchase-more-seats`, {seatCount});
+    return response.data;
+  },
+
   async redeemCode(code: string): Promise<IServerResponse<IUpgradeSubscriptionPlanResponse>> {
     const response = await apiClient.post<IServerResponse<IUpgradeSubscriptionPlanResponse>>(`${rootUrl}/billing/redeem`, {
       code,
