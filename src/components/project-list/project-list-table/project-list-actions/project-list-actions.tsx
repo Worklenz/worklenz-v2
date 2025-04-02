@@ -12,6 +12,8 @@ import { IProjectViewModel } from '@/types/project/projectViewModel.types';
 import logger from '@/utils/errorLogger';
 import { SettingOutlined, InboxOutlined } from '@ant-design/icons';
 import { Tooltip, Button, Popconfirm, Space } from 'antd';
+import { evt_projects_archive, evt_projects_archive_all, evt_projects_settings_click } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 interface ActionButtonsProps {
   t: (key: string) => string;
@@ -29,12 +31,14 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   // Add permission hooks
   const isProjectManager = useIsProjectManager();
   const isEditable = isOwnerOrAdmin;
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
   const { requestParams } = useAppSelector(state => state.projectsReducer);
   const { refetch: refetchProjects } = useGetProjectsQuery(requestParams);
 
   const handleSettingsClick = () => {
     if (record.id) {
+      trackMixpanelEvent(evt_projects_settings_click);
       dispatch(setProjectId(record.id));
       dispatch(fetchProjectData(record.id));
       dispatch(toggleProjectDrawer());
@@ -45,8 +49,10 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
     if (!record.id) return;
     try {
       if (isOwnerOrAdmin) {
+        trackMixpanelEvent(evt_projects_archive_all);
         await dispatch(toggleArchiveProjectForAll(record.id));
       } else {
+        trackMixpanelEvent(evt_projects_archive);
         await dispatch(toggleArchiveProject(record.id));
       }
       refetchProjects();

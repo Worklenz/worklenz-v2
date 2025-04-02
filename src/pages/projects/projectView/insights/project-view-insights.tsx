@@ -18,11 +18,15 @@ import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import logo from '@/assets/images/logo.png';
+import { evt_project_insights_members_visit, evt_project_insights_overview_visit, evt_project_insights_tasks_visit } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
+
 type SegmentType = 'Overview' | 'Members' | 'Tasks';
 
 const ProjectViewInsights = () => {
   const { projectId } = useParams();
   const { t } = useTranslation('project-view-insights');
+  const { trackMixpanelEvent } = useMixpanelTracking();
   const exportRef = useRef<HTMLDivElement>(null);
   const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -54,10 +58,13 @@ const ProjectViewInsights = () => {
 
     switch (activeSegment) {
       case 'Overview':
+        trackMixpanelEvent(evt_project_insights_overview_visit);
         return <InsightsOverview t={t} />;
       case 'Members':
+        trackMixpanelEvent(evt_project_insights_members_visit);
         return <InsightsMembers t={t} />;
       case 'Tasks':
+        trackMixpanelEvent(evt_project_insights_tasks_visit);
         return <InsightsTasks t={t} />;
     }
   };

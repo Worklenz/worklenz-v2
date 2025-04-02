@@ -21,7 +21,6 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { durationDateFormat } from '@utils/durationDateFormat';
-import EmptyListPlaceholder from '@components/EmptyListPlaceholder';
 import { DEFAULT_PAGE_SIZE, IconsMap } from '@/shared/constants';
 import {
   IProjectAttachmentsViewModel,
@@ -30,10 +29,12 @@ import {
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { attachmentsApiService } from '@/api/attachments/attachments.api.service';
 import logger from '@/utils/errorLogger';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { evt_project_files_visit } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 const ProjectViewFiles = () => {
   const { t } = useTranslation('project-view-files');
+  const { trackMixpanelEvent } = useMixpanelTracking();
   const { projectId, refreshTimestamp } = useAppSelector(state => state.projectReducer);
   const [attachments, setAttachments] = useState<IProjectAttachmentsViewModel>({});
   const [loading, setLoading] = useState(false);
@@ -120,6 +121,7 @@ const ProjectViewFiles = () => {
   };
 
   useEffect(() => {
+    trackMixpanelEvent(evt_project_files_visit);
     fetchAttachments();
   }, [paginationConfig.pageIndex, projectId]);
 
