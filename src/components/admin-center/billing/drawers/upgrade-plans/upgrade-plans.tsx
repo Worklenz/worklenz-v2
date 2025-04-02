@@ -204,6 +204,21 @@ const UpgradePlans = () => {
           setPaddleError('Failed to prepare checkout');
           message.error('Failed to prepare checkout');
         }
+      } else if (billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE) {
+        // For existing subscriptions, use changePlan endpoint
+        const res = await adminCenterApiService.changePlan(planId);
+        if (res.done) {
+          message.success('Subscription plan changed successfully!');
+          dispatch(fetchBillingInfo());
+          dispatch(toggleUpgradeModal());
+          setSwitchingToPaddlePlan(false);
+          setPaddleLoading(false);
+        } else {
+          setSwitchingToPaddlePlan(false);
+          setPaddleLoading(false);
+          setPaddleError('Failed to change plan');
+          message.error('Failed to change subscription plan');
+        }
       }
     } catch (error) {
       setSwitchingToPaddlePlan(false);
@@ -486,7 +501,7 @@ const UpgradePlans = () => {
             onClick={continueWithPaddlePlan}
             disabled={billingInfo?.plan_id === plans.annual_plan_id}
           >
-            Continue with {t('annualPlan')}
+            {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE ? t('changeToPlan', {plan: t('annualPlan')}) : t('continueWith', {plan: t('annualPlan')})}
           </Button>
         )}
         {selectedPlan === paddlePlans.MONTHLY && (
@@ -497,7 +512,7 @@ const UpgradePlans = () => {
             onClick={continueWithPaddlePlan}
             disabled={billingInfo?.plan_id === plans.monthly_plan_id}
           >
-            Continue with {t('monthlyPlan')}
+            {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE ? t('changeToPlan', {plan: t('monthlyPlan')}) : t('continueWith', {plan: t('monthlyPlan')})}
           </Button>
         )}
       </Row>
