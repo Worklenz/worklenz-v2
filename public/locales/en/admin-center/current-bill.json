@@ -102,5 +102,8 @@
   
   "expirestoday": "today",
   "expirestomorrow": "tomorrow",
-  "expiredDaysAgo": "{{days}} days ago"
+  "expiredDaysAgo": "{{days}} days ago",
+  
+  "continueWith": "Continue with {{plan}}",
+  "changeToPlan": "Change to {{plan}}"
 }
