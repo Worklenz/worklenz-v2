@@ -9,7 +9,6 @@ import {
   EyeOutlined,
   PaperClipOutlined,
   MinusCircleOutlined,
-  ScheduleOutlined,
   RetweetOutlined,
 } from '@ant-design/icons';
 import { colors } from '@/styles/colors';
@@ -176,7 +175,7 @@ const TaskListTaskCell = ({
             <Typography.Text
               ellipsis={{ tooltip: task.name }}
               onClick={() => setEditTaskName(true)}
-              style={{ cursor: 'pointer', width: 'auto' }}
+              style={{ cursor: 'pointer', width: 'auto', maxWidth: '350px' }}
             >
               {task.name}
             </Typography.Text>
