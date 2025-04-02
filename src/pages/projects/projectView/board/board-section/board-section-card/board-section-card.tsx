@@ -104,7 +104,7 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
   };
 
   const handleAddTaskToBottom = () => {
-    createTempTask();
+    // createTempTask();
     setShowNewCardBottom(true);
   };
 

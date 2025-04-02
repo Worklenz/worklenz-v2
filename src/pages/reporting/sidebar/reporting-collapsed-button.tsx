@@ -1,10 +1,13 @@
 import { GlobalOutlined, LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { colors } from '@/styles/colors';
 import { Button, Flex, Tooltip, Typography } from 'antd';
 import { themeWiseColor } from '@utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
+import { IOrganization } from '@/types/admin-center/admin-center.types';
+import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
+import logger from '@/utils/errorLogger';
 
 const ReportingCollapsedButton = ({
   isCollapsed,
@@ -17,7 +20,30 @@ const ReportingCollapsedButton = ({
   const { t } = useTranslation('reporting-sidebar');
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
-  const { currentOrganization } = useAppSelector(state => state.reportingReducer);
+
+  // State for organization name and loading
+  const [organization, setOrganization] = useState<IOrganization | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch organization details
+  const getOrganizationDetails = async () => {
+    setLoading(true);
+    try {
+      const res = await adminCenterApiService.getOrganizationDetails();
+      if (res.done) {
+        setOrganization(res.body);
+      }
+    } catch (error) {
+      logger.error('Error getting organization details', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+  useEffect(() => {
+    getOrganizationDetails();
+  }, []);
 
   return (
     <Flex
@@ -39,7 +65,9 @@ const ReportingCollapsedButton = ({
               }}
             />
 
-            <Typography.Text strong>{currentOrganization}</Typography.Text>
+            <Typography.Text strong>
+            {loading ? 'Loading...' : organization?.name || 'Unknown Organization'}
+            </Typography.Text>
           </Flex>
         </Tooltip>
       )}
