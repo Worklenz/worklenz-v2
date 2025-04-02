@@ -55,11 +55,11 @@ const CurrentPlanDetails = () => {
           dispatch(fetchBillingInfo());
           trackMixpanelEvent(eventType);
         }, 8000);
+        return; // Exit function to prevent finally block from executing
       }
     } catch (error) {
       logger.error(`Error ${action}ing subscription`, error);
-    } finally {
-      setLoadingState(false);
+      setLoadingState(false); // Only set to false on error
     }
   };
 

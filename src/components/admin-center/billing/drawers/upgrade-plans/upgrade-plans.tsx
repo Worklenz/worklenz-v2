@@ -114,17 +114,19 @@ const UpgradePlans = () => {
         break;
       case 'Checkout.Complete':
         message.success('Subscription updated successfully!');
-        dispatch(fetchBillingInfo());
-        dispatch(toggleUpgradeModal());
-        if (window.Paddle) {
-          window.Paddle.Checkout.close();
-        }
+        setPaddleLoading(true);
+        setTimeout(() => {
+          dispatch(fetchBillingInfo());
+          dispatch(toggleUpgradeModal());
+          setSwitchingToPaddlePlan(false);
+          setPaddleLoading(false);
+        }, 10000);
         break;
       case 'Checkout.Close':
         setSwitchingToPaddlePlan(false);
         setPaddleLoading(false);
         // User closed the checkout without completing
-        message.info('Checkout was closed without completing the subscription');
+        // message.info('Checkout was closed without completing the subscription');
         break;
       case 'Checkout.Error':
         setSwitchingToPaddlePlan(false);
