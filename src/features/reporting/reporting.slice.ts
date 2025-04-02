@@ -7,6 +7,7 @@ interface ReportingState {
   showOverViewTeamDrawer: boolean;
   duration: string;
   dateRange: string[];
+  currentOrganization: string;
 }
 
 const initialState: ReportingState = {
@@ -16,6 +17,7 @@ const initialState: ReportingState = {
   showOverViewTeamDrawer: false,
   duration: 'LAST_WEEK', // Default value
   dateRange: [],
+  currentOrganization: '',
 };
 
 const reportingSlice = createSlice({
@@ -44,6 +46,9 @@ const reportingSlice = createSlice({
     setDateRange: (state, action: PayloadAction<string[]>) => {
       state.dateRange = action.payload;
     },
+    setCurrentOrganization: (state, action: PayloadAction<string>) => {
+      state.currentOrganization = action.payload;
+    },
   },
 });
 
@@ -55,6 +60,7 @@ export const {
   toggleOverViewTeamDrawer,
   setDuration,
   setDateRange,
+  setCurrentOrganization,
 } = reportingSlice.actions;
 
 export default reportingSlice.reducer;

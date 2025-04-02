@@ -17,6 +17,7 @@ const ReportingCollapsedButton = ({
   const { t } = useTranslation('reporting-sidebar');
 
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  const { currentOrganization } = useAppSelector(state => state.reportingReducer);
 
   return (
     <Flex
@@ -38,7 +39,7 @@ const ReportingCollapsedButton = ({
               }}
             />
 
-            <Typography.Text strong>Ceydigital</Typography.Text>
+            <Typography.Text strong>{currentOrganization}</Typography.Text>
           </Flex>
         </Tooltip>
       )}
