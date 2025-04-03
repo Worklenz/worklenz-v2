@@ -18,9 +18,13 @@ import logger from '@/utils/errorLogger';
 const TaskDrawerActivityLog = () => {
   const [activityLogs, setActivityLogs] = useState<IActivityLogsResponse>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const { selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
+  const { selectedTaskId, taskFormViewModel } = useAppSelector(state => state.taskDrawerReducer);
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
   const { t } = useTranslation();
+
+  useEffect(()=>{
+    fetchActivityLogs();
+  },[taskFormViewModel]);
 
   const fetchActivityLogs = async () => {
     if (!selectedTaskId) return;
@@ -38,6 +42,14 @@ const TaskDrawerActivityLog = () => {
   };
 
   const renderAttributeType = (activity: IActivityLog) => {
+    const truncateText = (text?: string) => {
+      if (!text) return text;
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      const plainText = div.textContent || div.innerText || '';
+      return plainText.length > 28 ? `${plainText.slice(0, 27)}...` : plainText;
+    };
+
     switch (activity.attribute_type) {
       case IActivityLogAttributeTypes.ASSIGNEES:
         return (
@@ -46,16 +58,16 @@ const TaskDrawerActivityLog = () => {
               avatarUrl={activity.assigned_user?.avatar_url}
               name={activity.assigned_user?.name}
             />
-            <Typography.Text>{activity.assigned_user?.name}</Typography.Text>
+            <Typography.Text>{truncateText(activity.assigned_user?.name)}</Typography.Text>
             <ArrowRightOutlined />&nbsp;
-            <Tag color={'default'}>{activity.log_type?.toUpperCase()}</Tag>
+            <Tag color={'default'}>{truncateText(activity.log_type?.toUpperCase())}</Tag>
           </Flex>
         );
 
       case IActivityLogAttributeTypes.LABEL:
         return (
           <Flex gap={4} align="center">
-            <Tag color={activity.label_data?.color_code}>{activity.label_data?.name}</Tag>
+            <Tag color={activity.label_data?.color_code}>{truncateText(activity.label_data?.name)}</Tag>
             <ArrowRightOutlined />&nbsp;
             <Tag color={'default'}>{activity.log_type === 'create' ? 'ADD' : 'REMOVE'}</Tag>
           </Flex>
@@ -65,11 +77,11 @@ const TaskDrawerActivityLog = () => {
         return (
           <Flex gap={4} align="center">
             <Tag color={themeMode === 'dark' ? activity.previous_status?.color_code_dark : activity.previous_status?.color_code}>
-              {activity.previous_status?.name ? activity.previous_status?.name : 'None'}
+              {truncateText(activity.previous_status?.name) || 'None'}
             </Tag>
             <ArrowRightOutlined />&nbsp;
             <Tag color={themeMode === 'dark' ? activity.next_status?.color_code_dark : activity.next_status?.color_code}>
-              {activity.next_status?.name ? activity.next_status?.name : 'None'}
+              {truncateText(activity.next_status?.name) || 'None'}
             </Tag>
           </Flex>
         );
@@ -78,11 +90,11 @@ const TaskDrawerActivityLog = () => {
         return (
           <Flex gap={4} align="center">
             <Tag color={themeMode === 'dark' ? activity.previous_priority?.color_code_dark : activity.previous_priority?.color_code}>
-              {activity.previous_priority?.name ? activity.previous_priority?.name : 'None'}
+              {truncateText(activity.previous_priority?.name) || 'None'}
             </Tag>
             <ArrowRightOutlined />&nbsp;
             <Tag color={themeMode === 'dark' ? activity.next_priority?.color_code_dark : activity.next_priority?.color_code}>
-              {activity.next_priority?.name ? activity.next_priority?.name : 'None'}
+              {truncateText(activity.next_priority?.name) || 'None'}
             </Tag>
           </Flex>
         );
@@ -91,11 +103,11 @@ const TaskDrawerActivityLog = () => {
         return (
           <Flex gap={4} align="center">
             <Tag color={activity.previous_phase?.color_code}>
-              {activity.previous_phase?.name ? activity.previous_phase?.name : 'None'}
+              {truncateText(activity.previous_phase?.name) || 'None'}
             </Tag>
             <ArrowRightOutlined />&nbsp;
             <Tag color={activity.next_phase?.color_code}>
-              {activity.next_phase?.name ? activity.next_phase?.name : 'None'}
+              {truncateText(activity.next_phase?.name) || 'None'}
             </Tag>
           </Flex>
         );
@@ -103,9 +115,9 @@ const TaskDrawerActivityLog = () => {
       default:
         return (
           <Flex gap={4} align="center">
-            <Tag color={'default'}>{activity.previous || 'None'}</Tag>
+            <Tag color={'default'}>{truncateText(activity.previous) || 'None'}</Tag>
             <ArrowRightOutlined />&nbsp;
-            <Tag color={'default'}>{activity.current || 'None'}</Tag>
+            <Tag color={'default'}>{truncateText(activity.current) || 'None'}</Tag>
           </Flex>
         );
     }
