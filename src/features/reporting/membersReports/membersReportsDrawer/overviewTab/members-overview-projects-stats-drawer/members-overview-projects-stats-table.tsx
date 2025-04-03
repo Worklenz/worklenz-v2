@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { ConfigProvider, Flex, Table, TableColumnsType, Typography } from 'antd';
+import { ConfigProvider, Flex, Skeleton, Spin, Table, TableColumnsType, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CustomTableTitle from '@components/CustomTableTitle';
 import { simpleDateFormat } from '@/utils/simpleDateFormat';
@@ -11,9 +11,10 @@ import ProjectManagerCell from '@/pages/reporting/projects-reports/projects-repo
 
 type ProjectReportsTableProps = {
   projectList: any[];
+  loading: Boolean;
 };
 
-const MembersOverviewProjectsStatsTable = ({ projectList }: ProjectReportsTableProps) => {
+const MembersOverviewProjectsStatsTable = ({ projectList, loading }: ProjectReportsTableProps) => {
   // localization
   const { t } = useTranslation('reporting-members-drawer');
 
@@ -155,26 +156,30 @@ const MembersOverviewProjectsStatsTable = ({ projectList }: ProjectReportsTableP
   return (
     <ConfigProvider
       theme={{
-        components: {
-          Table: {
-            cellPaddingBlock: 8,
-            cellPaddingInline: 8,
-          },
+      components: {
+        Table: {
+        cellPaddingBlock: 8,
+        cellPaddingInline: 8,
         },
+      },
       }}
     >
+      {loading ? (
+      <Skeleton style={{ paddingTop: 16 }} />
+      ) : (
       <Table
         columns={columns}
         dataSource={projectList}
         pagination={{ showSizeChanger: true, defaultPageSize: 10 }}
         scroll={{ x: 'max-content' }}
         onRow={record => {
-          return {
-            style: { height: 38, cursor: 'pointer' },
-            className: 'group even:bg-[#4e4e4e10]',
-          };
+        return {
+          style: { height: 38, cursor: 'pointer' },
+          className: 'group even:bg-[#4e4e4e10]',
+        };
         }}
       />
+      )}
     </ConfigProvider>
   );
 };

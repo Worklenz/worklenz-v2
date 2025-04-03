@@ -1,11 +1,11 @@
 import { Drawer, Typography } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTranslation } from 'react-i18next';
 import { toggleMembersOverviewProjectsStatsDrawer } from '../../../membersReportsSlice';
-import { fetchData } from '@/utils/fetchData';
 import MembersOverviewProjectsStatsTable from './members-overview-projects-stats-table';
+import { reportingApiService } from '@/api/reporting/reporting.api.service';
 
 type MembersOverviewProjectsStatsDrawerProps = {
   memberId: string | null;
@@ -14,31 +14,51 @@ type MembersOverviewProjectsStatsDrawerProps = {
 const MembersOverviewProjectsStatsDrawer = ({
   memberId,
 }: MembersOverviewProjectsStatsDrawerProps) => {
-  const [projectsData, setprojectsData] = useState<any[]>([]);
+  const [projectsData, setProjectsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // localization
   const { t } = useTranslation('reporting-members-drawer');
 
   const dispatch = useAppDispatch();
 
-  // get drawer open state from the member reports reducer
   const isDrawerOpen = useAppSelector(
     state => state.membersReportsReducer.isMembersOverviewProjectsStatsDrawerOpen
   );
   const { membersList } = useAppSelector(state => state.membersReportsReducer);
 
-  // find the selected member based on memberId
   const selectedMember = membersList.find(member => member.id === memberId);
 
-  // function to handle drawer close
   const handleClose = () => {
     dispatch(toggleMembersOverviewProjectsStatsDrawer());
   };
 
-  // useMemo for memoizing the fetch functions
-  useMemo(() => {
-    fetchData('/reportingMockData/membersReports/projectsStatsOverview.json', setprojectsData);
-  }, []);
+  useEffect(() => {
+    const fetchProjectsData = async () => {
+      if (!memberId || !isDrawerOpen) return;
+
+      try {
+        setLoading(true);
+        const body = {
+          team_member_id: memberId,
+          archived: false,
+        };
+        const response = await reportingApiService.getSingleMemberProjects(body);
+        if (response.done){
+          setProjectsData(response.body.projects || []);
+        } else {
+          setProjectsData([]);
+        }
+      } catch (error) {
+        console.error('Error fetching member projects:', error);
+        setProjectsData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectsData();
+  }, [memberId, isDrawerOpen]);
 
   return (
     <Drawer
@@ -54,7 +74,10 @@ const MembersOverviewProjectsStatsDrawer = ({
         )
       }
     >
-      <MembersOverviewProjectsStatsTable projectList={projectsData} />
+      <MembersOverviewProjectsStatsTable 
+        projectList={projectsData}
+        loading={loading}
+      />
     </Drawer>
   );
 };
