@@ -49,10 +49,13 @@ import logger from '@/utils/errorLogger';
 import { setProjectData, toggleProjectDrawer, setProjectId as setDrawerProjectId } from '@/features/project/project-drawer.slice';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
 import { useAuthService } from '@/hooks/useAuth';
+import { evt_projects_create } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { trackMixpanelEvent } = useMixpanelTracking();
   const { t } = useTranslation('project-drawer');
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(true);
@@ -165,6 +168,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         form.resetFields();
         dispatch(toggleProjectDrawer());
         if (!editMode) {
+          trackMixpanelEvent(evt_projects_create);
           navigate(`/worklenz/projects/${response.data.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
         }
         refetchProjects();

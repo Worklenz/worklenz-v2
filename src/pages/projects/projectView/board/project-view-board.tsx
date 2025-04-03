@@ -30,7 +30,7 @@ import { useAuthService } from '@/hooks/useAuth';
 import { SocketEvents } from '@/shared/socket-events';
 import alertService from '@/services/alerts/alertService';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
-import { evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
+import { evt_project_board_visit, evt_project_task_list_drag_and_move } from '@/shared/worklenz-analytics-events';
 import { ITaskStatusCreateRequest } from '@/types/tasks/task-status-create-request';
 import { statusApiService } from '@/api/taskAttributes/status/status.api.service';
 import logger from '@/utils/errorLogger';
@@ -374,6 +374,7 @@ const ProjectViewBoard = () => {
   };
 
   useEffect(() => {
+    trackMixpanelEvent(evt_project_board_visit);
     if (!statusCategories.length && projectId) {
       dispatch(fetchStatusesCategories());
     }

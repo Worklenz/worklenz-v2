@@ -9,7 +9,7 @@ import PageHeader from '@components/AuthPageHeader';
 
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
-import { evt_forgot_password_page_visit } from '@/shared/worklenz-analytics-events';
+import { evt_forgot_password_page_visit, evt_reset_password_click } from '@/shared/worklenz-analytics-events';
 import { resetPassword, verifyAuthentication } from '@features/auth/authSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSession } from '@/utils/session-helper';
@@ -63,6 +63,7 @@ const ForgotPasswordPage = () => {
         setIsLoading(true);
         const result = await dispatch(resetPassword(values.email)).unwrap();
         if (result.done) {
+          trackMixpanelEvent(evt_reset_password_click);
           setIsSuccess(true);
         }
       } catch (error) {
