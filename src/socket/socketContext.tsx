@@ -109,17 +109,18 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Cleanup function
     return () => {
-      if (socket) {
+      const currentSocket = socketRef.current;
+      if (currentSocket) {
         // Remove all listeners first
-        socket.off('connect');
-        socket.off('connect_error');
-        socket.off('disconnect');
-        socket.off(SocketEvents.INVITATIONS_UPDATE.toString());
-        socket.off(SocketEvents.TEAM_MEMBER_REMOVED.toString());
-        socket.removeAllListeners();
+        currentSocket.off('connect');
+        currentSocket.off('connect_error');
+        currentSocket.off('disconnect');
+        currentSocket.off(SocketEvents.INVITATIONS_UPDATE.toString());
+        currentSocket.off(SocketEvents.TEAM_MEMBER_REMOVED.toString());
+        currentSocket.removeAllListeners();
 
         // Then close the connection
-        socket.close();
+        currentSocket.close();
         socketRef.current = null;
         hasShownConnectedMessage.current = false; // Reset on unmount
       }

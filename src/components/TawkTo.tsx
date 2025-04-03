@@ -39,8 +39,8 @@ const TawkTo: React.FC<TawkToProps> = ({ propertyId, widgetId }) => {
       }
       
       // Reset Tawk globals
-      delete window.Tawk_API;
-      delete window.Tawk_LoadStart;
+      if ('Tawk_API' in window) delete window.Tawk_API;
+      if ('Tawk_LoadStart' in window) delete window.Tawk_LoadStart;
     };
   }, [propertyId, widgetId]);
 

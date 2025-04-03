@@ -10,6 +10,8 @@ import { applyCssVariables } from './styles/colors';
 import { ConfigProvider, theme } from 'antd';
 import { colors } from './styles/colors';
 import { getInitialTheme } from './utils/get-initial-theme';
+// Import the Ant Design patch for React 19
+import '@ant-design/v5-patch-for-react-19';
 
 const initialTheme = getInitialTheme();
 

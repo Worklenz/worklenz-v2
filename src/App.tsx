@@ -19,7 +19,7 @@ import { Language } from './features/i18n/localesSlice';
 import logger from './utils/errorLogger';
 import { SuspenseFallback } from './components/suspense-fallback/suspense-fallback';
 
-const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const App = () => {
   const themeMode = useAppSelector(state => state.themeReducer.mode);
   const language = useAppSelector(state => state.localesReducer.lng);
 
@@ -38,7 +38,7 @@ const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Suspense fallback={<SuspenseFallback />}>
       <ThemeWrapper>
-        <RouterProvider router={router} future={{ v7_startTransition: true }} />
+        <RouterProvider router={router} future={{ v7_relativeSplatPath: true }} />
         <PreferenceSelector />
       </ThemeWrapper>
     </Suspense>
