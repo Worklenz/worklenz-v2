@@ -1,23 +1,22 @@
 import { Flex, Select } from 'antd';
 import './status-dropdown.css';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { useMemo } from 'react';
+import { useMemo, useCallback, memo } from 'react';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { getCurrentGroup, GROUP_BY_STATUS_VALUE } from '@/features/tasks/tasks.slice';
 
 type StatusDropdownProps = {
   task: IProjectTask;
   teamId: string;
 };
 
-const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
+const StatusDropdown = memo(({ task, teamId }: StatusDropdownProps) => {
   const { socket } = useSocket();
   const statusList = useAppSelector(state => state.taskStatusReducer.status);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  const handleStatusChange = (statusId: string) => {
+  const handleStatusChange = useCallback((statusId: string) => {
     if (!task.id || !statusId) return;
 
     socket?.emit(
@@ -30,11 +29,7 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
       })
     );
     socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.id);
-  };
-
-  const isGroupByStatus = () => {
-    return getCurrentGroup().value === GROUP_BY_STATUS_VALUE;
-  };
+  }, [socket, task.id, task.parent_task_id, teamId]);
 
   const options = useMemo(
     () =>
@@ -72,6 +67,6 @@ const StatusDropdown = ({ task, teamId }: StatusDropdownProps) => {
       )}
     </>
   );
-};
+});
 
 export default StatusDropdown;

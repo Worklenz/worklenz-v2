@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import {
   IGroupByOption,
   ILabelsChangeResponse,
@@ -21,6 +21,7 @@ import { ITaskLabel, ITaskLabelFilter } from '@/types/tasks/taskLabel.types';
 import { ITaskPhaseChangeResponse } from '@/types/tasks/task-phase-change-response';
 import { produce } from 'immer';
 import { tasksCustomColumnsService } from '@/api/tasks/tasks-custom-columns.service';
+import { RootState } from '@/app/store';
 
 export enum IGroupBy {
   STATUS = 'status',
@@ -55,16 +56,21 @@ export const setCurrentGroup = (groupBy: IGroupBy): void => {
   localStorage.setItem(LOCALSTORAGE_GROUP_KEY, groupBy);
 };
 
+// Create entity adapter for tasks
+const tasksAdapter = createEntityAdapter<IProjectTask>({
+  selectId: (task) => task.id || '',
+  sortComparer: (a, b) => (a.order || 0) - (b.order || 0),
+});
+
 interface ITaskState {
   search: string | null;
   archived: boolean;
   groupBy: IGroupBy;
   isSubtasksInclude: boolean;
   fields: ITaskListSortableColumn[];
-  tasks: IProjectTask[];
-  taskGroups: ITaskListGroup[];
   loadingColumns: boolean;
   columns: ITaskListColumn[];
+  taskGroups: ITaskListGroup[];
   loadingGroups: boolean;
   error: string | null;
   taskAssignees: ITaskListMemberFilter[];
@@ -78,6 +84,8 @@ interface ITaskState {
   convertToSubtaskDrawerOpen: boolean;
   customColumns: ITaskListColumn[];
   customColumnValues: Record<string, Record<string, any>>;
+  // Normalized tasks state using adapter
+  tasks: ReturnType<typeof tasksAdapter.getInitialState>;
 }
 
 const initialState: ITaskState = {
@@ -86,7 +94,6 @@ const initialState: ITaskState = {
   groupBy: getCurrentGroup().value as IGroupBy,
   isSubtasksInclude: false,
   fields: [],
-  tasks: [],
   loadingColumns: false,
   columns: [],
   taskGroups: [],
@@ -103,7 +110,109 @@ const initialState: ITaskState = {
   convertToSubtaskDrawerOpen: false,
   customColumns: [],
   customColumnValues: {},
+  // Initialize the entity adapter state
+  tasks: tasksAdapter.getInitialState(),
 };
+
+// Create selectors using the adapter
+const taskSelectors = tasksAdapter.getSelectors<RootState>(
+  (state) => state.taskReducer.tasks
+);
+
+// Export selectors for use in components
+export const {
+  selectAll: selectAllTasks,
+  selectById: selectTaskById,
+  selectIds: selectTaskIds,
+} = taskSelectors;
+
+// Create memoized selectors for derived data
+export const selectTasksByGroup = createSelector(
+  [selectAllTasks, (state: RootState) => state.taskReducer.groupBy],
+  (tasks, groupBy) => {
+    // Group tasks by the specified grouping property
+    const groupedTasks: Record<string, IProjectTask[]> = {};
+    
+    tasks.forEach(task => {
+      let groupKey = '';
+      
+      switch (groupBy) {
+        case IGroupBy.STATUS:
+          groupKey = task.status?.id || 'no_status';
+          break;
+        case IGroupBy.PRIORITY:
+          groupKey = task.priority?.id || 'no_priority';
+          break;
+        case IGroupBy.PHASE:
+          groupKey = task.phase?.id || 'no_phase';
+          break;
+        default:
+          groupKey = 'default';
+      }
+      
+      if (!groupedTasks[groupKey]) {
+        groupedTasks[groupKey] = [];
+      }
+      groupedTasks[groupKey].push(task);
+    });
+    
+    return groupedTasks;
+  }
+);
+
+// Select tasks with filters applied
+export const selectFilteredTasks = createSelector(
+  [
+    selectAllTasks,
+    (state: RootState) => state.taskReducer.search,
+    (state: RootState) => state.taskReducer.priorities,
+    (state: RootState) => state.taskReducer.labels,
+    (state: RootState) => state.taskReducer.taskAssignees,
+  ],
+  (tasks, search, priorities, labels, assignees) => {
+    let filtered = tasks;
+    
+    // Apply search filter
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter(task => 
+        task.name?.toLowerCase().includes(searchLower) || 
+        task.description?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Apply priorities filter
+    if (priorities.length > 0) {
+      filtered = filtered.filter(task => 
+        task.priority && priorities.includes(task.priority.id || '')
+      );
+    }
+    
+    // Apply labels filter
+    if (labels.some(label => label.selected)) {
+      const selectedLabelIds = labels
+        .filter(label => label.selected)
+        .map(label => label.id);
+      
+      filtered = filtered.filter(task => 
+        task.labels?.some(label => selectedLabelIds.includes(label.id || ''))
+      );
+    }
+    
+    // Apply assignees filter
+    if (assignees.some(assignee => assignee.selected)) {
+      const selectedAssigneeIds = assignees
+        .filter(assignee => assignee.selected)
+        .map(assignee => assignee.id);
+      
+      filtered = filtered.filter(task => 
+        task.assignees?.some(assignee => selectedAssigneeIds.includes(assignee.id || ''))
+      );
+    }
+    
+    return filtered;
+  }
+);
 
 export const COLUMN_KEYS = {
   KEY: 'KEY',
@@ -468,69 +577,17 @@ const taskSlice = createSlice({
       state.convertToSubtaskDrawerOpen = action.payload;
     },
 
-    addTask: (
-      state,
-      action: PayloadAction<{
-        task: IProjectTask;
-        groupId: string;
-        insert?: boolean;
-      }>
-    ) => {
-      const { task, groupId, insert = false } = action.payload;
-      const group = state.taskGroups.find(g => g.id === groupId);
-      if (!group || !task.id) return;
-
-      // Handle subtask addition
-      if (task.parent_task_id) {
-        const parentTask = group.tasks.find(t => t.id === task.parent_task_id);
-        // if (parentTask) {
-          // if (!parentTask.sub_tasks) parentTask.sub_tasks = [];
-          // parentTask.sub_tasks.push({ ...task });
-          // parentTask.sub_tasks_count = parentTask.sub_tasks.length; // Update the sub_tasks_count based on the actual length
-          // Ensure sub-tasks are visible when adding a new one
-          // parentTask.show_sub_tasks = true;
-        // }
-      } else {
-        // Handle main task addition
-        if (insert) {
-          group.tasks.push(task);
-        } else {
-          group.tasks.unshift(task);
-        }
-      }
+    addTask: (state, action: PayloadAction<IProjectTask>) => {
+      tasksAdapter.addOne(state.tasks, action.payload);
+      updateTaskGroup(state.taskGroups, action.payload);
     },
 
-    deleteTask: (
-      state,
-      action: PayloadAction<{
-        taskId: string;
-        index?: number | null;
-      }>
-    ) => {
-      const { taskId, index } = action.payload;
-
-      for (const group of state.taskGroups) {
-        // Try to find task in subtasks first
-        let found = false;
-        for (const parentTask of group.tasks) {
-          if (parentTask.sub_tasks) {
-            const subTaskIndex = parentTask.sub_tasks.findIndex(st => st.id === taskId);
-            if (subTaskIndex !== -1) {
-              parentTask.sub_tasks.splice(subTaskIndex, 1);
-              parentTask.sub_tasks_count = Math.max((parentTask.sub_tasks_count || 0) - 1, 0);
-              found = true;
-              break;
-            }
-          }
-        }
-        if (found) break;
-
-        // If not found in subtasks, try main tasks
-        const taskIndex = index ?? group.tasks.findIndex(t => t.id === taskId);
-        if (taskIndex !== -1) {
-          group.tasks.splice(taskIndex, 1);
-          break;
-        }
+    deleteTask: (state, action: PayloadAction<string>) => {
+      tasksAdapter.removeOne(state.tasks, action.payload);
+      const taskInGroups = findTaskInGroups(state.taskGroups, action.payload);
+      if (taskInGroups) {
+        const { task, groupId, index } = taskInGroups;
+        deleteTaskFromGroup(state.taskGroups, task, groupId, index);
       }
     },
 
@@ -929,38 +986,26 @@ const taskSlice = createSlice({
     ) => {
       const { taskId, columnKey, value } = action.payload;
       
-      // Update in task groups
-      for (const group of state.taskGroups) {
-        // Check in main tasks
-        const taskIndex = group.tasks.findIndex(t => t.id === taskId);
-        if (taskIndex !== -1) {
-          if (!group.tasks[taskIndex].custom_column_values) {
-            group.tasks[taskIndex].custom_column_values = {};
-          }
-          group.tasks[taskIndex].custom_column_values[columnKey] = value;
-          break;
-        }
-        
-        // Check in subtasks
-        for (const parentTask of group.tasks) {
-          if (parentTask.sub_tasks) {
-            const subtaskIndex = parentTask.sub_tasks.findIndex(st => st.id === taskId);
-            if (subtaskIndex !== -1) {
-              if (!parentTask.sub_tasks[subtaskIndex].custom_column_values) {
-                parentTask.sub_tasks[subtaskIndex].custom_column_values = {};
-              }
-              parentTask.sub_tasks[subtaskIndex].custom_column_values[columnKey] = value;
-              break;
-            }
+      // Update in the normalized store
+      tasksAdapter.updateOne(state.tasks, {
+        id: taskId,
+        changes: {
+          custom_column_values: {
+            ...(state.tasks.entities[taskId]?.custom_column_values || {}),
+            [columnKey]: value
           }
         }
-      }
+      });
       
-      // Also update in the customColumnValues state if needed
-      if (!state.customColumnValues[taskId]) {
-        state.customColumnValues[taskId] = {};
+      // Also update in task groups for immediate UI updates
+      const taskInGroups = findTaskInGroups(state.taskGroups, taskId);
+      if (taskInGroups) {
+        const { task } = taskInGroups;
+        if (!task.custom_column_values) {
+          task.custom_column_values = {};
+        }
+        task.custom_column_values[columnKey] = value;
       }
-      state.customColumnValues[taskId][columnKey] = value;
     },
 
     updateCustomColumnPinned: (state, action: PayloadAction<{ columnId: string; isVisible: boolean }>) => {
@@ -976,6 +1021,18 @@ const taskSlice = createSlice({
         column.pinned = isVisible;
       }
     },
+
+    updateTask: (state, action: PayloadAction<IProjectTask>) => {
+      tasksAdapter.updateOne(state.tasks, {
+        id: action.payload.id || '',
+        changes: action.payload
+      });
+      updateTaskGroup(state.taskGroups, action.payload, false);
+    },
+
+    setAllTasks: (state, action: PayloadAction<IProjectTask[]>) => {
+      tasksAdapter.setAll(state.tasks, action.payload);
+    },
   },
 
   extraReducers: builder => {
@@ -987,10 +1044,14 @@ const taskSlice = createSlice({
       .addCase(fetchTaskGroups.fulfilled, (state, action) => {
         state.loadingGroups = false;
         state.taskGroups = action.payload;
+        
+        // Extract all tasks from groups and normalize them
+        const allTasks = action.payload.flatMap(group => group.tasks);
+        tasksAdapter.setAll(state.tasks, allTasks);
       })
       .addCase(fetchTaskGroups.rejected, (state, action) => {
         state.loadingGroups = false;
-        state.error = action.error.message || 'Failed to fetch task groups';
+        state.error = action.payload as string;
       })
       .addCase(fetchSubTasks.pending, state => {
         state.error = null;
@@ -1135,6 +1196,8 @@ export const {
   updateSubTasks,
   updateCustomColumnValue,
   updateCustomColumnPinned,
+  updateTask,
+  setAllTasks,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;

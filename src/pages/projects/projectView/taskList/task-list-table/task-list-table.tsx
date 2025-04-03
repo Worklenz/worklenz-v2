@@ -502,37 +502,30 @@ const NumberFieldCell: React.FC<{
   updateValue: (taskId: string, columnKey: string, value: string) => void;
 }> = ({ value, task, columnKey, columnObj, updateValue }) => {
   const initialNumberValue = value !== undefined ? Number(value) : undefined;
-  // This stores the raw input value for display during editing
   const [inputValue, setInputValue] = useState<string>(
     initialNumberValue !== undefined ? 
       initialNumberValue.toString() : 
       ''
   );
-  // This stores the formatted value for display when not editing
   const [formattedValue, setFormattedValue] = useState<string>(
     initialNumberValue !== undefined && !isNaN(initialNumberValue) ? 
       formatNumberWithDecimals(initialNumberValue, columnObj?.decimals || 0) : 
       ''
   );
-  // Track if input is being edited
   const [isEditing, setIsEditing] = useState(false);
-  
-  // Track if this is the initial render to avoid unnecessary updates
+  const [isHovered, setIsHovered] = useState(false);
   const isInitialMount = useRef(true);
   
-  // Function to format number with specified decimals
   function formatNumberWithDecimals(num: number, decimals: number): string {
     return num.toFixed(decimals);
   }
   
   useEffect(() => {
-    // Skip the first render to avoid unnecessary updates
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
     
-    // Update values when the prop value changes (from external sources)
     if (value !== undefined && value !== null) {
       const numValue = Number(value);
       if (!isNaN(numValue)) {
@@ -547,27 +540,18 @@ const NumberFieldCell: React.FC<{
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    
-    // Validate input to allow only numeric values
-    // Allow: empty string, numbers, one decimal point, and minus sign at the beginning
     const isValidInput = /^-?\d*\.?\d*$/.test(newValue);
     
     if (!isValidInput && newValue !== '') {
-      return; // Reject invalid input
+      return;
     }
     
-    // Only update the input value during editing, not the formatted value
     setInputValue(newValue);
-  };
-  
-  const handleInputFocus = () => {
-    setIsEditing(true);
   };
   
   const formatAndCommitValue = () => {
     setIsEditing(false);
     
-    // Don't format empty values
     if (inputValue.trim() === '') {
       setFormattedValue('');
       if (task.id) {
@@ -576,17 +560,14 @@ const NumberFieldCell: React.FC<{
       return;
     }
     
-    // Parse the input value
     const numValue = parseFloat(inputValue);
     
-    // Format the value with decimals
     if (!isNaN(numValue)) {
       const decimals = columnObj?.decimals || 0;
       const formatted = formatNumberWithDecimals(numValue, decimals);
       setFormattedValue(formatted);
-      setInputValue(numValue.toString()); // Keep the raw value without trailing zeros
+      setInputValue(numValue.toString());
       
-      // Update the value in the task
       if (task.id) {
         updateValue(task.id, columnKey, numValue.toString());
       }
@@ -598,74 +579,126 @@ const NumberFieldCell: React.FC<{
   const label = columnObj?.label || '';
   const labelPosition = columnObj?.labelPosition || 'left';
   
-  // Determine which value to display based on editing state
-  const displayValue = isEditing ? inputValue : formattedValue;
-  
-  // For percentage type, add % symbol when not editing
   const getDisplayValue = () => {
-    if (displayValue === '') return '';
+    if (formattedValue === '') return '';
     
-    if (numberType === 'percentage' && !isEditing) {
-      return `${displayValue}%`;
+    if (numberType === 'percentage') {
+      return `${formattedValue}%`;
     }
     
-    return displayValue;
+    return formattedValue;
   };
 
-  // Common input styles with right alignment for numbers
   const commonInputStyle = {
     padding: 0,
     border: 'none',
     background: 'transparent',
-    textAlign: 'right' as const, // Add right alignment for all number inputs
+    textAlign: 'right' as const,
   };
 
+  // If not editing, show text with hover effect
+  if (!isEditing) {
+    const displayValue = getDisplayValue();
+    return (
+      <div 
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsEditing(true);
+        }}
+        style={{
+          cursor: 'pointer',
+          textAlign: 'right',
+          padding: '4px 8px',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: '8px',
+          position: 'relative'
+        }}
+        className="group"
+      >
+        <div 
+          style={{
+            color: '#999',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: 0,
+            transition: 'opacity 0.2s ease-in-out',
+            position: 'absolute',
+            right: '8px',
+            top: '50%',
+            transform: 'translateY(-50%)'
+          }}
+          className="group-hover:opacity-100"
+        >
+          <SettingOutlined style={{ fontSize: '14px' }} />
+        </div>
+        {displayValue}
+      </div>
+    );
+  }
+
+  // When editing, show input
   switch (numberType) {
     case 'formatted':
       return (
-        <Input
-          value={getDisplayValue()}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          onBlur={formatAndCommitValue}
-          onPressEnter={formatAndCommitValue}
-          style={commonInputStyle}
-          onKeyDown={(e) => {
-            // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
-            if (
-              ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-              // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-              (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-              // Allow: home, end, left, right, up, down
-              ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
-            ) {
-              // Allow these keys
-              // For decimal point, only allow one
-              if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
-                e.preventDefault();
-              }
-              // For minus sign, only allow at the beginning
-              if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
-                e.preventDefault();
-              }
-              return;
-            }
-            
-            // Block non-numeric keys
-            if (!/^\d$/.test(e.key)) {
-              e.preventDefault();
-            }
+        <div 
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            padding: '4px 8px'
           }}
-        />
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Input
+            value={inputValue}
+            onChange={handleInputChange}
+            onFocus={() => setIsEditing(true)}
+            onBlur={formatAndCommitValue}
+            onPressEnter={formatAndCommitValue}
+            style={{
+              ...commonInputStyle,
+              width: '100%',
+              maxWidth: '120px'
+            }}
+            autoFocus
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (
+                ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
+                (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
+                ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+              ) {
+                if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
+                  e.preventDefault();
+                }
+                if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
+                  e.preventDefault();
+                }
+                return;
+              }
+              
+              if (!/^\d$/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+          />
+        </div>
       );
     case 'withLabel':
       return (
         <Flex gap={4} align="center" justify={labelPosition === 'left' ? 'flex-end' : 'flex-start'}>
           {labelPosition === 'left' && label}
           <Input
-            value={getDisplayValue()}
+            value={inputValue}
             onChange={handleInputChange}
-            onFocus={handleInputFocus}
+            onFocus={() => setIsEditing(true)}
             onBlur={formatAndCommitValue}
             onPressEnter={formatAndCommitValue}
             style={{
@@ -673,28 +706,23 @@ const NumberFieldCell: React.FC<{
               width: '100%',
               textAlign: labelPosition === 'right' ? 'right' : 'left' as const,
             }}
+            autoFocus
+            onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
-              // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
               if (
                 ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
                 (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-                // Allow: home, end, left, right, up, down
                 ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
               ) {
-                // Allow these keys
-                // For decimal point, only allow one
                 if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
                   e.preventDefault();
                 }
-                // For minus sign, only allow at the beginning
                 if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
                   e.preventDefault();
                 }
                 return;
               }
               
-              // Block non-numeric keys
               if (!/^\d$/.test(e.key)) {
                 e.preventDefault();
               }
@@ -706,44 +734,29 @@ const NumberFieldCell: React.FC<{
     case 'unformatted':
       return (
         <Input
-          value={inputValue} // Always use raw input value for unformatted type
+          value={inputValue}
           onChange={handleInputChange}
           onFocus={() => setIsEditing(true)}
-          onBlur={() => {
-            setIsEditing(false);
-            if (task.id && inputValue.trim() !== '') {
-              updateValue(task.id, columnKey, inputValue);
-            }
-          }}
-          onPressEnter={() => {
-            setIsEditing(false);
-            if (task.id && inputValue.trim() !== '') {
-              updateValue(task.id, columnKey, inputValue);
-            }
-          }}
+          onBlur={formatAndCommitValue}
+          onPressEnter={formatAndCommitValue}
           style={commonInputStyle}
+          autoFocus
+          onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
-            // Allow: backspace, delete, tab, escape, enter, decimal point, minus sign
             if (
               ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', '-'].includes(e.key) ||
-              // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
               (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-              // Allow: home, end, left, right, up, down
               ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
             ) {
-              // Allow these keys
-              // For decimal point, only allow one
               if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
                 e.preventDefault();
               }
-              // For minus sign, only allow at the beginning
               if (e.key === '-' && e.currentTarget.selectionStart !== 0) {
                 e.preventDefault();
               }
               return;
             }
             
-            // Block non-numeric keys
             if (!/^\d$/.test(e.key)) {
               e.preventDefault();
             }
@@ -753,34 +766,29 @@ const NumberFieldCell: React.FC<{
     case 'percentage':
       return (
         <Input
-          value={getDisplayValue()}
+          value={inputValue}
           onChange={(e) => {
-            // Remove the % sign if present
             const value = e.target.value.replace('%', '');
             handleInputChange({ ...e, target: { ...e.target, value } } as React.ChangeEvent<HTMLInputElement>);
           }}
-          onFocus={handleInputFocus}
+          onFocus={() => setIsEditing(true)}
           onBlur={formatAndCommitValue}
           onPressEnter={formatAndCommitValue}
           style={commonInputStyle}
+          autoFocus
+          onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
-            // Allow: backspace, delete, tab, escape, enter, decimal point
             if (
               ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.'].includes(e.key) ||
-              // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
               (['a', 'c', 'v', 'x'].includes(e.key) && (e.ctrlKey || e.metaKey)) ||
-              // Allow: home, end, left, right, up, down
               ['Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
             ) {
-              // Allow these keys
-              // For decimal point, only allow one
               if (e.key === '.' && (e.currentTarget.value.includes('.'))) {
                 e.preventDefault();
               }
               return;
             }
             
-            // Block non-numeric keys
             if (!/^\d$/.test(e.key)) {
               e.preventDefault();
             }
@@ -1208,7 +1216,8 @@ const renderCustomColumnContent = (
   return customComponents[fieldType] ? customComponents[fieldType]() : null;
 };
 
-const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, activeId }) => {
+// Wrap component with React.memo for performance optimization
+const TaskListTable = React.memo(({ taskList, tableId, activeId }: TaskListTableProps) => {
   const { t } = useTranslation('task-list-table');
   const dispatch = useAppDispatch();
   const currentSession = useAuthService().getCurrentSession();
@@ -1499,6 +1508,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
                 style={{
                   backgroundColor: getRowBackgroundColor(task.id),
                   minWidth: column.custom_column ? '120px' : undefined,
+                  maxWidth: column.custom_column ? '120px' : undefined,
                 }}
                 data-task-cell
                 onContextMenu={e => handleContextMenu(e, task)}
@@ -1671,6 +1681,6 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
       )}
     </div>
   );
-};
+});
 
 export default TaskListTable;

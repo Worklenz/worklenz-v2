@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; // Add useEffect import
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import Flex from 'antd/es/flex';
@@ -16,7 +16,14 @@ import TaskListTable from '../task-list-table';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import Collapsible from '@/components/collapsible/collapsible';
-import { fetchTaskGroups, fetchTaskListColumns, IGroupBy, updateTaskGroupColor } from '@/features/tasks/tasks.slice';
+import { 
+  fetchTaskGroups, 
+  fetchTaskListColumns, 
+  IGroupBy, 
+  updateTaskGroupColor,
+  selectTasksByGroup,
+  selectFilteredTasks
+} from '@/features/tasks/tasks.slice';
 import { useAuthService } from '@/hooks/useAuth';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { ITaskStatusUpdateModel } from '@/types/tasks/task-status-update-model.types';
@@ -32,7 +39,6 @@ import { ALPHA_CHANNEL } from '@/shared/constants';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
 
 interface TaskListTableWrapperProps {
-  taskList: IProjectTask[];
   tableId: string;
   name: string;
   groupBy: string;
@@ -41,8 +47,7 @@ interface TaskListTableWrapperProps {
   activeId?: string | null;
 }
 
-const TaskListTableWrapper = ({
-  taskList,
+const TaskListTableWrapper = React.memo(({
   tableId,
   name,
   groupBy,
@@ -64,6 +69,23 @@ const TaskListTableWrapper = ({
   const { t } = useTranslation('task-list-table');
   const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
+  
+  // Get tasks using the new optimized selectors
+  const allFilteredTasks = useAppSelector(selectFilteredTasks);
+  const tasksByGroup = useAppSelector(selectTasksByGroup);
+  
+  // Memoize the tasks for this specific group
+  const taskList = useMemo(() => {
+    // Handle different group by cases
+    if (groupBy === IGroupBy.STATUS) {
+      return tasksByGroup[tableId] || [];
+    } else if (groupBy === IGroupBy.PRIORITY) {
+      return tasksByGroup[tableId] || [];
+    } else if (groupBy === IGroupBy.PHASE) {
+      return tasksByGroup[tableId] || [];
+    }
+    return [];
+  }, [tasksByGroup, tableId, groupBy]);
 
   const { setNodeRef, isOver } = useDroppable({
     id: tableId,
@@ -75,47 +97,51 @@ const TaskListTableWrapper = ({
     setCurrentCategory(statusCategory);
   }, [statusCategory]);
 
-  const handlToggleExpand = (e: React.MouseEvent) => {
+  const handlToggleExpand = useCallback((e: React.MouseEvent) => {
     if (isRenaming || showRenameInput) {
       e.stopPropagation();
       return;
     }
-    setIsExpanded(!isExpanded);
-  };
+    setIsExpanded(prev => !prev);
+  }, [isRenaming, showRenameInput]);
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === ' ') {
       e.stopPropagation();
     }
-  };
+  }, []);
 
-  const updateStatus = async (categoryId = currentCategory) => {
+  const updateStatus = useCallback(async (categoryId = currentCategory) => {
     if (!categoryId || !projectId || !tableId) return;
     const body: ITaskStatusUpdateModel = {
       name: tableName.trim(),
       project_id: projectId,
       category_id: categoryId,
     };
-    const res = await statusApiService.updateStatus(tableId, body, projectId);
-    if (res.done) {
-      setCurrentCategory(categoryId); // Update local state immediately
-      dispatch(fetchTaskListColumns(projectId));
-      dispatch(fetchPhasesByProjectId(projectId));
-      dispatch(fetchTaskGroups(projectId));
-      trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Status' });
-      if (res.body.color_code) {
-        dispatch(
-          updateTaskGroupColor({
-            groupId: tableId,
-            colorCode: res.body.color_code + ALPHA_CHANNEL,
-          })
-        );
+    try {
+      const res = await statusApiService.updateStatus(tableId, body, projectId);
+      if (res.done) {
+        setCurrentCategory(categoryId); // Update local state immediately
+        dispatch(fetchTaskListColumns(projectId));
+        dispatch(fetchPhasesByProjectId(projectId));
+        dispatch(fetchTaskGroups(projectId));
+        trackMixpanelEvent(evt_project_board_column_setting_click, { Rename: 'Status' });
+        if (res.body.color_code) {
+          dispatch(
+            updateTaskGroupColor({
+              groupId: tableId,
+              colorCode: res.body.color_code + ALPHA_CHANNEL,
+            })
+          );
+        }
+        dispatch(fetchStatuses(projectId));
       }
-      dispatch(fetchStatuses(projectId));
+    } catch (error) {
+      logger.error('Error updating status:', error);
     }
-  };
+  }, [currentCategory, projectId, tableId, tableName, dispatch, trackMixpanelEvent]);
 
-  const handleRename = async () => {
+  const handleRename = useCallback(async () => {
     if (!projectId || isRenaming || !(isOwnerOrAdmin || isProjectManager) || !tableId) return;
 
     if (tableName.trim() === name.trim()) {
@@ -144,19 +170,32 @@ const TaskListTableWrapper = ({
     } finally {
       setIsRenaming(false);
     }
-  };
+  }, [
+    projectId, 
+    isRenaming, 
+    isOwnerOrAdmin, 
+    isProjectManager, 
+    tableId, 
+    tableName, 
+    name, 
+    groupBy, 
+    updateStatus, 
+    trackMixpanelEvent, 
+    dispatch
+  ]);
 
-  const handleBlurOrEnter = () => {
+  const handleBlurOrEnter = useCallback(() => {
     handleRename();
     setShowRenameInput(false);
-  };
+  }, [handleRename]);
 
-  const handleCategoryChange = async (categoryId: string) => {
+  const handleCategoryChange = useCallback(async (categoryId: string) => {
     trackMixpanelEvent(evt_project_board_column_setting_click, { 'Change category': 'Status' });
     await updateStatus(categoryId); // Update backend and Redux store
-  };
+  }, [trackMixpanelEvent, updateStatus]);
 
-  const items: MenuProps['items'] = [
+  // Memoize dropdown items to prevent unnecessary rerenders
+  const items: MenuProps['items'] = useMemo(() => [
     {
       key: '1',
       icon: <EditOutlined />,
@@ -181,9 +220,12 @@ const TaskListTableWrapper = ({
         ),
       })),
     },
-  ].filter(Boolean) as MenuProps['items'];
+  ].filter(Boolean) as MenuProps['items'], [groupBy, statusCategories, currentCategory, handleCategoryChange]);
 
   const isEditable = isOwnerOrAdmin || isProjectManager;
+  
+  // Calculate task count only when taskList changes
+  const taskCount = useMemo(() => taskList.length, [taskList]);
 
   return (
     <div ref={setNodeRef}>
@@ -230,7 +272,7 @@ const TaskListTableWrapper = ({
                     fontWeight: 600,
                   }}
                 >
-                  {t(tableName)} ({taskList.length})
+                  {t(tableName)} ({taskCount})
                 </Typography.Text>
               )}
             </Button>
@@ -255,6 +297,6 @@ const TaskListTableWrapper = ({
       </ConfigProvider>
     </div>
   );
-};
+});
 
 export default TaskListTableWrapper;
