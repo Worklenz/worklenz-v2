@@ -3,6 +3,7 @@
   "inputLabel": "¿En qué proyecto estás trabajando ahora?",
   "or": "o",
   "templateButton": "Importar desde plantilla",
+  "createFromTemplate": "Crear desde plantilla",
   "goBack": "Volver",
   "continue": "Continuar",
   "cancel": "Cancelar",

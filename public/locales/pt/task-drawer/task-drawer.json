@@ -57,7 +57,10 @@
     },
     "comments": {
       "title": "Comentários",
-      "addComment": "+ Adicionar novo comentário"
+      "addComment": "+ Adicionar novo comentário",
+      "noComments": "Nenhum comentário ainda. Seja o primeiro a comentar!",
+      "delete": "Excluir",
+      "confirmDeleteComment": "Tem certeza de que deseja excluir este comentário?"
     },
     "searchInputPlaceholder": "Pesquisar por nome",
     "pendingInvitation": "Convite pendente"

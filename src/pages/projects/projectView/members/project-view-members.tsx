@@ -37,6 +37,8 @@ import logger from '@/utils/errorLogger';
 // Components
 import EmptyListPlaceholder from '../../../../components/EmptyListPlaceholder';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { evt_project_members_visit } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 interface PaginationType {
   current: number;
@@ -55,6 +57,7 @@ const ProjectViewMembers = () => {
   const auth = useAuthService();
   const user = auth.getCurrentSession();
   const isOwnerOrAdmin = auth.isOwnerOrAdmin();
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
   const { refreshTimestamp } = useAppSelector(state => state.projectReducer);
   
@@ -136,6 +139,10 @@ const ProjectViewMembers = () => {
   useEffect(() => {
     void getProjectMembers();
   }, [refreshTimestamp, projectId, pagination.current, pagination.pageSize, pagination.field, pagination.order]);
+
+  useEffect(() => {
+    trackMixpanelEvent(evt_project_members_visit);
+  }, []);
 
   // Table Configuration
   const columns: TableProps['columns'] = [

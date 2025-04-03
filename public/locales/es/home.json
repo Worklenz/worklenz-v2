@@ -12,7 +12,9 @@
     "title": "Proyectos",
     "refreshProjects": "Actualizar proyectos",
     "noRecentProjects": "Actualmente no estás asignado a ningún proyecto.",
-    "noFavouriteProjects": "No hay proyectos marcados como favoritos."
+    "noFavouriteProjects": "No hay proyectos marcados como favoritos.",
+    "recent": "Recientes",
+    "favourites": "Favoritos"
   },
   "tasks": {
     "assignedToMe": "Asignadas a mí",
@@ -34,6 +36,10 @@
     "nextMonth": "El próximo mes",
     "projectRequired": "Por favor selecciona un proyecto",
     "dueOn": "Tareas vencidas el",
-    "taskRequired": "Por favor agrega una tarea"
+    "taskRequired": "Por favor agrega una tarea",
+    "list": "Lista",
+    "calendar": "Calendario",
+    "tasks": "Tareas",
+    "refresh": "Actualizar"
   }
 }

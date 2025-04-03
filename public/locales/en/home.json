@@ -12,7 +12,9 @@
     "title": "Projects",
     "refreshProjects": "Refresh projects",
     "noRecentProjects": "You are currently not assigned to any project.",
-    "noFavouriteProjects": "No projects have been marked as favorites."
+    "noFavouriteProjects": "No projects have been marked as favorites.",
+    "recent": "Recent",
+    "favourites": "Favourites"
   },
   "tasks": {
     "assignedToMe": "Assigned to me",
@@ -35,6 +37,10 @@
     "projectRequired": "Please select a project",
     "pressTabToSelectDueDateAndProject": "Press Tab to select a due date and a project",
     "dueOn": "Tasks due on",
-    "taskRequired": "Please add a task"
+    "taskRequired": "Please add a task",
+    "list": "List",
+    "calendar": "Calendar",
+    "tasks": "Tasks",
+    "refresh": "Refresh"
   }
 }

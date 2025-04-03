@@ -325,10 +325,10 @@ const TaskComments = ({ taskId, t }: { taskId?: string, t: TFunction }) => {
                       canDelete(item.user_id) && (
                         <Popconfirm
                           key="delete"
-                          title="Are you sure?"
+                          title={t('taskInfoTab.comments.confirmDeleteComment')}
                           onConfirm={() => deleteComment(item.id)}
                         >
-                          <span style={actionStyle}>Delete</span>
+                          <span style={actionStyle}>{t('taskInfoTab.comments.delete')}</span>
                         </Popconfirm>
                       ),
                     ].filter(Boolean)}
@@ -347,7 +347,7 @@ const TaskComments = ({ taskId, t }: { taskId?: string, t: TFunction }) => {
                 padding: '16px 0',
               }}
             >
-              No comments yet. Be the first to comment!
+              {t('taskInfoTab.comments.noComments')}
             </p>
           </div>
         )}
