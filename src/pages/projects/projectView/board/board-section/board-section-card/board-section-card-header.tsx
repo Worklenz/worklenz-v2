@@ -79,6 +79,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const isProjectManager = useIsProjectManager();
   const [isEditable, setIsEditable] = useState(false);
+  const [editName, setEdit] = useState(name);
   const [isEllipsisActive, setIsEllipsisActive] = useState(false);
   const inputRef = useRef<InputRef>(null);
 
@@ -126,6 +127,9 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
         })
       );
       dispatch(fetchStatuses(projectId));
+    } else {
+      setName(editName);
+      logger.error('Error updating status', res.message);
     }
   };
 
@@ -161,9 +165,10 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   };
 
   const handlePressEnter = () => {
-    setShowNewCard(true);
-    setIsEditable(false);
-  };
+      setShowNewCard(true);
+      setIsEditable(false);
+      handleBlur();
+    };
 
   const handleDeleteSection = async () => {
     if (!projectId || !groupId) return;
