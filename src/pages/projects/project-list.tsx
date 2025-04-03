@@ -90,6 +90,14 @@ const ProjectList: React.FC = () => {
   } = useGetProjectsQuery(requestParams);
 
   const filters = useMemo(() => Object.values(IProjectFilter), []);
+  
+  // Create translated segment options for the filters
+  const segmentOptions = useMemo(() => {
+    return filters.map(filter => ({
+      value: filter,
+      label: t(filter.toLowerCase())
+    }));
+  }, [filters, t]);
 
   useEffect(() => {
     setIsLoading(loadingProjects || isFetchingProjects);
@@ -213,7 +221,7 @@ const ProjectList: React.FC = () => {
               />
             </Tooltip>
             <Segmented<IProjectFilter>
-              options={filters}
+              options={segmentOptions}
               defaultValue={filters[getFilterIndex()] ?? filters[0]}
               onChange={handleSegmentChange}
             />
