@@ -106,7 +106,7 @@ const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({ className }) 
       label: (
         <div className="w-full m-0 p-0" onClick={handleTemplateDrawerOpen}>
           <ImportOutlined className="mr-2" />
-          {currentPath === 'home' ? 'Import from template' : 'Create from template'}
+          {currentPath === 'home' ? t('templateButton') : t('createFromTemplate')}
         </div>
       ),
     },

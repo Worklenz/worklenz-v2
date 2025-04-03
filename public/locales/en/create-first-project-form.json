@@ -3,6 +3,7 @@
   "inputLabel": "What project are you working on right now?",
   "or": "or",
   "templateButton": "Import from template",
+  "createFromTemplate": "Create from template",
   "goBack": "Go Back",
   "continue": "Continue",
   "cancel": "Cancel",

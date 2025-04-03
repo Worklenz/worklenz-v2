@@ -117,7 +117,10 @@ const RecentAndFavouriteProjectList = () => {
         />
       </Tooltip>
       <Segmented<'Recent' | 'Favourites'>
-        options={['Recent', 'Favourites']}
+        options={[
+          { value: 'Recent', label: t('projects.recent') },
+          { value: 'Favourites', label: t('projects.favourites') }
+        ]}
         defaultValue={getActiveProjectsFilter() === 0 ? 'Recent' : 'Favourites'}
         onChange={handleSegmentChange}
       />

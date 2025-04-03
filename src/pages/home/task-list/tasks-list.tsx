@@ -209,7 +209,7 @@ const TasksList: React.FC = React.memo(() => {
       title={
         <Flex gap={8} align="center">
           <Typography.Title level={5} style={{ margin: 0 }}>
-            Tasks
+            {t('tasks.tasks')}
           </Typography.Title>
           <Select
             defaultValue={taskModes[0].label}
@@ -221,7 +221,7 @@ const TasksList: React.FC = React.memo(() => {
       }
       extra={
         <Flex gap={8} align="center">
-          <Tooltip title={'Refresh'} trigger={'hover'}>
+          <Tooltip title={t('tasks.refresh')} trigger={'hover'}>
             <Button
               shape="circle"
               icon={<SyncOutlined spin={homeTasksFetching} />}
@@ -229,7 +229,10 @@ const TasksList: React.FC = React.memo(() => {
             />
           </Tooltip>
           <Segmented<'List' | 'Calendar'>
-            options={['List', 'Calendar']}
+            options={[
+              { value: 'List', label: t('tasks.list') },
+              { value: 'Calendar', label: t('tasks.calendar') }
+            ]}
             defaultValue="List"
             onChange={handleSegmentChange}
           />
