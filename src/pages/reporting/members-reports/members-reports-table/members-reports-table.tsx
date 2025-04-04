@@ -95,7 +95,6 @@ const MembersReportsTable = () => {
 
   useEffect(() => {
     if (!isLoading) dispatch(fetchMembersData({ duration, dateRange }));
-    console.log(membersList);
   }, [dispatch, archived, searchQuery, dateRange]);
 
   return (
