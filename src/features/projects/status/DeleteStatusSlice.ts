@@ -4,6 +4,7 @@ interface Status {
   id: string;
   name: string;
   category_id: string;
+  message: string;
 }
 
 interface StatusState {
@@ -23,7 +24,7 @@ const deleteStatusSlice = createSlice({
     deleteStatusToggleDrawer: state => {
       state.isDeleteStatusDrawerOpen = !state.isDeleteStatusDrawerOpen;
     },
-    seletedStatusCategory: (state, action: PayloadAction<{ id: string; name: string; category_id: string}>) => {
+    seletedStatusCategory: (state, action: PayloadAction<{ id: string; name: string; category_id: string; message: string}>) => {
       state.status = action.payload;
     },
     // deleteStatus: (state, action: PayloadAction<string>) => {

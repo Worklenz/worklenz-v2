@@ -165,33 +165,33 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   };
 
   const handlePressEnter = () => {
-      setShowNewCard(true);
-      setIsEditable(false);
-      handleBlur();
-    };
+    setShowNewCard(true);
+    setIsEditable(false);
+    handleBlur();
+  };
 
   const handleDeleteSection = async () => {
     if (!projectId || !groupId) return;
-    dispatch(seletedStatusCategory({ id: groupId, name: name, category_id: categoryId ?? '' }));
-    dispatch(deleteStatusToggleDrawer());
-    
-    // try {
-    //   if (groupBy === IGroupBy.STATUS) {
-    //     const replacingStatusId = status?.[0]?.id;
-    //     if (!replacingStatusId) return;
-    //     const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
-    //     if (res.done) {
-    //       dispatch(deleteSection({ sectionId: groupId }));
-    //     }
-    //   } else if (groupBy === IGroupBy.PHASE) {
-    //     const res = await phasesApiService.deletePhaseOption(groupId, projectId);
-    //     if (res.done) {
-    //       dispatch(deleteSection({ sectionId: groupId }));
-    //     }
-    //   }
-    // } catch (error) {
-    //   logger.error('Error deleting section', error);
-    // }
+
+    try {
+      if (groupBy === IGroupBy.STATUS) {
+        const replacingStatusId = '';
+        const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
+        if (res.done) {
+          dispatch(deleteSection({ sectionId: groupId }));
+        } else {
+          dispatch(seletedStatusCategory({ id: groupId, name: name, category_id: categoryId ?? '', message: res.message ?? '' }));
+          dispatch(deleteStatusToggleDrawer());
+        }
+      } else if (groupBy === IGroupBy.PHASE) {
+        const res = await phasesApiService.deletePhaseOption(groupId, projectId);
+        if (res.done) {
+          dispatch(deleteSection({ sectionId: groupId }));
+        }
+      }
+    } catch (error) {
+      logger.error('Error deleting section', error);
+    }
   };
 
   const items: MenuProps['items'] = [
