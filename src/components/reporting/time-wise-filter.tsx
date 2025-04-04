@@ -40,7 +40,7 @@ const TimeWiseFilter = () => {
   const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setSelectedTimeFrame('');
-      setCustomRange([dateStrings[0], dateStrings[1]]);
+      setCustomRange([dates[0].$d.toString(), dates[1].$d.toString()]);
     } else {
       setCustomRange(null);
     }
