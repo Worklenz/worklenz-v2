@@ -190,12 +190,13 @@ const UpdateMemberDrawer = ({ selectedMemberId, onRoleUpdate }: UpdateMemberDraw
       >
         <Form.Item label={t('jobTitleLabel')} name="jobTitle">
           <Select
+            optionLabelProp="label"
             defaultValue={teamMember?.job_title}
             size="middle"
             placeholder={t('jobTitlePlaceholder')}
             options={jobTitles.map(job => ({
               label: job.name,
-              value: job.name,
+              value: job.id,
             }))}
             suffixIcon={false}
             onChange={(value, option) => {
