@@ -111,7 +111,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
     if (!category || !projectId || !groupId) return;
 
     const body: ITaskStatusUpdateModel = {
-      name: name.trim(),
+      name: name.toLowerCase().trim(),
       project_id: projectId,
       category_id: category,
     };
