@@ -177,6 +177,7 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
       if (groupBy === IGroupBy.STATUS) {
         const replacingStatusId = '';
         const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
+        if (res.message === 'At least one status should exists under each category.') return
         if (res.done) {
           dispatch(deleteSection({ sectionId: groupId }));
         } else {
