@@ -34,11 +34,11 @@ const BoardCreateSectionCard = () => {
     
     // If the base name exists, add a number suffix
     let counter = 1;
-    let newName = `${baseName} ${counter}`;
+    let newName = `${baseName.trim()} (${counter})`;
     
     while (existingNames.includes(newName.toLowerCase())) {
       counter++;
-      newName = `${baseName} ${counter}`;
+      newName = `${baseName.trim()} (${counter})`;
     }
     
     return newName;
