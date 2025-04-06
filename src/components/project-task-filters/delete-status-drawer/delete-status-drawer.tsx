@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Form from 'antd/es/form';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
+import { fetchStatuses, fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
 import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
@@ -68,6 +68,7 @@ const DeleteStatusDrawer: React.FC = () => {
                 if (res.done) {
                     dispatch(deleteSection({ sectionId: groupId }));
                     dispatch(deleteStatusToggleDrawer());
+                    dispatch(fetchStatuses(projectId));
                     refreshTasks();
                     dispatch(fetchStatusesCategories());
                 } else{
