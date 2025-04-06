@@ -37,7 +37,7 @@ const DeleteStatusDrawer: React.FC = () => {
     const { isDeleteStatusDrawerOpen, status: selectedForDelete } = useAppSelector(
         (state) => state.deleteStatusReducer
     );
-    const { status } = useAppSelector(state => state.taskStatusReducer);
+    const { status, statusCategories } = useAppSelector(state => state.taskStatusReducer);
     const { projectId } = useAppSelector(state => state.projectReducer);
     const themeMode = useAppSelector(state => state.themeReducer.mode);
 
@@ -87,7 +87,7 @@ const DeleteStatusDrawer: React.FC = () => {
         }
     };
     useEffect(() => {
-        setCurrentStatus(selectedForDelete?.category_id || '');
+        setCurrentStatus(selectedForDelete?.id || '');
     }, [isDelteStatusDrawerOpen]);
 
     return (
@@ -113,7 +113,7 @@ const DeleteStatusDrawer: React.FC = () => {
                     options={status.map((item) => ({
                         key: item.id,
                         value: item.id,
-                        name: item.name,
+                        name: item.category_name,
                         label: (
                             <Badge
                                 color={item.color_code}
