@@ -115,6 +115,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
         trackMixpanelEvent(evt_project_task_list_context_menu_archive);
         dispatch(deleteTask({ taskId: selectedTask.id }));
         dispatch(deselectAll());
+        if (selectedTask.parent_task_id) socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), selectedTask.parent_task_id);
       }
     } catch (error) {
       console.error(error);
@@ -134,6 +135,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
         trackMixpanelEvent(evt_project_task_list_context_menu_delete);
         dispatch(deleteTask({ taskId: selectedTask.id }));
         dispatch(deselectAll());
+        if (selectedTask.parent_task_id) socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), selectedTask.parent_task_id);
       }
     } catch (error) {
       console.error(error);
