@@ -571,6 +571,7 @@ const taskSlice = createSlice({
       }>
     ) => {
       const { taskId, progress, totalTasksCount, completedCount } = action.payload;
+      console.log('updateTaskProgress', action.payload);
 
       for (const group of state.taskGroups) {
         const task = group.tasks.find(task => task.id === taskId);
@@ -632,8 +633,8 @@ const taskSlice = createSlice({
     },
 
     updateTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
-      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =
-        action.payload;
+      console.log('updateTaskStatus', action.payload);
+      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =        action.payload;
 
       // Find the task in any group
       const taskInfo = findTaskInGroups(state.taskGroups, id);
