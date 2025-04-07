@@ -208,10 +208,12 @@ const ProjectMemberDrawer = () => {
             options={members?.data?.map(member => ({
               key: member.id,
               value: member.id,
+              name: member.name,
               label: renderMemberOption(member),
             }))}
             filterOption={false}
             notFoundContent={renderNotFoundContent()}
+            optionLabelProp="name"
           />
         </Form.Item>
       </Form>
