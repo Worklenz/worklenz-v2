@@ -595,7 +595,7 @@ const boardSlice = createSlice({
       }>
     ) => {
       const { sectionId, subtask, mode } = action.payload;
-      const parentTaskId = subtask.parent_task_id;
+      const parentTaskId = subtask?.parent_task_id || null;
 
       if (!parentTaskId) return;
 

@@ -83,6 +83,8 @@ const BoardCreateSubtaskCard = ({
 
       socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
+        if (!task) return;
+        
         dispatch(updateSubtask({ sectionId, subtask: task, mode: 'add' }));
         setCreatingTask(false);
         // Clear the input field after successful task creation
@@ -91,6 +93,9 @@ const BoardCreateSubtaskCard = ({
         setTimeout(() => {
           inputRef.current?.focus();
         }, 0);
+        if (task.parent_task_id) {
+          socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.parent_task_id);
+        }
       });
     } catch (error) {
       logger.error('Error adding task:', error);
