@@ -1656,7 +1656,10 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
         ) : null}
       </DragOverlay>
 
-      <AddTaskListRow groupId={tableId} />
+      {/* Add task row is positioned outside of the scrollable area */}
+      <div className={`border-t ${customBorderColor}`}>
+        <AddTaskListRow groupId={tableId} />
+      </div>
 
       {createPortal(
         <TaskContextMenu

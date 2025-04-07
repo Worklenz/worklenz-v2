@@ -46,6 +46,7 @@ import {
   IGroupBy,
   updateTaskDescription,
   updateSubTasks,
+  updateTaskProgress,
 } from '@/features/tasks/tasks.slice';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import {
@@ -189,8 +190,23 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       dispatch(deselectAll());
     };
 
-    const handleTaskProgress = (data: unknown) => {
-      logger.info('Task progress update:', data);
+    const handleTaskProgress = (data: {
+      id: string;
+      status: string;
+      complete_ratio: number;
+      completed_count: number;
+      total_tasks_count: number;
+      parent_task: string;
+    }) => {
+      if (!data.total_tasks_count || !data.completed_count) return;
+      dispatch(
+        updateTaskProgress({
+          taskId: data.parent_task,
+          progress: data.complete_ratio,
+          totalTasksCount: data.total_tasks_count,
+          completedCount: data.completed_count,
+        })
+      );
     };
 
     socket.on(SocketEvents.TASK_STATUS_CHANGE.toString(), handleTaskStatusChange);
@@ -371,7 +387,7 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       (draggedElement as HTMLElement).style.transition = 'transform 0.2s ease';
     }
   }, []);
-  
+
   const handleDragEnd = useCallback(
     async ({ active, over }: DragEndEvent) => {
       setActiveId(null);
