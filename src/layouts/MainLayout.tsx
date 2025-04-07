@@ -37,7 +37,7 @@ const MainLayout = () => {
   } as const;
 
   const contentStyles = {
-    paddingInline: isDesktop ? 64 : 24,
+    paddingInline: isDesktop ? 0 : 24,
     overflowX: 'hidden',
   } as const;
 

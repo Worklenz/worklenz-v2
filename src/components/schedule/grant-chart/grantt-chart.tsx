@@ -1,14 +1,28 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { fetchDateList, fetchTeamData } from '../../../features/schedule/scheduleSlice';
 import { themeWiseColor } from '../../../utils/themeWiseColor';
 import GranttMembersTable from './grantt-members-table';
 import { CELL_WIDTH } from '../../../shared/constants';
-import { Flex, Popover } from 'antd';
+import { Flex, Popover, Row, Col, Typography } from 'antd';
 import DayAllocationCell from './day-allocation-cell';
 import ProjectTimelineBar from './project-timeline-bar';
 import ProjectTimelineModal from '@/features/schedule/ProjectTimelineModal';
+
+const { Text } = Typography;
+
+// Date format helper function
+const formatDateLabel = (date: any, day: any) => {
+  return (
+    <>
+      <div>{day.name},</div>
+      <div>
+        {date?.month.substring(0, 4)} {day.day}
+      </div>
+    </>
+  );
+};
 
 const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date }, ref) => {
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
@@ -20,23 +34,37 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
 
   // get theme details from theme reducer
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+  
+  // Use refs to track previous values for comparison
+  const prevDateRef = useRef<string>('');
+  const prevTypeRef = useRef<string>('');
 
   const dispatch = useAppDispatch();
 
-  const getAllData = async () => {
-    await dispatch(fetchTeamData());
-    await dispatch(fetchDateList({ date, type }));
-  };
-
-  // useMemo(() => {
-  //   dispatch(fetchTeamData());
-  // }, [date, type]);
-
-  useMemo(() => {
-    getAllData();
-  }, [date, type]);
-
-  // function to scroll the timeline header and body together
+  // Properly handle data fetching with refs to prevent infinite loops
+  useEffect(() => {
+    // Convert date to a comparable string value
+    const dateStr = date ? date.toISOString() : '';
+    
+    // Only fetch if date or type has actually changed
+    if (dateStr !== prevDateRef.current || type !== prevTypeRef.current) {
+      const fetchData = async () => {
+        try {
+          if (date && type) {
+            await dispatch(fetchDateList({ date, type }));
+          }
+        } catch (error) {
+          console.error('Error fetching date list:', error);
+        }
+      };
+      
+      // Update refs to current values
+      prevDateRef.current = dateStr;
+      prevTypeRef.current = type;
+      
+      fetchData();
+    }
+  }, [date, type, dispatch]);
 
   // refs
   const timelineScrollRef = useRef<HTMLDivElement>(null);
@@ -101,7 +129,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: '375px 1fr',
+        gridTemplateColumns: '370px 1fr',
         overflow: 'hidden',
         height: 'calc(100vh - 206px)',
         border: themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
@@ -109,12 +137,15 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
         backgroundColor: themeMode === 'dark' ? '#141414' : '',
       }}
     >
-      {/* teams table */}
+      {/* Team members table */}
       <div
         style={{
           background: themeWiseColor('#fff', '#141414', themeMode),
+          borderRight: themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
+          height: '100%',
+          position: 'relative',
+          zIndex: 2,
         }}
-        className={`after:content relative z-10 after:absolute after:-right-1 after:top-0 after:-z-10 after:h-full after:w-1.5 after:bg-transparent after:bg-gradient-to-r after:from-[rgba(0,0,0,0.12)] after:to-transparent`}
       >
         <GranttMembersTable
           members={teamData}
@@ -125,8 +156,9 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
         />
       </div>
 
-      {/* timeline */}
-      <div style={{ overflow: 'auto', position: 'relative' }}>
+      {/* Timeline section */}
+      <div style={{ overflow: 'hidden', position: 'relative' }}>
+        {/* Date header row - Fixed at the top */}
         <div
           ref={timelineHeaderScrollRef}
           style={{
@@ -139,13 +171,17 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
             backgroundColor: themeWiseColor('#fff', '#141414', themeMode),
             scrollbarWidth: 'none',
             borderBottom: themeMode === 'dark' ? '1px solid #303030' : '1px solid #e5e7eb',
+            height: '60px', // Fixed height to match team header
+            msOverflowStyle: 'none', // Hide scrollbar in IE and Edge
           }}
           onScroll={() => syncHorizontalScroll('header')}
+          className="hide-scrollbar"
         >
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${dayCount}, ${CELL_WIDTH}px)`,
+              height: '100%',
             }}
           >
             {dateList?.date_data?.map((date: any, index: number) =>
@@ -161,19 +197,23 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
                     color: day.isToday ? '#fff' : '',
                     padding: '8px 0',
                     textAlign: 'center',
-                    height: 60,
+                    height: '60px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    fontSize: '13px',
+                    borderRight: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
                   }}
                 >
-                  <div>{day.name},</div>
-                  <div>
-                    {date?.month.substring(0, 4)} {day.day}
-                  </div>
+                  {formatDateLabel(date, day)}
                 </div>
               ))
             )}
           </div>
         </div>
 
+        {/* Scrollable timeline content */}
         <Flex
           vertical
           ref={timelineScrollRef}
@@ -182,9 +222,10 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
             syncHorizontalScroll('timeline');
           }}
           style={{
-            height: 'calc(100vh - 270px)',
+            height: 'calc(100vh - 266px)',
             overflow: 'auto',
           }}
+          className="hide-scrollbar"
         >
           {teamData.map((member: any) => (
             <div
@@ -192,6 +233,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
               style={{
                 display: 'grid',
                 gridTemplateColumns: `repeat(${dayCount}, ${CELL_WIDTH}px)`,
+                borderBottom: themeMode === 'dark' ? '1px solid #303030' : '1px solid #f0f0f0',
               }}
             >
               {dateList?.date_data?.map((date: any) =>
@@ -202,6 +244,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
                       background: day.isWeekend ? 'rgba(217, 217, 217, 0.4)' : '',
                       color: day.isToday ? '#fff' : '',
                       height: 90,
+                      borderRight: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(0,0,0,0.03)',
                     }}
                   >
                     <DayAllocationCell
@@ -221,7 +264,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
                     trigger={'click'}
                     open={isModalOpen}
                   ></Popover>
-                  {member.projects.map((project: any) => (
+                  {member.projects && Array.isArray(member.projects) && member.projects.map((project: any) => (
                     <div
                       key={project.id}
                       onClick={() => {
@@ -262,6 +305,7 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
                             style={{
                               background: day.isWeekend ? 'rgba(217, 217, 217, 0.4)' : '',
                               height: 65,
+                              borderRight: themeMode === 'dark' ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(0,0,0,0.03)',
                             }}
                           >
                             <div
@@ -282,5 +326,18 @@ const GranttChart = React.forwardRef(({ type, date }: { type: string; date: Date
     </div>
   );
 });
+
+// Add CSS to hide scrollbars but maintain functionality
+const style = document.createElement('style');
+style.innerHTML = `
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
+document.head.appendChild(style);
 
 export default GranttChart;

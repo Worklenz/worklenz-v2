@@ -1,7 +1,11 @@
 import React from 'react';
-import { Tooltip } from 'antd';
+import { Tooltip, Progress, Typography, Space } from 'antd';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleScheduleDrawer } from '../../../features/schedule/scheduleSlice';
+import { ClockCircleOutlined, CheckCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { useAppSelector } from '@/hooks/useAppSelector';
+
+const { Text } = Typography;
 
 type DayAllocationCellProps = {
   totalPerDayHours: number;
@@ -17,94 +21,147 @@ const DayAllocationCell = ({
   isWeekend,
 }: DayAllocationCellProps) => {
   const dispatch = useAppDispatch();
+  const themeMode = useAppSelector(state => state.themeReducer.mode);
 
   // If it's a weekend, override values and disable interaction
   const effectiveTotalPerDayHours = isWeekend ? 0 : totalPerDayHours;
   const effectiveLoggedHours = isWeekend ? 0 : loggedHours;
   const effectiveWorkingHours = isWeekend ? 1 : workingHours; // Avoid division by zero
 
-  const tooltipContent = isWeekend ? (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <span>Weekend</span>
-    </div>
-  ) : (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <span>Total Allocation: {effectiveTotalPerDayHours + effectiveLoggedHours}h</span>
-      <span>Time Logged: {effectiveLoggedHours}h</span>
-      <span>Remaining Time: {effectiveTotalPerDayHours}h</span>
-    </div>
-  );
+  // Calculate utilization percentage and status
+  const totalUtilization = ((effectiveTotalPerDayHours + effectiveLoggedHours) / effectiveWorkingHours) * 100;
+  const isOverAllocated = totalUtilization > 100;
+  const isUnderAllocated = totalUtilization < 100 && totalUtilization > 0;
+  const isZeroAllocated = totalUtilization === 0;
 
-  const gradientColor = isWeekend
-    ? 'rgba(200, 200, 200, 0.35)' // Inactive color for weekends
-    : effectiveTotalPerDayHours <= 0
-      ? 'rgba(200, 200, 200, 0.35)'
-      : effectiveTotalPerDayHours <= effectiveWorkingHours
-        ? 'rgba(6, 126, 252, 0.4)'
-        : 'rgba(255, 0, 0, 0.4)';
+  const remainingHours = Math.max(0, effectiveWorkingHours - effectiveTotalPerDayHours - effectiveLoggedHours);
+
+  // Status colors
+  const getStatusColor = () => {
+    if (isWeekend) return { color: '#d9d9d9', icon: null };
+    if (isOverAllocated) return { color: '#ff4d4f', icon: <WarningOutlined /> };
+    if (isZeroAllocated) return { color: '#d9d9d9', icon: <ClockCircleOutlined /> };
+    if (isUnderAllocated) return { color: '#52c41a', icon: <CheckCircleOutlined /> };
+    return { color: '#1890ff', icon: null };
+  };
+
+  const { color: statusColor, icon: statusIcon } = getStatusColor();
+
+  const tooltipContent = (
+    <Space direction="vertical" size={1}>
+      <Text strong style={{ color: 'white', marginBottom: 4 }}>
+        {isWeekend ? 'Weekend' : isOverAllocated ? 'Over Allocated' : isZeroAllocated ? 'No Allocation' : 'Available Time'}
+      </Text>
+      {!isWeekend && (
+        <>
+          <Text style={{ color: 'white' }}>
+            Working Hours: {effectiveWorkingHours}h
+          </Text>
+          <Text style={{ color: 'white' }}>
+            Allocated: {effectiveTotalPerDayHours}h
+          </Text>
+          <Text style={{ color: 'white' }}>
+            Logged: {effectiveLoggedHours}h
+          </Text>
+          <Text style={{ color: statusColor }}>
+            {isOverAllocated
+              ? `Overallocated by ${(effectiveTotalPerDayHours + effectiveLoggedHours - effectiveWorkingHours).toFixed(1)}h`
+              : `Remaining: ${remainingHours.toFixed(1)}h`}
+          </Text>
+        </>
+      )}
+    </Space>
+  );
 
   return (
     <div
       style={{
-        fontSize: '14px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '10px 7px',
-        height: '92px',
+        padding: '4px',
+        height: '90px', // Exact height to match team member rows
+        width: '100%',
+        boxSizing: 'border-box',
         flexDirection: 'column',
         pointerEvents: isWeekend ? 'none' : 'auto',
+        backgroundColor: isWeekend 
+          ? (themeMode === 'dark' ? 'rgba(40, 40, 40, 0.4)' : 'rgba(240, 240, 240, 0.4)') 
+          : 'transparent',
       }}
     >
-      <Tooltip title={tooltipContent}>
+      <Tooltip title={tooltipContent} color={themeMode === 'dark' ? '#141414' : undefined}>
         <div
           style={{
-            width: '63px',
-            background: `linear-gradient(to top, ${gradientColor} ${
-              (effectiveTotalPerDayHours * 100) / effectiveWorkingHours
-            }%, rgba(190, 190, 190, 0.25) ${
-              (effectiveTotalPerDayHours * 100) / effectiveWorkingHours
-            }%)`,
-            justifyContent: effectiveLoggedHours > 0 ? 'flex-end' : 'center',
-            display: 'flex',
-            alignItems: 'center',
+            width: '100%',
             height: '100%',
-            borderRadius: '5px',
+            display: 'flex',
             flexDirection: 'column',
-            cursor: isWeekend ? 'not-allowed' : 'pointer', // Change cursor for weekends
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: isWeekend ? 'not-allowed' : 'pointer',
+            borderRadius: '4px',
+            padding: '4px',
+            border: `1px solid ${isWeekend ? 'transparent' : themeMode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'}`,
+            transition: 'all 0.2s',
+            background: themeMode === 'dark' ? '#1f1f1f' : '#fafafa',
+            boxShadow: isWeekend ? 'none' : '0 1px 2px rgba(0, 0, 0, 0.05)',
           }}
+          className={isWeekend ? '' : 'day-cell-hover'}
           onClick={!isWeekend ? () => dispatch(toggleScheduleDrawer()) : undefined}
         >
-          <span
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: `${(effectiveTotalPerDayHours * 100) / effectiveWorkingHours}%`,
-            }}
-          >
-            {effectiveTotalPerDayHours}h
-          </span>
-          {effectiveLoggedHours > 0 && (
-            <span
-              style={{
-                height: `${(effectiveLoggedHours * 100) / effectiveWorkingHours}%`,
-                backgroundColor: 'rgba(98, 210, 130, 1)',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderBottomLeftRadius: '5px',
-                borderBottomRightRadius: '5px',
-              }}
-            >
-              {effectiveLoggedHours}h
-            </span>
+          {isWeekend ? (
+            <Text type="secondary" style={{ fontSize: '12px' }}>Weekend</Text>
+          ) : (
+            <>
+              <div style={{ marginBottom: 8, textAlign: 'center' }}>
+                {statusIcon && (
+                  <span style={{ color: statusColor, marginRight: 4 }}>{statusIcon}</span>
+                )}
+                <Text 
+                  style={{ 
+                    fontSize: '13px', 
+                    fontWeight: isOverAllocated ? 'bold' : 'normal',
+                    color: isOverAllocated 
+                      ? (themeMode === 'dark' ? '#ff7875' : '#f5222d') 
+                      : (themeMode === 'dark' ? '#d9d9d9' : 'inherit')
+                  }}
+                >
+                  {effectiveLoggedHours + effectiveTotalPerDayHours}h
+                  {isOverAllocated && '+'}
+                </Text>
+              </div>
+              <Progress 
+                percent={Math.min(100, totalUtilization)} 
+                size="small"
+                showInfo={false}
+                strokeColor={statusColor}
+                trailColor={themeMode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'}
+                style={{ width: '100%', marginBottom: 4 }}
+              />
+              <Text type="secondary" style={{ fontSize: '11px', textAlign: 'center' }}>
+                {isOverAllocated 
+                  ? 'Over'
+                  : isZeroAllocated
+                    ? 'Free'
+                    : `${remainingHours}h left`}
+              </Text>
+            </>
           )}
         </div>
       </Tooltip>
     </div>
   );
 };
+
+// Add CSS for hover styles
+const style = document.createElement('style');
+style.innerHTML = `
+  .day-cell-hover:hover {
+    border-color: #1890ff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+`;
+document.head.appendChild(style);
 
 export default React.memo(DayAllocationCell);
