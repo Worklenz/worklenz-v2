@@ -48,7 +48,7 @@ const ProjectCategoriesFilterDropdown = () => {
 
   // Add filtered categories memo
   const filteredCategories = useMemo(() => {
-    
+
     if (!searchQuery.trim()) return orgCategories;
 
     return orgCategories.filter(category =>
@@ -57,6 +57,14 @@ const ProjectCategoriesFilterDropdown = () => {
   }, [orgCategories, searchQuery]);
 
   const handleCategoryChange = (category: IProjectCategoryViewModel) => {
+    const isSelected = orgCategories.some(h => h.id === category.id);
+    let updatedCategory: IProjectCategoryViewModel[];
+
+    if (isSelected) {
+      updatedCategory = orgCategories.filter(h => h.id !== category.id);
+    } else {
+      updatedCategory = [...orgCategories, category];
+    }
     dispatch(setSelectedProjectCategories(category));
   };
 
@@ -115,11 +123,10 @@ const ProjectCategoriesFilterDropdown = () => {
         icon={<CaretDownFilled />}
         iconPosition="end"
         loading={projectCategoriesLoading}
-        className={`transition-colors duration-300 ${
-          isDropdownOpen
+        className={`transition-colors duration-300 ${isDropdownOpen
             ? 'border-[#1890ff] text-[#1890ff]'
             : 'hover:text-[#1890ff hover:border-[#1890ff]'
-        }`}
+          }`}
       >
         {t('categoryText')}
       </Button>
