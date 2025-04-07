@@ -265,43 +265,47 @@ export const durations: IRPTDuration[] = [
   {
     key: YESTERDAY,
     label: 'yesterdayText',
-    dates: dayjs().subtract(1, 'day').format('MMM DD, YYYY'),
+    dates: new Date(dayjs().subtract(1, 'day').format()).toString(),
   },
   {
     key: LAST_WEEK,
     label: 'lastSevenDaysText',
     dates:
-      dayjs().subtract(7, 'day').format('MMM DD, YYYY') + ' - ' + dayjs().format('MMM DD, YYYY'),
+      new Date(dayjs().subtract(7, 'day').format()).toString() +
+      ' - ' +
+      new Date(dayjs().format()).toString(),
   },
   {
     key: PREV_WEEK,
     label: 'lastWeekText',
     dates:
-      dayjs().startOf('week').subtract(1, 'week').format('MMM DD, YYYY') +
+      new Date(dayjs().startOf('week').subtract(1, 'week').format()).toString() +
       ' - ' +
-      dayjs().endOf('week').subtract(1, 'week').format('MMM DD, YYYY'),
+      new Date(dayjs().endOf('week').subtract(1, 'week').format()).toString(),
   },
   {
     key: LAST_MONTH,
     label: 'lastThirtyDaysText',
     dates:
-      dayjs().subtract(30, 'day').format('MMM DD, YYYY') + ' - ' + dayjs().format('MMM DD, YYYY'),
+      new Date(dayjs().subtract(30, 'day').format()).toString() +
+      ' - ' +
+      new Date(dayjs().format()).toString(),
   },
   {
     key: PREV_MONTH,
     label: 'lastMonthText',
     dates:
-      dayjs().startOf('month').subtract(1, 'month').format('MMM DD, YYYY') +
+      new Date(dayjs().startOf('month').subtract(1, 'month').format()).toString() +
       ' - ' +
-      dayjs().endOf('month').subtract(1, 'month').format('MMM DD, YYYY'),
+      new Date(dayjs().endOf('month').subtract(1, 'month').format()).toString(),
   },
   {
     key: LAST_QUARTER,
     label: 'lastThreeMonthsText',
     dates:
-      dayjs().subtract(3, 'month').format('MMM DD, YYYY') +
+      new Date(dayjs().subtract(3, 'month').format()).toString() +
       ' - ' +
-      dayjs().format('MMM DD, YYYY'),
+      new Date(dayjs().format()).toString(),
   },
   {
     key: ALL_TIME,
