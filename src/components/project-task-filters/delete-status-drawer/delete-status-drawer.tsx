@@ -88,7 +88,7 @@ const DeleteStatusDrawer: React.FC = () => {
         }
     };
     useEffect(() => {
-        setCurrentStatus(selectedForDelete?.id || '');
+        setCurrentStatus(status[0]?.id || '');
     }, [isDelteStatusDrawerOpen]);
 
     return (
@@ -98,7 +98,7 @@ const DeleteStatusDrawer: React.FC = () => {
             open={isDelteStatusDrawerOpen}
             afterOpenChange={handleDrawerOpenChange}
         >
-            <Alert type="warning" message={selectedForDelete?.message} />
+            <Alert type="warning" message={selectedForDelete?.message.replace("$","")} />
 
             <Card className="text-center" style={{ marginTop: 16 }}>
                 <Title level={5}>{selectedForDelete?.name}</Title>
@@ -114,7 +114,7 @@ const DeleteStatusDrawer: React.FC = () => {
                     options={status.map((item) => ({
                         key: item.id,
                         value: item.id,
-                        name: item.category_name,
+                        name: item.name,
                         label: (
                             <Badge
                                 color={item.color_code}
