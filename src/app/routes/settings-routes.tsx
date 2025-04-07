@@ -18,14 +18,20 @@ const settingsRoutes: RouteObject[] = [
   {
     path: 'settings',
     element: <SettingsLayout />,
-    children: settingsItems.map(item => ({
-      path: item.endpoint,
-      element: (
-        <SettingsGuard adminRequired={!!item.adminOnly}>
-          {item.element}
-        </SettingsGuard>
-      ),
-    })),
+    children: [
+      {
+        index: true,
+        element: <Navigate to="profile" replace />
+      },
+      ...settingsItems.map(item => ({
+        path: item.endpoint,
+        element: (
+          <SettingsGuard adminRequired={!!item.adminOnly}>
+            {item.element}
+          </SettingsGuard>
+        ),
+      })),
+    ],
   },
 ];
 

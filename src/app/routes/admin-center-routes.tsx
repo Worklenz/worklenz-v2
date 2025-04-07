@@ -22,10 +22,16 @@ const adminCenterRoutes: RouteObject[] = [
         <AdminCenterLayout />
       </AdminCenterGuard>
     ),
-    children: adminCenterItems.map(item => ({
-      path: item.endpoint,
-      element: item.element,
-    })),
+    children: [
+      {
+        index: true,
+        element: <Navigate to="overview" replace />
+      },
+      ...adminCenterItems.map(item => ({
+        path: item.endpoint,
+        element: item.element,
+      })),
+    ],
   },
 ];
 
