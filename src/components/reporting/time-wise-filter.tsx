@@ -22,9 +22,10 @@ const TimeWiseFilter = () => {
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>(
     durations.find(item => item.key === duration)?.label || 'lastSevenDaysText'
   );
-  const [customRange, setCustomRange] = useState<[string, string] | null>(
-    dateRange.length === 2 ? [dateRange[0], dateRange[1]] : null
-  );
+  // const [customRange, setCustomRange] = useState<[string, string] | null>(
+  //   dateRange.length === 2 ? [dateRange[0], dateRange[1]] : null
+  // );
+  const [customRange, setCustomRange] = useState<[string, string] | null>(null);
 
   // Format customRange for display
   const getDisplayLabel = () => {
@@ -39,7 +40,7 @@ const TimeWiseFilter = () => {
   const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setSelectedTimeFrame('');
-      setCustomRange([dateStrings[0], dateStrings[1]]);
+      setCustomRange([dates[0].$d.toString(), dates[1].$d.toString()]);
     } else {
       setCustomRange(null);
     }

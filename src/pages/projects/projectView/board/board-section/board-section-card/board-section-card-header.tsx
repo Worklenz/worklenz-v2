@@ -107,11 +107,31 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
     }
   }, [editableSectionId, groupId, dispatch]);
 
+  const getUniqueSectionName = (baseName: string): string => {
+    // Check if the base name already exists
+    const existingNames = status.map(status => status.name?.toLowerCase());
+    
+    if (!existingNames.includes(baseName.toLowerCase())) {
+      return baseName;
+    }
+    
+    // If the base name exists, add a number suffix
+    let counter = 1;
+    let newName = `${baseName.trim()} (${counter})`;
+    
+    while (existingNames.includes(newName.toLowerCase())) {
+      counter++;
+      newName = `${baseName.trim()} (${counter})`;
+    }
+    
+    return newName;
+  };
+
   const updateStatus = async (category = categoryId) => {
     if (!category || !projectId || !groupId) return;
-
+    const sectionName = getUniqueSectionName(name);
     const body: ITaskStatusUpdateModel = {
-      name: name.trim(),
+      name: sectionName,
       project_id: projectId,
       category_id: category,
     };
@@ -120,13 +140,14 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
       dispatch(
         setBoardGroupName({
           groupId,
-          name: name ?? '',
+          name: sectionName ?? '',
           colorCode: res.body.color_code ?? '',
           colorCodeDark: res.body.color_code_dark ?? '',
           categoryId: category,
         })
       );
       dispatch(fetchStatuses(projectId));
+      setName(sectionName);
     } else {
       setName(editName);
       logger.error('Error updating status', res.message);
@@ -165,33 +186,34 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
   };
 
   const handlePressEnter = () => {
-      setShowNewCard(true);
-      setIsEditable(false);
-      handleBlur();
-    };
+    setShowNewCard(true);
+    setIsEditable(false);
+    handleBlur();
+  };
 
   const handleDeleteSection = async () => {
     if (!projectId || !groupId) return;
-    dispatch(seletedStatusCategory({ id: groupId, name: name, category_id: categoryId ?? '' }));
-    dispatch(deleteStatusToggleDrawer());
-    
-    // try {
-    //   if (groupBy === IGroupBy.STATUS) {
-    //     const replacingStatusId = status?.[0]?.id;
-    //     if (!replacingStatusId) return;
-    //     const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
-    //     if (res.done) {
-    //       dispatch(deleteSection({ sectionId: groupId }));
-    //     }
-    //   } else if (groupBy === IGroupBy.PHASE) {
-    //     const res = await phasesApiService.deletePhaseOption(groupId, projectId);
-    //     if (res.done) {
-    //       dispatch(deleteSection({ sectionId: groupId }));
-    //     }
-    //   }
-    // } catch (error) {
-    //   logger.error('Error deleting section', error);
-    // }
+
+    try {
+      if (groupBy === IGroupBy.STATUS) {
+        const replacingStatusId = '';
+        const res = await statusApiService.deleteStatus(groupId, projectId, replacingStatusId);
+        if (res.message === 'At least one status should exists under each category.') return
+        if (res.done) {
+          dispatch(deleteSection({ sectionId: groupId }));
+        } else {
+          dispatch(seletedStatusCategory({ id: groupId, name: name, category_id: categoryId ?? '', message: res.message ?? '' }));
+          dispatch(deleteStatusToggleDrawer());
+        }
+      } else if (groupBy === IGroupBy.PHASE) {
+        const res = await phasesApiService.deletePhaseOption(groupId, projectId);
+        if (res.done) {
+          dispatch(deleteSection({ sectionId: groupId }));
+        }
+      }
+    } catch (error) {
+      logger.error('Error deleting section', error);
+    }
   };
 
   const items: MenuProps['items'] = [
@@ -351,3 +373,5 @@ const BoardSectionCardHeader: React.FC<BoardSectionCardHeaderProps> = ({
 };
 
 export default BoardSectionCardHeader;
+
+

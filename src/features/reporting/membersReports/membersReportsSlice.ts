@@ -56,7 +56,7 @@ export const fetchMembersData = createAsyncThunk(
       search: state.searchQuery,
       archived: state.archived,
       duration: duration || state.duration,
-      dateRange: dateRange || state.dateRange,
+      date_range: dateRange || state.dateRange,
     };
     const response = await reportingMembersApiService.getMembers(body);
     return response.body;

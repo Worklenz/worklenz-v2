@@ -116,13 +116,13 @@ const TasksList: React.FC = React.memo(() => {
             <span>{t('tasks.name')}</span>
           </Flex>
         ),
-        width: '400px',
+        width: '150px',
         render: (_, record) => (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Tooltip title={record.name}>
               <Typography.Text
                 ellipsis={{ tooltip: true }}
-                style={{ maxWidth: 300 }}
+                style={{ maxWidth: 150 }}
               >
                 {record.name}
               </Typography.Text>
@@ -151,12 +151,12 @@ const TasksList: React.FC = React.memo(() => {
       {
         key: 'project',
         title: t('tasks.project'),
-        width: '180px',
+        width: '120px',
         render: (_, record) => {
           return (
             <Tooltip title={record.project_name}>
-              <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6 }}>
-                <Badge color={record.phase_color} style={{ marginInlineEnd: 4 }} />
+              <Typography.Paragraph style={{ margin: 0, paddingInlineEnd: 6, maxWidth:120 }} ellipsis={{ tooltip: true }}>
+                <Badge color={record.phase_color || 'blue'} style={{ marginInlineEnd: 4 }} />
                 {record.project_name}
               </Typography.Paragraph>
             </Tooltip>

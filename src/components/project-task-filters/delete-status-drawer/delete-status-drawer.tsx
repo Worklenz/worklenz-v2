@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Form from 'antd/es/form';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
+import { fetchStatuses, fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import useTabSearchParam from '@/hooks/useTabSearchParam';
 import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
@@ -34,10 +34,10 @@ const DeleteStatusDrawer: React.FC = () => {
     const isDelteStatusDrawerOpen = useAppSelector(
         state => state.deleteStatusReducer.isDeleteStatusDrawerOpen
     );
-    const { isDeleteStatusDrawerOpen, status: selectedForDelete } = useSelector(
+    const { isDeleteStatusDrawerOpen, status: selectedForDelete } = useAppSelector(
         (state) => state.deleteStatusReducer
     );
-    const { statusCategories } = useAppSelector(state => state.taskStatusReducer);
+    const { status, statusCategories } = useAppSelector(state => state.taskStatusReducer);
     const { projectId } = useAppSelector(state => state.projectReducer);
     const themeMode = useAppSelector(state => state.themeReducer.mode);
 
@@ -48,7 +48,7 @@ const DeleteStatusDrawer: React.FC = () => {
     }, [projectId, projectView, dispatch]);
 
     const handleDrawerOpenChange = () => {
-        if (statusCategories.length === 0) {
+        if (status.length === 0) {
             dispatch(fetchStatusesCategories());
         }
     };
@@ -68,7 +68,9 @@ const DeleteStatusDrawer: React.FC = () => {
                 if (res.done) {
                     dispatch(deleteSection({ sectionId: groupId }));
                     dispatch(deleteStatusToggleDrawer());
+                    dispatch(fetchStatuses(projectId));
                     refreshTasks();
+                    dispatch(fetchStatusesCategories());
                 } else{
                     console.error('Error deleting status', res);
                 }
@@ -78,17 +80,15 @@ const DeleteStatusDrawer: React.FC = () => {
                     dispatch(deleteSection({ sectionId: groupId }));
                 }
             }
+
         } catch (error) {
             logger.error('Error deleting section', error);
         }finally {
             setDeletingStatus(false);
-            dispatch(deleteStatusToggleDrawer());
-            refreshTasks();
-            dispatch(fetchStatusesCategories());
         }
     };
     useEffect(() => {
-        setCurrentStatus(selectedForDelete?.category_id || '');
+        setCurrentStatus(selectedForDelete?.id || '');
     }, [isDelteStatusDrawerOpen]);
 
     return (
@@ -98,7 +98,7 @@ const DeleteStatusDrawer: React.FC = () => {
             open={isDelteStatusDrawerOpen}
             afterOpenChange={handleDrawerOpenChange}
         >
-            <Alert type="warning" message="One or more tasks (archived/non-archived) will be affected. Please select another status to move the tasks" />
+            <Alert type="warning" message={selectedForDelete?.message} />
 
             <Card className="text-center" style={{ marginTop: 16 }}>
                 <Title level={5}>{selectedForDelete?.name}</Title>
@@ -110,14 +110,12 @@ const DeleteStatusDrawer: React.FC = () => {
                     value={currentStatus}
                     onChange={setReplacingStatus}
                     style={{ width: '100%' }}
-                    dropdownMatchSelectWidth={false}
-                >
-                    {statusCategories.map((item) => (
-                        <Option
-                            key={item.id}
-                            disabled={item.id === selectedForDelete?.id}
-                            value={item.id}
-                        >
+                    optionLabelProp='name'
+                    options={status.map((item) => ({
+                        key: item.id,
+                        value: item.id,
+                        name: item.category_name,
+                        label: (
                             <Badge
                                 color={item.color_code}
                                 text={item?.name || null}
@@ -125,9 +123,10 @@ const DeleteStatusDrawer: React.FC = () => {
                                     opacity: item.id === selectedForDelete?.id ? 0.5 : undefined
                                 }}
                             />
-                        </Option>
-                    ))}
-                </Select>
+                        ),
+                        disabled: item.id === selectedForDelete?.id
+                    }))}
+                />
 
                 <Button
                     type="primary"

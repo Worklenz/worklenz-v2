@@ -52,7 +52,7 @@ const MembersReportsTable = () => {
         />
       ),
       className: 'text-center group-hover:text-[#1890ff]',
-      dataIndex: 'total_tasks',
+      dataIndex: 'tasks',
       width: 180,
     },
     {
@@ -76,7 +76,7 @@ const MembersReportsTable = () => {
         />
       ),
       className: 'text-center group-hover:text-[#1890ff]',
-      dataIndex: 'total_completed',
+      dataIndex: 'completed',
       width: 180,
     },
     {
@@ -88,7 +88,7 @@ const MembersReportsTable = () => {
         />
       ),
       className: 'text-center group-hover:text-[#1890ff]',
-      dataIndex: 'total_ongoing',
+      dataIndex: 'ongoing',
       width: 180,
     },
   ];
