@@ -1,3 +1,4 @@
+import { categoriesApiService } from '@/api/settings/categories/categories.api.service';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { setSelectedProjectCategories } from '@/features/reporting/projectReports/project-reports-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -16,6 +17,8 @@ const ProjectCategoriesFilterDropdown = () => {
   const categoryInputRef = useRef<InputRef>(null);
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [orgCategories, setOrgCategories] = useState<IProjectCategoryViewModel[]>([]);
+  const [loading, setLoading] = useState(false);
   const { projectCategories, loading: projectCategoriesLoading } = useAppSelector(
     state => state.projectCategoriesReducer
   );
@@ -30,14 +33,28 @@ const ProjectCategoriesFilterDropdown = () => {
     }
   };
 
+  const getOrgCategories = async () => {
+    setLoading(true);
+    const response = await categoriesApiService.getCategoriesByOrganization();
+    if (response.done) {
+      setOrgCategories(response.body as IProjectCategoryViewModel[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getOrgCategories();
+  }, []);
+
   // Add filtered categories memo
   const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim()) return projectCategories;
+    
+    if (!searchQuery.trim()) return orgCategories;
 
-    return projectCategories.filter(category =>
+    return orgCategories.filter(category =>
       category.name?.toLowerCase().includes(searchQuery.toLowerCase().trim())
     );
-  }, [projectCategories, searchQuery]);
+  }, [orgCategories, searchQuery]);
 
   const handleCategoryChange = (category: IProjectCategoryViewModel) => {
     dispatch(setSelectedProjectCategories(category));
