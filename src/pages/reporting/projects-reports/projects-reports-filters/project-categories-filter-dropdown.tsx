@@ -82,26 +82,32 @@ const ProjectCategoriesFilterDropdown = () => {
           placeholder={t('searchByCategoryPlaceholder')}
         />
 
-        <List style={{ padding: 0 }}>
+        <List
+          style={{
+            padding: 0,
+            maxHeight: 200,
+            overflowY: 'auto',
+          }}
+        >
           {filteredCategories.length ? (
             filteredCategories.map(category => (
               <List.Item
-                className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
-                key={category.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  gap: 8,
-                  padding: '4px 8px',
-                  border: 'none',
-                }}
+          className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+          key={category.id}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            gap: 8,
+            padding: '4px 8px',
+            border: 'none',
+          }}
               >
-                <Checkbox id={category.id} onChange={() => handleCategoryChange(category)}>
-                  <Flex gap={8}>
-                    <Badge color={category.color_code} />
-                    {category.name}
-                  </Flex>
-                </Checkbox>
+          <Checkbox id={category.id} onChange={() => handleCategoryChange(category)}>
+            <Flex gap={8}>
+              <Badge color={category.color_code} />
+              {category.name}
+            </Flex>
+          </Checkbox>
               </List.Item>
             ))
           ) : (
