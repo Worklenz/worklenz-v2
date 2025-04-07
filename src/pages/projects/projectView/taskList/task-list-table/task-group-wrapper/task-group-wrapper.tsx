@@ -198,10 +198,9 @@ const TaskGroupWrapper = ({ taskGroups, groupBy }: TaskGroupWrapperProps) => {
       total_tasks_count: number;
       parent_task: string;
     }) => {
-      if (!data.total_tasks_count || !data.completed_count) return;
       dispatch(
         updateTaskProgress({
-          taskId: data.parent_task,
+          taskId: data.parent_task || data.id,
           progress: data.complete_ratio,
           totalTasksCount: data.total_tasks_count,
           completedCount: data.completed_count,
