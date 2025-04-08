@@ -53,6 +53,7 @@ const TaskDrawerStatusDropdown = ({ statuses, task, teamId }: TaskDrawerStatusDr
         if (tab === 'board') {
           dispatch(updateBoardTaskStatus(data));
         }
+        if (data.parent_task) getTaskProgress(data.parent_task);
       }
     );
     if (task.status_id !== statusId) {

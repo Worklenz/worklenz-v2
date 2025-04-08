@@ -60,6 +60,9 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
       setTimeout(() => {
         isDeleting.current = false;
       }, 100);
+      if (taskFormViewModel?.task?.parent_task_id) {
+        socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), taskFormViewModel?.task?.parent_task_id);
+      }
     } else {
       isDeleting.current = false;
     }
