@@ -5,8 +5,9 @@
   "scripts": {
     "start": "vite",
     "prebuild": "node scripts/copy-tinymce.js",
-    "build": "node --max-old-space-size=4096 node_modules/.bin/vite build",
-    "dev-build": "vite build",
+    "build": "vite build",
+    "build:prod": "node --max-old-space-size=4096 node_modules/vite/bin/vite.js build",
+    "dev-build": "vite build --mode development",
     "serve": "vite preview",
     "format": "prettier --write ."
   },
@@ -56,12 +57,13 @@
     "react-window": "^1.8.11",
     "socket.io-client": "^4.8.1",
     "tinymce": "^7.7.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^4.2.4"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@babel/plugin-transform-runtime": "^7.26.10",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/chart.js": "^2.9.41",
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^27.5.2",
@@ -72,11 +74,14 @@
     "@types/react-dom": "19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "lightningcss": "^1.29.3",
     "postcss": "^8.5.2",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.17",
+    "terser": "^5.39.0",
     "typescript": "^5.7.3",
-    "vite": "^6.2.2",
+    "vite": "^6.2.5",
+    "vite-plugin-compression": "^0.5.1",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.5"
   },
