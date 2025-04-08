@@ -12,6 +12,18 @@ export const getCsrfToken = (): string | null => {
   return decodeURIComponent(match.split('=')[1]);
 };
 
+// Function to refresh CSRF token if needed
+export const refreshCsrfToken = async (): Promise<string | null> => {
+  try {
+    // Make a GET request to the server to get a fresh CSRF token
+    await axios.get(`${import.meta.env.VITE_API_URL}/csrf-token`, { withCredentials: true });
+    return getCsrfToken();
+  } catch (error) {
+    console.error('Failed to refresh CSRF token:', error);
+    return null;
+  }
+};
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
@@ -64,6 +76,30 @@ apiClient.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const { message, code, name } = error || {};
+    const errorResponse = error.response;
+
+    // Handle CSRF token errors
+    if (errorResponse?.status === 403 && 
+        (typeof errorResponse.data === 'object' && 
+         errorResponse.data !== null && 
+         'message' in errorResponse.data && 
+         errorResponse.data.message === 'Invalid CSRF token' || 
+         (error as any).code === 'EBADCSRFTOKEN')) {
+      alertService.error('Security Error', 'Invalid security token. Refreshing your session...');
+      
+      // Try to refresh the CSRF token and retry the request
+      const newToken = await refreshCsrfToken();
+      if (newToken && error.config) {
+        // Update the token in the failed request
+        error.config.headers['X-CSRF-Token'] = newToken;
+        // Retry the original request with the new token
+        return axios(error.config);
+      } else {
+        // If token refresh failed, redirect to login
+        window.location.href = '/auth/login';
+        return Promise.reject(error);
+      }
+    }
 
     // Add 401 unauthorized handling
     if (error.response?.status === 401) {

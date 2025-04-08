@@ -142,6 +142,7 @@ const ProjectViewHeader = () => {
             } else {
               dispatch(addTask({ task, groupId }));
             }
+            socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.id);
           }
         }
       });
