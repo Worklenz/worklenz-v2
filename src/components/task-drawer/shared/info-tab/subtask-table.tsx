@@ -239,6 +239,7 @@ const SubTaskTable = ({ subTasks, loadingSubTasks, refreshSubTasks, t }: SubTask
                 cursor: 'pointer',
                 height: 36,
               },
+              onClick: () => record.id && handleEditSubTask(record.id)
             })}
             loading={loadingSubTasks}
           />
