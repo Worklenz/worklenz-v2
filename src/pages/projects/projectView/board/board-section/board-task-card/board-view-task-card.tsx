@@ -320,7 +320,12 @@ const BoardViewTaskCard = ({ task, sectionId }: IBoardViewTaskCardProps) => {
         {/* Action Icons */}
         <Flex gap={4}>
           {priorityIcon}
-          <Typography.Text style={{ fontWeight: 500 }}>{task.name}</Typography.Text>
+          <Typography.Text 
+            style={{ fontWeight: 500 }}
+            ellipsis={{ tooltip: task.name }}
+          >
+            {task.name}
+          </Typography.Text>
         </Flex>
 
         <Flex vertical gap={8}>
