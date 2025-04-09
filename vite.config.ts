@@ -1,22 +1,25 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { ConfigEnv, UserConfig } from 'vite';
+import { UserConfig } from 'vite'; // Import type for better auto-completion
 
-// Use async function to properly load the plugins
-const config = async ({ command }: ConfigEnv): Promise<UserConfig> => {
+export default defineConfig(async ({ command }: { command: 'build' | 'serve' }) => {
   const tsconfigPaths = (await import('vite-tsconfig-paths')).default;
 
   return {
     // **Plugins**
     plugins: [
       react(),
-      tsconfigPaths(),
+      tsconfigPaths({
+        // Optionally, you can specify a custom tsconfig file
+        // loose: true, // If you're using a non-standard tsconfig setup
+      }),
     ],
 
     // **Resolve**
     resolve: {
       alias: [
+        // Using an array with objects for clarity and easier management
         { find: '@', replacement: path.resolve(__dirname, './src') },
         { find: '@components', replacement: path.resolve(__dirname, './src/components') },
         { find: '@features', replacement: path.resolve(__dirname, './src/features') },
@@ -30,15 +33,15 @@ const config = async ({ command }: ConfigEnv): Promise<UserConfig> => {
     // **Build**
     build: {
       // **Target**
-      target: 'es2020',
-      
+      target: ['es2020'], // Updated to a more modern target, adjust according to your needs
+
       // **Output**
       outDir: 'build',
-      assetsDir: 'assets',
+      assetsDir: 'assets', // Consider a more specific directory for better organization, e.g., 'build/assets'
       cssCodeSplit: true,
 
       // **Sourcemaps**
-      sourcemap: command === 'serve',
+      sourcemap: command === 'serve' ? 'inline' : true, // Adjust sourcemap strategy based on command
 
       // **Minification**
       minify: 'terser',
@@ -47,8 +50,9 @@ const config = async ({ command }: ConfigEnv): Promise<UserConfig> => {
           drop_console: command === 'build',
           drop_debugger: command === 'build',
         },
+        // **Additional Optimization**
         format: {
-          comments: false,
+          comments: command === 'serve', // Preserve comments during development
         },
       },
 
@@ -56,44 +60,18 @@ const config = async ({ command }: ConfigEnv): Promise<UserConfig> => {
       rollupOptions: {
         output: {
           // **Chunking Strategy**
-          manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              if (['react', 'react-dom', 'react-router-dom'].some(pkg => id.includes(pkg))) {
-                return 'vendor';
-              }
-              if (id.includes('antd')) {
-                return 'antd';
-              }
-              if (id.includes('i18next')) {
-                return 'i18n';
-              }
-            }
-            return null;
+          manualChunks(id) {
+            if (['react', 'react-dom', 'react-router-dom'].includes(id)) return 'vendor';
+            if (id.includes('antd')) return 'antd';
+            if (id.includes('i18next')) return 'i18n';
+            // Add more conditions as needed
           },
           // **File Naming Strategies**
-          chunkFileNames: 'assets/js/[name].[hash].js',
-          entryFileNames: 'assets/js/[name].[hash].js',
-          assetFileNames: (assetInfo) => {
-            const info = assetInfo.name ? assetInfo.name : '';
-            if (/\.(gif|jpe?g|png|svg)$/.test(info)) {
-              return 'assets/images/[name].[hash][extname]';
-            }
-            if (/\.(woff2?|eot|ttf|otf)$/.test(info)) {
-              return 'assets/fonts/[name].[hash][extname]';
-            }
-            return 'assets/[ext]/[name].[hash][extname]';
-          },
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
         },
       },
     },
-
-    // **Server**
-    server: {
-      port: 5173,
-      open: true,
-      cors: true,
-    },
   };
-};
-
-export default defineConfig(config);
+});
