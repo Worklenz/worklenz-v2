@@ -30,6 +30,7 @@ import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 import { evt_project_board_column_setting_click } from '@/shared/worklenz-analytics-events';
 import { ALPHA_CHANNEL } from '@/shared/constants';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
+import AddTaskListRow from '../task-list-table-rows/add-task-list-row';
 
 interface TaskListTableWrapperProps {
   taskList: IProjectTask[];
@@ -244,13 +245,26 @@ const TaskListTableWrapper = ({
               </Dropdown>
             )}
           </Flex>
-          <Collapsible
-            isOpen={isExpanded}
-            className={`border-l-[3px] relative after:content after:absolute after:h-full after:w-1 after:z-10 after:top-0 after:left-0`}
-            color={color}
-          >
-            <TaskListTable taskList={taskList} tableId={tableId} activeId={activeId} />
-          </Collapsible>
+            <Collapsible
+              isOpen={isExpanded}
+              className={`border-l-[3px] relative after:content after:absolute after:h-full after:w-1 after:z-10 after:top-0 after:left-0`}
+              color={color}
+            >
+              <div style={{ position: 'relative', minHeight: '100%' }}>
+              <TaskListTable taskList={taskList} tableId={tableId} activeId={activeId} />
+              <div
+                style={{
+                position: 'sticky',
+                bottom: 0,
+                width: '100%',
+                zIndex: 1,
+                }}
+              >
+                <AddTaskListRow groupId={tableId} />
+              </div>
+              </div>
+            </Collapsible>
+          
         </Flex>
       </ConfigProvider>
     </div>
