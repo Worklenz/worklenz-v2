@@ -83,19 +83,23 @@ const AddTaskListRow = ({ groupId = null, parentTask = null }: IAddTaskListRowPr
 
   const onNewTaskReceived = (task: IAddNewTask) => {
     if (!groupId) return;
-    
+
     // Ensure we're adding the task with the correct group
     const taskWithGroup = {
       ...task,
-      groupId: groupId
+      groupId: groupId,
     };
 
     // Add the task to the state
-    dispatch(addTask({ 
-      task: taskWithGroup, 
-      groupId, 
-      insert: true 
-    }));
+    dispatch(
+      addTask({
+        task: taskWithGroup,
+        groupId,
+        insert: true,
+      })
+    );
+
+    socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.parent_task_id || task.id);
 
     // Reset the input state
     reset(false);

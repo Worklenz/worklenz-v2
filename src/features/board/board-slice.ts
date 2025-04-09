@@ -209,9 +209,7 @@ export const fetchBoardSubTasks = createAsyncThunk(
       const { boardReducer } = state;
 
       // Check if the task is already expanded
-      const task = boardReducer.taskGroups
-        .flatMap(group => group.tasks)
-        .find(t => t.id === taskId);
+      const task = boardReducer.taskGroups.flatMap(group => group.tasks).find(t => t.id === taskId);
 
       if (task?.show_sub_tasks) {
         // If already expanded, just return without fetching
@@ -286,7 +284,11 @@ const findParentTaskInAllGroups = (
   return null;
 };
 
-const getTaskListConfig = (state: BoardState, projectId: string, parentTaskId?: string): ITaskListConfigV2 => {
+const getTaskListConfig = (
+  state: BoardState,
+  projectId: string,
+  parentTaskId?: string
+): ITaskListConfigV2 => {
   const selectedMembers = state.taskAssignees
     .filter(member => member.selected)
     .map(member => member.id)
@@ -348,14 +350,20 @@ const boardSlice = createSlice({
       state.editableSectionId = action.payload;
     },
 
-    addTaskCardToTheTop: (state, action: PayloadAction<{ sectionId: string; task: IProjectTask }>) => {
+    addTaskCardToTheTop: (
+      state,
+      action: PayloadAction<{ sectionId: string; task: IProjectTask }>
+    ) => {
       const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         section.tasks.unshift(action.payload.task);
       }
     },
 
-    addTaskCardToTheBottom: (state, action: PayloadAction<{ sectionId: string; task: IProjectTask }>) => {
+    addTaskCardToTheBottom: (
+      state,
+      action: PayloadAction<{ sectionId: string; task: IProjectTask }>
+    ) => {
       const section = state.taskGroups.find(sec => sec.id === action.payload.sectionId);
       if (section) {
         section.tasks.push(action.payload.task);
@@ -386,17 +394,46 @@ const boardSlice = createSlice({
       if (sectionId) {
         const section = state.taskGroups.find(sec => sec.id === sectionId);
         if (section) {
-          section.tasks = section.tasks.filter(task => task.id !== taskId);
-          return;
+          // Check if task is in the main task list
+          const taskIndex = section.tasks.findIndex(task => task.id === taskId);
+          if (taskIndex !== -1) {
+            section.tasks.splice(taskIndex, 1);
+            return;
+          }
+          
+          // Check if task is in subtasks
+          for (const parentTask of section.tasks) {
+            if (!parentTask.sub_tasks) continue;
+            
+            const subtaskIndex = parentTask.sub_tasks.findIndex(st => st.id === taskId);
+            if (subtaskIndex !== -1) {
+              parentTask.sub_tasks.splice(subtaskIndex, 1);
+              parentTask.sub_tasks_count = Math.max(0, (parentTask.sub_tasks_count || 1) - 1);
+              return;
+            }
+          }
         }
       }
 
       // If section not found or task not in section, search all groups
       for (const group of state.taskGroups) {
+        // Check main tasks
         const taskIndex = group.tasks.findIndex(task => task.id === taskId);
         if (taskIndex !== -1) {
           group.tasks.splice(taskIndex, 1);
-          break;
+          return;
+        }
+        
+        // Check subtasks
+        for (const parentTask of group.tasks) {
+          if (!parentTask.sub_tasks) continue;
+          
+          const subtaskIndex = parentTask.sub_tasks.findIndex(st => st.id === taskId);
+          if (subtaskIndex !== -1) {
+            parentTask.sub_tasks.splice(subtaskIndex, 1);
+            parentTask.sub_tasks_count = Math.max(0, (parentTask.sub_tasks_count || 1) - 1);
+            return;
+          }
         }
       }
     },
@@ -496,7 +533,7 @@ const boardSlice = createSlice({
       state.search = action.payload;
     },
 
-    toggleSubtasksInclude: (state) => {
+    toggleSubtasksInclude: state => {
       state.isSubtasksInclude = !state.isSubtasksInclude;
     },
 
@@ -591,11 +628,11 @@ const boardSlice = createSlice({
       action: PayloadAction<{
         sectionId: string;
         subtask: IProjectTask;
-        mode: 'add' | 'delete'
+        mode: 'add' | 'delete';
       }>
     ) => {
       const { sectionId, subtask, mode } = action.payload;
-      const parentTaskId = subtask.parent_task_id;
+      const parentTaskId = subtask?.parent_task_id || null;
 
       if (!parentTaskId) return;
 
@@ -717,6 +754,32 @@ const boardSlice = createSlice({
         }
       }
     },
+    updateTaskProgress: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        complete_ratio: number;
+        completed_count: number;
+        total_tasks_count: number;
+        parent_task: string;
+      }>
+    ) => {
+      const { id, complete_ratio, completed_count, total_tasks_count, parent_task } =
+        action.payload;
+
+      // Find the task in any group
+      const taskInfo = findTaskInAllGroups(state.taskGroups, parent_task || id);
+
+      // Check if taskInfo exists before destructuring
+      if (!taskInfo) return;
+
+      const { task } = taskInfo;
+
+      // Update the task properties
+      task.complete_ratio = +complete_ratio;
+      task.completed_count = completed_count;
+      task.total_tasks_count = total_tasks_count;
+    },
   },
   extraReducers: builder => {
     builder
@@ -804,5 +867,6 @@ export const {
   updateBoardTaskStatus,
   updateTaskPriority,
   updateBoardTaskLabel,
+  updateTaskProgress,
 } = boardSlice.actions;
 export default boardSlice.reducer;

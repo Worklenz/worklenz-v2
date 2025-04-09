@@ -115,6 +115,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
         trackMixpanelEvent(evt_project_task_list_context_menu_archive);
         dispatch(deleteTask({ taskId: selectedTask.id }));
         dispatch(deselectAll());
+        if (selectedTask.parent_task_id) socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), selectedTask.parent_task_id);
       }
     } catch (error) {
       console.error(error);
@@ -134,6 +135,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
         trackMixpanelEvent(evt_project_task_list_context_menu_delete);
         dispatch(deleteTask({ taskId: selectedTask.id }));
         dispatch(deselectAll());
+        if (selectedTask.parent_task_id) socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), selectedTask.parent_task_id);
       }
     } catch (error) {
       console.error(error);
@@ -149,11 +151,10 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
         JSON.stringify({
           task_id: selectedTask.id,
           status_id: targetId,
-          parent_task: null,
+          parent_task: selectedTask.parent_task_id || null,
           team_id: currentSession?.team_id,
         })
       );
-      socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), selectedTask);
     } catch (error) {
       logger.error('Error moving status', error);
     }
@@ -168,6 +169,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
         JSON.stringify({
           task_id: selectedTask.id,
           priority_id: targetId,
+          parent_task: selectedTask.parent_task_id || null,
           team_id: currentSession?.team_id,
         })
       );
@@ -183,6 +185,7 @@ const TaskContextMenu = ({ visible, position, selectedTask, onClose, t }: TaskCo
       socket?.emit(SocketEvents.TASK_PHASE_CHANGE.toString(), {
         task_id: selectedTask.id,
         phase_id: targetId,
+        parent_task: selectedTask.parent_task_id || null,
         team_id: currentSession?.team_id,
       });
     } catch (error) {

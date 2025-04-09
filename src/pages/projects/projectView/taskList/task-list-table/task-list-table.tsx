@@ -1655,6 +1655,7 @@ const TaskListTable: React.FC<TaskListTableProps> = ({ taskList, tableId, active
           </table>
         ) : null}
       </DragOverlay>
+
       {createPortal(
         <TaskContextMenu
           visible={contextMenuVisible}
