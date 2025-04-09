@@ -101,7 +101,7 @@ const DependenciesTable = ({
       render: (record: ITaskDependency) => (
         <Flex align="center" gap={8}>
           <Typography.Text ellipsis={{ tooltip: record.task_name }}>
-            {record.task_name}
+            {record.task_name?.length ?? 0 > 36 ? `${record.task_name?.slice(0, 36)}...` : record?.task_name ?? ''}
           </Typography.Text>
           <Tag>{record.task_key}</Tag>
         </Flex>
