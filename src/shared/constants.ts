@@ -295,9 +295,9 @@ export const durations: IRPTDuration[] = [
     key: PREV_MONTH,
     label: 'lastMonthText',
     dates:
-      new Date(dayjs().startOf('month').subtract(1, 'month').format()).toString() +
+      new Date(dayjs().subtract(1, 'month').startOf('month').format()).toString() +
       ' - ' +
-      new Date(dayjs().endOf('month').subtract(1, 'month').format()).toString(),
+      new Date(dayjs().subtract(1, 'month').endOf('month').format()).toString(),
   },
   {
     key: LAST_QUARTER,

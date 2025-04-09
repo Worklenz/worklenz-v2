@@ -16,6 +16,7 @@ import { SocketEvents } from '@/shared/socket-events';
 import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
 import { deleteTask } from '@/features/tasks/tasks.slice';
 import { deleteBoardTask, updateTaskName } from '@/features/board/board-slice';
+import TextArea from 'antd/es/input/TextArea';
 
 type TaskDrawerHeaderProps = {
   inputRef: React.RefObject<InputRef | null>;
@@ -36,26 +37,26 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
     setTaskName(taskFormViewModel?.task?.name ?? '');
   }, [taskFormViewModel?.task?.name]);
 
-  const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTaskName(e.currentTarget.value);
-  };
+  const onTaskNameChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setTaskName(e.currentTarget.value);
+    };
 
   const handleDeleteTask = async () => {
     if (!selectedTaskId) return;
-    
+
     // Set flag to indicate we're deleting the task
     isDeleting.current = true;
-    
+
     const res = await tasksApiService.deleteTask(selectedTaskId);
     if (res.done) {
       // Explicitly clear the task parameter from URL
       clearTaskFromUrl();
-      
+
       dispatch(setShowTaskDrawer(false));
       dispatch(setSelectedTaskId(null));
       dispatch(deleteTask({ taskId: selectedTaskId }));
       dispatch(deleteBoardTask({ sectionId: '', taskId: selectedTaskId }));
-      
+
       // Reset the flag after a short delay
       setTimeout(() => {
         isDeleting.current = false;
@@ -113,7 +114,7 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
   return (
     <Flex gap={12} align="center" style={{ marginBlockEnd: 6 }}>
       <Flex style={{ position: 'relative', width: '100%' }}>
-        <Input
+        <TextArea
           ref={inputRef}
           size="large"
           value={taskName}
@@ -121,12 +122,14 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
           onBlur={handleInputBlur}
           placeholder={t('taskHeader.taskNamePlaceholder')}
           className="task-name-input"
-          style={{ 
-            width: '100%', 
+          style={{
+            width: '100%',
             border: 'none',
+            resize: 'none',
           }}
           showCount={false}
           maxLength={250}
+          autoSize={{ minRows: 1, maxRows: 3 }}
         />
       </Flex>
 
