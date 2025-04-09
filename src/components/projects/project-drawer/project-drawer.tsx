@@ -60,7 +60,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(true);
   const currentSession = useAuthService().getCurrentSession();
-  
+
   // State
   const [editMode, setEditMode] = useState<boolean>(false);
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
@@ -440,10 +440,10 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           </Form.Item> */}
 
           <Form.Item name="working_days" label={t('estimateWorkingDays')}>
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+            <Input type="number" min={0} disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
           <Form.Item name="man_days" label={t('estimateManDays')}>
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+            <Input type="number" min={0} disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
           <Form.Item
             name="hours_per_day"
@@ -459,7 +459,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               },
             ]}
           >
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+            <Input type="number" min={0} disabled={!isProjectManager && !isOwnerorAdmin} />
           </Form.Item>
         </Form>
 
