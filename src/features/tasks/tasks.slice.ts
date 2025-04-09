@@ -632,8 +632,7 @@ const taskSlice = createSlice({
     },
 
     updateTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
-      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =
-        action.payload;
+      const { id, status_id, color_code, color_code_dark, complete_ratio, statusCategory } =        action.payload;
 
       // Find the task in any group
       const taskInfo = findTaskInGroups(state.taskGroups, id);

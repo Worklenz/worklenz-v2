@@ -8,6 +8,7 @@ import {
   reorderTaskGroups,
   moveTaskBetweenGroups,
   IGroupBy,
+  updateTaskProgress,
 } from '@features/board/board-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
@@ -79,6 +80,17 @@ const ProjectViewBoard = () => {
     })
   );
 
+  const handleTaskProgress = (data: {
+    id: string;
+    status: string;
+    complete_ratio: number;
+    completed_count: number;
+    total_tasks_count: number;  
+    parent_task: string;
+  }) => {
+    dispatch(updateTaskProgress(data));
+  };
+
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     setActiveItem(active.data.current);
@@ -86,7 +98,6 @@ const ProjectViewBoard = () => {
     // Store the original source group ID when drag starts
     if (active.data.current?.type === 'task') {
       originalSourceGroupIdRef.current = active.data.current.sectionId;
-      console.log('Original source group ID stored:', originalSourceGroupIdRef.current);
     }
   };
 
@@ -216,7 +227,7 @@ const ProjectViewBoard = () => {
 
       // Handle case where task is not found in source group (might have been moved already in UI)
       if (fromIndex === -1) {
-        console.warn('Task not found in source group. Using task sort_order from task object.');
+        logger.info('Task not found in source group. Using task sort_order from task object.');
 
         // Use the sort_order from the task object itself
         const fromSortOrder = task.sort_order;
@@ -372,6 +383,16 @@ const ProjectViewBoard = () => {
     setActiveItem(null);
     originalSourceGroupIdRef.current = null; // Reset the ref
   };
+
+  useEffect(() => {   
+    if (socket) {
+      socket.on(SocketEvents.GET_TASK_PROGRESS.toString(), handleTaskProgress);
+    }
+
+    return () => {
+      socket?.off(SocketEvents.GET_TASK_PROGRESS.toString(), handleTaskProgress);
+    };
+  }, [socket]);
 
   useEffect(() => {
     trackMixpanelEvent(evt_project_board_visit);

@@ -9,6 +9,7 @@ import {
   GROUP_BY_PRIORITY_VALUE,
   GROUP_BY_STATUS_VALUE,
   updateSubtask,
+  updateTaskProgress,
 } from '@features/board/board-slice';
 import { themeWiseColor } from '@/utils/themeWiseColor';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -83,6 +84,8 @@ const BoardCreateSubtaskCard = ({
 
       socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
+        if (!task) return;
+        
         dispatch(updateSubtask({ sectionId, subtask: task, mode: 'add' }));
         setCreatingTask(false);
         // Clear the input field after successful task creation
@@ -91,6 +94,19 @@ const BoardCreateSubtaskCard = ({
         setTimeout(() => {
           inputRef.current?.focus();
         }, 0);
+        if (task.parent_task_id) {
+          socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.parent_task_id);
+          socket?.once(SocketEvents.GET_TASK_PROGRESS.toString(), (data: {
+            id: string;
+            complete_ratio: number;
+            completed_count: number;
+            total_tasks_count: number;
+            parent_task: string;
+          }) => { 
+            if (!data.parent_task) data.parent_task = task.parent_task_id || '';
+            dispatch(updateTaskProgress(data));
+          });
+        }
       });
     } catch (error) {
       logger.error('Error adding task:', error);

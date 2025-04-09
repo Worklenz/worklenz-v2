@@ -7,6 +7,7 @@ import { setTeamMembers, setTasks } from '@/features/account-setup/account-setup
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { validateEmail } from '@/utils/validateEmail';
+import { sanitizeInput } from '@/utils/sanitizeInput';
 import { Rule } from 'antd/es/form';
 
 const { Title } = Typography;
@@ -47,19 +48,26 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
   };
 
   const updateEmail = (id: number, value: string) => {
+    const sanitizedValue = sanitizeInput(value);
     dispatch(
       setTeamMembers(
         teamMembers.map(teamMember =>
-          teamMember.id === id ? { ...teamMember, value } : teamMember
+          teamMember.id === id ? { ...teamMember, value: sanitizedValue } : teamMember
         )
       )
     );
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (!e.target.value.trim()) return;
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const input = e.currentTarget as HTMLInputElement;
+    if (!input.value.trim()) return;
     e.preventDefault();
     addEmail();
+  };
+
+  // Function to set ref that doesn't return anything (void)
+  const setInputRef = (index: number) => (el: InputRef | null) => {
+    inputRefs.current[index] = el;
   };
 
   useEffect(() => {
@@ -132,8 +140,8 @@ const MembersStep: React.FC<MembersStepProps> = ({ isDarkMode, styles }) => {
                     placeholder={t('emailPlaceholder')}
                     value={teamMember.value}
                     onChange={e => updateEmail(teamMember.id, e.target.value)}
-                    onPressEnter={e => handleKeyPress(e)}
-                    ref={el => (inputRefs.current[index] = el)}
+                    onPressEnter={handleKeyPress}
+                    ref={setInputRef(index)}
                     status={teamMember.value && !validateEmail(teamMember.value) ? 'error' : ''}
                     id={`member-${index}`}
                   />
