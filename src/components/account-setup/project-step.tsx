@@ -8,6 +8,7 @@ import TemplateDrawer from '../common/template-drawer/template-drawer';
 
 import { RootState } from '@/app/store';
 import { setProjectName, setTemplateId } from '@/features/account-setup/account-setup.slice';
+import { sanitizeInput } from '@/utils/sanitizeInput';
 
 import { projectTemplatesApiService } from '@/api/project-templates/project-templates.api.service';
 import logger from '@/utils/errorLogger';
@@ -80,6 +81,11 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
     onEnter();
   };
 
+  const handleProjectNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitizedValue = sanitizeInput(e.target.value);
+    dispatch(setProjectName(sanitizedValue));
+  };
+
   return (
     <div>
       <Form className="step-form" style={styles.form}>
@@ -96,7 +102,7 @@ export const ProjectStep: React.FC<Props> = ({ onEnter, styles, isDarkMode = fal
           <Input
             placeholder={t('projectStepPlaceholder')}
             value={projectName}
-            onChange={e => dispatch(setProjectName(e.target.value))}
+            onChange={handleProjectNameChange}
             onPressEnter={onPressEnter}
             ref={inputRef}
           />

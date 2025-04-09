@@ -23,6 +23,7 @@ import { RootState } from '@/app/store';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { getUserSession, setSession } from '@/utils/session-helper';
 import { validateEmail } from '@/utils/validateEmail';
+import { sanitizeInput } from '@/utils/sanitizeInput';
 import logo from '@/assets/images/logo.png';
 import logoDark from '@/assets/images/logo-dark-mode.png';
 
@@ -149,13 +150,15 @@ const AccountSetup: React.FC = () => {
   const completeAccountSetup = async (skip = false) => {
     try {
       const model: IAccountSetupRequest = {
-        team_name: organizationName,
-        project_name: projectName,
-        tasks: tasks.map(task => task.value.trim()).filter(task => task !== ''),
+        team_name: sanitizeInput(organizationName),
+        project_name: sanitizeInput(projectName),
+        tasks: tasks
+          .map(task => sanitizeInput(task.value.trim()))
+          .filter(task => task !== ''),
         team_members: skip
           ? []
           : teamMembers
-              .map(teamMember => teamMember.value.trim())
+              .map(teamMember => sanitizeInput(teamMember.value.trim()))
               .filter(email => validateEmail(email)),
       };
       const res = await profileSettingsApiService.setupAccount(model);

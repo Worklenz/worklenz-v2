@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '@/app/store';
 import { setTasks } from '@/features/account-setup/account-setup.slice';
+import { sanitizeInput } from '@/utils/sanitizeInput';
 
 const { Title } = Typography;
 
@@ -37,18 +38,25 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
   };
 
   const updateTask = (id: number, value: string) => {
-    dispatch(setTasks(tasks.map(task => (task.id === id ? { ...task, value } : task))));
+    const sanitizedValue = sanitizeInput(value);
+    dispatch(setTasks(tasks.map(task => (task.id === id ? { ...task, value: sanitizedValue } : task))));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (!e.target.value.trim()) return;
-      e.preventDefault();
-      addTask();
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const input = e.currentTarget as HTMLInputElement;
+    if (!input.value.trim()) return;
+    e.preventDefault();
+    addTask();
   };
 
   useEffect(() => {
     setTimeout(() => inputRefs.current[0]?.focus(), 200);
   }, []);
+
+  // Function to set ref that doesn't return anything (void)
+  const setInputRef = (index: number) => (el: InputRef | null) => {
+    inputRefs.current[index] = el;
+  };
 
   return (
     <Form
@@ -87,8 +95,8 @@ export const TasksStep: React.FC<Props> = ({ onEnter, styles, isDarkMode }) => {
                   placeholder="Your Task"
                   value={task.value}
                   onChange={e => updateTask(task.id, e.target.value)}
-                  onPressEnter={e => handleKeyPress(e)}
-                  ref={el => (inputRefs.current[index] = el)}
+                  onPressEnter={handleKeyPress}
+                  ref={setInputRef(index)}
                 />
                 <Button
                   className="custom-close-button"
