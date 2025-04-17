@@ -373,7 +373,10 @@ const CustomColumnModal = () => {
         } else if (open && customColumnModalType === 'create') {
           // Reset form for create mode
           mainForm.resetFields();
-          dispatch(setCustomFieldType('people'));
+          dispatch(setCustomFieldType('people')); // Reset field type to 'people'
+          mainForm.setFieldsValue({
+            fieldType: 'people'
+            });
         }
       }}
     >
@@ -424,7 +427,7 @@ const CustomColumnModal = () => {
             ]}
             required={false}
           >
-            <Input placeholder="title" style={{ minWidth: '100%', width: 300 }} />
+            <Input placeholder="Title" style={{ minWidth: '100%', width: 300 }} />
           </Form.Item>
 
           <Form.Item
@@ -434,8 +437,6 @@ const CustomColumnModal = () => {
           >
             <Select
               options={fieldTypesOptions}
-              defaultValue={fieldType}
-              value={fieldType}
               onChange={value => dispatch(setCustomFieldType(value))}
               style={{
                 minWidth: '100%',
