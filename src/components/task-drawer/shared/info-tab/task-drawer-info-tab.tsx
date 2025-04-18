@@ -192,9 +192,9 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
   ];
 
   // Filter out the 'subTasks' item if this task is a subtask
-  const infoItems = taskFormViewModel?.task?.parent_task_id 
-    ? allInfoItems.filter(item => item.key !== 'subTasks')
-    : allInfoItems;
+  // const infoItems = taskFormViewModel?.task?.parent_task_id
+  //   ? allInfoItems.filter(item => item.key !== 'subTasks')
+  //   : allInfoItems;
 
   const fetchSubTasks = async () => {
     if (!selectedTaskId || loadingSubTasks) return;
@@ -276,7 +276,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     <Skeleton active loading={loadingTask}>
       <Flex vertical>
         <Collapse
-          items={infoItems}
+          items={allInfoItems}
           bordered={false}
           defaultActiveKey={[
             'details',
