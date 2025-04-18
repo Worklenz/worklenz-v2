@@ -170,9 +170,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         if (!editMode) {
           trackMixpanelEvent(evt_projects_create);
           navigate(`/worklenz/projects/${response.data.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
+        } else {
+          refetchProjects();
+          window.location.reload();
         }
-        refetchProjects();
-        window.location.reload(); // Refresh the page
+
       } else {
         notification.error({ message: response?.data?.message });
         logger.error(

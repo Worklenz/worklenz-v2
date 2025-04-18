@@ -112,7 +112,7 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
   };
 
   return (
-    <Flex gap={12} align="center" style={{ marginBlockEnd: 6 }}>
+    <Flex gap={12} align="self-start" style={{ marginBlockEnd: 6 }}>
       <Flex style={{ position: 'relative', width: '100%' }}>
         <TextArea
           ref={inputRef}
