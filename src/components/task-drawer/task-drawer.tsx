@@ -3,7 +3,7 @@ import Drawer from 'antd/es/drawer';
 import { InputRef } from 'antd/es/input';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useRef, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
+import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -32,7 +32,7 @@ const TaskDrawer = () => {
   const [refreshTimeLogTrigger, setRefreshTimeLogTrigger] = useState(0);
 
   const { showTaskDrawer, timeLogEditing } = useAppSelector(state => state.taskDrawerReducer);
-
+  const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const taskNameInputRef = useRef<InputRef>(null);
   const isClosingManually = useRef(false);
 
@@ -48,18 +48,23 @@ const TaskDrawer = () => {
   const dispatch = useAppDispatch();
 
   const handleOnClose = () => {
-    // Set flag to indicate we're manually closing the drawer
-    isClosingManually.current = true;
-    setActiveTab('info');
+    if (!taskFormViewModel?.task?.is_sub_task) {
+      // Set flag to indicate we're manually closing the drawer
+      isClosingManually.current = true;
+      setActiveTab('info');
 
-    // Explicitly clear the task parameter from URL
-    clearTaskFromUrl();
+      // Explicitly clear the task parameter from URL
+      clearTaskFromUrl();
 
-    // Update the Redux state
-    dispatch(setShowTaskDrawer(false));
-    dispatch(setSelectedTaskId(null));
-    dispatch(setTaskFormViewModel({}));
-    dispatch(setTaskSubscribers([]));
+      // Update the Redux state
+      dispatch(setShowTaskDrawer(false));
+      dispatch(setSelectedTaskId(null));
+      dispatch(setTaskFormViewModel({}));
+      dispatch(setTaskSubscribers([]));
+
+    } else {
+      dispatch(setSelectedTaskId(taskFormViewModel?.task?.parent_task_id || null));
+    }
 
     // Reset the flag after a short delay
     setTimeout(() => {
@@ -176,7 +181,7 @@ const TaskDrawer = () => {
   // Get conditional body style
   const getBodyStyle = () => {
     const baseStyle = {
-      padding: '24px', 
+      padding: '24px',
       overflow: 'auto'
     };
 
@@ -203,6 +208,7 @@ const TaskDrawer = () => {
     footer: renderFooter(),
     bodyStyle: getBodyStyle(),
     footerStyle: getFooterStyle(),
+    closeIcon: taskFormViewModel?.task?.is_sub_task ? <LeftOutlined /> : undefined,
   };
 
   return (
