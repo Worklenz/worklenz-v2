@@ -48,14 +48,13 @@ const TaskDrawer = () => {
   const dispatch = useAppDispatch();
 
   const handleOnClose = () => {
+    // Set flag to indicate we're manually closing the drawer
+    isClosingManually.current = true;
+    setActiveTab('info');
+
+    // Explicitly clear the task parameter from URL
+    clearTaskFromUrl();
     if (!taskFormViewModel?.task?.is_sub_task) {
-      // Set flag to indicate we're manually closing the drawer
-      isClosingManually.current = true;
-      setActiveTab('info');
-
-      // Explicitly clear the task parameter from URL
-      clearTaskFromUrl();
-
       // Update the Redux state
       dispatch(setShowTaskDrawer(false));
       dispatch(setSelectedTaskId(null));
@@ -63,6 +62,9 @@ const TaskDrawer = () => {
       dispatch(setTaskSubscribers([]));
 
     } else {
+      dispatch(setSelectedTaskId(null));
+      dispatch(setTaskFormViewModel({}));
+      dispatch(setTaskSubscribers([]));
       dispatch(setSelectedTaskId(taskFormViewModel?.task?.parent_task_id || null));
     }
 
