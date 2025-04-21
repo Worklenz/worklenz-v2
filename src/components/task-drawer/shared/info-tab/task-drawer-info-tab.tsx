@@ -281,7 +281,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
           defaultActiveKey={[
             'details',
             'description',
-            ...(taskFormViewModel?.task?.parent_task_id ? [] : ['subTasks']),
+            'subTasks',
             'dependencies',
             'attachments',
             'comments',
