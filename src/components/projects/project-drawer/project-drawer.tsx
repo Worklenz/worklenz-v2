@@ -441,11 +441,52 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             />
           </Form.Item> */}
 
-          <Form.Item name="working_days" label={t('estimateWorkingDays')}>
-            <Input type="number" min={0} disabled={!isProjectManager && !isOwnerorAdmin} />
+          <Form.Item
+            name="working_days"
+            label={t('estimateWorkingDays')}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (value === undefined || value >= 0) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(t('workingDaysValidationMessage', { min: 0 })));
+                },
+              },
+            ]}
+          >
+            <Input
+              type="number"
+              min={0}
+              disabled={!isProjectManager && !isOwnerorAdmin}
+              onBlur={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (value < 0) {
+                  form.setFieldsValue({ working_days: 0 });
+                }
+              }}
+            />
           </Form.Item>
-          <Form.Item name="man_days" label={t('estimateManDays')}>
-            <Input type="number" min={0} disabled={!isProjectManager && !isOwnerorAdmin} />
+          <Form.Item name="man_days" label={t('estimateManDays')} rules={[
+              {
+              validator: (_, value) => {
+                if (value === undefined || value >= 0) {
+                return Promise.resolve();
+                }
+                return Promise.reject(new Error(t('manDaysValidationMessage', { min: 0 })));
+              },
+              },
+            ]}>
+            <Input
+              type="number"
+              min={0}
+              disabled={!isProjectManager && !isOwnerorAdmin}
+              onBlur={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (value < 0) {
+                  form.setFieldsValue({ man_days: 0 });
+                }
+              }} />
           </Form.Item>
           <Form.Item
             name="hours_per_day"
@@ -461,7 +502,16 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               },
             ]}
           >
-            <Input type="number" min={0} disabled={!isProjectManager && !isOwnerorAdmin} />
+            <Input
+              type="number"
+              min={0}
+              disabled={!isProjectManager && !isOwnerorAdmin}
+              onBlur={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (value < 0) {
+                  form.setFieldsValue({ hours_per_day: 8 });
+                }
+              }} />
           </Form.Item>
         </Form>
 
