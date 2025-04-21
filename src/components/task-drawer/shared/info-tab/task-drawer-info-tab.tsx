@@ -191,7 +191,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     },
   ];
 
-  // Filter out the 'subTasks' item if this task is a subtask
+  // Filter out the 'subTasks' item if this task is more than level 2
   const infoItems = (taskFormViewModel?.task?.task_level ?? 0) >= 2
     ? allInfoItems.filter(item => item.key !== 'subTasks')
     : allInfoItems;
