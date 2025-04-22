@@ -47,28 +47,31 @@ const TaskDrawer = () => {
 
   const dispatch = useAppDispatch();
 
-  const handleOnClose = () => {
-    if (!taskFormViewModel?.task?.is_sub_task) {
-      // Set flag to indicate we're manually closing the drawer
-      isClosingManually.current = true;
-      setActiveTab('info');
+  const resetTaskState = () => {
+    dispatch(setShowTaskDrawer(false));
+    dispatch(setSelectedTaskId(null));
+    dispatch(setTaskFormViewModel({}));
+    dispatch(setTaskSubscribers([]));
+  };
 
-      // Explicitly clear the task parameter from URL
-      clearTaskFromUrl();
+  const handleOnClose = (e?: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>) => {
+    isClosingManually.current = true; // Indicate manual drawer close
+    setActiveTab('info'); // Reset active tab to 'info'
+    clearTaskFromUrl(); // Clear task parameter from URL
 
-      // Update the Redux state
-      dispatch(setShowTaskDrawer(false));
+    const isClickOutsideDrawer = e?.target && (e.target as HTMLElement).classList.contains('ant-drawer-mask');
+
+    if (isClickOutsideDrawer || !taskFormViewModel?.task?.is_sub_task) {
+      resetTaskState();
+    } else {
       dispatch(setSelectedTaskId(null));
       dispatch(setTaskFormViewModel({}));
       dispatch(setTaskSubscribers([]));
-
-    } else {
       dispatch(setSelectedTaskId(taskFormViewModel?.task?.parent_task_id || null));
     }
 
-    // Reset the flag after a short delay
     setTimeout(() => {
-      isClosingManually.current = false;
+      isClosingManually.current = false; // Reset flag after delay
     }, 100);
   };
 
