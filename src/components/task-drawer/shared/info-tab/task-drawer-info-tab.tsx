@@ -191,8 +191,8 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
     },
   ];
 
-  // Filter out the 'subTasks' item if this task is a subtask
-  const infoItems = taskFormViewModel?.task?.parent_task_id 
+  // Filter out the 'subTasks' item if this task is more than level 2
+  const infoItems = (taskFormViewModel?.task?.task_level ?? 0) >= 2
     ? allInfoItems.filter(item => item.key !== 'subTasks')
     : allInfoItems;
 
@@ -281,7 +281,7 @@ const TaskDrawerInfoTab = ({ t }: TaskDrawerInfoTabProps) => {
           defaultActiveKey={[
             'details',
             'description',
-            ...(taskFormViewModel?.task?.parent_task_id ? [] : ['subTasks']),
+            'subTasks',
             'dependencies',
             'attachments',
             'comments',

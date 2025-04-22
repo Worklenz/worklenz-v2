@@ -83,6 +83,7 @@ export interface ITaskViewModel extends ITask {
   phase_id?: string;
   billable?: boolean;
   recurring?: boolean;
+  task_level?: number;
 }
 
 export interface ITaskTeamMember extends ITeamMember {

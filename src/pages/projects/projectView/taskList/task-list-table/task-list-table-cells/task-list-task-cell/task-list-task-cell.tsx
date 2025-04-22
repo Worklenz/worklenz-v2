@@ -63,7 +63,7 @@ const TaskListTaskCell = ({
   }, [editTaskName]);
 
   const handleToggleExpansion = (taskId: string) => {
-    if (task.sub_tasks_count && task.sub_tasks_count > 0 && !task.sub_tasks) {
+    if (task.sub_tasks_count && task.sub_tasks_count > 0) {
       dispatch(fetchSubTasks({ taskId, projectId }));
     }
     toggleTaskExpansion(taskId);
@@ -86,7 +86,7 @@ const TaskListTaskCell = ({
     isSubTask: boolean,
     subTasksCount: number
   ) => {
-    if (subTasksCount > 0) {
+    if (subTasksCount > 0 && !isSubTask) {
       return (
         <button
           onClick={() => handleToggleExpansion(taskId)}
@@ -112,9 +112,10 @@ const TaskListTaskCell = ({
   const renderSubtasksCountLabel = (taskId: string, isSubTask: boolean, subTasksCount: number) => {
     if (!taskId) return null;
     return (
-      !isSubTask && (
-        <Button
-          onClick={() => handleToggleExpansion(taskId)}
+      <Button
+          onClick={() => {
+            if(!isSubTask) handleToggleExpansion(taskId);
+          }}
           size="small"
           style={{
             display: 'flex',
@@ -128,8 +129,7 @@ const TaskListTaskCell = ({
           <Typography.Text style={{ fontSize: 12, lineHeight: 1 }}>{subTasksCount}</Typography.Text>
           <DoubleRightOutlined style={{ fontSize: 10 }} />
         </Button>
-      )
-    );
+      );
   };
 
   const handleTaskNameSave = () => {
