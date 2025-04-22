@@ -440,7 +440,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
               disabled // Make it read-only since it's calculated
             />
           </Form.Item> */}
-
+          
           <Form.Item
             name="working_days"
             label={t('estimateWorkingDays')}
