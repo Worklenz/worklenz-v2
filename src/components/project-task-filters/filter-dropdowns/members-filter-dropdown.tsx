@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useCallback } from 'react';
+import { useMemo, useRef, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownFilled } from '@ant-design/icons';
 import { 
@@ -44,6 +44,24 @@ const MembersFilterDropdown = () => {
   const { taskAssignees } = useAppSelector(state => state.taskReducer);
   const { taskAssignees: boardTaskAssignees } = useAppSelector(state => state.boardReducer);
   const { projectId } = useAppSelector(state => state.projectReducer);
+
+  useEffect(() => {
+    if (projectId) {
+      // Reset task assignees selections
+      const resetTaskMembers = taskAssignees.map(member => ({
+        ...member,
+        selected: false
+      }));
+      dispatch(setMembers(resetTaskMembers));
+
+      // Reset board assignees selections
+      const resetBoardMembers = boardTaskAssignees.map(member => ({
+        ...member,
+        selected: false
+      }));
+      dispatch(setBoardMembers(resetBoardMembers));
+    }
+  }, [projectId, dispatch]);
 
   const selectedCount = useMemo(() => {
     return projectView === 'list' ? taskAssignees.filter(member => member.selected).length : boardTaskAssignees.filter(member => member.selected).length;

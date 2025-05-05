@@ -27,6 +27,11 @@
   box-sizing: border-box;
 }
 
+html[data-theme="dark"] .mobile-menu-card .ant-card-body a:hover {
+  background-color: #333 !important;
+  color: #1890ff !important;
+}
+
 .mobile-menu-card {
   border: none !important;
   box-shadow: none !important;

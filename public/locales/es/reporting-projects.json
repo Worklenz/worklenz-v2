@@ -38,6 +38,7 @@
   "continuousText": "Continuo",
 
   "daysLeftText": "días restantes",
+  "dayLeftText": "día restante",
   "daysOverdueText": "días de retraso",
 
   "notSetText": "No Establecido",
@@ -46,5 +47,6 @@
   "goodText": "Bien",
 
   "setCategoryText": "Establecer Categoría",
-  "searchByNameInputPlaceholder": "Buscar por nombre"
+  "searchByNameInputPlaceholder": "Buscar por nombre",
+  "todayText": "Hoy"
 }

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { setOrganizationName } from '@/features/account-setup/account-setup.slice';
 import { RootState } from '@/app/store';
+import { sanitizeInput } from '@/utils/sanitizeInput';
 import './admin-center-common.css';
 
 const { Title } = Typography;
@@ -33,6 +34,11 @@ export const OrganizationStep: React.FC<Props> = ({
     onEnter();
   };
 
+  const handleOrgNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitizedValue = sanitizeInput(e.target.value);
+    dispatch(setOrganizationName(sanitizedValue));
+  };
+
   return (
     <Form className="step-form" style={styles.form}>
       <Form.Item>
@@ -48,7 +54,7 @@ export const OrganizationStep: React.FC<Props> = ({
         <Input
           placeholder={organizationNamePlaceholder}
           value={organizationName}
-          onChange={e => dispatch(setOrganizationName(e.target.value))}
+          onChange={handleOrgNameChange}
           onPressEnter={onPressEnter}
           ref={inputRef}
         />

@@ -27,7 +27,7 @@ const LabelsDropdown = ({
   onCreateLabelTextChange,
   onApply,
   loading,
-  t
+  t,
 }: LabelsDropdownProps) => {
   useEffect(() => {
     if (labelsInputRef.current) {
@@ -35,53 +35,49 @@ const LabelsDropdown = ({
     }
   }, []);
 
-  // Filter labels based on createLabelText
-  const filteredLabels = useMemo(() => {
-    if (!createLabelText.trim()) return labelsList; // Show all labels if input is empty
-    return labelsList.filter(label =>
-      label.name?.toLowerCase().includes(createLabelText.toLowerCase())
-    );
-  }, [labelsList, createLabelText]);
-
+  const isOnApply = () => {
+    if (!createLabelText.trim() && selectedLabels.length === 0) return;
+    onApply();
+  };
   return (
     <Card className="custom-card" styles={{ body: { padding: 8 } }}>
       <Flex vertical>
         {/* Always show the list, filtered by input */}
-        <List
-          style={{
-            padding: 0,
-            overflow: 'auto',
-            maxHeight: filteredLabels.length > 10 ? '200px' : 'auto', // Set max height if more than 10 labels
-            maxWidth: 250,
+        {!createLabelText && (
+          <List
+            style={{
+              padding: 0,
+              overflow: 'auto',
+              maxHeight: labelsList.length > 10 ? '200px' : 'auto', // Set max height if more than 10 labels
+              maxWidth: 250,
           }}
         >
-          {filteredLabels.length ? (
-            filteredLabels.map(label => (
+          {labelsList.length > 0 && (
+            labelsList.map(label => (
               <List.Item
-          className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
-          key={label.id}
-          style={{
-            display: 'flex',
-            gap: 8,
-            justifyContent: 'flex-start',
-            padding: '4px 8px',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+                className={themeMode === 'dark' ? 'custom-list-item dark' : 'custom-list-item'}
+                key={label.id}
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  justifyContent: 'flex-start',
+                  padding: '4px 8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
               >
-          <Checkbox
-            id={label.id}
-            checked={selectedLabels.some(l => l.id === label.id)}
-            onChange={e => onLabelChange(e, label)}
-          >
-            <Badge color={label.color_code} text={label.name} />
-          </Checkbox>
+                <Checkbox
+                  id={label.id}
+                  checked={selectedLabels.some(l => l.id === label.id)}
+                  onChange={e => onLabelChange(e, label)}
+                >
+                  <Badge color={label.color_code} text={label.name} />
+                </Checkbox>
               </List.Item>
             ))
-          ) : (
-            <Empty description={createLabelText ? t('noMatchingLabels') : t('noLabels')} />
-          )}
-        </List>
+            )}
+          </List>
+        )}
 
         <Flex style={{ paddingTop: 8 }} vertical justify="space-between" gap={8}>
           <Input
@@ -89,20 +85,17 @@ const LabelsDropdown = ({
             value={createLabelText}
             onChange={e => onCreateLabelTextChange(e.currentTarget.value)}
             placeholder={t('createLabel')}
-            onPressEnter={onApply}
+            onPressEnter={() => {
+              isOnApply();
+            }}
           />
-          {createLabelText && filteredLabels.length === 0 && (
+          {createLabelText && (
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {t('hitEnterToCreate')}
             </Typography.Text>
           )}
-          {filteredLabels.length > 0 && (
-            <Button
-              type="primary"
-              size="small"
-              onClick={onApply}
-              style={{ width: '100%' }}
-            >
+          {!createLabelText && (
+            <Button type="primary" size="small" onClick={isOnApply} style={{ width: '100%' }}>
               {t('apply')}
             </Button>
           )}

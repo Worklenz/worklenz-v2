@@ -8,6 +8,7 @@ const initialState: ILocalSession = {
   id: sessionData?.id || '',
   name: sessionData?.name || '',
   email: sessionData?.email || '',
+  avatar_url: sessionData?.avatar_url || '',
 };
 
 const userSlice = createSlice({
@@ -18,7 +19,12 @@ const userSlice = createSlice({
       state.name = action.payload;
     },
     setUser: (state, action: PayloadAction<ILocalSession>) => {
-      state = action.payload;
+      // Update state properties individually to ensure mutation
+      state.id = action.payload.id;
+      state.name = action.payload.name;
+      state.email = action.payload.email;
+      state.avatar_url = action.payload.avatar_url;
+      // Add other properties as needed
     },
   },
 });

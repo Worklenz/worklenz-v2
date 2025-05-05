@@ -1,15 +1,16 @@
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
-import { Button, Card, Flex, Input, Tooltip } from 'antd';
+import { Button, Card, Flex, Input, Table, TableProps, Tooltip, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import UsersTable from '@/components/admin-center/users/users-table/users-table';
 import { RootState } from '@/app/store';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import { IOrganizationUser } from '@/types/admin-center/admin-center.types';
-import { DEFAULT_PAGE_SIZE } from '@/shared/constants';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '@/shared/constants';
 import logger from '@/utils/errorLogger';
+import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
+import SingleAvatar from '@/components/common/single-avatar/single-avatar';
 
 const Users: React.FC = () => {
   const { t } = useTranslation('admin-center/users');
@@ -42,9 +43,41 @@ const Users: React.FC = () => {
     }
   };
 
+  const columns: TableProps<IOrganizationUser>['columns'] = [
+    {
+      title: t('user'),
+      dataIndex: 'user',
+      key: 'user',
+      render: (_, record) => (
+        <Flex gap={8} align="center">
+          <SingleAvatar avatarUrl={record.avatar_url} name={record.name} />
+          <Typography.Text>{record.name}</Typography.Text>
+        </Flex>
+      ),
+    },
+    {
+      title: t('email'),
+      dataIndex: 'email',
+      key: 'email',
+      render: text => (
+        <span className="email-hover">
+          <Typography.Text copyable={{ text }}>
+            {text}
+          </Typography.Text>
+        </span>
+      ),
+    },
+    {
+      title: t('lastActivity'),
+      dataIndex: 'last_logged',
+      key: 'last_logged',
+      render: text => <span>{formatDateTimeWithLocale(text) || '-'}</span>,
+    },
+  ];
+
   useEffect(() => {
     fetchUsers();
-  }, [requestParams.searchTerm]);
+  }, [requestParams.searchTerm, requestParams.page, requestParams.pageSize]);
 
   return (
     <div style={{ width: '100%' }}>
@@ -86,7 +119,21 @@ const Users: React.FC = () => {
         }
       />
       <Card>
-        <UsersTable users={users} t={t} loading={isLoading} />
+        <Table
+          rowClassName="users-table-row"
+          size="small"
+          columns={columns}
+          dataSource={users}
+          pagination={{
+            defaultPageSize: DEFAULT_PAGE_SIZE,
+            pageSizeOptions: PAGE_SIZE_OPTIONS,
+            size: 'small',
+            showSizeChanger: true,
+            total: requestParams.total,
+            onChange: (page, pageSize) => setRequestParams(prev => ({ ...prev, page, pageSize })),
+          }}
+          loading={isLoading}
+        />
       </Card>
     </div>
   );

@@ -55,13 +55,39 @@ const ProjectCategorySection = ({ categories, form, t, disabled }: ProjectCatego
     handleCategoryInputFocus();
   };
 
-  const handleAddCategoryInputBlur = () => {
+  const handleAddCategoryInputBlur = (category: string) => {
     setIsAddCategoryInputShow(false);
+    if (!category.trim()) return;
+    try {
+      const existingCategory = categoryOptions.find(
+        option => option.label?.toLowerCase() === category.toLowerCase()
+      );
+      if (existingCategory) {
+        form.setFieldValue('category_id', existingCategory.value);
+      }
+      form.setFieldValue('category_id', undefined);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsAddCategoryInputShow(false);
+      setCategoryText('');
+      return;
+    }
   };
 
   const handleAddCategoryItem = async (category: string) => {
     if (!category.trim()) return;
     try {
+      const existingCategory = categoryOptions.find(
+        option => option.label?.toLowerCase() === category.toLowerCase()
+      );
+
+      if (existingCategory) {
+        form.setFieldValue('category_id', existingCategory.value);
+        setCategoryText('');
+        setIsAddCategoryInputShow(false);
+        return;
+      }
       setCreating(true);
       const newCategory = {
         name: category,
@@ -113,9 +139,11 @@ const ProjectCategorySection = ({ categories, form, t, disabled }: ProjectCatego
               value={categoryText}
               onChange={e => setCategoryText(e.currentTarget.value)}
               allowClear
-              onClear={() => setIsAddCategoryInputShow(false)}
+              onClear={() => {
+                setIsAddCategoryInputShow(false)
+              }}
               onPressEnter={() => handleAddCategoryItem(categoryText)}
-              onBlur={handleAddCategoryInputBlur}
+              onBlur={() => handleAddCategoryInputBlur(categoryText)}
               disabled={disabled}
             />
             <Typography.Text style={{ color: colors.lightGray }}>

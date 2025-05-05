@@ -7,11 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { RootState } from '@/app/store';
 
-import { getRole, getUserSession } from '@/utils/session-helper';
+import { getRole } from '@/utils/session-helper';
 
 import './profile-dropdown.css';
 import './profile-button.css';
 import SingleAvatar from '@/components/common/single-avatar/single-avatar';
+import { useAuthService } from '@/hooks/useAuth';
+import { useEffect, useState } from 'react';
 
 interface ProfileButtonProps {
   isOwnerOrAdmin: boolean;
@@ -19,7 +21,9 @@ interface ProfileButtonProps {
 
 const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
   const { t } = useTranslation('navbar');
-  const userDetails = getUserSession();
+  const authService = useAuthService();
+  const currentSession = useAppSelector((state: RootState) => state.userReducer);
+  
   const role = getRole();
   const themeMode = useAppSelector((state: RootState) => state.themeReducer.mode);
 
@@ -38,22 +42,22 @@ const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
               <Typography.Text>Account</Typography.Text>
               <Flex gap={8} align="center" justify="flex-start" style={{ width: '100%' }}>
                 <SingleAvatar
-                  avatarUrl={userDetails?.avatar_url}
-                  name={userDetails?.name}
-                  email={userDetails?.email}
+                  avatarUrl={currentSession?.avatar_url}
+                  name={currentSession?.name}
+                  email={currentSession?.email}
                 />
                 <Flex vertical style={{ flex: 1, minWidth: 0 }}>
                   <Typography.Text
-                    ellipsis={{ tooltip: userDetails?.name }} // Show tooltip on hover
+                    ellipsis={{ tooltip: currentSession?.name }} // Show tooltip on hover
                     style={{ width: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
                   >
-                    {userDetails?.name}
+                    {currentSession?.name}
                   </Typography.Text>
                   <Typography.Text
-                    ellipsis={{ tooltip: userDetails?.email }} // Show tooltip on hover
+                    ellipsis={{ tooltip: currentSession?.email }} // Show tooltip on hover
                     style={{ fontSize: 12, width: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
                   >
-                    {userDetails?.email}
+                    {currentSession?.email}
                   </Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     ({role})
@@ -62,7 +66,7 @@ const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
               </Flex>
             </div>
           }
-          bordered={false}
+          variant="borderless"
           style={{ width: 230 }}
         >
           {isOwnerOrAdmin && (
@@ -93,7 +97,17 @@ const ProfileButton = ({ isOwnerOrAdmin }: ProfileButtonProps) => {
           className="profile-button"
           style={{ height: '62px', width: '60px' }}
           type="text"
-          icon={<UserOutlined style={{ fontSize: 20 }} />}
+          icon={
+            currentSession?.avatar_url ? (
+              <SingleAvatar
+                avatarUrl={currentSession.avatar_url}
+                name={currentSession.name}
+                email={currentSession.email}
+              />
+            ) : (
+              <UserOutlined style={{ fontSize: 20 }} />
+            )
+          }
         />
       </Tooltip>
     </Dropdown>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Tooltip,
   Tag,
@@ -11,6 +11,7 @@ import {
   List,
   Divider,
   Popconfirm,
+  Skeleton,
 } from 'antd';
 import {
   DoubleRightOutlined,
@@ -37,7 +38,11 @@ import BoardSubTaskCard from '../board-sub-task-card/board-sub-task-card';
 import CustomAvatarGroup from '@/components/board/custom-avatar-group';
 import CustomDueDatePicker from '@/components/board/custom-due-date-picker';
 import { colors } from '@/styles/colors';
-import { deleteBoardTask, updateBoardTaskAssignee } from '@features/board/board-slice';
+import {
+  deleteBoardTask,
+  fetchBoardSubTasks,
+  updateBoardTaskAssignee,
+} from '@features/board/board-slice';
 import BoardCreateSubtaskCard from '../board-sub-task-card/board-create-sub-task-card';
 import { setShowTaskDrawer, setSelectedTaskId } from '@/features/task-drawer/task-drawer.slice';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
@@ -49,8 +54,14 @@ import {
   evt_project_task_list_context_menu_assign_me,
   evt_project_task_list_context_menu_delete,
 } from '@/shared/worklenz-analytics-events';
+import logger from '@/utils/errorLogger';
 
-const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId: string }) => {
+interface IBoardViewTaskCardProps {
+  task: IProjectTask;
+  sectionId: string;
+}
+
+const BoardViewTaskCard = ({ task, sectionId }: IBoardViewTaskCardProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('kanban-board');
   const { trackMixpanelEvent } = useMixpanelTracking();
@@ -73,13 +84,13 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
     },
   });
 
-  const style = {
+  const style = useMemo(() => ({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-  };
+  }), [transform, transition, isDragging]);
 
-  const handleCardClick = (e: React.MouseEvent, id: string) => {
+  const handleCardClick = useCallback((e: React.MouseEvent, id: string) => {
     // Prevent the event from propagating to parent elements
     e.stopPropagation();
 
@@ -93,10 +104,10 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
     }, 50);
 
     return () => clearTimeout(clickTimeout);
-  };
+  }, [dispatch, isDragging]);
 
-  const handleAssignToMe = async (task: IProjectTask) => {
-    if (!projectId || !task.id) return;
+  const handleAssignToMe = useCallback(async () => {
+    if (!projectId || !task.id || updatingAssignToMe) return;
 
     try {
       setUpdatingAssignToMe(true);
@@ -116,13 +127,13 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
         );
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error assigning task to me:', error);
     } finally {
       setUpdatingAssignToMe(false);
     }
-  };
+  }, [projectId, task.id, updatingAssignToMe, dispatch, trackMixpanelEvent, sectionId]);
 
-  const handleArchive = async (task: IProjectTask) => {
+  const handleArchive = useCallback(async () => {
     if (!projectId || !task.id) return;
 
     try {
@@ -139,11 +150,11 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
         dispatch(deleteBoardTask({ sectionId, taskId: task.id }));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error archiving task:', error);
     }
-  };
+  }, [projectId, task.id, dispatch, trackMixpanelEvent, sectionId]);
 
-  const handleDelete = async (task: IProjectTask) => {
+  const handleDelete = useCallback(async () => {
     if (!projectId || !task.id) return;
 
     try {
@@ -154,11 +165,34 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
         dispatch(deleteBoardTask({ sectionId, taskId: task.id }));
       }
     } catch (error) {
-      console.error(error);
+      logger.error('Error deleting task:', error);
     }
-  };
+  }, [projectId, task.id, dispatch, trackMixpanelEvent, sectionId]);
 
-  const items: MenuProps['items'] = [
+  const handleSubTaskExpand = useCallback(() => {
+    if (task && task.id && projectId) {
+      if (task.show_sub_tasks) {
+        // If subtasks are already loaded, just toggle visibility
+        setIsSubTaskShow(prev => !prev);
+      } else {
+        // If subtasks need to be fetched, show the section first with loading state
+        setIsSubTaskShow(true);
+        dispatch(fetchBoardSubTasks({ taskId: task.id, projectId }));
+      }
+    }
+  }, [task, projectId, dispatch]);
+
+  const handleAddSubtaskClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowNewSubtaskCard(true);
+  }, []);
+
+  const handleSubtaskButtonClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    handleSubTaskExpand();
+  }, [handleSubTaskExpand]);
+
+  const items: MenuProps['items'] = useMemo(() => [
     {
       label: (
         <span>
@@ -168,9 +202,8 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
         </span>
       ),
       key: '1',
-      onClick: () => {
-        handleAssignToMe(task);
-      },
+      onClick: handleAssignToMe,
+      disabled: updatingAssignToMe,
     },
     {
       label: (
@@ -181,9 +214,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
         </span>
       ),
       key: '2',
-      onClick: () => {
-        handleArchive(task);
-      },
+      onClick: handleArchive,
     },
     {
       label: (
@@ -192,7 +223,7 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
           icon={<ExclamationCircleFilled style={{ color: colors.vibrantOrange }} />}
           okText={t('deleteConfirmationOk')}
           cancelText={t('deleteConfirmationCancel')}
-          onConfirm={() => handleDelete(task)}
+          onConfirm={handleDelete}
         >
           <DeleteOutlined />
           &nbsp;
@@ -201,7 +232,57 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
       ),
       key: '3',
     },
-  ];
+  ], [t, handleAssignToMe, handleArchive, handleDelete, updatingAssignToMe]);
+
+  const priorityIcon = useMemo(() => {
+    if (task.priority_value === 0) {
+      return (
+        <MinusOutlined
+          style={{
+            color: '#52c41a',
+            marginRight: '0.25rem',
+          }}
+        />
+      );
+    } else if (task.priority_value === 1) {
+      return (
+        <PauseOutlined
+          style={{
+            color: '#faad14',
+            transform: 'rotate(90deg)',
+            marginRight: '0.25rem',
+          }}
+        />
+      );
+    } else {
+      return (
+        <DoubleRightOutlined
+          style={{
+            color: '#f5222d',
+            transform: 'rotate(-90deg)',
+            marginRight: '0.25rem',
+          }}
+        />
+      );
+    }
+  }, [task.priority_value]);
+
+  const renderLabels = useMemo(() => {
+    if (!task?.labels?.length) return null;
+    
+    return (
+      <>
+        {task.labels.slice(0, 2).map((label: any) => (
+          <Tag key={label.id} style={{ marginRight: '4px' }} color={label?.color_code}>
+            <span style={{ color: themeMode === 'dark' ? '#383838' : '' }}>
+              {label.name}
+            </span>
+          </Tag>
+        ))}
+        {task.labels.length > 2 && <Tag>+ {task.labels.length - 2}</Tag>}
+      </>
+    );
+  }, [task.labels, themeMode]);
 
   return (
     <Dropdown menu={{ items }} trigger={['contextMenu']}>
@@ -217,63 +298,34 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
           padding: 12,
           backgroundColor: themeMode === 'dark' ? '#292929' : '#fafafa',
           borderRadius: 6,
-          cursor: 'pointer',
+          cursor: 'grab',
           overflow: 'hidden',
         }}
-        className={`group outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline`}
+        className={`group outline-1 ${themeWiseColor('outline-[#edeae9]', 'outline-[#6a696a]', themeMode)} hover:outline board-task-card`}
         onClick={e => handleCardClick(e, task.id || '')}
+        data-id={task.id}
+        data-dragging={isDragging ? "true" : "false"}
       >
         {/* Labels and Progress */}
         <Flex align="center" justify="space-between">
           <Flex>
-            {task?.labels?.length ? (
-              <>
-                {task?.labels.slice(0, 2).map((label: any) => (
-                  <Tag key={label.id} style={{ marginRight: '4px' }} color={label?.color_code}>
-                    <span style={{ color: themeMode === 'dark' ? '#383838' : '' }}>
-                      {label.name}
-                    </span>
-                  </Tag>
-                ))}
-                {task.labels?.length > 2 && <Tag>+ {task.labels.length - 2}</Tag>}
-              </>
-            ) : (
-              ''
-            )}
+            {renderLabels}
           </Flex>
 
-          <Tooltip title={` ${task?.completed_count} / ${task?.sub_tasks_count ?? 0 + 1}`}>
-            <Progress type="circle" percent={task?.progress} size={26} />
+          <Tooltip title={` ${task?.completed_count} / ${task?.total_tasks_count}`}>
+            <Progress type="circle" percent={task?.complete_ratio } size={26} strokeWidth={(task.complete_ratio || 0) >= 100 ? 9 : 7} />
           </Tooltip>
         </Flex>
 
         {/* Action Icons */}
         <Flex gap={4}>
-          {task.priority_value === 0 ? (
-            <MinusOutlined
-              style={{
-                color: '#52c41a',
-                marginRight: '0.25rem',
-              }}
-            />
-          ) : task.priority_value === 1 ? (
-            <PauseOutlined
-              style={{
-                color: '#faad14',
-                transform: 'rotate(90deg)',
-                marginRight: '0.25rem',
-              }}
-            />
-          ) : (
-            <DoubleRightOutlined
-              style={{
-                color: '#f5222d',
-                transform: 'rotate(-90deg)',
-                marginRight: '0.25rem',
-              }}
-            />
-          )}
-          <Typography.Text style={{ fontWeight: 500 }}>{task.name}</Typography.Text>
+          {priorityIcon}
+          <Typography.Text 
+            style={{ fontWeight: 500 }}
+            ellipsis={{ tooltip: task.name }}
+          >
+            {task.name}
+          </Typography.Text>
         </Flex>
 
         <Flex vertical gap={8}>
@@ -284,18 +336,14 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
               marginBlock: 8,
             }}
           >
-            <CustomAvatarGroup task={task} sectionId={sectionId} />
+            {task && <CustomAvatarGroup task={task} sectionId={sectionId} />}
 
             <Flex gap={4} align="center">
-              <CustomDueDatePicker dueDate={dueDate} onDateChange={setDueDate} />
+              <CustomDueDatePicker task={task} onDateChange={setDueDate} />
 
               {/* Subtask Section */}
-
               <Button
-                onClick={e => {
-                  e.stopPropagation();
-                  setIsSubTaskShow(prev => !prev);
-                }}
+                onClick={handleSubtaskButtonClick}
                 size="small"
                 style={{
                   padding: 0,
@@ -323,13 +371,21 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
             <Flex vertical>
               <Divider style={{ marginBlock: 0 }} />
               <List>
-                {task?.sub_tasks &&
-                  task?.sub_tasks.map((subtask: any) => <BoardSubTaskCard subtask={subtask} />)}
+                {task.sub_tasks_loading && (
+                  <List.Item>
+                    <Skeleton active paragraph={{ rows: 2 }} title={false} style={{ marginTop: 8 }} />
+                  </List.Item>
+                )}
+                
+                {!task.sub_tasks_loading && task?.sub_tasks &&
+                  task?.sub_tasks.map((subtask: any) => (
+                    <BoardSubTaskCard key={subtask.id} subtask={subtask} sectionId={sectionId} />
+                  ))}
 
                 {showNewSubtaskCard && (
                   <BoardCreateSubtaskCard
                     sectionId={sectionId}
-                    taskId={task.id || ''}
+                    parentTaskId={task.id || ''}
                     setShowNewSubtaskCard={setShowNewSubtaskCard}
                   />
                 )}
@@ -342,12 +398,9 @@ const BoardViewTaskCard = ({ task, sectionId }: { task: IProjectTask; sectionId:
                   boxShadow: 'none',
                 }}
                 icon={<PlusOutlined />}
-                onClick={e => {
-                  e.stopPropagation();
-                  setShowNewSubtaskCard(true);
-                }}
+                onClick={handleAddSubtaskClick}
               >
-                Add Subtask
+                {t('addSubtask', 'Add Subtask')}
               </Button>
             </Flex>
           )}

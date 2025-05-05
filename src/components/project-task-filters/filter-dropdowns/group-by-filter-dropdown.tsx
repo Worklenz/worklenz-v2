@@ -36,9 +36,9 @@ const GroupByFilterDropdown = () => {
       { key: IGroupBy.PHASE, label: project?.phase_label || t('phaseText') },
     ];
 
-    if (projectView === 'kanban') {
-      return [...baseItems, { key: IGroupBy.MEMBERS, label: t('memberText') }];
-    }
+    // if (projectView === 'kanban') {
+    //   return [...baseItems, { key: IGroupBy.MEMBERS, label: t('memberText') }];
+    // }
 
     return baseItems;
   }, [t, project?.phase_label, projectView]);

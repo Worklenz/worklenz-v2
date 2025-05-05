@@ -46,26 +46,27 @@ import { ITeamMemberViewModel } from '@/types/teamMembers/teamMembersGetResponse
 import { calculateTimeDifference } from '@/utils/calculate-time-difference';
 import { formatDateTimeWithLocale } from '@/utils/format-date-time-with-locale';
 import logger from '@/utils/errorLogger';
-import { setProjectData, toggleProjectDrawer } from '@/features/project/project-drawer.slice';
+import { setProjectData, toggleProjectDrawer, setProjectId as setDrawerProjectId } from '@/features/project/project-drawer.slice';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
 import { useAuthService } from '@/hooks/useAuth';
+import { evt_projects_create } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { trackMixpanelEvent } = useMixpanelTracking();
   const { t } = useTranslation('project-drawer');
   const [form] = Form.useForm();
-
-  // Auth and permissions
-  const isProjectManager = useIsProjectManager();
-  const isOwnerorAdmin = useAuthService().isOwnerOrAdmin();
-  const isEditable = isProjectManager || isOwnerorAdmin;
+  const [loading, setLoading] = useState<boolean>(true);
+  const currentSession = useAuthService().getCurrentSession();
 
   // State
   const [editMode, setEditMode] = useState<boolean>(false);
   const [selectedProjectManager, setSelectedProjectManager] = useState<ITeamMemberViewModel | null>(
     null
   );
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
   // Selectors
   const { clients, loading: loadingClients } = useAppSelector(state => state.clientReducer);
@@ -99,6 +100,11 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     [project, projectStatuses, projectHealths]
   );
 
+  // Auth and permissions
+  const isProjectManager = currentSession?.team_member_id == selectedProjectManager?.id;
+  const isOwnerorAdmin = useAuthService().isOwnerOrAdmin();
+  const isEditable = isProjectManager || isOwnerorAdmin;
+
   // Effects
   useEffect(() => {
     const loadInitialData = async () => {
@@ -116,6 +122,19 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
 
     loadInitialData();
   }, [dispatch]);
+
+  useEffect(() => {
+    const startDate = form.getFieldValue('start_date');
+    const endDate = form.getFieldValue('end_date');
+
+    if (startDate && endDate) {
+      const days = calculateWorkingDays(
+        dayjs.isDayjs(startDate) ? startDate : dayjs(startDate),
+        dayjs.isDayjs(endDate) ? endDate : dayjs(endDate)
+      );
+      form.setFieldsValue({ working_days: days });
+    }
+  }, [form]);
 
   // Handlers
   const handleFormSubmit = async (values: any) => {
@@ -149,9 +168,13 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         form.resetFields();
         dispatch(toggleProjectDrawer());
         if (!editMode) {
+          trackMixpanelEvent(evt_projects_create);
           navigate(`/worklenz/projects/${response.data.body.id}?tab=tasks-list&pinned_tab=tasks-list`);
+        } else {
+          refetchProjects();
+          window.location.reload();
         }
-        refetchProjects();
+
       } else {
         notification.error({ message: response?.data?.message });
         logger.error(
@@ -163,6 +186,25 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
       logger.error('Error saving project', error);
     }
   };
+  const calculateWorkingDays = (startDate: dayjs.Dayjs | null, endDate: dayjs.Dayjs | null): number => {
+    if (!startDate || !endDate || !startDate.isValid() || !endDate.isValid() || startDate.isAfter(endDate)) {
+      return 0;
+    }
+
+    let workingDays = 0;
+    let currentDate = startDate.clone().startOf('day');
+    const end = endDate.clone().startOf('day');
+
+    while (currentDate.isBefore(end) || currentDate.isSame(end)) {
+      const dayOfWeek = currentDate.day();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        workingDays++;
+      }
+      currentDate = currentDate.add(1, 'day');
+    }
+
+    return workingDays;
+  };
 
   const handleVisibilityChange = useCallback(
     (visible: boolean) => {
@@ -173,8 +215,10 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             ...project,
             start_date: project.start_date ? dayjs(project.start_date) : null,
             end_date: project.end_date ? dayjs(project.end_date) : null,
+            working_days: form.getFieldValue('start_date') && form.getFieldValue('end_date') ? calculateWorkingDays(form.getFieldValue('start_date'), form.getFieldValue('end_date')) : project.working_days || 0,
           });
           setSelectedProjectManager(project.project_manager || null);
+          setLoading(false);
         }
       } else {
         resetForm();
@@ -190,8 +234,12 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
   }, [form]);
 
   const handleDrawerClose = useCallback(() => {
+    setLoading(true);
     resetForm();
-    setTimeout(() => dispatch(toggleProjectDrawer()), 300);
+    dispatch(setProjectData({} as IProjectViewModel));
+    dispatch(setProjectId(null));
+    dispatch(setDrawerProjectId(null));
+    dispatch(toggleProjectDrawer());
     onClose();
   }, [resetForm, dispatch, onClose]);
 
@@ -207,6 +255,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
         dispatch(toggleProjectDrawer());
         navigate('/worklenz/projects');
         refetchProjects();
+        window.location.reload(); // Refresh the page
       } else {
         notification.error({ message: res?.data?.message });
         logger.error('Error deleting project', res?.data?.message);
@@ -232,8 +281,14 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
     [form]
   );
 
+  const handleFieldsChange = (_: any, allFields: any[]) => {
+    const isValid = allFields.every(field => field.errors.length === 0);
+    setIsFormValid(isValid);
+  };
+
   return (
     <Drawer
+      // loading={loading}
       title={
         <Typography.Text style={{ fontWeight: 500, fontSize: 16 }}>
           {projectId ? t('editProject') : t('createProject')}
@@ -261,13 +316,16 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
             )}
           </Space>
           <Space>
-            <Button
-              type="primary"
-              onClick={() => form.submit()}
-              loading={isCreatingProject || isUpdatingProject}
-            >
-              {editMode ? t('update') : t('create')}
-            </Button>
+            {(isProjectManager || isOwnerorAdmin) && (
+              <Button
+                type="primary"
+                onClick={() => form.submit()}
+                loading={isCreatingProject || isUpdatingProject}
+                disabled={!isFormValid}
+              >
+                {editMode ? t('update') : t('create')}
+              </Button>
+            )}
           </Space>
         </Flex>
       }
@@ -286,6 +344,7 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
           layout="vertical"
           onFinish={handleFormSubmit}
           initialValues={defaultFormValues}
+          onFieldsChange={handleFieldsChange}
         >
           <ProjectBasicInfo
             editMode={editMode}
@@ -338,29 +397,121 @@ const ProjectDrawer = ({ onClose }: { onClose: () => void }) => {
 
           <Form.Item name="date" layout="horizontal">
             <Flex gap={8}>
-              <Form.Item name="start_date" label={t('startDate')}>
+              <Form.Item
+                name="start_date"
+                label={t('startDate')}
+              >
                 <DatePicker
                   disabledDate={disabledStartDate}
                   disabled={!isProjectManager && !isOwnerorAdmin}
+                  onChange={(date) => {
+                    const endDate = form.getFieldValue('end_date');
+                    if (date && endDate) {
+                      const days = calculateWorkingDays(date, endDate);
+                      form.setFieldsValue({ working_days: days });
+                    }
+                  }}
                 />
               </Form.Item>
-              <Form.Item name="end_date" label={t('endDate')}>
+              <Form.Item
+                name="end_date"
+                label={t('endDate')}
+              >
                 <DatePicker
                   disabledDate={disabledEndDate}
                   disabled={!isProjectManager && !isOwnerorAdmin}
+                  onChange={(date) => {
+                    const startDate = form.getFieldValue('start_date');
+                    if (startDate && date) {
+                      const days = calculateWorkingDays(startDate, date);
+                      form.setFieldsValue({ working_days: days });
+                    }
+                  }}
                 />
               </Form.Item>
             </Flex>
           </Form.Item>
-
-          <Form.Item name="working_days" label={t('estimateWorkingDays')}>
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+          {/* <Form.Item
+            name="working_days"
+            label={t('estimateWorkingDays')}
+          >
+            <Input
+              type="number"
+              disabled // Make it read-only since it's calculated
+            />
+          </Form.Item> */}
+          
+          <Form.Item
+            name="working_days"
+            label={t('estimateWorkingDays')}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (value === undefined || value >= 0) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(t('workingDaysValidationMessage', { min: 0 })));
+                },
+              },
+            ]}
+          >
+            <Input
+              type="number"
+              min={0}
+              disabled={!isProjectManager && !isOwnerorAdmin}
+              onBlur={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (value < 0) {
+                  form.setFieldsValue({ working_days: 0 });
+                }
+              }}
+            />
           </Form.Item>
-          <Form.Item name="man_days" label={t('estimateManDays')}>
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+          <Form.Item name="man_days" label={t('estimateManDays')} rules={[
+              {
+              validator: (_, value) => {
+                if (value === undefined || value >= 0) {
+                return Promise.resolve();
+                }
+                return Promise.reject(new Error(t('manDaysValidationMessage', { min: 0 })));
+              },
+              },
+            ]}>
+            <Input
+              type="number"
+              min={0}
+              disabled={!isProjectManager && !isOwnerorAdmin}
+              onBlur={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (value < 0) {
+                  form.setFieldsValue({ man_days: 0 });
+                }
+              }} />
           </Form.Item>
-          <Form.Item name="hours_per_day" label={t('hoursPerDay')}>
-            <Input type="number" disabled={!isProjectManager && !isOwnerorAdmin} />
+          <Form.Item
+            name="hours_per_day"
+            label={t('hoursPerDay')}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (value === undefined || (value >= 0 && value <= 24)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(t('hoursPerDayValidationMessage', { min: 0, max: 24 })));
+                },
+              },
+            ]}
+          >
+            <Input
+              type="number"
+              min={0}
+              disabled={!isProjectManager && !isOwnerorAdmin}
+              onBlur={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (value < 0) {
+                  form.setFieldsValue({ hours_per_day: 8 });
+                }
+              }} />
           </Form.Item>
         </Form>
 

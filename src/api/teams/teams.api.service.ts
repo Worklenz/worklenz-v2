@@ -1,6 +1,7 @@
 import { IServerResponse } from '@/types/common.types';
 import apiClient from '../api-client';
 import {
+  IAcceptTeamInvite,
   ITeam,
   ITeamActivateResponse,
   ITeamGetResponse,
@@ -41,5 +42,10 @@ export const teamsApiService = {
     );
     return response.data;
   },
+
+  acceptInvitation: async (body: IAcceptTeamInvite): Promise<IServerResponse<ITeamInvites>> => {
+    const response = await apiClient.put<IServerResponse<ITeamInvites>>(`${rootUrl}`, body);
+    return response.data;
+  }
 };
 

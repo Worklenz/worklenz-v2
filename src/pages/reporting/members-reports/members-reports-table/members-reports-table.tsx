@@ -8,12 +8,14 @@ import TasksProgressCell from './tablesCells/tasksProgressCell/TasksProgressCell
 import MemberCell from './tablesCells/memberCell/MemberCell';
 import { fetchMembersData, toggleMembersReportsDrawer } from '@/features/reporting/membersReports/membersReportsSlice';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import MembersReportsDrawer from '@/features/reporting/membersReports/membersReportsDrawer/members-reports-drawer';
 
 const MembersReportsTable = () => {
   const { t } = useTranslation('reporting-members');
   const dispatch = useAppDispatch();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
   const { membersList, isLoading, total, archived, searchQuery } = useAppSelector(state => state.membersReportsReducer);
 
   // function to handle drawer toggle
@@ -50,7 +52,7 @@ const MembersReportsTable = () => {
         />
       ),
       className: 'text-center group-hover:text-[#1890ff]',
-      dataIndex: 'total_tasks',
+      dataIndex: 'tasks',
       width: 180,
     },
     {
@@ -74,7 +76,7 @@ const MembersReportsTable = () => {
         />
       ),
       className: 'text-center group-hover:text-[#1890ff]',
-      dataIndex: 'total_completed',
+      dataIndex: 'completed',
       width: 180,
     },
     {
@@ -86,14 +88,14 @@ const MembersReportsTable = () => {
         />
       ),
       className: 'text-center group-hover:text-[#1890ff]',
-      dataIndex: 'total_ongoing',
+      dataIndex: 'ongoing',
       width: 180,
     },
   ];
 
   useEffect(() => {
-    if (!isLoading) dispatch(fetchMembersData());
-  }, [dispatch, archived, searchQuery]);
+    if (!isLoading) dispatch(fetchMembersData({ duration, dateRange }));
+  }, [dispatch, archived, searchQuery, dateRange]);
 
   return (
     <ConfigProvider
@@ -109,6 +111,7 @@ const MembersReportsTable = () => {
       <Table
         columns={columns}
         dataSource={membersList}
+        rowKey={record => record.id}
         pagination={{ showSizeChanger: true, defaultPageSize: 10, total: total }}
         scroll={{ x: 'max-content' }}
         loading={isLoading}
@@ -120,7 +123,7 @@ const MembersReportsTable = () => {
         }}
       />
 
-      {/* <MembersReportsDrawer memberId={selectedId} /> */}
+      <MembersReportsDrawer memberId={selectedId} />
     </ConfigProvider>
   );
 };

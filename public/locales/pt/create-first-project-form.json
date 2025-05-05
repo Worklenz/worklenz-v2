@@ -3,6 +3,7 @@
   "inputLabel": "Em qual projeto você está trabalhando agora?",
   "or": "ou",
   "templateButton": "Importar do modelo",
+  "createFromTemplate": "Criar do modelo",
   "goBack": "Voltar",
   "continue": "Continuar",
   "cancel": "Cancelar",

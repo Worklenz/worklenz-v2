@@ -96,5 +96,10 @@
   "cancelPlan": "Cancelar Plan",
 
   "perMonthPerUser": "por usuario / mes",
-  "viewInvoice": "Ver Factura"
+  "viewInvoice": "Ver Factura",
+  "switchToFreePlan": "Cambiar a Plan Gratuito",
+  
+  "expirestoday": "hoy",
+  "expirestomorrow": "mañana",
+  "expiredDaysAgo": "hace {{days}} días"
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Col, Flex, Form, Row, Select, Tag, Tooltip, Typography } from 'antd/es';
+import { Button, Card, Col, Flex, Form, Row, Select, Tag, Tooltip, Typography, message } from 'antd/es';
 import { useTranslation } from 'react-i18next';
 
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
@@ -15,6 +15,20 @@ import { useAuthService } from '@/hooks/useAuth';
 import { fetchBillingInfo, toggleUpgradeModal } from '@/features/admin-center/admin-center.slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { billingApiService } from '@/api/admin-center/billing.api.service';
+import { authApiService } from '@/api/auth/auth.api.service';
+import { setUser } from '@/features/user/userSlice';
+import { setSession } from '@/utils/session-helper';
+
+// Extend Window interface to include Paddle
+declare global {
+  interface Window {
+    Paddle?: {
+      Environment: { set: (env: string) => void };
+      Setup: (config: { vendor: number; eventCallback: (data: any) => void }) => void;
+      Checkout: { open: (params: any) => void };
+    };
+  }
+}
 
 declare const Paddle: any;
 
@@ -34,6 +48,9 @@ const UpgradePlans = () => {
 
   const { billingInfo } = useAppSelector(state => state.adminCenterReducer);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
+
+  const [paddleLoading, setPaddleLoading] = useState(false);
+  const [paddleError, setPaddleError] = useState<string | null>(null);
 
   const populateSeatCountOptions = (currentSeats: number) => {
     if (!currentSeats) return [];
@@ -73,6 +90,12 @@ const UpgradePlans = () => {
       if (res.done) {
         dispatch(fetchBillingInfo());
         dispatch(toggleUpgradeModal());
+        const authorizeResponse = await authApiService.verify();
+        if (authorizeResponse.authenticated) {
+          setSession(authorizeResponse.user);
+          dispatch(setUser(authorizeResponse.user));
+          window.location.href = '/worklenz/admin-center/billing';
+        }
       }
     } catch (error) {
       logger.error('Error switching to free plan', error);
@@ -82,56 +105,139 @@ const UpgradePlans = () => {
   };
 
   const handlePaddleCallback = (data: any) => {
-    if (data.event === 'Checkout.Loaded') {
-      setSwitchingToPaddlePlan(false);
-    }
-
-    if (data.event === 'Checkout.Complete') {
-      dispatch(fetchBillingInfo());
-      dispatch(toggleUpgradeModal());
+    console.log('Paddle event:', data);
+    
+    switch (data.event) {
+      case 'Checkout.Loaded':
+        setSwitchingToPaddlePlan(false);
+        setPaddleLoading(false);
+        break;
+      case 'Checkout.Complete':
+        message.success('Subscription updated successfully!');
+        setPaddleLoading(true);
+        setTimeout(() => {
+          dispatch(fetchBillingInfo());
+          dispatch(toggleUpgradeModal());
+          setSwitchingToPaddlePlan(false);
+          setPaddleLoading(false);
+        }, 10000);
+        break;
+      case 'Checkout.Close':
+        setSwitchingToPaddlePlan(false);
+        setPaddleLoading(false);
+        // User closed the checkout without completing
+        // message.info('Checkout was closed without completing the subscription');
+        break;
+      case 'Checkout.Error':
+        setSwitchingToPaddlePlan(false);
+        setPaddleLoading(false);
+        setPaddleError(data.error?.message || 'An error occurred during checkout');
+        message.error('Error during checkout: ' + (data.error?.message || 'Unknown error'));
+        logger.error('Paddle checkout error', data.error);
+        break;
+      default:
+        // Handle other events if needed
+        break;
     }
   };
 
   const initializePaddle = (data: IUpgradeSubscriptionPlanResponse) => {
+    setPaddleLoading(true);
+    setPaddleError(null);
+    
+    // Check if Paddle is already loaded
+    if (window.Paddle) {
+      configurePaddle(data);
+      return;
+    }
+    
     const script = document.createElement('script');
     script.src = 'https://cdn.paddle.com/paddle/paddle.js';
     script.type = 'text/javascript';
     script.async = true;
 
-    document.getElementsByTagName('head')[0].appendChild(script);
-
     script.onload = () => {
+      configurePaddle(data);
+    };
+    
+    script.onerror = () => {
+      setPaddleLoading(false);
+      setPaddleError('Failed to load Paddle checkout');
+      message.error('Failed to load payment processor');
+      logger.error('Failed to load Paddle script');
+    };
+
+    document.getElementsByTagName('head')[0].appendChild(script);
+  };
+  
+  const configurePaddle = (data: IUpgradeSubscriptionPlanResponse) => {
+    try {
       if (data.sandbox) Paddle.Environment.set('sandbox');
       Paddle.Setup({
         vendor: parseInt(data.vendor_id),
-        eventCallback: (data: any) => {
-          void handlePaddleCallback(data);
+        eventCallback: (eventData: any) => {
+          void handlePaddleCallback(eventData);
         },
       });
       Paddle.Checkout.open(data.params);
-    };
+    } catch (error) {
+      setPaddleLoading(false);
+      setPaddleError('Failed to initialize checkout');
+      message.error('Failed to initialize checkout');
+      logger.error('Error initializing Paddle', error);
+    }
   };
 
   const upgradeToPaddlePlan = async (planId: string) => {
     try {
       setSwitchingToPaddlePlan(true);
+      setPaddleLoading(true);
+      setPaddleError(null);
+      
       if (billingInfo?.trial_in_progress && billingInfo.status === SUBSCRIPTION_STATUS.TRIALING) {
         const res = await billingApiService.upgradeToPaidPlan(planId, selectedSeatCount);
         if (res.done) {
-          setSwitchingToPaddlePlan(false);
           initializePaddle(res.body);
+        } else {
+          setSwitchingToPaddlePlan(false);
+          setPaddleLoading(false);
+          setPaddleError('Failed to prepare checkout');
+          message.error('Failed to prepare checkout');
+        }
+      } else if (billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE) {
+        // For existing subscriptions, use changePlan endpoint
+        const res = await adminCenterApiService.changePlan(planId);
+        if (res.done) {
+          message.success('Subscription plan changed successfully!');
+          dispatch(fetchBillingInfo());
+          dispatch(toggleUpgradeModal());
+          setSwitchingToPaddlePlan(false);
+          setPaddleLoading(false);
+        } else {
+          setSwitchingToPaddlePlan(false);
+          setPaddleLoading(false);
+          setPaddleError('Failed to change plan');
+          message.error('Failed to change subscription plan');
         }
       }
     } catch (error) {
+      setSwitchingToPaddlePlan(false);
+      setPaddleLoading(false);
+      setPaddleError('Error upgrading to paid plan');
+      message.error('Failed to upgrade to paid plan');
       logger.error('Error upgrading to paddle plan', error);
     }
   };
 
   const continueWithPaddlePlan = async () => {
-    if (selectedPlan && selectedSeatCount.toString() === '100+') return;
+    if (selectedPlan && selectedSeatCount.toString() === '100+') {
+      message.info('Please contact sales for custom pricing on large teams');
+      return;
+    }
 
     try {
       setSwitchingToPaddlePlan(true);
+      setPaddleError(null);
       let planId: string | null = null;
 
       if (selectedPlan === paddlePlans.ANNUAL && plans.annual_plan_id) {
@@ -140,11 +246,18 @@ const UpgradePlans = () => {
         planId = plans.monthly_plan_id;
       }
 
-      if (planId) upgradeToPaddlePlan(planId);
+      if (planId) {
+        upgradeToPaddlePlan(planId);
+      } else {
+        setSwitchingToPaddlePlan(false);
+        setPaddleError('Invalid plan selected');
+        message.error('Invalid plan selected');
+      }
     } catch (error) {
-      logger.error('Error upgrading to paddle plan', error);
-    } finally {
       setSwitchingToPaddlePlan(false);
+      setPaddleError('Error processing request');
+      message.error('Error processing request');
+      logger.error('Error upgrading to paddle plan', error);
     }
   };
 
@@ -203,6 +316,16 @@ const UpgradePlans = () => {
       &nbsp;<span>{text}</span>
     </div>
   );
+
+  useEffect(() => {
+    // Cleanup Paddle script when component unmounts
+    return () => {
+      const paddleScript = document.querySelector('script[src*="paddle.js"]');
+      if (paddleScript) {
+        paddleScript.remove();
+      }
+    };
+  }, []);
 
   return (
     <div>
@@ -354,6 +477,11 @@ const UpgradePlans = () => {
           </Col>
         </Row>
       </Flex>
+      {paddleError && (
+        <Row justify="center" className="mt-2">
+          <Typography.Text type="danger">{paddleError}</Typography.Text>
+        </Row>
+      )}
       <Row justify="end" className="mt-4">
         {selectedPlan === paddlePlans.FREE && (
           <Button
@@ -361,7 +489,6 @@ const UpgradePlans = () => {
             htmlType="submit"
             loading={switchingToFreePlan}
             onClick={switchToFreePlan}
-
           >
             Try for free
           </Button>
@@ -370,23 +497,22 @@ const UpgradePlans = () => {
           <Button
             type="primary"
             htmlType="submit"
-            loading={switchingToPaddlePlan}
+            loading={switchingToPaddlePlan || paddleLoading}
             onClick={continueWithPaddlePlan}
             disabled={billingInfo?.plan_id === plans.annual_plan_id}
           >
-            Continue with {t('annualPlan')}
+            {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE ? t('changeToPlan', {plan: t('annualPlan')}) : t('continueWith', {plan: t('annualPlan')})}
           </Button>
-
         )}
         {selectedPlan === paddlePlans.MONTHLY && (
           <Button
             type="primary"
             htmlType="submit"
-            loading={switchingToPaddlePlan}
+            loading={switchingToPaddlePlan || paddleLoading}
             onClick={continueWithPaddlePlan}
             disabled={billingInfo?.plan_id === plans.monthly_plan_id}
           >
-            Continue with {t('monthlyPlan')}
+            {billingInfo?.status === SUBSCRIPTION_STATUS.ACTIVE ? t('changeToPlan', {plan: t('monthlyPlan')}) : t('continueWith', {plan: t('monthlyPlan')})}
           </Button>
         )}
       </Row>

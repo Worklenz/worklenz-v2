@@ -1,6 +1,7 @@
 export interface IMentionMember {
   id?: string /*user id*/;
   name?: string;
+  team_member_id?: string;
 }
 
 export interface IMentionMemberViewModel extends IMentionMember {

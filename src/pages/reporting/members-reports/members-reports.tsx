@@ -1,8 +1,7 @@
 import { Button, Card, Checkbox, Dropdown, Flex, Skeleton, Space, Typography } from 'antd';
-import { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import MembersReportsTable from './members-reports-table/members-reports-table';
-import TimeWiseFilter from './time-wise-filter';
+import TimeWiseFilter from '@/components/reporting/time-wise-filter';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useTranslation } from 'react-i18next';
@@ -16,19 +15,31 @@ import {
   setDateRange,
   setSearchQuery,
 } from '@/features/reporting/membersReports/membersReportsSlice';
+import { useAuthService } from '@/hooks/useAuth';
+import { reportingExportApiService } from '@/api/reporting/reporting-export.api.service';
+import { useEffect } from 'react';
 
 const MembersReports = () => {
   const { t } = useTranslation('reporting-members');
   const dispatch = useAppDispatch();
   useDocumentTitle('Reporting - Members');
+  const currentSession = useAuthService().getCurrentSession();
 
-  const { archived, searchQuery, duration, dateRange } = useAppSelector(
+  const { archived, searchQuery } = useAppSelector(
     state => state.membersReportsReducer,
   );
+  const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
+
 
   const handleExport = () => {
-    console.log('export');
+    if (!currentSession?.team_name) return;
+    reportingExportApiService.exportMembers(currentSession.team_name, duration, dateRange, archived);
   };
+
+  useEffect(() => {
+    dispatch(setDuration(duration));
+    dispatch(setDateRange(dateRange));
+  }, [dateRange, duration]);
 
   return (
     <Flex vertical>
@@ -42,12 +53,7 @@ const MembersReports = () => {
               </Checkbox>
             </Button>
 
-            <TimeWiseFilter
-              setDuration={duration => dispatch(setDuration(duration))}
-              setDateRange={dateRange => dispatch(setDateRange(dateRange))}
-              duration={duration}
-              dateRange={dateRange}
-            />
+            <TimeWiseFilter />
 
             <Dropdown
               menu={{ items: [{ key: '1', label: t('excelButton') }], onClick: handleExport }}

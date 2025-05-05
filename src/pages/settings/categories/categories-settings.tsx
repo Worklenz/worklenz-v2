@@ -17,7 +17,7 @@ import { CategoryType } from '@/types/categories.types';
 import CustomColorsCategoryTag from '@features/settings/categories/CustomColorsCategoryTag';
 import { deleteCategory } from '@features/settings/categories/categoriesSlice';
 import { categoriesApiService } from '@/api/settings/categories/categories.api.service';
-import { IProjectCategory } from '@/types/project/projectCategory.types';
+import { IProjectCategory, IProjectCategoryViewModel } from '@/types/project/projectCategory.types';
 import { useDocumentTitle } from '@/hooks/useDoumentTItle';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 
@@ -30,7 +30,7 @@ const CategoriesSettings = () => {
   const dispatch = useAppDispatch();
   // get currently hover row
   const [hoverRow, setHoverRow] = useState<string | null>(null);
-  const [categories, setCategories] = useState<IProjectCategory[]>([]);
+  const [categories, setCategories] = useState<IProjectCategoryViewModel[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -65,17 +65,17 @@ const CategoriesSettings = () => {
     {
       key: 'category',
       title: t('categoryColumn'),
-      render: (record: IProjectCategory) => <CustomColorsCategoryTag category={record} />,
+      render: (record: IProjectCategoryViewModel) => <CustomColorsCategoryTag category={record} />,
     },
     {
       key: 'associatedTask',
       title: t('associatedTaskColumn'),
-      render: () => <Typography.Text>0</Typography.Text>,
+      render: (record: IProjectCategoryViewModel) => <Typography.Text>{record.usage}</Typography.Text>,
     },
     {
       key: 'actionBtns',
       width: 60,
-      render: (record: IProjectCategory) =>
+      render: (record: IProjectCategoryViewModel) =>
         hoverRow === record.id && (
           <Popconfirm
             title={t('deleteConfirmationTitle')}

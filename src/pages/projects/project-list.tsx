@@ -9,6 +9,7 @@ import {
   Flex,
   Input,
   Segmented,
+  Skeleton,
   Table,
   TablePaginationConfig,
   Tooltip,
@@ -49,14 +50,18 @@ import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/pr
 import { setProjectId, setStatuses } from '@/features/project/project.slice';
 import { setProject } from '@/features/project/project.slice';
 import { createPortal } from 'react-dom';
+import { evt_projects_page_visit, evt_projects_refresh_click, evt_projects_search } from '@/shared/worklenz-analytics-events';
+import { useMixpanelTracking } from '@/hooks/useMixpanelTracking';
 
 const ProjectList: React.FC = () => {
   const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation('all-project-list');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   useDocumentTitle('Projects');
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
+  const { trackMixpanelEvent } = useMixpanelTracking();
 
   const getFilterIndex = useCallback(() => {
     return +(localStorage.getItem(FILTER_INDEX_KEY) || 0);
@@ -85,6 +90,18 @@ const ProjectList: React.FC = () => {
   } = useGetProjectsQuery(requestParams);
 
   const filters = useMemo(() => Object.values(IProjectFilter), []);
+  
+  // Create translated segment options for the filters
+  const segmentOptions = useMemo(() => {
+    return filters.map(filter => ({
+      value: filter,
+      label: t(filter.toLowerCase())
+    }));
+  }, [filters, t]);
+
+  useEffect(() => {
+    setIsLoading(loadingProjects || isFetchingProjects);
+  }, [loadingProjects, isFetchingProjects]);
 
   useEffect(() => {
     const filterIndex = getFilterIndex();
@@ -92,6 +109,7 @@ const ProjectList: React.FC = () => {
   }, [dispatch, getFilterIndex]);
 
   useEffect(() => {
+    trackMixpanelEvent(evt_projects_page_visit);
     refetchProjects();
   }, [requestParams, refetchProjects]);
 
@@ -137,6 +155,7 @@ const ProjectList: React.FC = () => {
   );
 
   const handleRefresh = useCallback(() => {
+    trackMixpanelEvent(evt_projects_refresh_click);
     refetchProjects();
   }, [refetchProjects, requestParams]);
 
@@ -151,6 +170,7 @@ const ProjectList: React.FC = () => {
   );
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    trackMixpanelEvent(evt_projects_search);
     const value = e.target.value;
     dispatch(setRequestParams({ search: value }));
   }, []);
@@ -201,7 +221,7 @@ const ProjectList: React.FC = () => {
               />
             </Tooltip>
             <Segmented<IProjectFilter>
-              options={filters}
+              options={segmentOptions}
               defaultValue={filters[getFilterIndex()] ?? filters[0]}
               onChange={handleSegmentChange}
             />
@@ -218,22 +238,25 @@ const ProjectList: React.FC = () => {
         }
       />
       <Card className="project-card">
-        <Table<IProjectViewModel>
-          columns={TableColumns({
-            navigate,
-            filteredInfo,
-          })}
-          dataSource={projectsData?.body?.data || []}
-          rowKey={record => record.id || ''}
-          loading={loadingProjects}
-          size="small"
-          onChange={handleTableChange}
-          pagination={paginationConfig}
-          locale={{ emptyText: <Empty description={t('noProjects')} /> }}
-          onRow={record => ({
-            onClick: () => navigateToProject(record.id, record.team_member_default_view), // Navigate to project on row click
-          })}
-        />
+        <Skeleton active loading={isLoading} className='mt-4 p-4'>
+          <Table<IProjectViewModel>
+            columns={TableColumns({
+              navigate,
+              filteredInfo,
+            })}
+            dataSource={projectsData?.body?.data || []}
+            rowKey={record => record.id || ''}
+            loading={loadingProjects}
+            size="small"
+            onChange={handleTableChange}
+            pagination={paginationConfig}
+            locale={{ emptyText: <Empty description={t('noProjects')} /> }}
+            onRow={record => ({
+              onClick: () => navigateToProject(record.id, record.team_member_default_view), // Navigate to project on row click
+            })}
+          />
+        </Skeleton>
+
       </Card>
 
       {createPortal(<ProjectDrawer onClose={handleDrawerClose} />, document.body, 'project-drawer')}

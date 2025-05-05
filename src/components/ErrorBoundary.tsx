@@ -29,6 +29,7 @@ class ErrorBoundary extends React.Component<Props, State> {
       stack: error.stack,
       componentStack: errorInfo.componentStack
     });
+    console.error('Error caught by ErrorBoundary:', error);
   }
 
   render() {
@@ -57,10 +58,6 @@ const ErrorFallback: React.FC<{ error?: Error }> = ({ error }) => {
     <Result
       status="error"
       title={t('error.somethingWentWrong', 'Something went wrong')}
-      subTitle={
-        error?.message ||
-        t('error.unexpectedError', 'An unexpected error occurred')
-      }
       extra={[
         <Button key="retry" type="primary" onClick={handleRetry}>
           {t('error.retry', 'Try Again')}

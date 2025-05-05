@@ -16,19 +16,30 @@ const ShowFieldsFilterDropdown = () => {
   const { trackMixpanelEvent } = useMixpanelTracking();
   const themeMode = useAppSelector(state => state.themeReducer.mode);
 
-  // Filter out fixed columns
-  const changableColumnList = columnList.filter(
-    column => !['selector', 'task'].includes(column.key)
-  );
+  const customColumns = useAppSelector(state => state.taskReducer.customColumns);
+
+  const changableColumnList = [
+    ...columnList.filter(column => !['selector', 'task'].includes(column.key)),
+    ...(customColumns || []).map(col => ({
+      key: col.key,
+      columnHeader: col.custom_column_obj.columnHeader,
+      isCustomColumn: col.custom_column,
+    }))
+  ];
 
   const columnsVisibility = useAppSelector(
     state => state.projectViewTaskListColumnsReducer.columnsVisibility
   );
 
-  const handleColumnToggle = (columnKey: string) => {
-    dispatch(toggleColumnVisibility(columnKey));
+  const handleColumnToggle = (columnKey: string, isCustomColumn: boolean = false) => {
+    if (isCustomColumn) {
+      // dispatch(toggleCustomColumnVisibility(columnKey));
+    } else {
+      dispatch(toggleColumnVisibility(columnKey));
+    }
     trackMixpanelEvent('task_list_column_visibility_changed', {
       column: columnKey,
+      isCustomColumn,
       visible: !columnsVisibility[columnKey as keyof typeof columnsVisibility],
     });
   };
@@ -55,7 +66,7 @@ const ShowFieldsFilterDropdown = () => {
               border: 'none',
               cursor: 'pointer',
             }}
-            onClick={() => handleColumnToggle(col.key)}
+            onClick={() => handleColumnToggle(col.key, col.custom_column)}
           >
             <Space>
               <Checkbox
@@ -65,7 +76,9 @@ const ShowFieldsFilterDropdown = () => {
                   ]
                 }
               />
-              {t(col.key === 'phases' ? 'phasesText' : `${col.columnHeader}Text`)}
+              {col.custom_column
+                ? col.columnHeader 
+                : t(col.key === 'phases' ? 'phasesText' : `${col.columnHeader}Text`)}
             </Space>
           </List.Item>
         ))}

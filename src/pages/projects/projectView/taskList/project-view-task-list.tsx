@@ -4,18 +4,19 @@ import Skeleton from 'antd/es/skeleton';
 import { useSearchParams } from 'react-router-dom';
 
 import TaskListFilters from './task-list-filters/task-list-filters';
-import TaskGroupWrapper from './taskListTable/task-group-wrapper/task-group-wrapper';
+import TaskGroupWrapper from './task-list-table/task-group-wrapper/task-group-wrapper';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { fetchTaskGroups, fetTaskListColumns } from '@/features/tasks/tasks.slice';
+import { fetchTaskGroups, fetchTaskListColumns } from '@/features/tasks/tasks.slice';
 import { fetchStatusesCategories } from '@/features/taskAttributes/taskStatusSlice';
 import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
+import { Empty } from 'antd';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
 
 const ProjectViewTaskList = () => {
   const dispatch = useAppDispatch();
-  const [searchParams] = useSearchParams();
-  const tab = searchParams.get('tab');
-  const projectView = tab === 'tasks-list' ? 'list' : 'kanban';
+  const { projectView } = useTabSearchParam();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { projectId } = useAppSelector(state => state.projectReducer);
   const { taskGroups, loadingGroups, groupBy, archived, fields, search } = useAppSelector(
@@ -28,12 +29,21 @@ const ProjectViewTaskList = () => {
   const { loadingColumns } = useAppSelector(state => state.taskReducer);
 
   useEffect(() => {
+    // Set default view to list if projectView is not list or board
+    if (projectView !== 'list' && projectView !== 'board') {
+      searchParams.set('tab', 'tasks-list');
+      searchParams.set('pinned_tab', 'tasks-list');
+      setSearchParams(searchParams);
+    }
+  }, [projectView, searchParams, setSearchParams]);
+
+  useEffect(() => {
     if (projectId && groupBy) {
+      if (!loadingColumns) dispatch(fetchTaskListColumns(projectId));
+      if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
       if (!loadingGroups && projectView === 'list') {
         dispatch(fetchTaskGroups(projectId));
       }
-      if (!loadingColumns) dispatch(fetTaskListColumns(projectId));
-      if (!loadingPhases) dispatch(fetchPhasesByProjectId(projectId));
     }
     if (!statusCategories.length) {
       dispatch(fetchStatusesCategories());
@@ -44,10 +54,12 @@ const ProjectViewTaskList = () => {
     <Flex vertical gap={16} style={{ overflowX: 'hidden' }}>
       <TaskListFilters position="list" />
 
-      {loadingGroups ? (
-        <Skeleton />
+      {(taskGroups.length === 0 && !loadingGroups) ? (
+        <Empty description="No tasks group found" />
       ) : (
-        <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
+        <Skeleton active loading={loadingGroups} className='mt-4 p-4'>
+          <TaskGroupWrapper taskGroups={taskGroups} groupBy={groupBy} />
+        </Skeleton>
       )}
     </Flex>
   );

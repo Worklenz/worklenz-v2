@@ -1,5 +1,5 @@
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
-import { IBillingAccountInfo, IFreePlanSettings } from '@/types/admin-center/admin-center.types';
+import { IBillingAccountInfo, IBillingAccountStorage, IFreePlanSettings } from '@/types/admin-center/admin-center.types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface adminCenterState {
@@ -8,6 +8,8 @@ interface adminCenterState {
   loadingBillingInfo: boolean;
   billingInfo: IBillingAccountInfo | null;
   freePlanSettings: IFreePlanSettings | null;
+  storageInfo: IBillingAccountStorage | null;
+  loadingStorageInfo: boolean;
 }
 
 const initialState: adminCenterState = {
@@ -16,6 +18,8 @@ const initialState: adminCenterState = {
   loadingBillingInfo: false,
   billingInfo: null,
   freePlanSettings: null,
+  storageInfo: null,
+  loadingStorageInfo: false,
 };
 
 export const fetchBillingInfo = createAsyncThunk('adminCenter/fetchBillingInfo', async () => {
@@ -25,6 +29,11 @@ export const fetchBillingInfo = createAsyncThunk('adminCenter/fetchBillingInfo',
 
 export const fetchFreePlanSettings = createAsyncThunk('adminCenter/fetchFreePlanSettings', async () => {
   const res = await adminCenterApiService.getFreePlanSettings();
+  return res.body;
+});
+
+export const fetchStorageInfo = createAsyncThunk('adminCenter/fetchStorageInfo', async () => {
+  const res = await adminCenterApiService.getAccountStorage();
   return res.body;
 });
 
@@ -53,6 +62,18 @@ const adminCenterSlice = createSlice({
 
     builder.addCase(fetchFreePlanSettings.fulfilled, (state, action) => {
       state.freePlanSettings = action.payload;
+    });
+
+    builder.addCase(fetchStorageInfo.fulfilled, (state, action) => {
+      state.storageInfo = action.payload;
+    });
+
+    builder.addCase(fetchStorageInfo.rejected, (state, action) => {
+      state.loadingStorageInfo = false;
+    });
+
+    builder.addCase(fetchStorageInfo.pending, (state, action) => {
+      state.loadingStorageInfo = true;
     });
   },
 });

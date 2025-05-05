@@ -6,7 +6,7 @@ import { IProjectManager } from '@/types/project/projectManager.types';
 import { IProjectStatus } from '@/types/project/projectStatus.types';
 import { IGetProjectsRequestBody, IRPTOverviewProject, IRPTOverviewProjectMember, IRPTProject } from '@/types/reporting/reporting.types';
 import { getFromLocalStorage } from '@/utils/localStorageFunctions';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, createAction } from '@reduxjs/toolkit';
 
 const filterIndex = () => {
   return +(getFromLocalStorage(FILTER_INDEX_KEY.toString()) || 0);
@@ -60,6 +60,16 @@ export const fetchProjectData = createAsyncThunk(
   }
 );
 
+export const updateProjectCategory = createAction<{
+  projectId: string;
+  category: IProjectCategory;
+}>('projectReports/updateProjectCategory');
+
+export const updateProjectStatus = createAction<{
+  projectId: string;
+  status: IProjectStatus;
+}>('projectReports/updateProjectStatus');
+
 const initialState: ProjectReportsState = {
   isProjectReportsDrawerOpen: false,
 
@@ -98,24 +108,13 @@ const projectReportsSlice = createSlice({
     },
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
+      state.index = 1;
     },
     setSelectedProjectStatuses: (state, action) => {
-      const status = action.payload;
-      const index = state.selectedProjectStatuses.findIndex(s => s.id === status.id);
-      if (index >= 0) {
-        state.selectedProjectStatuses.splice(index, 1);
-      } else {
-        state.selectedProjectStatuses.push(status);
-      }
+      state.selectedProjectStatuses = action.payload;
     },
     setSelectedProjectHealths: (state, action) => {
-      const health = action.payload;
-      const index = state.selectedProjectHealths.findIndex(h => h.id === health.id);
-      if (index >= 0) {
-        state.selectedProjectHealths.splice(index, 1);
-      } else {
-        state.selectedProjectHealths.push(health);
-      }
+      state.selectedProjectHealths = action.payload;
     },
     setSelectedProjectCategories: (state, action) => {
       const category = action.payload;
@@ -186,6 +185,28 @@ const projectReportsSlice = createSlice({
     setSelectedProject: (state, action) => {
       state.selectedProject = action.payload;
     },
+    setSelectedProjectCategory: (state, action) => {
+      const category = action.payload;
+      const project = state.projectList.find(p => p.id === category.id);
+      if (project) {
+        project.category_id = category.id;
+        project.category_name = category.name;
+        project.category_color = category.color_code;
+      }
+    },
+    resetProjectReports: state => {
+      state.projectList = [];
+      state.total = 0;
+      state.isLoading = false;
+      state.error = null;
+      state.index = 1;
+      state.pageSize = 10;
+      state.field = 'name';
+      state.order = 'asc';
+      state.searchQuery = '';
+      state.filterIndex = filterIndex();
+      state.archived = false;
+    },
   },
   extraReducers: builder => {
     builder
@@ -201,6 +222,26 @@ const projectReportsSlice = createSlice({
       .addCase(fetchProjectData.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Failed to fetch project data';
+      })
+      .addCase(updateProjectCategory, (state, action) => {
+        const { projectId, category } = action.payload;
+        const projectIndex = state.projectList.findIndex(project => project.id === projectId);
+        
+        if (projectIndex !== -1) {
+          state.projectList[projectIndex].category_id = category.id || null;
+          state.projectList[projectIndex].category_name = category.name ?? '';
+          state.projectList[projectIndex].category_color = category.color_code ?? '';
+        }
+      })
+      .addCase(updateProjectStatus, (state, action) => {
+        const { projectId, status } = action.payload;
+        const projectIndex = state.projectList.findIndex(project => project.id === projectId);
+        
+        if (projectIndex !== -1) {
+          state.projectList[projectIndex].status_id = status.id || '';
+          state.projectList[projectIndex].status_name = status.name ?? '';
+          state.projectList[projectIndex].status_color = status.color_code ?? '';
+        }
       });
   },
 });
@@ -224,5 +265,7 @@ export const {
   setProjectStatus,
   setSelectedMember,
   setSelectedProject,
+  setSelectedProjectCategory,
+  resetProjectReports,
 } = projectReportsSlice.actions;
 export default projectReportsSlice.reducer;

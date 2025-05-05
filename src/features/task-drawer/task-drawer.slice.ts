@@ -7,12 +7,18 @@ import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
 import { ITaskListPriorityChangeResponse } from '@/types/tasks/task-list-priority.types';
 import { ILabelsChangeResponse } from '@/types/tasks/taskList.types';
 import { InlineMember } from '@/types/teamMembers/inlineMember.types';
+import { ITaskLogViewModel } from '@/types/tasks/task-log-view.types';
+
 interface ITaskDrawerState {
   selectedTaskId: string | null;
   showTaskDrawer: boolean;
   taskFormViewModel: ITaskFormViewModel | null;
   subscribers: InlineMember[];
   loadingTask: boolean;
+  timeLogEditing: {
+    isEditing: boolean;
+    logBeingEdited: ITaskLogViewModel | null;
+  };
 }
 
 const initialState: ITaskDrawerState = {
@@ -21,6 +27,10 @@ const initialState: ITaskDrawerState = {
   taskFormViewModel: null,
   subscribers: [],
   loadingTask: false,
+  timeLogEditing: {
+    isEditing: false,
+    logBeingEdited: null,
+  },
 };
 
 export const fetchTask = createAsyncThunk(
@@ -48,10 +58,11 @@ const taskDrawerSlice = createSlice({
       state.loadingTask = action.payload;
     },
     setTaskStatus: (state, action: PayloadAction<ITaskListStatusChangeResponse>) => {
-      const { status_id, color_code, id: taskId } = action.payload;
+      const { status_id, color_code, id: taskId, color_code_dark } = action.payload;
       if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
         state.taskFormViewModel.task.status_id = status_id;
         state.taskFormViewModel.task.status_color = color_code;
+        state.taskFormViewModel.task.status_color_dark = color_code_dark
       }
     },
     setStartDate: (state, action: PayloadAction<IProjectTask>) => {
@@ -67,7 +78,6 @@ const taskDrawerSlice = createSlice({
       }
     },
     setTaskAssignee: (state, action: PayloadAction<IProjectTask>) => {
-      console.log('action.payload', action.payload);
       const { assignees, id: taskId, names } = action.payload;
       if (state.taskFormViewModel?.task && state.taskFormViewModel.task.id === taskId) {
         state.taskFormViewModel.task.assignees = (assignees || []).map(m => m.team_member_id);
@@ -88,6 +98,12 @@ const taskDrawerSlice = createSlice({
     },
     setTaskSubscribers: (state, action: PayloadAction<InlineMember[]>) => {
       state.subscribers = action.payload;
+    },
+    setTimeLogEditing: (state, action: PayloadAction<{
+      isEditing: boolean;
+      logBeingEdited: ITaskLogViewModel | null;
+    }>) => {
+      state.timeLogEditing = action.payload;
     },
   },
   extraReducers: builder => {
@@ -116,5 +132,6 @@ export const {
   setTaskPriority,
   setTaskLabels,
   setTaskSubscribers,
+  setTimeLogEditing,
 } = taskDrawerSlice.actions;
 export default taskDrawerSlice.reducer;

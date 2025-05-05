@@ -1,27 +1,37 @@
 import { Avatar, Button, Card, Divider, Drawer, Tag, Timeline, Typography } from 'antd';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { toggleTimeLogDrawer } from './timeLogSlice';
 import { DownloadOutlined } from '@ant-design/icons';
 import jsonData from './ProjectTimeLog.json';
-import { AvatarNamesMap } from '../../../shared/constants';
+import { AvatarNamesMap, durations } from '../../../shared/constants';
 import './ProjectTimeLogDrawer.css';
 import { useTranslation } from 'react-i18next';
+import TimeWiseFilter from '@/components/reporting/time-wise-filter';
+import { IProjectLogsBreakdown, ITimeLogBreakdownReq } from '@/types/reporting/reporting.types';
+import { reportingTimesheetApiService } from '@/api/reporting/reporting.timesheet.api.service';
+import { useAuthService } from '@/hooks/useAuth';
+import logger from '@/utils/errorLogger';
 
 const ProjectTimeLogDrawer: React.FC = () => {
-  const isTimeLogDrawerOpen = useAppSelector(state => state.timeLogReducer.isTimeLogDrawerOpen);
-  const selectedLabel = useAppSelector(state => state.timeLogReducer.selectedLabel);
   const dispatch = useAppDispatch();
   const { t } = useTranslation('time-report');
+  const currentSession = useAuthService().getCurrentSession();
 
-  // Filter the data based on selectedLabel
-  const filteredData = jsonData.log_data.filter(logItem =>
-    logItem.logs.some(log => log.project_name === selectedLabel)
-  );
-
-  // Sort the filtered data by log_day in descending order (latest date first)
-  filteredData.sort((a, b) => new Date(b.log_day).getTime() - new Date(a.log_day).getTime());
+  const { selectedLabel, isTimeLogDrawerOpen } = useAppSelector(state => state.timeLogReducer);
+  const {
+    teams,
+    loadingTeams,
+    categories,
+    loadingCategories,
+    projects: filterProjects,
+    loadingProjects,
+    billable,
+    archived,
+  } = useAppSelector(state => state.timeReportsOverviewReducer);
+  const { duration, dateRange } = useAppSelector(state => state.reportingReducer);
+  const [projectTimeLogs, setProjectTimeLogs] = useState<IProjectLogsBreakdown[]>([]);
 
   // Format date to desired format
   const formatDate = (date: string) => {
@@ -33,20 +43,49 @@ const ProjectTimeLogDrawer: React.FC = () => {
     return formattedDate;
   };
 
+  const handleDrawerOpen = async () => {
+    if (!selectedLabel?.id) return;
+    try {
+      const body: ITimeLogBreakdownReq = {
+        id: selectedLabel.id,
+        duration: duration ? duration : durations[1].key,
+        date_range: dateRange,
+        time_zone: currentSession?.timezone_name
+          ? (currentSession?.timezone_name as string)
+          : (Intl.DateTimeFormat().resolvedOptions().timeZone as string),
+      };
+      const res = await reportingTimesheetApiService.getProjectTimeLogs(body);
+      if (res.done) {
+        setProjectTimeLogs(res.body || []);
+      }
+    } catch (error) {
+      logger.error('Error fetching project time logs:', error);
+    }
+  };
+
   return (
     <Drawer
       width={736}
       open={isTimeLogDrawerOpen}
       onClose={() => dispatch(toggleTimeLogDrawer())}
-      title={<Typography.Title level={5}>{selectedLabel}</Typography.Title>}
+      title={
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Typography.Title level={5}>{selectedLabel?.name}</Typography.Title>
+          <TimeWiseFilter />
+        </div>
+      }
+      destroyOnClose
+      afterOpenChange={() => {
+        handleDrawerOpen();
+      }}
     >
       <div style={{ textAlign: 'right', width: '100%', height: '40px' }}>
         <Button size="small" icon={<DownloadOutlined />}>
           {t('exportToExcel')}
         </Button>
       </div>
-      {filteredData.map(logItem => (
-        <div>
+      {projectTimeLogs.map(logItem => (
+        <div key={logItem.log_day}>
           <Card
             className="time-log-card"
             title={
@@ -56,7 +95,6 @@ const ProjectTimeLogDrawer: React.FC = () => {
                 {formatDate(logItem.log_day)}
               </Typography.Text>
             }
-            key={logItem.log_day}
           >
             <Timeline>
               {logItem.logs.map((log, index) => (

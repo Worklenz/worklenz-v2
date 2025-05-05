@@ -24,7 +24,7 @@ const Billing: React.FC = () => {
   return (
     <div style={{ width: '100%' }}>
       <PageHeader title={<span>{t('title')}</span>} style={{ padding: '16px 0' }} />
-      <Tabs defaultActiveKey="1" items={items} />
+      <Tabs defaultActiveKey="1" items={items} destroyInactiveTabPane />
     </div>
   );
 };

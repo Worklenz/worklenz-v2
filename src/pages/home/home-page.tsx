@@ -19,14 +19,14 @@ import { fetchProjectCategories } from '@/features/projects/lookups/projectCateg
 import { fetchProjectHealth } from '@/features/projects/lookups/projectHealth/projectHealthSlice';
 import { fetchProjects } from '@/features/home-page/home-page.slice';
 import { createPortal } from 'react-dom';
+import React from 'react';
 
 const DESKTOP_MIN_WIDTH = 1024;
 const TASK_LIST_MIN_WIDTH = 500;
 const SIDEBAR_MAX_WIDTH = 400;
-
+const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 const HomePage = () => {
   const dispatch = useAppDispatch();
-
   const isDesktop = useMediaQuery({ query: `(min-width: ${DESKTOP_MIN_WIDTH}px)` });
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   useDocumentTitle('Home');
@@ -42,7 +42,6 @@ const HomePage = () => {
 
       await Promise.all(fetchPromises);
     };
-
     fetchLookups();
   }, [dispatch]);
 
@@ -82,7 +81,7 @@ const HomePage = () => {
       </Col>
 
       <MainContent />
-
+      {createPortal(<TaskDrawer />, document.body, 'home-task-drawer')}
       {createPortal(<ProjectDrawer onClose={() => {}} />, document.body, 'project-drawer')}
     </div>
   );

@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Form, Select, Typography } from 'antd';
+import { Button, Card, Flex, Form, Select, Skeleton, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -99,7 +99,7 @@ const LanguageAndRegionSettings = () => {
 
   return (
     <Card style={{ width: '100%' }}>
-      <Form
+      {!loadingTimezones ? (<Form
         layout="vertical"
         style={{ width: '100%', maxWidth: 350 }}
         initialValues={{
@@ -142,7 +142,9 @@ const LanguageAndRegionSettings = () => {
             {t('save_changes')}
           </Button>
         </Form.Item>
-      </Form>
+      </Form>): (
+        <Skeleton />
+      )}
     </Card>
   );
 };

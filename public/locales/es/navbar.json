@@ -18,5 +18,14 @@
   "profileTooltip": "Ver perfil",
   "adminCenter": "Centro de administración",
   "settings": "Configuración",
-  "logOut": "Cerrar sesión"
+  "logOut": "Cerrar sesión",
+  "notificationsDrawer": {
+    "read": "Notificaciones leídas",
+    "unread": "Notificaciones no leídas",
+    "markAsRead": "Marcar como leído",
+    "readAndJoin": "Leer y unirse",
+    "accept": "Aceptar",
+    "acceptAndJoin": "Aceptar y unirse",
+    "noNotifications": "Sin notificaciones"
+  }
 }

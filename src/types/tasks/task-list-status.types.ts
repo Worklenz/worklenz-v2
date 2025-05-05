@@ -12,4 +12,5 @@ export interface ITaskListStatusChangeResponse {
     is_doing: boolean;
     is_done: boolean;
   };
+  completed_deps?: boolean;
 }

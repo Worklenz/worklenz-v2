@@ -21,7 +21,7 @@ const AuthenticatingPage: React.FC = () => {
     const project = localStorage.getItem(WORKLENZ_REDIRECT_PROJ_KEY);
     if (project) {
       localStorage.removeItem(WORKLENZ_REDIRECT_PROJ_KEY);
-      window.location.href = `/worklenz/projects/${project}`;
+      window.location.href = `/worklenz/projects/${project}?tab=tasks-list`;
       return;
     }
 

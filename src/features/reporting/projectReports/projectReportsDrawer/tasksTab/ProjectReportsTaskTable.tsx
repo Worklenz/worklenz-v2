@@ -1,18 +1,24 @@
 import { Badge, Collapse, Flex, Table, TableColumnsType, Tag, Typography } from 'antd';
-import React from 'react';
+import { useEffect } from 'react';
 import CustomTableTitle from '@/components/CustomTableTitle';
 import { colors } from '@/styles/colors';
 import dayjs from 'dayjs';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
+import { setShowTaskDrawer, fetchTask, setSelectedTaskId  } from '@/features/task-drawer/task-drawer.slice';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { fetchPriorities } from '@/features/taskAttributes/taskPrioritySlice';
+import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
+import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
+import { getTeamMembers } from '@/features/team-members/team-members.slice';
+import { setProjectId } from '@/features/project/project.slice';
 
 type ProjectReportsTasksTableProps = {
   tasksData: any[];
   title: string;
   color: string;
   type: string;
+  projectId: string;
 };
 
 const ProjectReportsTasksTable = ({
@@ -20,16 +26,26 @@ const ProjectReportsTasksTable = ({
   title,
   color,
   type,
+  projectId,
 }: ProjectReportsTasksTableProps) => {
   // localization
   const { t } = useTranslation('reporting-projects-drawer');
 
   const dispatch = useAppDispatch();
 
+  useEffect(()=>{
+    dispatch(fetchPriorities());
+    dispatch(fetchLabels());
+    dispatch(getTeamMembers({ index: 0, size: 100, field: null, order: null, search: null, all: true }));
+  },[dispatch])
+
   // function to handle task drawer open
   const handleUpdateTaskDrawer = (id: string) => {
-    if (!id) return;
+    if (!id && !projectId) return;
     dispatch(setSelectedTaskId(id));
+    dispatch(setProjectId(projectId));
+    dispatch(fetchPhasesByProjectId(projectId));
+    dispatch(fetchTask({ taskId: id, projectId: projectId }));
     dispatch(setShowTaskDrawer(true));
   };
 
@@ -93,7 +109,7 @@ const ProjectReportsTasksTable = ({
       title: <CustomTableTitle title={t('dueDateColumn')} />,
       render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.due_date ? `${dayjs(record.due_date).format('MMM DD, YYYY')}` : '-'}
+          {record.end_date ? `${dayjs(record.end_date).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,
@@ -103,7 +119,7 @@ const ProjectReportsTasksTable = ({
       title: <CustomTableTitle title={t('completedOnColumn')} />,
       render: record => (
         <Typography.Text className="text-center group-hover:text-[#1890ff]">
-          {record.completed_date ? `${dayjs(record.completed_date).format('MMM DD, YYYY')}` : '-'}
+          {record.completed_at ? `${dayjs(record.completed_at).format('MMM DD, YYYY')}` : '-'}
         </Typography.Text>
       ),
       width: 120,

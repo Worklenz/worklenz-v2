@@ -34,5 +34,11 @@
   "manDays": "Días Hombre",
   "days": "Días",
   "estimatedDays": "Días Estimados",
-  "actualDays": "Días Reales"
+  "actualDays": "Días Reales",
+
+  "noCategories": "No se encontraron categorías",
+  "noCategory": "No Categoría",
+  "noProjects": "No se encontraron proyectos",
+  "noTeams": "No se encontraron equipos",
+  "noData": "No se encontraron datos"
 }

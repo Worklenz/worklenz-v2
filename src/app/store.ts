@@ -23,6 +23,7 @@ import projectViewTaskListColumnsReducer from '@features/projects/singleProject/
 import phaseReducer from '@/features/projects/singleProject/phase/phases.slice';
 import updatesReducer from '../features/projects/singleProject/updates/updatesSlice';
 import statusReducer from '@features/projects/status/StatusSlice';
+import deleteStatusReducer from '@features/projects/status/DeleteStatusSlice';
 import bulkActionReducer from '@features/projects/bulkActions/bulkActionSlice';
 import projectInsightsReducer from '@features/projects/insights/project-insights.slice';
 import taskListCustomColumnsReducer from '@features/projects/singleProject/task-list-custom-columns/task-list-custom-columns-slice';
@@ -39,7 +40,7 @@ import taskReducer from '@features/tasks/tasks.slice';
 import createCardReducer from '@/features/board/create-card.slice';
 import priorityReducer from '@features/taskAttributes/taskPrioritySlice';
 import taskLabelsReducer from '@features/taskAttributes/taskLabelSlice';
-import taskStatusReducer from '@features/taskAttributes/taskStatusSlice';
+import taskStatusReducer, { deleteStatus } from '@features/taskAttributes/taskStatusSlice';
 import taskDrawerReducer from '@features/task-drawer/task-drawer.slice';
 
 // Settings & Management
@@ -56,7 +57,7 @@ import adminCenterReducer from '@features/admin-center/admin-center.slice';
 
 // Features
 import dateReducer from '@features/date/dateSlice';
-import notificationReducer from '@features/navbar/notification/notificationSlice';
+import notificationReducer from '@/features/navbar/notificationSlice';
 import buttonReducer from '@features/actionSetup/buttonSlice';
 import scheduleReducer from '../features/schedule/scheduleSlice';
 
@@ -67,6 +68,8 @@ import taskTemplateReducer from '../features/settings/taskTemplates/taskTemplate
 import projectReportsTableColumnsReducer from '../features/reporting/projectReports/project-reports-table-column-slice/project-reports-table-column-slice';
 import projectReportsReducer from '../features/reporting/projectReports/project-reports-slice';
 import membersReportsReducer from '../features/reporting/membersReports/membersReportsSlice';
+import timeReportsOverviewReducer from '@features/reporting/time-reports/time-reports-overview.slice';
+
 import roadmapReducer from '../features/roadmap/roadmap-slice';
 import teamMembersReducer from '@features/team-members/team-members.slice';
 import groupByFilterDropdownReducer from '../features/group-by-filter-dropdown/group-by-filter-dropdown-slice';
@@ -104,6 +107,7 @@ export const store = configureStore({
     phaseReducer: phaseReducer,
     updatesReducer: updatesReducer,
     statusReducer: statusReducer,
+    deleteStatusReducer: deleteStatusReducer,
     bulkActionReducer: bulkActionReducer,
     projectInsightsReducer: projectInsightsReducer,
     taskListCustomColumnsReducer: taskListCustomColumnsReducer,
@@ -150,6 +154,7 @@ export const store = configureStore({
     membersReportsReducer: membersReportsReducer,
     roadmapReducer: roadmapReducer,
     groupByFilterDropdownReducer: groupByFilterDropdownReducer,
+    timeReportsOverviewReducer: timeReportsOverviewReducer,
   },
 });
 

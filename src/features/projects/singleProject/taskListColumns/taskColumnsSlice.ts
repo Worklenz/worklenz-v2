@@ -1,16 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import React, { ReactNode } from 'react';
 import PhaseHeader from '../phase/PhaseHeader';
-import AddCustomColumnButton from '../../../../pages/projects/projectView/taskList/taskListTable/custom-columns/custom-column-modal/add-custom-column-button';
+import AddCustomColumnButton from '../../../../pages/projects/projectView/taskList/task-list-table/custom-columns/custom-column-modal/add-custom-column-button';
 
 export type CustomTableColumnsType = {
+  id?: string;
   key: string; // this key identify each column uniquely
   name: string; // this name show the name of the column. this name is used when custom column generated, show in fields filter
   columnHeader: ReactNode | null; // this column header used to render the actual column title
   width: number;
   isVisible: boolean;
-  isCustomColumn?: boolean;
-  customColumnObj?: any; // this object include specific values that are generated based on custom column types
+  custom_column?: boolean;
+  custom_column_obj?: any; // this object include specific values that are generated based on custom column types
 };
 
 export type projectViewTaskListColumnsState = {
@@ -180,6 +181,7 @@ const projectViewTaskListColumnsSlice = createSlice({
       }>
     ) {
       const index = state.columnList.findIndex(column => column.key === action.payload.key);
+      console.log('index', index, action.payload.key);
       if (index !== -1) {
         state.columnList[index] = action.payload.updatedColumn;
       }

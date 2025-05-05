@@ -21,11 +21,14 @@ import { taskTemplatesApiService } from '@/api/task-templates/task-templates.api
 import logger from '@/utils/errorLogger';
 import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 import { setImportTaskTemplateDrawerOpen } from '@/features/project/project.slice';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { fetchTaskGroups } from '@/features/tasks/tasks.slice';
 
 const ImportTaskTemplate = () => {
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
   const { t } = useTranslation('project-view/import-task-templates');
+  const { tab } = useTabSearchParam();
 
   const { importTaskTemplateDrawerOpen, projectId } = useAppSelector(state => state.projectReducer);
   const [templates, setTemplates] = useState<ITaskTemplatesGetResponse[]>([]);
@@ -86,7 +89,8 @@ const ImportTaskTemplate = () => {
       setImporting(true);
       const res = await taskTemplatesApiService.importTemplate(projectId, tasks);
       if (res.done) {
-        dispatch(fetchBoardTaskGroups(projectId));
+        if (tab === 'board') dispatch(fetchBoardTaskGroups(projectId));
+        if (tab === 'tasks-list') dispatch(fetchTaskGroups(projectId));
         dispatch(setImportTaskTemplateDrawerOpen(false));
       }
     } catch (error) {

@@ -1,5 +1,5 @@
 import { Button, Dropdown, Flex, Input, InputRef, MenuProps } from 'antd';
-import React, { ChangeEvent, useEffect, useState, useTransition } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { TFunction } from 'i18next';
 
@@ -13,6 +13,10 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { setSelectedTaskId, setShowTaskDrawer } from '@/features/task-drawer/task-drawer.slice';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
+import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
+import { deleteTask } from '@/features/tasks/tasks.slice';
+import { deleteBoardTask, updateTaskName } from '@/features/board/board-slice';
+import TextArea from 'antd/es/input/TextArea';
 
 type TaskDrawerHeaderProps = {
   inputRef: React.RefObject<InputRef | null>;
@@ -22,6 +26,8 @@ type TaskDrawerHeaderProps = {
 const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
   const dispatch = useAppDispatch();
   const { socket, connected } = useSocket();
+  const { clearTaskFromUrl } = useTaskDrawerUrlSync();
+  const isDeleting = useRef(false);
 
   const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const [taskName, setTaskName] = useState<string>(taskFormViewModel?.task?.name ?? '');
@@ -31,16 +37,35 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
     setTaskName(taskFormViewModel?.task?.name ?? '');
   }, [taskFormViewModel?.task?.name]);
 
-  const onTaskNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTaskName(e.currentTarget.value);
-  };
+  const onTaskNameChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setTaskName(e.currentTarget.value);
+    };
 
   const handleDeleteTask = async () => {
     if (!selectedTaskId) return;
+
+    // Set flag to indicate we're deleting the task
+    isDeleting.current = true;
+
     const res = await tasksApiService.deleteTask(selectedTaskId);
     if (res.done) {
+      // Explicitly clear the task parameter from URL
+      clearTaskFromUrl();
+
       dispatch(setShowTaskDrawer(false));
       dispatch(setSelectedTaskId(null));
+      dispatch(deleteTask({ taskId: selectedTaskId }));
+      dispatch(deleteBoardTask({ sectionId: '', taskId: selectedTaskId }));
+
+      // Reset the flag after a short delay
+      setTimeout(() => {
+        isDeleting.current = false;
+      }, 100);
+      if (taskFormViewModel?.task?.parent_task_id) {
+        socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), taskFormViewModel?.task?.parent_task_id);
+      }
+    } else {
+      isDeleting.current = false;
     }
   };
 
@@ -56,6 +81,12 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
       ),
     },
   ];
+
+  const handleReceivedTaskNameChange = (data: { id: string; parent_task: string; name: string }) => {
+    if (data.id === selectedTaskId) {
+      dispatch(updateTaskName({ task: data }));
+    }
+  };
 
   const handleInputBlur = () => {
     if (
@@ -75,12 +106,15 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
         parent_task: taskFormViewModel?.task?.parent_task_id,
       })
     );
+    socket?.once(SocketEvents.TASK_NAME_CHANGE.toString(), (data: any) => {
+      handleReceivedTaskNameChange(data);
+    });
   };
 
   return (
-    <Flex gap={12} align="center" style={{ marginBlockEnd: 6 }}>
+    <Flex gap={12} align="self-start" style={{ marginBlockEnd: 6 }}>
       <Flex style={{ position: 'relative', width: '100%' }}>
-        <Input
+        <TextArea
           ref={inputRef}
           size="large"
           value={taskName}
@@ -88,12 +122,14 @@ const TaskDrawerHeader = ({ inputRef, t }: TaskDrawerHeaderProps) => {
           onBlur={handleInputBlur}
           placeholder={t('taskHeader.taskNamePlaceholder')}
           className="task-name-input"
-          style={{ 
-            width: '100%', 
+          style={{
+            width: '100%',
             border: 'none',
+            resize: 'none',
           }}
           showCount={false}
           maxLength={250}
+          autoSize={{ minRows: 1, maxRows: 3 }}
         />
       </Flex>
 

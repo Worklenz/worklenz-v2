@@ -39,6 +39,8 @@ export interface IProjectTask {
   comments_count?: number;
   has_subscribers?: boolean;
   attachments_count?: number;
+  has_dependencies?: boolean;
+  schedule_id?: string;
   status_name?: string;
   total_time_string?: string;
   due_in?: string;
@@ -86,6 +88,7 @@ export interface IProjectTask {
   width?: number;
   isVisible?: boolean;
   estimated_string?: string;
+  custom_column_values?: Record<string, any>;
 }
 
 export interface IProjectTasksViewModel {

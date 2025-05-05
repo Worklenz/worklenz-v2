@@ -101,10 +101,12 @@ const ProjectManagerDropdown: React.FC<ProjectManagerDropdownProps> = ({
               email={selectedProjectManager.email}
             />
             <Typography.Text>{selectedProjectManager.name}</Typography.Text>
-            <CloseCircleFilled
-              className="project-manager-icon"
-              onClick={() => setSelectedProjectManager(null)}
-            />
+            {!disabled && (
+              <CloseCircleFilled
+                className="project-manager-icon"
+                onClick={() => setSelectedProjectManager(null)}
+              />
+            )}
           </>
         ) : (
           <Button type="dashed" shape="circle" icon={<PlusCircleOutlined />} />

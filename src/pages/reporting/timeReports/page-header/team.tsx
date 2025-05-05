@@ -1,88 +1,102 @@
 import { CaretDownFilled } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Dropdown, Input, MenuProps, Space } from 'antd';
-import React, { useState } from 'react';
+import { Button, Checkbox, Divider, Dropdown, Input, theme } from 'antd';
+import React, { useEffect, useState } from 'react';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { useTranslation } from 'react-i18next';
+import { ISelectableTeam } from '@/types/reporting/reporting-filters.types';
+import { reportingApiService } from '@/api/reporting/reporting.api.service';
+import logger from '@/utils/errorLogger';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { fetchReportingCategories, fetchReportingProjects, fetchReportingTeams, setSelectOrDeselectAllTeams, setSelectOrDeselectTeam } from '@/features/reporting/time-reports/time-reports-overview.slice';
 
 const Team: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const { t } = useTranslation('time-report');
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const { token } = theme.useToken();
 
-  const allItems = [
-    { key: '1', label: 'Team 1' },
-    { key: '2', label: 'Team 2' },
-    { key: '3', label: 'Team 3' },
-  ];
+  const { teams, loadingTeams } = useAppSelector(state => state.timeReportsOverviewReducer);
 
-  // Filter items based on search text
-  const filteredItems = allItems.filter(item =>
-    item.label.toLowerCase().includes(searchText.toLowerCase())
+  const filteredItems = teams.filter(item =>
+    item.name?.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Handle checkbox change for individual items
-  const handleCheckboxChange = (key: string, checked: boolean) => {
-    setCheckedList(prev => (checked ? [...prev, key] : prev.filter(item => item !== key)));
+  const handleCheckboxChange = async (key: string, checked: boolean) => {
+    dispatch(setSelectOrDeselectTeam({ id: key, selected: checked }));
+    await dispatch(fetchReportingCategories());
+    await dispatch(fetchReportingProjects());
   };
 
-  // Handle "Select All" checkbox change
-  const handleSelectAllChange = (e: CheckboxChangeEvent) => {
+  const handleSelectAllChange = async (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
     setSelectAll(isChecked);
-    setCheckedList(isChecked ? allItems.map(item => item.key) : []);
+    dispatch(setSelectOrDeselectAllTeams(isChecked));
+    await dispatch(fetchReportingCategories());
+    await dispatch(fetchReportingProjects());
   };
-
-  // Dropdown items for the menu
-  const menuItems: MenuProps['items'] = [
-    {
-      key: 'search',
-      label: (
-        <Input
-          placeholder={t('searchByName')}
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-          onClick={e => e.stopPropagation()}
-        />
-      ),
-    },
-    {
-      key: 'selectAll',
-      label: (
-        <div>
-          <Checkbox
-            onClick={e => e.stopPropagation()}
-            onChange={handleSelectAllChange}
-            checked={selectAll}
-          >
-            {t('selectAll')}
-          </Checkbox>
-          <Divider style={{ margin: '4px 0' }} />
-        </div>
-      ),
-    },
-    ...filteredItems.map(item => ({
-      key: item.key,
-      label: (
-        <Checkbox
-          onClick={e => e.stopPropagation()}
-          checked={checkedList.includes(item.key)}
-          onChange={e => handleCheckboxChange(item.key, e.target.checked)}
-        >
-          {item.label}
-        </Checkbox>
-      ),
-    })),
-  ];
 
   return (
     <div>
       <Dropdown
-        menu={{ items: menuItems }}
+        menu={undefined}
         placement="bottomLeft"
         trigger={['click']}
-        overlayStyle={{ maxHeight: '330px', overflowY: 'auto' }}
+        dropdownRender={() => (
+          <div style={{ 
+            background: token.colorBgContainer,
+            borderRadius: token.borderRadius,
+            boxShadow: token.boxShadow,
+            padding: '4px 0',
+            maxHeight: '330px',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{ padding: '8px', flexShrink: 0 }}>
+              <Input
+                placeholder={t('searchByName')}
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+            <div style={{ padding: '0 12px', flexShrink: 0 }}>
+              <Checkbox
+                onClick={e => e.stopPropagation()}
+                onChange={handleSelectAllChange}
+                checked={selectAll}
+              >
+                {t('selectAll')}
+              </Checkbox>
+            </div>
+            <Divider style={{ margin: '4px 0', flexShrink: 0 }} />
+            <div style={{ 
+              overflowY: 'auto',
+              flex: 1
+            }}>
+              {filteredItems.map(item => (
+                <div 
+                  key={item.id}
+                  style={{ 
+                    padding: '8px 12px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Checkbox
+                    onClick={e => e.stopPropagation()}
+                    checked={item.selected}
+                    onChange={e => handleCheckboxChange(item.id || '', e.target.checked)}
+                  >
+                    {item.name}
+                  </Checkbox>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         onOpenChange={visible => {
           setDropdownVisible(visible);
           if (!visible) {
@@ -90,7 +104,7 @@ const Team: React.FC = () => {
           }
         }}
       >
-        <Button>
+        <Button loading={loadingTeams}>
           {t('teams')} <CaretDownFilled />
         </Button>
       </Dropdown>

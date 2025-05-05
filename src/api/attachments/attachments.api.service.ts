@@ -14,7 +14,7 @@ export const attachmentsApiService = {
 
   getProjectAttachments: async (projectId: string, index: number, size: number): Promise<IServerResponse<IProjectAttachmentsViewModel>> => {
     const q = toQueryString({ index, size });
-    const response = await apiClient.get<IServerResponse<IProjectAttachmentsViewModel>>(`${rootUrl}/project/${projectId}?${q}`);
+    const response = await apiClient.get<IServerResponse<IProjectAttachmentsViewModel>>(`${rootUrl}/project/${projectId}${q}`);
     return response.data;
   },
 

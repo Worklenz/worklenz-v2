@@ -1,8 +1,9 @@
-import { TabsProps, Tabs } from 'antd';
+import { TabsProps, Tabs, Button } from 'antd';
 import Drawer from 'antd/es/drawer';
 import { InputRef } from 'antd/es/input';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useRef, useState } from 'react';
+import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -11,21 +12,32 @@ import {
   setShowTaskDrawer,
   setTaskFormViewModel,
   setTaskSubscribers,
+  setTimeLogEditing,
 } from '@/features/task-drawer/task-drawer.slice';
 
 import './task-drawer.css';
 import TaskDrawerHeader from './task-drawer-header/task-drawer-header';
 import TaskDrawerActivityLog from './shared/activity-log/task-drawer-activity-log';
-import TaskDrawerInfoTab from './shared/infoTab/TaskDrawerInfoTab';
-import TaskDrawerTimeLog from './shared/timeLog/task-drawer-time-log';
+import TaskDrawerInfoTab from './shared/info-tab/task-drawer-info-tab';
+import TaskDrawerTimeLog from './shared/time-log/task-drawer-time-log';
+import TimeLogForm from './shared/time-log/time-log-form';
 import { DEFAULT_TASK_NAME } from '@/shared/constants';
+import useTaskDrawerUrlSync from '@/hooks/useTaskDrawerUrlSync';
+import InfoTabFooter from './shared/info-tab/info-tab-footer';
+import { Flex } from 'antd';
 
 const TaskDrawer = () => {
   const { t } = useTranslation('task-drawer/task-drawer');
+  const [activeTab, setActiveTab] = useState<string>('info');
+  const [refreshTimeLogTrigger, setRefreshTimeLogTrigger] = useState(0);
 
-  const { showTaskDrawer } = useAppSelector(state => state.taskDrawerReducer);
-
+  const { showTaskDrawer, timeLogEditing } = useAppSelector(state => state.taskDrawerReducer);
+  const { taskFormViewModel, selectedTaskId } = useAppSelector(state => state.taskDrawerReducer);
   const taskNameInputRef = useRef<InputRef>(null);
+  const isClosingManually = useRef(false);
+
+  // Use the custom hook to sync the task drawer state with the URL
+  const { clearTaskFromUrl } = useTaskDrawerUrlSync();
 
   useEffect(() => {
     if (taskNameInputRef.current?.input?.value === DEFAULT_TASK_NAME) {
@@ -35,11 +47,66 @@ const TaskDrawer = () => {
 
   const dispatch = useAppDispatch();
 
-  const handleOnClose = () => {
+  const resetTaskState = () => {
     dispatch(setShowTaskDrawer(false));
     dispatch(setSelectedTaskId(null));
     dispatch(setTaskFormViewModel({}));
     dispatch(setTaskSubscribers([]));
+  };
+
+  const handleOnClose = (e?: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>) => {
+    isClosingManually.current = true; // Indicate manual drawer close
+    setActiveTab('info'); // Reset active tab to 'info'
+    clearTaskFromUrl(); // Clear task parameter from URL
+
+    const isClickOutsideDrawer = e?.target && (e.target as HTMLElement).classList.contains('ant-drawer-mask');
+
+    if (isClickOutsideDrawer || !taskFormViewModel?.task?.is_sub_task) {
+      resetTaskState();
+    } else {
+      dispatch(setSelectedTaskId(null));
+      dispatch(setTaskFormViewModel({}));
+      dispatch(setTaskSubscribers([]));
+      dispatch(setSelectedTaskId(taskFormViewModel?.task?.parent_task_id || null));
+    }
+
+    setTimeout(() => {
+      isClosingManually.current = false; // Reset flag after delay
+    }, 100);
+  };
+
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+  };
+
+  const handleCancelTimeLog = () => {
+    dispatch(
+      setTimeLogEditing({
+        isEditing: false,
+        logBeingEdited: null,
+      })
+    );
+  };
+
+  const handleAddTimeLog = () => {
+    dispatch(
+      setTimeLogEditing({
+        isEditing: true,
+        logBeingEdited: null,
+      })
+    );
+  };
+
+  // Function to trigger a refresh of the time log list
+  const refreshTimeLogs = () => {
+    setRefreshTimeLogTrigger(prev => prev + 1);
+  };
+
+  const handleTimeLogSubmitSuccess = () => {
+    // Close the form
+    handleCancelTimeLog();
+    // Trigger refresh of time logs
+    refreshTimeLogs();
   };
 
   const tabItems: TabsProps['items'] = [
@@ -51,7 +118,7 @@ const TaskDrawer = () => {
     {
       key: 'timeLog',
       label: t('taskTimeLogTab.title'),
-      children: <TaskDrawerTimeLog t={t} />,
+      children: <TaskDrawerTimeLog t={t} refreshTrigger={refreshTimeLogTrigger} />,
     },
     {
       key: 'activityLog',
@@ -60,21 +127,102 @@ const TaskDrawer = () => {
     },
   ];
 
-  return (
-    <Drawer
-      open={showTaskDrawer}
-      onClose={handleOnClose}
-      width={720}
-      style={{ justifyContent: 'space-between' }}
-      destroyOnClose
-      title={
-        <TaskDrawerHeader
-          inputRef={taskNameInputRef}
-          t={t}
-        />
+  // Render the appropriate footer based on the active tab
+  const renderFooter = () => {
+    if (activeTab === 'info') {
+      return <InfoTabFooter />;
+    } else if (activeTab === 'timeLog') {
+      if (timeLogEditing.isEditing) {
+        return (
+          <TimeLogForm
+            onCancel={handleCancelTimeLog}
+            onSubmitSuccess={handleTimeLogSubmitSuccess}
+            initialValues={timeLogEditing.logBeingEdited || undefined}
+            mode={timeLogEditing.logBeingEdited ? 'edit' : 'create'}
+          />
+        );
+      } else {
+        return (
+          <Flex justify="center" style={{ width: '100%', padding: '16px 0 0' }}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAddTimeLog}
+              style={{ width: '100%' }}
+            >
+              Add new time log
+            </Button>
+          </Flex>
+        );
       }
-    >
-      <Tabs type="card" items={tabItems} destroyInactiveTabPane />
+    }
+    return null;
+  };
+
+  // Create conditional footer styles based on active tab
+  const getFooterStyle = () => {
+    const baseStyle = {
+      padding: '0 24px 16px',
+      width: '100%',
+      height: 'auto',
+      boxSizing: 'border-box' as const,
+    };
+
+    if (activeTab === 'timeLog') {
+      return {
+        ...baseStyle,
+        overflow: 'visible', // Remove scrolling for timeLog tab
+      };
+    }
+
+    return {
+      ...baseStyle,
+      overflow: 'hidden',
+    };
+  };
+
+  // Get conditional body style
+  const getBodyStyle = () => {
+    const baseStyle = {
+      padding: '24px',
+      overflow: 'auto'
+    };
+
+    if (activeTab === 'timeLog' && timeLogEditing.isEditing) {
+      return {
+        ...baseStyle,
+        height: 'calc(100% - 220px)', // More space for the timeLog form
+      };
+    }
+
+    return {
+      ...baseStyle,
+      height: 'calc(100% - 180px)',
+    };
+  };
+
+  const drawerProps = {
+    open: showTaskDrawer,
+    onClose: handleOnClose,
+    width: 720,
+    style: { justifyContent: 'space-between' },
+    destroyOnClose: true,
+    title: <TaskDrawerHeader inputRef={taskNameInputRef} t={t} />,
+    footer: renderFooter(),
+    bodyStyle: getBodyStyle(),
+    footerStyle: getFooterStyle(),
+    closeIcon: taskFormViewModel?.task?.is_sub_task ? <LeftOutlined /> : undefined,
+  };
+
+  return (
+    <Drawer {...drawerProps}>
+      <Tabs
+        type="card"
+        items={tabItems}
+        destroyInactiveTabPane
+        onChange={handleTabChange}
+        activeKey={activeTab}
+      />
     </Drawer>
   );
 };

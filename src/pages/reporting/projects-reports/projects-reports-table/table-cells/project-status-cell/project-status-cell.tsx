@@ -3,7 +3,7 @@ import { colors } from '@/styles/colors';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { getStatusIcon } from '@/utils/projectUtils';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -20,22 +20,23 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
   const dispatch = useAppDispatch();
   const { socket } = useSocket();
   const { projectStatuses } = useAppSelector(state => state.projectStatusesReducer);
+  const [selectedStatus, setSelectedStatus] = useState(currentStatus);
 
-  const statusOptions = [
-    ...projectStatuses.map((status, index) => ({
-      key: index,
-      value: status.id,
-      label: (
-        <Typography.Text
-          style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-          className="group-hover:text-[#1890ff]"
-        >
-          {getStatusIcon(status.icon || '', status.color_code || '')}
-          {t(`${status.name}`)}
-        </Typography.Text>
-      ),
-    })),
-  ];
+  // Find current status object
+  const currentStatusObject = projectStatuses.find(status => status.id === selectedStatus);
+
+  const statusOptions = projectStatuses.map(status => ({
+    value: status.id,
+    label: (
+      <Typography.Text
+        style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+        className="group-hover:text-[#1890ff]"
+      >
+        {getStatusIcon(status.icon || '', status.color_code || '')}
+        {t(`${status.name}`)}
+      </Typography.Text>
+    )
+  }));
 
   const handleStatusChange = (value: string) => {
     try {
@@ -43,11 +44,19 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
         throw new Error('Invalid status value or project ID');
       }
 
-      if (!socket) {
-        throw new Error('Socket connection not available');
+      const newStatus = projectStatuses.find(status => status.id === value);
+      if (!newStatus) {
+        throw new Error('Status not found');
       }
 
-      socket.emit(
+      // Update local state immediately
+      setSelectedStatus(value);
+
+      // Update Redux store
+      dispatch(setProjectStatus({ projectId, status: newStatus }));
+
+      // Emit socket event
+      socket?.emit(
         SocketEvents.PROJECT_STATUS_CHANGE.toString(),
         JSON.stringify({
           project_id: projectId,
@@ -59,32 +68,10 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
     }
   };
 
-  const handleStatusChangeResponse = (data: any) => {
-    try {
-      if (!data || !data.id) {
-        throw new Error('Invalid status change response data');
-      }
-      dispatch(setProjectStatus(data));
-    } catch (error) {
-      logger.error('Error handling status change response:', error);
-    }
-  };
-
+  // Keep local state in sync with props
   useEffect(() => {
-    if (!socket) {
-      logger.warning('Socket connection not available for status updates');
-      return;
-    }
-
-    socket.on(SocketEvents.PROJECT_STATUS_CHANGE.toString(), handleStatusChangeResponse);
-
-    return () => {
-      socket.removeListener(
-        SocketEvents.PROJECT_STATUS_CHANGE.toString(),
-        handleStatusChangeResponse
-      );
-    };
-  }, [socket]);
+    setSelectedStatus(currentStatus);
+  }, [currentStatus]);
 
   return (
     <ConfigProvider
@@ -99,7 +86,7 @@ const ProjectStatusCell = ({ currentStatus, projectId }: ProjectStatusCellProps)
       <Select
         variant="borderless"
         options={statusOptions}
-        defaultValue={currentStatus}
+        value={selectedStatus}
         onChange={handleStatusChange}
       />
     </ConfigProvider>

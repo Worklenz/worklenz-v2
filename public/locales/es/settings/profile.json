@@ -8,5 +8,6 @@
   "emailRequiredError": "El correo electrónico es obligatorio",
   "saveChanges": "Guardar cambios",
   "profileJoinedText": "Se unió hace un mes",
-  "profileLastUpdatedText": "Última actualización hace un mes"
+  "profileLastUpdatedText": "Última actualización hace un mes",
+  "avatarTooltip": "Haz clic para subir un avatar"
 }

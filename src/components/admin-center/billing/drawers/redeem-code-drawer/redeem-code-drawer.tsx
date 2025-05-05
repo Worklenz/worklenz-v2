@@ -5,10 +5,14 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   fetchBillingInfo,
+  fetchStorageInfo,
   toggleRedeemCodeDrawer,
 } from '@features/admin-center/admin-center.slice';
 import { adminCenterApiService } from '@/api/admin-center/admin-center.api.service';
 import logger from '@/utils/errorLogger';
+import { authApiService } from '@/api/auth/auth.api.service';
+import { setUser } from '@/features/user/userSlice';
+import { setSession } from '@/utils/session-helper';
 const RedeemCodeDrawer: React.FC = () => {
   const [form] = Form.useForm();
   const { t } = useTranslation('admin-center/current-bill');
@@ -26,8 +30,14 @@ const RedeemCodeDrawer: React.FC = () => {
       const res = await adminCenterApiService.redeemCode(values.redeemCode);
       if (res.done) {
         form.resetFields();
+        const authorizeResponse = await authApiService.verify();
+        if (authorizeResponse.authenticated) {
+          setSession(authorizeResponse.user);
+          dispatch(setUser(authorizeResponse.user));
+        }
         dispatch(toggleRedeemCodeDrawer());
         dispatch(fetchBillingInfo());
+        dispatch(fetchStorageInfo());
       }
     } catch (error) {
       logger.error('Error redeeming code', error);
@@ -79,6 +89,7 @@ const RedeemCodeDrawer: React.FC = () => {
               style={{ width: '100%' }}
               htmlType="submit"
               disabled={redeemCode.length !== 10}
+              loading={isLoading}
             >
               {t('redeemSubmit')}
             </Button>

@@ -1,3 +1,4 @@
+import { categoriesApiService } from '@/api/settings/categories/categories.api.service';
 import { fetchProjectCategories } from '@/features/projects/lookups/projectCategories/projectCategoriesSlice';
 import { setSelectedProjectCategories } from '@/features/reporting/projectReports/project-reports-slice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
@@ -16,6 +17,8 @@ const ProjectCategoriesFilterDropdown = () => {
   const categoryInputRef = useRef<InputRef>(null);
   const { mode: themeMode } = useAppSelector(state => state.themeReducer);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [orgCategories, setOrgCategories] = useState<IProjectCategoryViewModel[]>([]);
+  const [loading, setLoading] = useState(false);
   const { projectCategories, loading: projectCategoriesLoading } = useAppSelector(
     state => state.projectCategoriesReducer
   );
@@ -30,16 +33,38 @@ const ProjectCategoriesFilterDropdown = () => {
     }
   };
 
+  const getOrgCategories = async () => {
+    setLoading(true);
+    const response = await categoriesApiService.getCategoriesByOrganization();
+    if (response.done) {
+      setOrgCategories(response.body as IProjectCategoryViewModel[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getOrgCategories();
+  }, []);
+
   // Add filtered categories memo
   const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim()) return projectCategories;
 
-    return projectCategories.filter(category =>
+    if (!searchQuery.trim()) return orgCategories;
+
+    return orgCategories.filter(category =>
       category.name?.toLowerCase().includes(searchQuery.toLowerCase().trim())
     );
-  }, [projectCategories, searchQuery]);
+  }, [orgCategories, searchQuery]);
 
   const handleCategoryChange = (category: IProjectCategoryViewModel) => {
+    const isSelected = orgCategories.some(h => h.id === category.id);
+    let updatedCategory: IProjectCategoryViewModel[];
+
+    if (isSelected) {
+      updatedCategory = orgCategories.filter(h => h.id !== category.id);
+    } else {
+      updatedCategory = [...orgCategories, category];
+    }
     dispatch(setSelectedProjectCategories(category));
   };
 
@@ -57,26 +82,32 @@ const ProjectCategoriesFilterDropdown = () => {
           placeholder={t('searchByCategoryPlaceholder')}
         />
 
-        <List style={{ padding: 0 }}>
+        <List
+          style={{
+            padding: 0,
+            maxHeight: 200,
+            overflowY: 'auto',
+          }}
+        >
           {filteredCategories.length ? (
             filteredCategories.map(category => (
               <List.Item
-                className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
-                key={category.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  gap: 8,
-                  padding: '4px 8px',
-                  border: 'none',
-                }}
+          className={`custom-list-item ${themeMode === 'dark' ? 'dark' : ''}`}
+          key={category.id}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            gap: 8,
+            padding: '4px 8px',
+            border: 'none',
+          }}
               >
-                <Checkbox id={category.id} onChange={() => handleCategoryChange(category)}>
-                  <Flex gap={8}>
-                    <Badge color={category.color_code} />
-                    {category.name}
-                  </Flex>
-                </Checkbox>
+          <Checkbox id={category.id} onChange={() => handleCategoryChange(category)}>
+            <Flex gap={8}>
+              <Badge color={category.color_code} />
+              {category.name}
+            </Flex>
+          </Checkbox>
               </List.Item>
             ))
           ) : (
@@ -98,11 +129,10 @@ const ProjectCategoriesFilterDropdown = () => {
         icon={<CaretDownFilled />}
         iconPosition="end"
         loading={projectCategoriesLoading}
-        className={`transition-colors duration-300 ${
-          isDropdownOpen
+        className={`transition-colors duration-300 ${isDropdownOpen
             ? 'border-[#1890ff] text-[#1890ff]'
             : 'hover:text-[#1890ff hover:border-[#1890ff]'
-        }`}
+          }`}
       >
         {t('categoryText')}
       </Button>

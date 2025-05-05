@@ -9,6 +9,7 @@ import logger from '@/utils/errorLogger';
 import { reportingProjectsApiService } from '@/api/reporting/reporting-projects.api.service';
 import { IGroupByOption, ITaskListGroup } from '@/types/tasks/taskList.types';
 import { GROUP_BY_STATUS_VALUE, IGroupBy } from '@/features/board/board-slice';
+import { createPortal } from 'react-dom';
 
 const TaskDrawer = React.lazy(() => import('@components/task-drawer/task-drawer'));
 
@@ -71,15 +72,17 @@ const ProjectReportsTasksTab = ({ projectId = null }: ProjectReportsTasksTabProp
       <Flex vertical gap={12}>
         {filteredGroups.map(item => (
           <ProjectReportsTasksTable
+            key={item.id}
             tasksData={item.tasks}
             title={item.name}
             color={item.color_code}
             type={groupBy}
+            projectId={projectId || ''}
           />
         ))}
       </Flex>
 
-      <TaskDrawer />
+      {createPortal(<TaskDrawer />, document.body, 'task-drawer')}
     </Flex>
   );
 };

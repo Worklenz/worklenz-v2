@@ -22,8 +22,8 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { SocketEvents } from '@/shared/socket-events';
 import { useAuthService } from '@/hooks/useAuth';
 import { useSocket } from '@/socket/socketContext';
-import { setProject, setImportTaskTemplateDrawerOpen } from '@features/project/project.slice';
-import { addTask, fetchTaskGroups, IGroupBy } from '@features/tasks/tasks.slice';
+import { setProject, setImportTaskTemplateDrawerOpen, setRefreshTimestamp } from '@features/project/project.slice';
+import { addTask, fetchTaskGroups, fetchTaskListColumns, IGroupBy } from '@features/tasks/tasks.slice';
 import ProjectStatusIcon from '@/components/common/project-status-icon/project-status-icon';
 import { formatDate } from '@/utils/timeUtils';
 import { toggleSaveAsTemplateDrawer } from '@/features/projects/projectsSlice';
@@ -45,6 +45,9 @@ import ImportTaskTemplate from '@/components/task-templates/import-task-template
 import ProjectDrawer from '@/components/projects/project-drawer/project-drawer';
 import { toggleProjectMemberDrawer } from '@/features/projects/singleProject/members/projectMembersSlice';
 import useIsProjectManager from '@/hooks/useIsProjectManager';
+import useTabSearchParam from '@/hooks/useTabSearchParam';
+import { addTaskCardToTheTop, fetchBoardTaskGroups } from '@/features/board/board-slice';
+import { fetchPhasesByProjectId } from '@/features/projects/singleProject/phase/phases.slice';
 
 const ProjectViewHeader = () => {
   const navigate = useNavigate();
@@ -53,6 +56,7 @@ const ProjectViewHeader = () => {
   const currentSession = useAuthService().getCurrentSession();
   const isOwnerOrAdmin = useAuthService().isOwnerOrAdmin();
   const isProjectManager = useIsProjectManager();
+  const { tab } = useTabSearchParam();
 
   const { socket } = useSocket();
 
@@ -65,8 +69,30 @@ const ProjectViewHeader = () => {
   const [creatingTask, setCreatingTask] = useState(false);
 
   const handleRefresh = () => {
-    if (projectId) {
-      dispatch(fetchTaskGroups(projectId));
+    if (!projectId) return;
+    switch (tab) {
+      case 'tasks-list':
+        dispatch(fetchTaskListColumns(projectId));
+        dispatch(fetchPhasesByProjectId(projectId))
+        dispatch(fetchTaskGroups(projectId));
+        break;
+      case 'board':
+        dispatch(fetchBoardTaskGroups(projectId));
+        break;
+      case 'project-insights-member-overview':
+        dispatch(setRefreshTimestamp());
+        break;
+      case 'all-attachments':
+        dispatch(setRefreshTimestamp());
+        break;
+      case 'members':
+        dispatch(setRefreshTimestamp());
+        break;
+      case 'updates':
+        dispatch(setRefreshTimestamp());
+        break;
+      default:
+        break;
     }
   };
 
@@ -105,14 +131,18 @@ const ProjectViewHeader = () => {
       };
 
       socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
-        console.log('task', task);
         if (task.id) {
           dispatch(setSelectedTaskId(task.id));
           dispatch(setShowTaskDrawer(true));
 
           const groupId = groupBy === IGroupBy.PHASE ? UNMAPPED : getGroupIdByGroupedColumn(task);
           if (groupId) {
-            dispatch(addTask({ task, groupId }));
+            if (tab === 'board') {
+              dispatch(addTaskCardToTheTop({ sectionId: groupId, task }));
+            } else {
+              dispatch(addTask({ task, groupId }));
+            }
+            socket?.emit(SocketEvents.GET_TASK_PROGRESS.toString(), task.id);
           }
         }
       });

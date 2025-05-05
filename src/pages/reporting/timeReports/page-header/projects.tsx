@@ -1,88 +1,100 @@
+import { setSelectOrDeselectAllProjects, setSelectOrDeselectProject } from '@/features/reporting/time-reports/time-reports-overview.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { CaretDownFilled } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Dropdown, Input, MenuProps } from 'antd';
+import { Button, Checkbox, Divider, Dropdown, Input, theme } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const Projects: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const { t } = useTranslation('time-report');
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const allItems = [
-    { key: '1', label: 'Project 1' },
-    { key: '2', label: 'Project 2' },
-    { key: '3', label: 'Project 3' },
-  ];
+  const { projects, loadingProjects } = useAppSelector(state => state.timeReportsOverviewReducer);
+  const { token } = theme.useToken();
 
   // Filter items based on search text
-  const filteredItems = allItems.filter(item =>
-    item.label.toLowerCase().includes(searchText.toLowerCase())
+  const filteredItems = projects.filter(item =>
+    item.name?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Handle checkbox change for individual items
   const handleCheckboxChange = (key: string, checked: boolean) => {
-    setCheckedList(prev => (checked ? [...prev, key] : prev.filter(item => item !== key)));
+    dispatch(setSelectOrDeselectProject({ id: key, selected: checked }));
   };
 
   // Handle "Select All" checkbox change
   const handleSelectAllChange = (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
     setSelectAll(isChecked);
-    setCheckedList(isChecked ? allItems.map(item => item.key) : []);
+    dispatch(setSelectOrDeselectAllProjects(isChecked));
   };
-
-  // Dropdown items for the menu
-  const menuItems: MenuProps['items'] = [
-    {
-      key: 'search',
-      label: (
-        <Input
-          onClick={e => e.stopPropagation()}
-          placeholder={t('searchByProject')}
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-        />
-      ),
-    },
-    {
-      key: 'selectAll',
-      label: (
-        <div>
-          <Checkbox
-            onClick={e => e.stopPropagation()}
-            onChange={handleSelectAllChange}
-            checked={selectAll}
-          >
-            {t('selectAll')}
-          </Checkbox>
-          <Divider style={{ margin: '4px 0' }} />
-        </div>
-      ),
-    },
-    ...filteredItems.map(item => ({
-      key: item.key,
-      label: (
-        <Checkbox
-          onClick={e => e.stopPropagation()}
-          checked={checkedList.includes(item.key)}
-          onChange={e => handleCheckboxChange(item.key, e.target.checked)}
-        >
-          {item.label}
-        </Checkbox>
-      ),
-    })),
-  ];
 
   return (
     <div>
       <Dropdown
-        menu={{ items: menuItems }}
+        menu={undefined}
         placement="bottomLeft"
         trigger={['click']}
-        overlayStyle={{ maxHeight: '330px', overflowY: 'auto' }}
+        dropdownRender={() => (
+          <div style={{ 
+            background: token.colorBgContainer,
+            borderRadius: token.borderRadius,
+            boxShadow: token.boxShadow,
+            padding: '4px 0',
+            maxHeight: '330px',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{ padding: '8px', flexShrink: 0 }}>
+              <Input
+                onClick={e => e.stopPropagation()}
+                placeholder={t('searchByProject')}
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+              />
+            </div>
+            <div style={{ padding: '0 12px', flexShrink: 0 }}>
+              <Checkbox
+                onClick={e => e.stopPropagation()}
+                onChange={handleSelectAllChange}
+                checked={selectAll}
+              >
+                {t('selectAll')}
+              </Checkbox>
+            </div>
+            <Divider style={{ margin: '4px 0', flexShrink: 0 }} />
+            <div style={{ 
+              overflowY: 'auto',
+              flex: 1
+            }}>
+              {filteredItems.map(item => (
+                <div 
+                  key={item.id}
+                  style={{ 
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: token.colorBgTextHover
+                    }
+                  }}
+                >
+                  <Checkbox
+                    onClick={e => e.stopPropagation()}
+                    checked={item.selected}
+                    onChange={e => handleCheckboxChange(item.id || '', e.target.checked)}
+                  >
+                    {item.name}
+                  </Checkbox>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         onOpenChange={visible => {
           setDropdownVisible(visible);
           if (!visible) {
@@ -90,7 +102,7 @@ const Projects: React.FC = () => {
           }
         }}
       >
-        <Button>
+        <Button loading={loadingProjects}>
           {t('projects')} <CaretDownFilled />
         </Button>
       </Dropdown>

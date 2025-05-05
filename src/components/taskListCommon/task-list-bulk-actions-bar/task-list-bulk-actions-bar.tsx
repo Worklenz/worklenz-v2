@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Badge,
-  Dropdown,
-  Flex,
-  Tooltip,
-  Button,
-  InputRef,
-  CheckboxChangeEvent,
-} from 'antd/es';
+import { Badge, Dropdown, Flex, Tooltip, Button, InputRef, CheckboxChangeEvent } from 'antd/es';
 import {
   RetweetOutlined,
   TagsOutlined,
@@ -60,6 +52,9 @@ import logger from '@/utils/errorLogger';
 import ConvertToSubtaskDrawer from '@/components/task-list-common/convert-to-subtask-drawer/convert-to-subtask-drawer';
 import { fetchLabels } from '@/features/taskAttributes/taskLabelSlice';
 import { useAuthService } from '@/hooks/useAuth';
+import CustomColumnModal from '@/pages/projects/projectView/taskList/task-list-table/custom-columns/custom-column-modal/custom-column-modal';
+import { checkTaskDependencyStatus } from '@/utils/check-task-dependency-status';
+import alertService from '@/services/alerts/alertService';
 
 interface ITaskAssignee {
   id: string;
@@ -124,6 +119,7 @@ const TaskListBulkActionsBar = () => {
     if (!status.id || !projectId) return;
     try {
       setLoading(true);
+
       const body: IBulkTasksStatusChangeRequest = {
         tasks: selectedTaskIdsList,
         status_id: status.id,
@@ -133,6 +129,23 @@ const TaskListBulkActionsBar = () => {
         trackMixpanelEvent(evt_project_task_list_bulk_change_status);
         dispatch(deselectAll());
         dispatch(fetchTaskGroups(projectId));
+      }
+      for (const it of selectedTaskIdsList) {
+        const canContinue = await checkTaskDependencyStatus(it, status.id);
+        if (!canContinue) {
+          if (selectedTaskIdsList.length > 1) {
+            alertService.warning(
+              'Incomplete Dependencies!',
+              'Some tasks were not updated. Please ensure all dependent tasks are completed before proceeding.'
+            );
+          } else {
+            alertService.error(
+              'Task is not completed',
+              'Please complete the task dependencies before proceeding'
+            );
+          }
+          return;
+        }
       }
     } catch (error) {
       logger.error('Error changing status:', error);
@@ -339,13 +352,17 @@ const TaskListBulkActionsBar = () => {
 
   const applyLabels = async () => {
     if (!projectId) return;
-
     try {
       setUpdatingLabels(true);
       const body: IBulkTasksLabelsRequest = {
         tasks: selectedTaskIdsList,
         labels: selectedLabels,
-        text: createLabelText.trim() !== '' ? createLabelText.trim() : null,
+        text:
+          selectedLabels.length > 0
+            ? null
+            : createLabelText.trim() !== ''
+              ? createLabelText.trim()
+              : null,
       };
       const res = await taskListBulkActionsApiService.assignLabels(body, projectId);
       if (res.done) {
@@ -450,7 +467,10 @@ const TaskListBulkActionsBar = () => {
             </div>
           </Tooltip>
 
-          <Tooltip title={t('changeAssignees')} getPopupContainer={() => changeAssigneesRef.current!}>
+          <Tooltip
+            title={t('changeAssignees')}
+            getPopupContainer={() => changeAssigneesRef.current!}
+          >
             <div ref={changeAssigneesRef}>
               <Dropdown
                 dropdownRender={getAssigneesMenu}
@@ -471,7 +491,10 @@ const TaskListBulkActionsBar = () => {
             </div>
           </Tooltip>
 
-          <Tooltip title={archived ? t('unarchive') : t('archive')} getPopupContainer={() => archiveRef.current!}>
+          <Tooltip
+            title={archived ? t('unarchive') : t('archive')}
+            getPopupContainer={() => archiveRef.current!}
+          >
             <div ref={archiveRef}>
               <Button
                 icon={<InboxOutlined />}
@@ -511,7 +534,11 @@ const TaskListBulkActionsBar = () => {
                   ],
                 }}
               >
-                <Button icon={<MoreOutlined />} className="borderless-icon-btn" style={buttonStyle} />
+                <Button
+                  icon={<MoreOutlined />}
+                  className="borderless-icon-btn"
+                  style={buttonStyle}
+                />
               </Dropdown>
             </div>
           </Tooltip>
@@ -539,11 +566,8 @@ const TaskListBulkActionsBar = () => {
           document.body,
           'create-task-template'
         )}
-        {createPortal(
-          <ConvertToSubtaskDrawer />,
-          document.body,
-          'convert-to-subtask-modal'
-        )}
+        {createPortal(<ConvertToSubtaskDrawer />, document.body, 'convert-to-subtask-modal')}
+        {createPortal(<CustomColumnModal />, document.body, 'custom-column-modal')}
       </Flex>
     </div>
   );

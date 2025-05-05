@@ -14,3 +14,11 @@ export interface IProjectAttachmentsViewModel {
   total?: number;
   data?: ITaskAttachmentViewModel[];
 }
+
+export interface ITaskAttachment {
+  file: string;
+  file_name: string;
+  project_id: string;
+  size: number;
+  task_id?: string | null;
+}

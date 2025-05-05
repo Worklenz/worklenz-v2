@@ -1,5 +1,5 @@
 import { Button, Flex } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -13,14 +13,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import BoardViewTaskCard from '../board-task-card/board-view-task-card';
 import BoardViewCreateTaskCard from '../board-task-card/board-view-create-task-card';
 import { ITaskListGroup } from '@/types/tasks/taskList.types';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { DEFAULT_TASK_NAME } from '@/shared/constants';
 import { ITaskCreateRequest } from '@/types/tasks/task-create-request.types';
-import { taskListBulkActionsApiService } from '@/api/tasks/task-list-bulk-actions.api.service';
 import { useSocket } from '@/socket/socketContext';
 import { SocketEvents } from '@/shared/socket-events';
 import { IProjectTask } from '@/types/project/projectTasksViewModel.types';
-import { fetchBoardTaskGroups } from '@/features/board/board-slice';
 import logger from '@/utils/errorLogger';
 
 interface IBoardSectionCardProps {
@@ -28,7 +25,6 @@ interface IBoardSectionCardProps {
 }
 
 const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
-  const dispatch = useAppDispatch();
   const { t } = useTranslation('kanban-board');
   const scrollContainerRef = useRef<any>(null);
   const themeMode = useAppSelector(state => state.themeReducer.mode);
@@ -77,7 +73,15 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
     setDroppableRef(el);
   };
 
-  const getInstantTask = async ({task_id, group_id, task}: {task_id: string, group_id: string, task: IProjectTask}) => {
+  const getInstantTask = async ({
+    task_id,
+    group_id,
+    task,
+  }: {
+    task_id: string;
+    group_id: string;
+    task: IProjectTask;
+  }) => {
     try {
     } catch (error) {
       logger.error('Error creating instant task', error);
@@ -97,16 +101,10 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
     };
 
     socket?.emit(SocketEvents.QUICK_TASK.toString(), JSON.stringify(body));
-    socket?.once(SocketEvents.QUICK_TASK.toString(), (task: IProjectTask) => {
-      setCreatingTempTask(false);
-      if (task && task.id) {
-        dispatch(fetchBoardTaskGroups(projectId));
-      }
-    });
   };
 
   const handleAddTaskToBottom = () => {
-    createTempTask();
+    // createTempTask();
     setShowNewCardBottom(true);
   };
 
@@ -136,10 +134,15 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
         padding: 8,
         borderRadius: 12,
       }}
-      className="h-[600px] max-h-[600px] overflow-y-scroll"
+      className="h-[600px] max-h-[600px] overflow-y-scroll board-section"
+      data-section-id={taskGroup.id}
+      data-droppable="true"
+      data-over="false"
     >
       <BoardSectionCardHeader
-        id={taskGroup.id}
+        groupId={taskGroup.id}
+        key={taskGroup.id}
+        categoryId={taskGroup.category_id ?? null}
         name={name}
         tasksCount={taskGroup?.tasks.length}
         isLoading={isLoading}
@@ -148,7 +151,7 @@ const BoardSectionCard = ({ taskGroup }: IBoardSectionCardProps) => {
         onHoverChange={setIsHover}
         setShowNewCard={setShowNewCardTop}
       />
-      
+
       <Flex
         vertical
         gap={16}

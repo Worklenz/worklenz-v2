@@ -1,13 +1,14 @@
+import { IRPTTimeProject } from '@/types/reporting/reporting.types';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface timeLogState {
   isTimeLogDrawerOpen: boolean;
-  selectedLabel: string;
+  selectedLabel: IRPTTimeProject | null;
 }
 
 const initialState: timeLogState = {
   isTimeLogDrawerOpen: false,
-  selectedLabel: '',
+  selectedLabel: null,
 };
 
 const timeLogSlice = createSlice({
@@ -22,8 +23,12 @@ const timeLogSlice = createSlice({
     setSelectedLabel(state, action) {
       state.selectedLabel = action.payload;
     },
+    setLabelAndToggleDrawer(state, action) {
+      state.selectedLabel = action.payload;
+      state.isTimeLogDrawerOpen = true;
+    },
   },
 });
 
-export const { toggleTimeLogDrawer, setSelectedLabel } = timeLogSlice.actions;
+export const { toggleTimeLogDrawer, setSelectedLabel, setLabelAndToggleDrawer } = timeLogSlice.actions;
 export default timeLogSlice.reducer;

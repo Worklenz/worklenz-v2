@@ -18,5 +18,14 @@
   "profileTooltip": "View profile",
   "adminCenter": "Admin Center",
   "settings": "Settings",
-  "logOut": "Log Out"
+  "logOut": "Log Out",
+  "notificationsDrawer": {
+    "read": "Read notifications",
+    "unread": "Unread notifications",
+    "markAsRead": "Mark as read",
+    "readAndJoin": "Read & Join",
+    "accept": "Accept",
+    "acceptAndJoin": "Accept & Join",
+    "noNotifications": "No notifications"
+  }
 }

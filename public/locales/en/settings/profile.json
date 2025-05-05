@@ -8,5 +8,6 @@
   "emailRequiredError": "Email is required",
   "saveChanges": "Save Changes",
   "profileJoinedText": "Joined a month ago",
-  "profileLastUpdatedText": "Last updated a month ago"
+  "profileLastUpdatedText": "Last updated a month ago",
+  "avatarTooltip": "Click to upload an avatar"
 }

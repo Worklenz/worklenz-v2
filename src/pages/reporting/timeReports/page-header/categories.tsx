@@ -1,88 +1,124 @@
+import { fetchReportingProjects, setNoCategory, setSelectOrDeselectAllCategories, setSelectOrDeselectCategory } from '@/features/reporting/time-reports/time-reports-overview.slice';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { CaretDownFilled } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Dropdown, Input, MenuProps } from 'antd';
+import { Button, Card, Checkbox, Divider, Dropdown, Input, theme } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const Categories: React.FC = () => {
-  const [checkedList, setCheckedList] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+
   const [searchText, setSearchText] = useState('');
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const { t } = useTranslation('time-report');
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const { categories, loadingCategories, noCategory } = useAppSelector(
+    state => state.timeReportsOverviewReducer
+  );
+  const { token } = theme.useToken();
 
-  const allItems = [
-    { key: '1', label: 'Category 1' },
-    { key: '2', label: 'Category 2' },
-    { key: '3', label: 'Category 3' },
-  ];
-
-  // Filter items based on search text
-  const filteredItems = allItems.filter(item =>
-    item.label.toLowerCase().includes(searchText.toLowerCase())
+  const filteredItems = categories.filter(item =>
+    item.name?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Handle checkbox change for individual items
-  const handleCheckboxChange = (key: string, checked: boolean) => {
-    setCheckedList(prev => (checked ? [...prev, key] : prev.filter(item => item !== key)));
+  const handleCheckboxChange = async (key: string, checked: boolean) => {
+    await dispatch(setSelectOrDeselectCategory({ id: key, selected: checked }));
+    await dispatch(fetchReportingProjects());
   };
 
   // Handle "Select All" checkbox change
-  const handleSelectAllChange = (e: CheckboxChangeEvent) => {
+  const handleSelectAllChange = async (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
     setSelectAll(isChecked);
-    setCheckedList(isChecked ? allItems.map(item => item.key) : []);
+    await dispatch(setNoCategory(isChecked));
+    await dispatch(setSelectOrDeselectAllCategories(isChecked));
+    await dispatch(fetchReportingProjects());
+
   };
 
-  // Dropdown items for the menu
-  const menuItems: MenuProps['items'] = [
-    {
-      key: 'search',
-      label: (
-        <Input
-          onClick={e => e.stopPropagation()}
-          placeholder={t('searchByCategory')}
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-        />
-      ),
-    },
-    {
-      key: 'selectAll',
-      label: (
-        <div>
-          <Checkbox
-            onClick={e => e.stopPropagation()}
-            onChange={handleSelectAllChange}
-            checked={selectAll}
-          >
-            {t('selectAll')}
-          </Checkbox>
-          <Divider style={{ margin: '4px 0' }} />
-        </div>
-      ),
-    },
-    ...filteredItems.map(item => ({
-      key: item.key,
-      label: (
-        <Checkbox
-          onClick={e => e.stopPropagation()}
-          checked={checkedList.includes(item.key)}
-          onChange={e => handleCheckboxChange(item.key, e.target.checked)}
-        >
-          {item.label}
-        </Checkbox>
-      ),
-    })),
-  ];
+  const handleNoCategoryChange = async (checked: boolean) => {
+    await dispatch(setNoCategory(checked));
+    await dispatch(fetchReportingProjects());
+  };
 
   return (
     <div>
       <Dropdown
-        menu={{ items: menuItems }}
+        menu={undefined}
         placement="bottomLeft"
         trigger={['click']}
-        overlayStyle={{ maxHeight: '330px', overflowY: 'auto' }}
+        dropdownRender={() => (
+          <div style={{ 
+            background: token.colorBgContainer,
+            borderRadius: token.borderRadius,
+            boxShadow: token.boxShadow,
+            padding: '4px 0',
+            maxHeight: '330px',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{ padding: '8px', flexShrink: 0 }}>
+              <Input
+                onClick={e => e.stopPropagation()}
+                placeholder={t('searchByCategory')}
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+              />
+            </div>
+            {categories.length > 0 && (
+              <div style={{ padding: '0 12px', flexShrink: 0 }}>
+                <Checkbox
+                  onClick={e => e.stopPropagation()}
+                  onChange={handleSelectAllChange}
+                  checked={selectAll}
+                >
+                  {t('selectAll')}
+                </Checkbox>
+              </div>
+            )}
+            <div style={{ padding: '8px 12px 4px 12px', flexShrink: 0 }}>
+              <Checkbox
+                onClick={e => e.stopPropagation()}
+                checked={noCategory}
+                onChange={e => handleNoCategoryChange(e.target.checked)}
+              >
+                {t('noCategory')}
+              </Checkbox>
+            </div>
+            <Divider style={{ margin: '4px 0', flexShrink: 0 }} />
+            <div style={{ 
+              overflowY: 'auto',
+              flex: 1
+            }}>
+              {filteredItems.length > 0 ? (
+                filteredItems.map(item => (
+                  <div 
+                    key={item.id}
+                    style={{ 
+                      padding: '8px 12px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Checkbox
+                      onClick={e => e.stopPropagation()}
+                      checked={item.selected}
+                      onChange={e => handleCheckboxChange(item.id || '', e.target.checked)}
+                    >
+                      {item.name}
+                    </Checkbox>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '8px 12px' }}>
+                  {t('noCategories')}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         onOpenChange={visible => {
           setDropdownVisible(visible);
           if (!visible) {
@@ -90,7 +126,7 @@ const Categories: React.FC = () => {
           }
         }}
       >
-        <Button>
+        <Button loading={loadingCategories}>
           {t('categories')} <CaretDownFilled />
         </Button>
       </Dropdown>

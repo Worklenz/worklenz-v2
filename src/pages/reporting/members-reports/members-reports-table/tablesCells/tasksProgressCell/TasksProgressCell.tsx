@@ -11,18 +11,18 @@ const TasksProgressCell = ({ tasksStat }: TasksProgressCellProps) => {
   const { t } = useTranslation('reporting-members');
 
   if (!tasksStat) return null;
-
   const totalStat = tasksStat.todo + tasksStat.doing + tasksStat.done;
   if (totalStat === 0) return null;
 
-  const todoPercent = Math.floor((tasksStat.todo / totalStat) * 100);
-  const doingPercent = Math.floor((tasksStat.doing / totalStat) * 100);
-  const donePercent = Math.floor((tasksStat.done / totalStat) * 100);
+  const todoPercent = Math.round((tasksStat.todo / totalStat) * 100);
+  const doingPercent = Math.round((tasksStat.doing / totalStat) * 100);
+  const donePercent = Math.round((tasksStat.done / totalStat) * 100);
 
   const segments = [
-    { percent: todoPercent, color: '#98d4b1', label: 'todo' },
+    { percent: donePercent, color: '#98d4b1', label: 'done' },
     { percent: doingPercent, color: '#bce3cc', label: 'doing' },
-    { percent: donePercent, color: '#e3f4ea', label: 'done' },
+    { percent: todoPercent, color: '#e3f4ea', label: 'todo' },
+
   ];
 
   return (
